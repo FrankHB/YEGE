@@ -431,10 +431,8 @@ int MandelbrotEx(PIXEL& z)
 		*z.last2 = *z.last;
 		for(; ed > 2; ed = std::min<unsigned>(last >> 1, 8), last = last - ed)
 		{
-			for(int k = 0; k < ed; ++k)
-			{
+			for(unsigned k = 0; k < ed; ++k)
 				func(*z.last, *z.c);
-			}
 			if(abs4(*z.last))
 			{
 				*z.last = *z.last2;
@@ -463,9 +461,13 @@ int MandelbrotEx(PIXEL& z)
 		if(abs4(*z.last))
 		{
 			z.ed = 1;
-			int t = z.nIter + (b - k);
-			if(t > g_max_iter_last) g_max_iter_last = t;
-			if(t < g_min_iter_last) g_min_iter_last = t;
+
+			unsigned t = z.nIter + (b - k);
+
+			if(t > g_max_iter_last)
+				g_max_iter_last = t;
+			if(t < g_min_iter_last)
+				g_min_iter_last = t;
 			delete_cp(&z.last);
 			delete_cp(&z.last2);
 			delete_cp(&z.c);
@@ -592,107 +594,89 @@ void addpoint(int x, int y, int it = -1)
 
 //int travel(int x, int y, )
 
-int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int mode = 0)
+int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy)
 {
 	int t = clock();
-	//if (mode == 0)
+	int x, y;
+
+	while(g_udlist.pop(&x, &y))
 	{
-		int x, y;
-		while(g_udlist.pop(&x, &y))
+		PIXEL& p = pMap[y][x];
+		if(p.nIter == 0 && p.ed == 0)
 		{
-			PIXEL& p = pMap[y][x];
-			if(p.nIter == 0 && p.ed == 0)
+			COMPLEX z, c;
+			c.re = fromx + (tox - fromx) * (x / (double)SC_W);
+			c.im = fromy + (toy - fromy) * (y / (double)SC_H);
+			z.re = z.im = 0.0;
+			pMap[y][x].last = new_cp();
+			pMap[y][x].last2 = new_cp();
+			pMap[y][x].c = new_cp();
+			pMap[y][x].last->setprec();
+			pMap[y][x].last2->setprec();
+			pMap[y][x].c->setprec();
+			pMap[y][x].last[0] = z;
+			pMap[y][x].c[0] = c;
+		}
+		if(p.ed == 0)
+		{
+			unsigned k;
+			k = MandelbrotEx(p);
+			if(p.ed)
 			{
-				COMPLEX z, c;
-				c.re = fromx + (tox - fromx) * (x / (double)SC_W);
-				c.im = fromy + (toy - fromy) * (y / (double)SC_H);
-				z.re = z.im = 0.0;
-				pMap[y][x].last = new_cp();
-				pMap[y][x].last2 = new_cp();
-				pMap[y][x].c = new_cp();
-				pMap[y][x].last->setprec();
-				pMap[y][x].last2->setprec();
-				pMap[y][x].c->setprec();
-				pMap[y][x].last[0] = z;
-				pMap[y][x].c[0] = c;
+#if 1
+				if(x == 0)
+					; //addpoint(x+1, y, k);
+				else if(pMap[y][x - 1].ed && pMap[y][x - 1].nIter != k)
+				{
+					addpoint(x, y - 1, k);
+					addpoint(x - 1, y - 1, k);
+					addpoint(x, y + 1, k);
+					addpoint(x - 1, y + 1, k);
+				}
+				if(x + 1 == SC_W)
+					; //addpoint(x-1, y, k);
+				else if(pMap[y][x + 1].ed && pMap[y][x + 1].nIter != k)
+				{
+					addpoint(x, y - 1, k);
+					addpoint(x + 1, y - 1, k);
+					addpoint(x, y + 1, k);
+					addpoint(x + 1, y + 1, k);
+				}
+				if(y == 0)
+					; //addpoint(x, y+1, k);
+				else if(pMap[y - 1][x].ed && pMap[y - 1][x].nIter != k)
+				{
+					addpoint(x - 1, y - 1, k);
+					addpoint(x - 1, y  , k);
+					addpoint(x + 1, y - 1, k);
+					addpoint(x + 1, y  , k);
+				}
+				if(y + 1 == SC_H)
+					; //addpoint(x, y-1, k);
+				else if(pMap[y + 1][x].ed && pMap[y + 1][x].nIter != k)
+				{
+					addpoint(x - 1, y + 1, k);
+					addpoint(x - 1, y  , k);
+					addpoint(x + 1, y + 1, k);
+					addpoint(x + 1, y  , k);
+				}
+#else
+				addpoint(x, y - 1, k);
+				addpoint(x, y + 1, k);
+				addpoint(x - 1, y, k);
+				addpoint(x + 1, y, k);
+#endif
+				g_b_update_mark += 1;
+				putpixel_f(x, y, Color[k & COLORMASK]);
 			}
-			if(p.ed == 0)
+			else
+				addpoint(x, y);
+			if(clock() - t > 5000)
 			{
-				int k;
-				k = MandelbrotEx(p);
-				if(p.ed)
-				{
-					if(1)
-					{
-						if(x == 0)
-						{
-							//addpoint(x+1, y, k);
-						}
-						else if(pMap[y][x - 1].ed && pMap[y][x - 1].nIter != k)
-						{
-							addpoint(x  , y - 1, k);
-							addpoint(x - 1, y - 1, k);
-							addpoint(x  , y + 1, k);
-							addpoint(x - 1, y + 1, k);
-						}
-						if(x + 1 == SC_W)
-						{
-							//addpoint(x-1, y, k);
-						}
-						else if(pMap[y][x + 1].ed && pMap[y][x + 1].nIter != k)
-						{
-							addpoint(x  , y - 1, k);
-							addpoint(x + 1, y - 1, k);
-							addpoint(x  , y + 1, k);
-							addpoint(x + 1, y + 1, k);
-						}
-						if(y == 0)
-						{
-							//addpoint(x, y+1, k);
-						}
-						else if(pMap[y - 1][x].ed && pMap[y - 1][x].nIter != k)
-						{
-							addpoint(x - 1, y - 1, k);
-							addpoint(x - 1, y  , k);
-							addpoint(x + 1, y - 1, k);
-							addpoint(x + 1, y  , k);
-						}
-						if(y + 1 == SC_H)
-						{
-							//addpoint(x, y-1, k);
-						}
-						else if(pMap[y + 1][x].ed && pMap[y + 1][x].nIter != k)
-						{
-							addpoint(x - 1, y + 1, k);
-							addpoint(x - 1, y  , k);
-							addpoint(x + 1, y + 1, k);
-							addpoint(x + 1, y  , k);
-						}
-						{
-							//
-						}
-					}
-					else
-					{
-						addpoint(x, y - 1, k);
-						addpoint(x, y + 1, k);
-						addpoint(x - 1, y, k);
-						addpoint(x + 1, y, k);
-					}
-					g_b_update_mark += 1;
-					putpixel_f(x, y, Color[k & COLORMASK]);
-				}
-				else
-				{
-					addpoint(x, y);
-				}
-				if(clock() - t > 5000)
-				{
-					//if (keystate('J') && keystate('N'))
-					return 1;
-					delay(0);
-					t = clock();
-				}
+				//	if (keystate('J') && keystate('N'))
+				return 1;
+				delay(0);
+				t = clock();
 			}
 		}
 	}
@@ -703,26 +687,20 @@ int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int mode = 0)
 void
 fill_map()
 {
-	for(int y = 1; y < SC_H - 1; y++)
-	{
-		for(int x = 1; x < SC_W - 1; x++)
-		{
-			if(pMap[y][x].nIter == 0)
-			{
-				if(pMap[y - 1][x].ed && pMap[y][x - 1].ed && pMap[y][x - 1].nIter == pMap[y - 1][x].nIter)
+	for(int y = 1; y < SC_H - 1; ++y)
+		for(int x = 1; x < SC_W - 1; ++x)
+			if(pMap[y][x].nIter == 0 && pMap[y - 1][x].ed && pMap[y][x - 1].ed
+					&& pMap[y][x - 1].nIter == pMap[y - 1][x].nIter)
 				{
 					pMap[y][x].nIter = pMap[y - 1][x].nIter;
 					pMap[y][x].ed = 1;
 					putpixel_f(x, y, Color[pMap[y][x].nIter & COLORMASK]);
 				}
-			}
-		}
-	}
 }
 
 void setgprec(Float f)
 {
-	mp_bitcnt_t t = 0;
+	mp_bitcnt_t t(0);
 	while(f < 1)
 	{
 		f *= 2;
@@ -737,23 +715,20 @@ void setgprec(Float f)
 
 #include <stdio.h>
 #include <io.h>
-/////////////////////////////////////////////////
-// 主函数
-/////////////////////////////////////////////////
-int main()
+
+int
+main()
 {
 	// 初始化绘图窗口及颜色
 	int w = SC_W, h = SC_H, dh = 48;
-	//setinitmode(0);
 	initgraph(w, h + dh);
 	randomize();
 	InitColor();
 //	setfillstyle(0x0);
 	setfont(12, 0, "宋体");
-	//SetWindowTextA(GetHWnd(), "Mandelbrot Set");
-	SetWindowTextA(getHWnd(), "Mandelbrot Set by 御坂美琴 -- PowerEasyX V0.3.4 Release (20110129)");
+	::SetWindowTextA(getHWnd(),
+		"Mandelbrot Set by 御坂美琴 -- PowerEasyX V0.3.4 Release (20110129)");
 	//mpf_set_prec(100);
-
 
 	// 初始化 Mandelbrot Set(曼德布洛特集)坐标系
 	IMAGE mimage;
@@ -761,10 +736,10 @@ int main()
 	COMPLEX center, delta, mindelta;
 	COMPLEX from, to;
 	COMPLEX js_c;
-	int mode = 0;
-	int ncnt = 0;
-	int nbeg = -1;
+
+	int ncnt = 0, nbeg = -1;
 	double delta_mul = 0.97857206208770013450916112581344; //0.707;
+
 	g_prec = 2048;
 	center.setprec();
 	mindelta.setprec();
@@ -866,8 +841,8 @@ int main()
 			bar(0, 0, SC_W, SC_H);
 			delay(0);
 			g_max_iter_last = 16;
-			//Draw(from.re, from.im, to.re, to.im, mode);
-			int mend = 0xFFFFFFF;
+			//Draw(from.re, from.im, to.re, to.im);
+			unsigned mend = 0xFFFFFFF;
 			int minmark = 0;
 			//if (g_prec <= 64) minmark = 0, mend = 16;
 			int addmark = 0;
@@ -877,8 +852,8 @@ int main()
 			if(g_prec <= 64) g_max_iter = 16;
 			//g_iters = ITERATIONS;
 
-			int last_min = 0;
-			for(int m = 0, t = clock(); g_udlist.nLen > 0 && m < mend; ++m)
+			unsigned last_min = 0;
+			for(unsigned m = 0, t = clock(); g_udlist.nLen > 0 && m < mend; ++m)
 			{
 				g_b_update_mark = 0;
 				g_min_iter_last = 0x7FFFFFFF;
@@ -886,7 +861,8 @@ int main()
 				{
 					{
 						char str[100];
-						sprintf(str, "%8d %8d %8d %8d", g_base_iters, g_max_iter, g_max_iter_last, last_min);
+						sprintf(str, "%8d %8d %8d %8d", g_base_iters,
+							g_max_iter, g_max_iter_last, last_min);
 						outtextxy(100, SC_H + 12 * 3, str);
 					}
 					{
@@ -907,7 +883,8 @@ int main()
 					delay(0);
 					t = clock();
 				}
-				if(DrawEx(from.re, from.im, to.re, to.im, mode)) break;
+				if(DrawEx(from.re, from.im, to.re, to.im))
+					break;
 				if(g_b_update_mark + addmark > minmark)
 				{
 					if(mend == 0xFFFFFFF)
@@ -924,31 +901,29 @@ int main()
 					{
 						if(g_min_iter_last > 10000) break;
 					}
-					if(g_min_iter_last < last_min) g_min_iter_last = last_min;
-					if(g_max_iter_last >= g_max_iter) g_max_iter = (g_max_iter_last << 1);
-					if(g_max_iter > (g_min_iter_last << 1)) g_max_iter = (g_min_iter_last << 1);
+					if(g_min_iter_last < last_min)
+						g_min_iter_last = last_min;
+					if(g_max_iter_last >= g_max_iter)
+						g_max_iter = (g_max_iter_last << 1);
+					if(g_max_iter > (g_min_iter_last << 1))
+						g_max_iter = (g_min_iter_last << 1);
 					last_min = g_min_iter_last;
 				}
 				else
 				{
 					if(g_max_iter > 0x100 && mend != 0xFFFFFFF)
-					{
 						mend = 2;
-					}
 					if(g_max_iter <= 0x10000)
-					{
 						g_max_iter <<= 1;
-					}
 					else if(g_max_iter < 0x1000000)
-					{
 						g_max_iter += g_max_iter >> 1;
-					}
 					addmark += g_b_update_mark;
 				}
 			}
 			fill_map();
 			{
 				char str[30];
+
 				getimage(&mimage, 0, 0, SC_W, SC_H);
 				sprintf(str, "snap%06d.bmp", ncnt);
 				putimage_alphatransparent(&mimage, &img_logo, 2, SC_H - 26, 0, 0x80);

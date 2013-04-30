@@ -75,7 +75,7 @@ int main()
 	Draw(fromx, fromy, tox, toy);
 	{
 		bool isLDown = false;
-		int selfx, selfy, seltx, selty; // 定义选区
+		int selfx(0), selfy(0), seltx(0), selty(0); // 定义选区
 
 		while(kbhit() != -1)
 		{

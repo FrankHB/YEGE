@@ -125,7 +125,7 @@ int
 IMAGE::newimage(HDC hdc, int width, int height) {
 	HDC dc;
 	HBITMAP bitmap;
-	BITMAPINFO bmi = {{0}};
+	auto bmi = ::BITMAPINFO();
 	VOID* p_bmp_buf;
 
 	bmi.bmiHeader.biSize = sizeof(bmi.bmiHeader);
@@ -316,7 +316,7 @@ IMAGE::getimage(LPCSTR filename, int zoomWidth, int zoomHeight) {
 }
 
 int
-IMAGE::getimage(LPCWSTR filename, int zoomWidth, int zoomHeight) {
+IMAGE::getimage(LPCWSTR filename, int, int) {
 	inittest(L"IMAGE::getimage");
 	{
 		int ret = getimage_pngfile(this, filename);
@@ -341,21 +341,13 @@ IMAGE::getimage(LPCWSTR filename, int zoomWidth, int zoomHeight) {
 	}
 
 	lstrcpyW(wszPath, szPath);
-
-	hr = OleLoadPicturePath(
-		wszPath,
-		0,
-		0,
-		0,
-		IID_IPicture,
-		(void**)&pPicture
-		);
-
-	if(FAILED(hr)) {
+	hr = ::OleLoadPicturePath(wszPath, 0, 0, 0, IID_IPicture,
+		(void**)&pPicture);
+	if(FAILED(hr))
 		return grIOerror;
-	}
 
 	PIMAGE img = CONVERT_IMAGE_CONST(0);
+
 	pPicture->get_Width (&lWidth );
 	lWidthPixels  = MulDiv(lWidth,  GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 	pPicture->get_Height(&lHeight);
@@ -364,39 +356,29 @@ IMAGE::getimage(LPCWSTR filename, int zoomWidth, int zoomHeight) {
 
 	createimage(lWidthPixels, lHeightPixels);
 	{
-		HDC dc = m_hDC;
+		::HDC dc = m_hDC;
 
-		pPicture->Render(
-			dc,
-			0, 0,
-			lWidthPixels,
-			lHeightPixels,
-			0,
-			lHeight,
-			lWidth,
-			-lHeight,
-			0
-			);
+		pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+			lWidth, -lHeight, 0);
 	}
-
 	pPicture->Release();
-
 	return grOk;
 }
 
 // private function
-static
-int
+static int
 saveimagetofile(PIMAGE img, FILE* fp) {
-	BITMAPFILEHEADER bmpfHead = {0};
-	BITMAPINFOHEADER bmpinfo = {0};
+	auto bmpfHead = ::BITMAPFILEHEADER();
+	auto bmpinfo = ::BITMAPINFOHEADER();
 	int pitch = img->m_width * 3, addbit, y, x, zero = 0;
-	addbit = 4 - (pitch & 3);
-	if (pitch & 3) pitch = ((pitch + 4) & ~3); else addbit = 0;
 
+	addbit = 4 - (pitch & 3);
+	if(pitch & 3)
+		pitch = ((pitch + 4) & ~3); else addbit = 0;
 	bmpfHead.bfType = *(WORD*)"BM";
 	bmpfHead.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
-	bmpfHead.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + pitch * img->m_height;
+	bmpfHead.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER)
+		+ pitch * img->m_height;
 	bmpinfo.biSize = sizeof(BITMAPINFOHEADER);
 	bmpinfo.biBitCount = 24;
 	bmpinfo.biHeight = img->m_height;
@@ -577,7 +559,7 @@ IMAGE::savepngimg(FILE* fp, int bAlpha) {
 }
 
 int
-IMAGE::getimage(LPCSTR pResType, LPCSTR pResName, int zoomWidth, int zoomHeight) {
+IMAGE::getimage(LPCSTR pResType, LPCSTR pResName, int, int) {
 	inittest(L"IMAGE::getimage");
 	struct _graph_setting * pg = &graph_setting;
 	HRSRC hrsrc = FindResourceA(pg->instance, pResName, pResType);
@@ -649,40 +631,34 @@ IMAGE::getimage(LPCSTR pResType, LPCSTR pResName, int zoomWidth, int zoomHeight)
 
 
 int
-IMAGE::getimage(LPCWSTR pResType, LPCWSTR pResName, int zoomWidth, int zoomHeight) {
+IMAGE::getimage(LPCWSTR pResType, LPCWSTR pResName, int, int)
+{
 	inittest(L"IMAGE::getimage");
 	struct _graph_setting * pg = &graph_setting;
 	HRSRC hrsrc = FindResourceW(pg->instance, pResName, pResType);
 
 
-	if (hrsrc) {
-		HGLOBAL         hg = LoadResource(0, hrsrc);
-		DWORD           dwSize = SizeofResource(0, hrsrc);
-		HGLOBAL         hGlobal = GlobalAlloc(GMEM_MOVEABLE, dwSize);
-		LPVOID          pvRes = LockResource(hg);
-		LPVOID          pvData;
-		struct IPicture *pPicture;
-		IStream         *pStm;
-		long            lWidth,         lHeight;
-		long            lWidthPixels,   lHeightPixels;
-		HRESULT         hr;
+	if(hrsrc)
+	{
+		auto hg = ::LoadResource(0, hrsrc);
+		auto dwSize = ::SizeofResource(0, hrsrc);
+		auto hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, dwSize);
+		auto pvRes = ::LockResource(hg);
+		LPVOID pvData;
+		IPicture *pPicture;
+		IStream *pStm;
+		long lWidth, lHeight;
+		long lWidthPixels, lHeightPixels;
 
-		if (hGlobal == NULL || (pvData = GlobalLock(hGlobal)) == NULL) {
+		if (hGlobal == NULL || (pvData = GlobalLock(hGlobal)) == NULL)
 			return grAllocError;
-		}
-		memcpy(pvData, pvRes, dwSize);
-		GlobalUnlock(hGlobal);
-		if (S_OK != CreateStreamOnHGlobal(hGlobal, TRUE, &pStm)) {
+		::memcpy(pvData, pvRes, dwSize);
+		::GlobalUnlock(hGlobal);
+		if (S_OK != CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
 			return grNullPointer;
-		}
 
-		hr = OleLoadPicture(
-			pStm,
-			(LONG)dwSize,
-			TRUE,
-			IID_IPicture,
-			(void**)&pPicture
-			);
+		auto hr = OleLoadPicture(pStm, (LONG)dwSize, TRUE, IID_IPicture,
+			(void**)&pPicture);
 
 		GlobalFree(hGlobal);
 
@@ -811,50 +787,61 @@ fix_rect_1size(
 	int* nHeightSrc      // height of source rectangle
 	)
 {
-	struct viewporttype _vpt = {0, 0, pdest->m_width, pdest->m_height};
+	viewporttype _vpt = {0, 0, pdest->m_width, pdest->m_height, 0};
 	/* default value proc */
-	if (*nWidthSrc == 0) {
+	if(*nWidthSrc == 0)
+	{
 		*nWidthSrc  = psrc->m_width;
 		*nHeightSrc = psrc->m_height;
 	}
 	/* fix src rect */
-	if (*nWidthSrc > psrc->m_width) {
+	if(*nWidthSrc > psrc->m_width)
+	{
 		*nWidthSrc -= *nWidthSrc - psrc->m_width;
 		*nWidthSrc = psrc->m_width;
 	}
-	if (*nHeightSrc > psrc->m_height) {
+	if(*nHeightSrc > psrc->m_height)
+	{
 		*nHeightSrc -= *nHeightSrc - psrc->m_height;
 		*nHeightSrc = psrc->m_height;
 	}
-	if (*nXOriginSrc < 0) {
+	if(*nXOriginSrc < 0)
+	{
 		*nWidthSrc += *nXOriginSrc;
 		*nXOriginDest += *nXOriginSrc;
 		*nXOriginSrc = 0;
 	}
-	if (*nYOriginSrc < 0) {
+	if(*nYOriginSrc < 0)
+	{
 		*nHeightSrc += *nYOriginSrc;
 		*nYOriginDest += *nYOriginSrc;
 		*nYOriginSrc = 0;
 	}
 	/* fix dest vpt rect */
-	if (*nXOriginDest < _vpt.left) {
+	if(*nXOriginDest < _vpt.left)
+	{
 		int dx = _vpt.left - *nXOriginDest;
-		*nXOriginDest    += dx;
-		*nXOriginSrc     += dx;
-		*nWidthSrc       -= dx;
-	}
-	if (*nYOriginDest < _vpt.top) {
-		int dy = _vpt.top - *nYOriginDest;
-		*nYOriginDest    += dy;
-		*nYOriginSrc     += dy;
-		*nHeightSrc      -= dy;
-	}
-	if (*nXOriginDest + *nWidthSrc > _vpt.right) {
-		int dx = *nXOriginDest + *nWidthSrc - _vpt.right + 1;
+		*nXOriginDest += dx;
+		*nXOriginSrc += dx;
 		*nWidthSrc -= dx;
 	}
-	if (*nYOriginDest + *nHeightSrc > _vpt.bottom) {
+	if(*nYOriginDest < _vpt.top)
+	{
+		int dy = _vpt.top - *nYOriginDest;
+		*nYOriginDest += dy;
+		*nYOriginSrc += dy;
+		*nHeightSrc -= dy;
+	}
+	if(*nXOriginDest + *nWidthSrc > _vpt.right)
+	{
+		int dx = *nXOriginDest + *nWidthSrc - _vpt.right + 1;
+
+		*nWidthSrc -= dx;
+	}
+	if(*nYOriginDest + *nHeightSrc > _vpt.bottom)
+	{
 		int dy = *nYOriginDest + *nHeightSrc - _vpt.bottom + 1;
+
 		*nHeightSrc -= dy;
 	}
 }
@@ -2021,7 +2008,7 @@ draw_flat_trangle_alpha(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_sr
 		int s = float2int((float)t2d.p[0].y), e = float2int((float)t2d.p[2].y), h, m = float2int((float)t2d.p[1].y);
 		int rs, re;
 		int i, lh, rh;
-		float dm = t2d.p[1].y, dh;
+		float dm = t2d.p[1].y;
 		struct point2d pl, pr, pt;
 		struct point2d spl, spr;
 
@@ -2033,7 +2020,7 @@ draw_flat_trangle_alpha(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_sr
 		spr.x = t3d.p[2].x - t3d.p[0].x;
 		spl.y = t3d.p[1].y - t3d.p[0].y;
 		spr.y = t3d.p[2].y - t3d.p[0].y;
-		dh = dm - s;
+	//	float dh = dm - s;
 		h = m - s;
 		rs = s;
 		if (s < y1) {
@@ -2149,8 +2136,7 @@ draw_flat_trangle_alpha(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_sr
 		spr.x = t3d.p[1].x - t3d.p[2].x;
 		spl.y = t3d.p[0].y - t3d.p[2].y;
 		spr.y = t3d.p[1].y - t3d.p[2].y;
-
-		dh = e - dm;
+	//	dh = e - dm;
 		h = e - m;
 		re = e;
 		if (m < y1) {

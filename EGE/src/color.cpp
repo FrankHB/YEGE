@@ -243,6 +243,8 @@ void
 RGB_TO_HSV(const COLORRGB* input, COLORHSV* output)
 {
 	float r, g, b, minRGB, maxRGB, deltaRGB;
+
+	output->h = 0;
 	r = input->r / 255.0f;
 	g = input->g / 255.0f;
 	b = input->b / 255.0f;
@@ -255,34 +257,18 @@ RGB_TO_HSV(const COLORRGB* input, COLORHSV* output)
 	else
 		output->s = 0.0f;
 	if(output->s <= 0.0f)
-	{
 		output->h = -1.0f;
-	}
 	else
 	{
 		if(r == maxRGB)
-		{
 			output->h = (g - b) / deltaRGB;
-		}
-		else
-		{
-			if(g == maxRGB)
-			{
-				output->h = 2.0f + (b - r) / deltaRGB;
-			}
-			else
-			{
-				if(b == maxRGB)
-				{
-					output->h = 4.0f + (r - g) / deltaRGB;
-				}
-			}
-		}
-		output->h = output->h * 60.0f;
+		else if(g == maxRGB)
+			output->h = 2.0f + (b - r) / deltaRGB;
+		else if(b == maxRGB)
+			output->h = 4.0f + (r - g) / deltaRGB;
+		output->h *= 60.0f;
 		if(output->h < 0.0f)
-		{
 			output->h += 360.0f;
-		}
 		output->h /= 360.0f;
 	}
 }

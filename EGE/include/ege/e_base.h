@@ -190,7 +190,7 @@ enum rendermode_e
 	RENDER_MANUAL,
 };
 
-typedef enum key_code_e
+enum key_code_e
 {
 	key_mouse_l     = 0x01,
 	key_mouse_r     = 0x02,
@@ -286,43 +286,45 @@ typedef enum key_code_e
 	key_quote       = 0xde,
 
 	key_ime_process = 0xe5,
-} key_code_e;
+};
 
-typedef enum key_msg_e
+enum key_msg_e
 {
+	key_msg_none = 0,
 	key_msg_down    = 1,
 	key_msg_up      = 2,
 	key_msg_char    = 4,
-} key_msg_e;
-typedef enum key_flag_e
+};
+enum key_flag_e
 {
 	key_flag_shift  = 0x100,
 	key_flag_ctrl   = 0x200
-} key_flag_e;
+};
 
-typedef enum mouse_msg_e
+enum mouse_msg_e
 {
+	mouse_msg_none = 0,
 	mouse_msg_down      = 0x10,
 	mouse_msg_up        = 0x20,
 	mouse_msg_move      = 0x40,
 	mouse_msg_wheel     = 0x80
-} mouse_msg_e;
-typedef enum mouse_flag_e
+};
+enum mouse_flag_e
 {
 	mouse_flag_left     = 1,
 	mouse_flag_right    = 2,
 	mouse_flag_mid      = 4,
 	mouse_flag_shift    = 0x100,
 	mouse_flag_ctrl     = 0x200
-} mouse_flag_e;
+};
 
-typedef enum pattern_type_e
+enum pattern_type_e
 {
 	pattern_none            = 0,
 	pattern_lineargradient  = 1,
 	pattern_pathgradient    = 2,
 	pattern_texture         = 3
-} pattern_type_e;
+};
 
 struct viewporttype
 {
@@ -409,12 +411,12 @@ typedef struct ege_rect
 
 typedef unsigned int color_t;
 
-typedef struct ege_colpoint
+struct ege_colpoint
 {
 	float   x;
 	float   y;
 	color_t color;
-} ege_colpoint;
+};
 
 void EGEAPI setrendermode(rendermode_e mode);
 void EGEAPI initgraph(int Width, int Height, int Flag = INIT_DEFAULT);    // 初始化图形环境
