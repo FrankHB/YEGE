@@ -161,7 +161,9 @@ int getpath_scene()
 	return getch();
 }
 
-int copyfile(char* path1, char* pathnew, char* dir, char* file)
+int
+copyfile(const char* path1, char* pathnew,
+	const char* dir, const char* file)
 {
 	char strpath1[MAX_PATH];
 	char strpath2[MAX_PATH];
@@ -203,12 +205,17 @@ int setup_scene()
 	setfont(14, 0, "ËÎÌו");
 	for(it = 0; ver[it][0]; ++it)
 	{
-		if(installpath[it][0] == 0) continue;
+		if(installpath[it][0] == 0)
+			continue;
 		copyfile(".\\", installpath[it], "include", "graphics.h");
-		if(it == 0) copyfile(".\\", installpath[it], "lib", "graphics.lib");
-		if(it == 1) copyfile(".\\", installpath[it], "lib", "graphics05.lib");
-		if(it == 2 || it == 3) copyfile(".\\", installpath[it], "lib", "graphics08.lib");
-		if(it == 4) copyfile(".\\", installpath[it], "lib", "libgraphics.a");
+		if(it == 0)
+			copyfile(".\\", installpath[it], "lib", "graphics.lib");
+		if(it == 1)
+			copyfile(".\\", installpath[it], "lib", "graphics05.lib");
+		if(it == 2 || it == 3)
+			copyfile(".\\", installpath[it], "lib", "graphics08.lib");
+		if(it == 4)
+			copyfile(".\\", installpath[it], "lib", "libgraphics.a");
 	}
 	if(g_output[0])
 	{

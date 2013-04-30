@@ -4,6 +4,7 @@
 //#include <gmpxx.h>
 #include <stdio.h>
 #include <algorithm>
+#include <ege/head.h>
 
 //using namespace std;
 
@@ -198,9 +199,9 @@ typedef struct PIXEL
 	COMPLEX* last;
 	COMPLEX* last2;
 	COMPLEX* c;
-	int nIter;
-	int nMinIter;
-	int nLastIter;
+	unsigned int nIter;
+	unsigned int nMinIter;
+	unsigned int nLastIter;
 	int ed;
 	int calc;
 	PIXEL()
@@ -426,9 +427,9 @@ int MandelbrotEx(PIXEL& z)
 	//*
 	if(z.nIter < z.nMinIter)
 	{
-		int ed = std::min(z.nMinIter, 8), last = z.nMinIter - ed;
+		auto ed = std::min<unsigned>(z.nMinIter, 8), last = z.nMinIter - ed;
 		*z.last2 = *z.last;
-		for(; ed > 2; ed = std::min(last >> 1, 8), last = last - ed)
+		for(; ed > 2; ed = std::min<unsigned>(last >> 1, 8), last = last - ed)
 		{
 			for(int k = 0; k < ed; ++k)
 			{
@@ -449,8 +450,10 @@ int MandelbrotEx(PIXEL& z)
 	}
 	// */
 	int k = g_iters;
-	if(z.nIter > (g_max_iter << 1)) return z.nIter;
-	if(z.nIter + k < g_max_iter) k = g_max_iter - z.nIter;
+	if(z.nIter > (g_max_iter << 1))
+		return z.nIter;
+	if(z.nIter + k < g_max_iter)
+		k = g_max_iter - z.nIter;
 	int b = k;
 	while(k > 0)
 	{
@@ -697,7 +700,8 @@ int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int mode = 0)
 	return 0;
 }
 
-int fill_map()
+void
+fill_map()
 {
 	for(int y = 1; y < SC_H - 1; y++)
 	{
@@ -736,7 +740,7 @@ void setgprec(Float f)
 /////////////////////////////////////////////////
 // 主函数
 /////////////////////////////////////////////////
-int WinMain()
+int main()
 {
 	// 初始化绘图窗口及颜色
 	int w = SC_W, h = SC_H, dh = 48;
@@ -744,10 +748,10 @@ int WinMain()
 	initgraph(w, h + dh);
 	randomize();
 	InitColor();
-	setfillstyle(0x0);
+//	setfillstyle(0x0);
 	setfont(12, 0, "宋体");
 	//SetWindowTextA(GetHWnd(), "Mandelbrot Set");
-	SetWindowTextA(GetHWnd(), "Mandelbrot Set by 御坂美琴 -- PowerEasyX V0.3.4 Release (20110129)");
+	SetWindowTextA(getHWnd(), "Mandelbrot Set by 御坂美琴 -- PowerEasyX V0.3.4 Release (20110129)");
 	//mpf_set_prec(100);
 
 
@@ -794,7 +798,6 @@ int WinMain()
 
 	SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_LOWEST);
-	BeginBatchDraw();
 	for(; delta.re > mindelta.re; delta.re *= delta_mul, ++ncnt)
 	{
 		setgprec(delta.re);
@@ -889,12 +892,12 @@ int WinMain()
 					{
 						RECT rect, crect;
 						int _dw, _dh;
-						GetClientRect(GetHWnd(), &crect);
-						GetWindowRect(GetHWnd(), &rect);
+						GetClientRect(getHWnd(), &crect);
+						GetWindowRect(getHWnd(), &rect);
 						_dw = w - crect.right;
 						_dh = h + dh - crect.bottom;
 						MoveWindow(
-							GetHWnd(),
+							getHWnd(),
 							rect.left,
 							rect.top,
 							rect.right  + _dw - rect.left,
@@ -954,9 +957,6 @@ int WinMain()
 		}
 		delay(0);
 	}
-	EndBatchDraw();
-
-	//getch();
 	closegraph();
 	return 0;
 }

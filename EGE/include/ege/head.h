@@ -45,14 +45,6 @@
 #define SWAP(_a, _b, _t) {_t = _a; _a = _b; _b = _t; }
 #endif
 
-#ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
-
-#ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
-
 #define IFATODOB(A, B)  ( (A) && (B, 0) )
 #define IFNATODOB(A, B) ( (A) || (B, 0) )
 

@@ -503,7 +503,7 @@ public:
 		}
 		return false;
 	}
-	const TreeType
+	TreeType
 	select(sbt_int_t rank) const
 	{
 		return _select(root(), rank);

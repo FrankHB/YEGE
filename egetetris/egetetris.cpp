@@ -320,7 +320,7 @@ public:
 		lineto(x + w, y + h);
 		lineto(x, y + h);
 	}
-	void drawtile(int x, int y, int w, int h, int d, int color)
+	void drawtile(int x, int y, int w, int h, int, int color)
 	{
 		w--, h--;
 		setfillcolor(color);
@@ -328,11 +328,10 @@ public:
 		drawedge(x, y, w, h, color);
 		drawedge(x + 1, y + 1, w - 2, h - 2, color);
 	}
-	void drawframe(int x, int y, int w, int h, int d = 0)
+	void drawframe(int x, int y, int w, int h, int = 0)
 	{
 		int coll[] = {0x400040, 0x600060, 0xA000A0, 0xFF00FF,
-					  0xA000A0, 0x600060, 0x400040
-					 };
+					  0xA000A0, 0x600060, 0x400040};
 		setfillcolor(0x010101);
 		bar(x, y, x + w--, y + h--);
 		for(int i = 0; i < 7; ++i)
@@ -348,13 +347,13 @@ public:
 		{
 			for(int x = 0, c; x < 4; ++x)
 			{
-				if(c = mat[y][x])
+				if((c = mat[y][x]))
 				{
 					if(nc) c = nc;
 					drawtile(int(bx + (x + dx) * m_base_w + 1000.5) - 1000,
-							 int(by + (y - dy) * m_base_h + 1000.5) - 1000,
-							 m_base_w, m_base_h, deep,
-							 m_colormap[c]);
+						int(by + (y - dy) * m_base_h + 1000.5) - 1000,
+						m_base_w, m_base_h, deep,
+						m_colormap[c]);
 				}
 			}
 		}
@@ -377,12 +376,10 @@ public:
 		for(y = m_gamepool_h; y >= 1; --y)
 		{
 			for(x = 1; x <= m_gamepool_w; ++x)
-			{
-				if(c = m_gamepool[y][x])
+				if((c = m_gamepool[y][x]))
 					putimage(bx + x * m_base_w, by + y * m_base_h,
 							 m_base_w, m_base_h, m_pcb,
 							 c * m_base_w, 0);
-			}
 		}
 		/*»­¿ØÖÆ¿é*/
 		if(m_ctl_t >= 0)

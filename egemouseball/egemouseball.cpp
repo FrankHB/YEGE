@@ -17,9 +17,7 @@ public:
 		vx = (6 * randomf() + 0.1f) * (random(2) * 2.0 - 1);
 		vy = (6 * randomf() + 0.1f) * (random(2) * 2.0 - 1);
 		color = HSVtoRGB(randomf() * 360.0f, 1.0f, 0.8f);
-
-		float a = randomf();//随机下每个对象的摩擦系数
-
+		randomf();//随机下每个对象的摩擦系数
 		fa = 1 / (100.0);
 		goon = 1;
 	}
@@ -142,7 +140,7 @@ void dealMouse(BALL* ball)
 {
 	static int iCapture = -1, mx, my;
 	int i;
-	mouse_msg mouse = {0};
+	mouse_msg mouse;
 	while(mousemsg())
 	{
 		double dx, dy;

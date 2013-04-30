@@ -53,9 +53,9 @@ int preinit(int argc, char* argv[])
 	}
 	else if(stricmp(argv[1], "/p") == 0)          // 小窗口预览模式
 	{
-		HWND hwnd;
-		sscanf(argv[2], "%d", &hwnd);
-		attachHWND(hwnd);   // 新ege函数
+		void* pwnd;
+		sscanf(argv[2], "%p", &pwnd);
+		attachHWND(::HWND(pwnd));   // 新ege函数
 		setinitmode(INIT_NOBORDER | INIT_CHILD | INIT_WITHLOGO);   // 指定初始化为无边框子窗口
 		g_max = 200;
 		return 1;

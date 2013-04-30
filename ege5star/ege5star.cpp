@@ -1,8 +1,8 @@
 // 旋转五角星动画演示程序
 #include <graphics.h>
 #include <ege/fps.h>
-#include <time.h>
-#include <math.h>
+#include <ctime>
+#include <cmath>
 
 void paintstar(double x, double y, double r, double a)
 {

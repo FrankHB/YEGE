@@ -23,8 +23,8 @@ int getflush();
 double
 get_highfeq_time_ls(struct _graph_setting* pg)
 {
-	static LARGE_INTEGER llFeq = {{0}}; /* 此实为常数 */
-	LARGE_INTEGER llNow = {{0}};
+	static LARGE_INTEGER llFeq; /* 此实为常数 */
+	LARGE_INTEGER llNow;
 
 	if(pg->get_highfeq_time_start.QuadPart == 0)
 	{
@@ -665,7 +665,7 @@ saveBrush(PIMAGE img, int save)   //此函数调用前，已经有Lock
 	struct _graph_setting* pg = &graph_setting;
 	if(save)
 	{
-		LOGBRUSH lbr = {0};
+		LOGBRUSH lbr = {0, COLORREF(), ULONG_PTR()};
 
 		lbr.lbColor = 0;
 		lbr.lbStyle = BS_NULL;
@@ -794,7 +794,7 @@ void
 setfillcolor(color_t color, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
-	LOGBRUSH lbr = {0};
+	LOGBRUSH lbr = {0, COLORREF(), ULONG_PTR()};
 	img->m_fillcolor = color;
 	color = RGBTOBGR(color);
 	lbr.lbColor = color;
@@ -1640,7 +1640,7 @@ void
 setlinestyle(int linestyle, unsigned short upattern, int thickness, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
-	LOGPEN lpen = {0};
+	LOGPEN lpen = {0, POINT(), COLORREF()};
 	lpen.lopnColor = RGBTOBGR(getcolor(pimg));
 	img->m_linestyle.thickness = thickness;
 	img->m_linewidth = (float)thickness;
@@ -1715,7 +1715,7 @@ void
 setfillstyle(int pattern, color_t color, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
-	LOGBRUSH lbr = {0};
+	LOGBRUSH lbr = {0, COLORREF(), UINT_PTR()};
 	img->m_fillcolor = color;
 	lbr.lbColor = RGBTOBGR(color);
 	//SetBkColor(img->m_hDC, color);
@@ -1778,20 +1778,10 @@ setfont(
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTA lf = {0};
-		lf.lfHeight         = nHeight;
-		lf.lfWidth          = nWidth;
-		lf.lfEscapement     = nEscapement;
-		lf.lfOrientation    = nOrientation;
-		lf.lfWeight         = nWeight;
-		lf.lfItalic         = (bItalic != 0);
-		lf.lfUnderline      = (bUnderline != 0);
-		lf.lfStrikeOut      = (bStrikeOut != 0);
-		lf.lfCharSet        = fbCharSet;
-		lf.lfOutPrecision   = fbOutPrecision;
-		lf.lfClipPrecision  = fbClipPrecision;
-		lf.lfQuality        = fbQuality;
-		lf.lfPitchAndFamily = fbPitchAndFamily;
+		LOGFONTA lf = {nHeight, nWidth, nEscapement, nOrientation, nWeight,
+			bItalic != 0, bUnderline != 0, bStrikeOut != 0, fbCharSet,
+			fbOutPrecision, fbClipPrecision, fbQuality, fbPitchAndFamily, 0};
+
 		lstrcpyA(lf.lfFaceName, lpszFace);
 		HFONT hfont = CreateFontIndirectA(&lf);
 		DeleteObject(SelectObject(img->m_hDC, hfont));
@@ -1820,20 +1810,10 @@ setfont(
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTW lf = {0};
-		lf.lfHeight         = nHeight;
-		lf.lfWidth          = nWidth;
-		lf.lfEscapement     = nEscapement;
-		lf.lfOrientation    = nOrientation;
-		lf.lfWeight         = nWeight;
-		lf.lfItalic         = (bItalic != 0);
-		lf.lfUnderline      = (bUnderline != 0);
-		lf.lfStrikeOut      = (bStrikeOut != 0);
-		lf.lfCharSet        = fbCharSet;
-		lf.lfOutPrecision   = fbOutPrecision;
-		lf.lfClipPrecision  = fbClipPrecision;
-		lf.lfQuality        = fbQuality;
-		lf.lfPitchAndFamily = fbPitchAndFamily;
+		LOGFONTW lf = {nHeight, nWidth, nEscapement, nOrientation, nWeight,
+			bItalic != 0, bUnderline != 0, bStrikeOut != 0, fbCharSet,
+			fbOutPrecision, fbClipPrecision, fbQuality, fbPitchAndFamily, 0};
+
 		lstrcpyW(lf.lfFaceName, lpszFace);
 		HFONT hfont = CreateFontIndirectW(&lf);
 		DeleteObject(SelectObject(img->m_hDC, hfont));
@@ -1857,20 +1837,11 @@ setfont(
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTA lf = {0};
-		lf.lfHeight         = nHeight;
-		lf.lfWidth          = nWidth;
-		lf.lfEscapement     = nEscapement;
-		lf.lfOrientation    = nOrientation;
-		lf.lfWeight         = nWeight;
-		lf.lfItalic         = (bItalic != 0);
-		lf.lfUnderline      = (bUnderline != 0);
-		lf.lfStrikeOut      = (bStrikeOut != 0);
-		lf.lfCharSet        = DEFAULT_CHARSET;
-		lf.lfOutPrecision   = OUT_DEFAULT_PRECIS;
-		lf.lfClipPrecision  = CLIP_DEFAULT_PRECIS;
-		lf.lfQuality        = DEFAULT_QUALITY;
-		lf.lfPitchAndFamily = DEFAULT_PITCH;
+		LOGFONTA lf = {nHeight, nWidth, nEscapement, nOrientation, nWeight,
+			bItalic != 0, bUnderline != 0, bStrikeOut != 0, DEFAULT_CHARSET,
+			OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+			DEFAULT_PITCH, 0};
+
 		lstrcpyA(lf.lfFaceName, lpszFace);
 		HFONT hfont = CreateFontIndirectA(&lf);
 		DeleteObject(SelectObject(img->m_hDC, hfont));
@@ -1894,20 +1865,11 @@ setfont(
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTW lf = {0};
-		lf.lfHeight         = nHeight;
-		lf.lfWidth          = nWidth;
-		lf.lfEscapement     = nEscapement;
-		lf.lfOrientation    = nOrientation;
-		lf.lfWeight         = nWeight;
-		lf.lfItalic         = (bItalic != 0);
-		lf.lfUnderline      = (bUnderline != 0);
-		lf.lfStrikeOut      = (bStrikeOut != 0);
-		lf.lfCharSet        = DEFAULT_CHARSET;
-		lf.lfOutPrecision   = OUT_DEFAULT_PRECIS;
-		lf.lfClipPrecision  = CLIP_DEFAULT_PRECIS;
-		lf.lfQuality        = DEFAULT_QUALITY;
-		lf.lfPitchAndFamily = DEFAULT_PITCH;
+		LOGFONTW lf = {nHeight, nWidth, nEscapement, nOrientation, nWeight,
+			bItalic != 0, bUnderline != 0, bStrikeOut != 0, DEFAULT_CHARSET,
+			OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+			DEFAULT_PITCH, 0};
+
 		lstrcpyW(lf.lfFaceName, lpszFace);
 		HFONT hfont = CreateFontIndirectW(&lf);
 		DeleteObject(SelectObject(img->m_hDC, hfont));
@@ -1921,20 +1883,10 @@ setfont(int nHeight, int nWidth, LPCSTR lpszFace, PIMAGE pimg)
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTA lf = {0};
-		lf.lfHeight         = nHeight;
-		lf.lfWidth          = nWidth;
-		lf.lfEscapement     = 0;
-		lf.lfOrientation    = 0;
-		lf.lfWeight         = FW_DONTCARE;
-		lf.lfItalic         = 0;
-		lf.lfUnderline      = 0;
-		lf.lfStrikeOut      = 0;
-		lf.lfCharSet        = DEFAULT_CHARSET;
-		lf.lfOutPrecision   = OUT_DEFAULT_PRECIS;
-		lf.lfClipPrecision  = CLIP_DEFAULT_PRECIS;
-		lf.lfQuality        = DEFAULT_QUALITY;
-		lf.lfPitchAndFamily = DEFAULT_PITCH;
+		LOGFONTA lf = {nHeight, nWidth, 0, 0, FW_DONTCARE, 0, 0, 0,
+			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+			DEFAULT_QUALITY, DEFAULT_PITCH, 0};
+
 		lstrcpyA(lf.lfFaceName, lpszFace);
 		HFONT hfont = CreateFontIndirectA(&lf);
 		DeleteObject(SelectObject(img->m_hDC, hfont));
@@ -1948,20 +1900,10 @@ setfont(int nHeight, int nWidth, LPCWSTR lpszFace, PIMAGE pimg)
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTW lf = {0};
-		lf.lfHeight         = nHeight;
-		lf.lfWidth          = nWidth;
-		lf.lfEscapement     = 0;
-		lf.lfOrientation    = 0;
-		lf.lfWeight         = FW_DONTCARE;
-		lf.lfItalic         = 0;
-		lf.lfUnderline      = 0;
-		lf.lfStrikeOut      = 0;
-		lf.lfCharSet        = DEFAULT_CHARSET;
-		lf.lfOutPrecision   = OUT_DEFAULT_PRECIS;
-		lf.lfClipPrecision  = CLIP_DEFAULT_PRECIS;
-		lf.lfQuality        = DEFAULT_QUALITY;
-		lf.lfPitchAndFamily = DEFAULT_PITCH;
+		LOGFONTW lf = {nHeight, nWidth, 0, 0, FW_DONTCARE, 0, 0, 0,
+			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+			DEFAULT_QUALITY, DEFAULT_PITCH, 0};
+
 		lstrcpyW(lf.lfFaceName, lpszFace);
 		HFONT hfont = CreateFontIndirectW(&lf);
 		DeleteObject(SelectObject(img->m_hDC, hfont));
@@ -1973,11 +1915,9 @@ void
 setfont(const LOGFONTA* font, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
+
 	if(img)
-	{
-		HFONT hfont = CreateFontIndirectA(font);
-		DeleteObject(SelectObject(img->m_hDC, hfont));
-	}
+		::DeleteObject(SelectObject(img->m_hDC, ::CreateFontIndirectA(font)));
 	CONVERT_IMAGE_END;
 }
 
@@ -1985,11 +1925,9 @@ void
 setfont(const LOGFONTW* font, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
+
 	if(img)
-	{
-		HFONT hfont = CreateFontIndirectW(font);
-		DeleteObject(SelectObject(img->m_hDC, hfont));
-	}
+		::DeleteObject(SelectObject(img->m_hDC, ::CreateFontIndirectW(font)));
 	CONVERT_IMAGE_END;
 }
 
@@ -1997,11 +1935,10 @@ void
 getfont(LOGFONTA* font, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
+
 	if(img)
-	{
-		HFONT hf = (HFONT)GetCurrentObject(img->m_hDC, OBJ_FONT);
-		GetObjectA(hf, sizeof(LOGFONTA), font);
-	}
+		::GetObjectA((::HFONT)::GetCurrentObject(img->m_hDC, OBJ_FONT),
+			sizeof(LOGFONTA), font);
 	CONVERT_IMAGE_END;
 }
 
@@ -2009,11 +1946,10 @@ void
 getfont(LOGFONTW* font, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
+
 	if(img)
-	{
-		HFONT hf = (HFONT)GetCurrentObject(img->m_hDC, OBJ_FONT);
-		GetObjectW(hf, sizeof(LOGFONTA), font);
-	}
+		::GetObjectW((::HFONT)::GetCurrentObject(img->m_hDC, OBJ_FONT),
+			sizeof(LOGFONTA), font);
 	CONVERT_IMAGE_END;
 }
 
@@ -2022,27 +1958,21 @@ void setrendermode(rendermode_e mode)
 	if(mode == RENDER_MANUAL)
 	{
 		struct _graph_setting* pg = &graph_setting;
-		if(pg->lock_window)
+		if(!pg->lock_window)
 		{
-			;
-		}
-		else
-		{
-			KillTimer(pg->hwnd, RENDER_TIMER_ID);
+			::KillTimer(pg->hwnd, RENDER_TIMER_ID);
 			pg->timer_stop_mark = true;
-			PostMessageW(pg->hwnd, WM_TIMER, RENDER_TIMER_ID, 0);
+			::PostMessageW(pg->hwnd, WM_TIMER, RENDER_TIMER_ID, 0);
 			pg->lock_window = true;
 			while(pg->timer_stop_mark)
-			{
 				::Sleep(1);
-			}
 		}
 	}
 	else
 	{
-		struct _graph_setting* pg = &graph_setting;
+		_graph_setting* pg = &graph_setting;
 		delay_ms(0);
-		SetTimer(pg->hwnd, RENDER_TIMER_ID, 0, NULL);
+		::SetTimer(pg->hwnd, RENDER_TIMER_ID, 0, NULL);
 		pg->skip_timer_mark = false;
 		pg->lock_window = false;
 	}
@@ -2051,15 +1981,15 @@ void setrendermode(rendermode_e mode)
 void
 swappage()
 {
-	struct _graph_setting* pg = &graph_setting;
+	_graph_setting* pg = &graph_setting;
 	setvisualpage(pg->active_page);
 	setactivepage(1 - pg->active_page);
 }
 
 void
-window_getviewport(struct viewporttype* viewport)
+window_getviewport(viewporttype* viewport)
 {
-	struct _graph_setting* pg = &graph_setting;
+	_graph_setting* pg = &graph_setting;
 	viewport->left   = pg->base_x;
 	viewport->top    = pg->base_y;
 	viewport->right  = pg->base_w + pg->base_x;
@@ -2069,7 +1999,7 @@ window_getviewport(struct viewporttype* viewport)
 void
 window_getviewport(int* left, int* top, int* right, int* bottom)
 {
-	struct _graph_setting* pg = &graph_setting;
+	_graph_setting* pg = &graph_setting;
 	if(left)   *left   = pg->base_x;
 	if(top)    *top    = pg->base_y;
 	if(right)  *right  = pg->base_w + pg->base_x;
@@ -2079,16 +2009,12 @@ window_getviewport(int* left, int* top, int* right, int* bottom)
 void
 window_setviewport(int left, int top, int right, int bottom)
 {
-	struct _graph_setting* pg = &graph_setting;
+	_graph_setting* pg = &graph_setting;
 	int same_xy = 0, same_wh = 0;
 	if(pg->base_x == left && pg->base_y == top)
-	{
 		same_xy = 1;
-	}
 	if(pg->base_w == bottom - top && pg->base_h == right - left)
-	{
 		same_wh = 1;
-	}
 	pg->base_x = left;
 	pg->base_y = top;
 	pg->base_w = right - left;
@@ -2118,13 +2044,8 @@ window_setviewport(int left, int top, int right, int bottom)
 				rect.bottom -= pt.y;
 			}
 
-			MoveWindow(
-				pg->hwnd,
-				rect.left,
-				rect.top,
-				rect.right + dw - rect.left,
-				rect.bottom + dh - rect.top,
-				TRUE);
+			::MoveWindow(pg->hwnd, rect.left, rect.top,
+				rect.right + dw - rect.left, rect.bottom + dh - rect.top, TRUE);
 		}
 	}
 }
@@ -2157,46 +2078,26 @@ setviewport(int left, int top, int right, int bottom, int clip, PIMAGE pimg)
 	img->m_vpt.clipflag = clip;
 
 	if(img->m_vpt.left < 0)
-	{
 		img->m_vpt.left = 0;
-	}
 	if(img->m_vpt.top < 0)
-	{
 		img->m_vpt.top = 0;
-	}
 	if(img->m_vpt.right > img->m_width)
-	{
 		img->m_vpt.right = img->m_width;
-	}
 	if(img->m_vpt.bottom > img->m_height)
-	{
 		img->m_vpt.bottom = img->m_height;
-	}
 
-	HRGN rgn = NULL;
+	::HRGN rgn = nullptr;
+
 	if(img->m_vpt.clipflag)
-	{
-		rgn = CreateRectRgn(
-				  img->m_vpt.left,
-				  img->m_vpt.top,
-				  img->m_vpt.right,
-				  img->m_vpt.bottom
-			  );
-	}
+		rgn = ::CreateRectRgn(img->m_vpt.left, img->m_vpt.top, img->m_vpt.right,
+			img->m_vpt.bottom);
 	else
-	{
-		rgn = CreateRectRgn(
-				  0,
-				  0,
-				  img->m_width,
-				  img->m_height
-			  );
-	}
-	SelectClipRgn(img->m_hDC, rgn);
-	DeleteObject(rgn);
+		rgn = ::CreateRectRgn(0, 0, img->m_width,img->m_height);
+	::SelectClipRgn(img->m_hDC, rgn);
+	::DeleteObject(rgn);
 
 	//OffsetViewportOrgEx(img->m_hDC, img->m_vpt.left, img->m_vpt.top, NULL);
-	SetViewportOrgEx(img->m_hDC, img->m_vpt.left, img->m_vpt.top, NULL);
+	::SetViewportOrgEx(img->m_hDC, img->m_vpt.left, img->m_vpt.top, NULL);
 
 	CONVERT_IMAGE_END;
 }
@@ -2208,19 +2109,15 @@ clearviewport(PIMAGE pimg)
 
 	if(img && img->m_hDC)
 	{
-		RECT rect =
-		{
-			0,
-			0,
-			img->m_vpt.right - img->m_vpt.left,
-			img->m_vpt.bottom - img->m_vpt.top
-		};
-		HBRUSH hbr_c = (HBRUSH)GetCurrentObject(img->m_hDC, OBJ_BRUSH);
-		LOGBRUSH logBrush;
-		GetObject(hbr_c, sizeof(logBrush), &logBrush);
-		HBRUSH hbr = CreateSolidBrush(logBrush.lbColor);
-		FillRect(img->m_hDC, &rect, hbr);
-		DeleteObject(hbr);
+		::RECT rect = {0, 0, img->m_vpt.right - img->m_vpt.left,
+			img->m_vpt.bottom - img->m_vpt.top};
+		::HBRUSH hbr_c = (HBRUSH)GetCurrentObject(img->m_hDC, OBJ_BRUSH);
+		::LOGBRUSH logBrush;
+
+		::GetObject(hbr_c, sizeof(logBrush), &logBrush);
+		::HBRUSH hbr = CreateSolidBrush(logBrush.lbColor);
+		::FillRect(img->m_hDC, &rect, hbr);
+		::DeleteObject(hbr);
 	}
 	CONVERT_IMAGE_END;
 }

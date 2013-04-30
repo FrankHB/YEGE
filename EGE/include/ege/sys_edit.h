@@ -10,6 +10,7 @@ class sys_edit : public egeControlBase
 public:
 	CTL_PREINIT(sys_edit, egeControlBase)
 	{
+		(void)inheritlevel;
 		// do sth. before sub objects' construct function call
 	} CTL_PREINITEND;
 	sys_edit(CTL_DEFPARAM) : CTL_INITBASE(egeControlBase)
@@ -22,26 +23,18 @@ public:
 	{
 		destory();
 	}
-	int create(bool multiline = false, int scrollbar = 2)
+	int create(bool multiline = false, int = 2)
 	{
 		if(m_hwnd)
 		{
 			destory();
 		}
-		msg_createwindow msg = {NULL};
-		msg.hEvent = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+		msg_createwindow msg = {nullptr, nullptr, nullptr, 0, 0, 0, nullptr};
+		msg.hEvent = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
 		msg.classname = L"EDIT";
 		msg.id = egeControlBase::allocId();
-		msg.style = WS_CHILD | WS_BORDER |
-					ES_LEFT | ES_WANTRETURN;
-		if(multiline)
-		{
-			msg.style |= ES_MULTILINE | WS_VSCROLL;
-		}
-		else
-		{
-			msg.style |= ES_AUTOHSCROLL;
-		}
+		msg.style = WS_CHILD | WS_BORDER | ES_LEFT | ES_WANTRETURN;
+		msg.style |= multiline ? ES_MULTILINE | WS_VSCROLL : ES_AUTOHSCROLL;
 		msg.exstyle = WS_EX_CLIENTEDGE;// | WS_EX_STATICEDGE;
 		msg.param = this;
 
@@ -71,7 +64,8 @@ public:
 	{
 		if(m_hwnd)
 		{
-			msg_createwindow msg = {NULL};
+			msg_createwindow msg
+				= {nullptr, nullptr, nullptr, 0, 0, 0, nullptr};
 			msg.hwnd = m_hwnd;
 			msg.hEvent = ::CreateEvent(NULL, TRUE, FALSE, NULL);
 			::SendMessage(m_hwnd, WM_SETFONT, 0, 0);
@@ -116,22 +110,13 @@ public:
 	void setfont(int h, int w, LPCSTR fontface)
 	{
 		{
-			LOGFONTA lf = {0};
-			lf.lfHeight         = h;
-			lf.lfWidth          = w;
-			lf.lfEscapement     = 0;
-			lf.lfOrientation    = 0;
-			lf.lfWeight         = FW_DONTCARE;
-			lf.lfItalic         = 0;
-			lf.lfUnderline      = 0;
-			lf.lfStrikeOut      = 0;
-			lf.lfCharSet        = DEFAULT_CHARSET;
-			lf.lfOutPrecision   = OUT_DEFAULT_PRECIS;
-			lf.lfClipPrecision  = CLIP_DEFAULT_PRECIS;
-			lf.lfQuality        = DEFAULT_QUALITY;
-			lf.lfPitchAndFamily = DEFAULT_PITCH;
+			LOGFONTA lf = {h, w, 0, 0, FW_DONTCARE, 0, 0, 0, DEFAULT_CHARSET,
+				OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+				DEFAULT_PITCH, 0};
 			lstrcpyA(lf.lfFaceName, fontface);
-			HFONT hFont = CreateFontIndirectA(&lf);
+
+			::HFONT hFont = CreateFontIndirectA(&lf);
+
 			if(hFont)
 			{
 				::SendMessageA(m_hwnd, WM_SETFONT, (WPARAM)hFont, 0);
@@ -143,22 +128,14 @@ public:
 	void setfont(int h, int w, LPCWSTR fontface)
 	{
 		{
-			LOGFONTW lf = {0};
-			lf.lfHeight         = h;
-			lf.lfWidth          = w;
-			lf.lfEscapement     = 0;
-			lf.lfOrientation    = 0;
-			lf.lfWeight         = FW_DONTCARE;
-			lf.lfItalic         = 0;
-			lf.lfUnderline      = 0;
-			lf.lfStrikeOut      = 0;
-			lf.lfCharSet        = DEFAULT_CHARSET;
-			lf.lfOutPrecision   = OUT_DEFAULT_PRECIS;
-			lf.lfClipPrecision  = CLIP_DEFAULT_PRECIS;
-			lf.lfQuality        = DEFAULT_QUALITY;
-			lf.lfPitchAndFamily = DEFAULT_PITCH;
+			LOGFONTW lf = {h, w, 0, 0, FW_DONTCARE, 0, 0, 0, DEFAULT_CHARSET,
+				OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+				DEFAULT_PITCH, 0};
+
 			lstrcpyW(lf.lfFaceName, fontface);
-			HFONT hFont = CreateFontIndirectW(&lf);
+
+			::HFONT hFont = CreateFontIndirectW(&lf);
+
 			if(hFont)
 			{
 				::SendMessageW(m_hwnd, WM_SETFONT, (WPARAM)hFont, 0);

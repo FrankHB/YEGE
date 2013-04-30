@@ -9,7 +9,7 @@ int Color[MAXCOLOR];
 
 void InitColor(float h1 = 240, float h2 = 320)
 {
-	for(auto i = 0; i < MAXCOLOR / 2; ++i)
+	for(std::size_t i = 0; i < MAXCOLOR / 2; ++i)
 	{
 		Color[i] = HSLtoRGB(h1, 1.0F, i * 2.0F / MAXCOLOR);
 		Color[MAXCOLOR - i - 1] = HSLtoRGB(h2, 1.0F, i * 2.0F / MAXCOLOR);
@@ -80,10 +80,10 @@ int main()
 		while(kbhit() != -1)
 		{
 			mouse_msg m(getmouse());
-			switch(m.msg)
+			switch((unsigned)m.msg)
 			{
 				// 按鼠标右键恢复原图形坐标系
-			case WM_RBUTTONUP:
+			case mouse_flag_right | mouse_msg_up:
 				fromx = -2.2;
 				tox = 1.2;
 				fromy = -1.65;
@@ -91,8 +91,7 @@ int main()
 				Draw(fromx, fromy, tox, toy);
 				break;
 
-				// 按鼠标左键并拖动，选择区域
-			case WM_MOUSEMOVE:
+			case mouse_msg_move:
 				if(isLDown)
 				{
 					rectangle(selfx, selfy, seltx, selty);
@@ -102,27 +101,23 @@ int main()
 				}
 				break;
 
-				// 按鼠标左键并拖动，选择区域
-			case WM_LBUTTONDOWN:
+			case mouse_flag_left | mouse_msg_down:
 				setcolor(WHITE);
 				setwritemode(R2_XORPEN);
 				isLDown = true;
 				selfx = seltx = m.x;
 				selfy = selty = m.y;
 				rectangle(selfx, selfy, seltx, selty);
-
 				break;
 
-				// 按鼠标左键并拖动，选择区域
-			case WM_LBUTTONUP:
+			case mouse_flag_left | mouse_msg_up:
 				rectangle(selfx, selfy, seltx, selty);
 				setwritemode(R2_COPYPEN);
 				isLDown = false;
 				seltx = m.x;
 				selty = m.y;
-
-				if(selfx == seltx || selfy == selty) break;
-
+				if(selfx == seltx || selfy == selty)
+					break;
 				// 修正选区为 4:3
 				{
 					int tmp;
@@ -170,6 +165,7 @@ int main()
 
 				// 画图形
 				Draw(fromx, fromy, tox, toy);
+			default:
 				break;
 			}
 		}

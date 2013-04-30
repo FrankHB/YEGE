@@ -8,6 +8,7 @@ class fps : public egeControlBase
 public:
 	CTL_PREINIT(fps, egeControlBase)
 	{
+		(void)inheritlevel;
 		// do sth. before sub objects' construct function call
 	} CTL_PREINITEND;
 	fps(CTL_DEFPARAM) : CTL_INITBASE(egeControlBase)

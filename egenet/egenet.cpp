@@ -195,7 +195,7 @@ void init_net(struct net* pnet, int w, int h, int sw, int sh)
 	double dtw = sw / (double)(w - 1);
 	double dth = sh / (double)(h - 1);
 	int x, y, l;
-	struct point_t pt = {0};
+	struct point_t pt;
 
 	pnet->layer = 0;
 	pnet->w = w;
@@ -204,17 +204,13 @@ void init_net(struct net* pnet, int w, int h, int sw, int sh)
 	pnet->dth = dth;
 
 	for(y = 0; y <= h + 1; ++y)
-	{
 		for(x = 0; x <= w + 1; ++x)
-		{
 			for(l = 0; l < 2; ++l)
 			{
 				pnet->pt[l][y][x] = pt;
 				pnet->pt[l][y][x].x = (dtw * (x - 1));
 				pnet->pt[l][y][x].y = (dth * (y - 1));
 			}
-		}
-	}
 }
 
 void draw_net(struct net* pnet)
@@ -300,11 +296,11 @@ void cap_pt(struct net* pnet, int px, int py, int op)
 
 void init()
 {
-	int g = TRUECOLORSIZE, m = (g_height << 16) | g_width;
-	//initgraph(&g, &m, "碧波荡漾");
-	//setinitmode(3);
+//	int g = TRUECOLORSIZE, m = (g_height << 16) | g_width;
+//	initgraph(&g, &m, "碧波荡漾");
+//	setinitmode(3);
 	initgraph(640, 480);
-	g_width  = getwidth();
+	g_width = getwidth();
 	g_height = getheight();
 }
 
@@ -316,19 +312,10 @@ void getmouse(int* x, int* y, int* key)
 
 struct net g_net;
 
-int main(int argc, char* argv[])
+int main(int, char*[])
 {
 	char str[100] = "";
 	int basepoint = 20;
-	/*
-	if (argc < 2) return 0;
-	if (stricmp(argv[1], "/p") == 0)
-	{
-	    HWND hwnd;
-	    sscanf(argv[2], "%d", &hwnd);
-	    attachHWND(hwnd);
-	}
-	else if (stricmp(argv[1], "/s")) return 0;//*/
 
 	init();
 	init_net(&g_net, basepoint * 4, basepoint * 3, g_width, g_height);

@@ -6,7 +6,8 @@
 */
 
 #include "ege/head.h"
-#include <math.h>
+#include <cmath>
+#include <algorithm> // for std::min, std::max;
 
 namespace ege
 {
@@ -245,8 +246,8 @@ RGB_TO_HSV(const COLORRGB* input, COLORHSV* output)
 	r = input->r / 255.0f;
 	g = input->g / 255.0f;
 	b = input->b / 255.0f;
-	minRGB = min(r, min(g, b));
-	maxRGB = max(r, max(g, b));
+	minRGB = std::min(r, std::min(g, b));
+	maxRGB = std::max(r, std::max(g, b));
 	deltaRGB = maxRGB - minRGB;
 	output->v = maxRGB;
 	if(maxRGB != 0.0f)

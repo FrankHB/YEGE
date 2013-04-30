@@ -235,28 +235,22 @@ peekkey(_graph_setting* pg)
 		{
 			if(msg.message == WM_KEYDOWN)
 			{
-				if(msg.wParam <= key_space
-						|| msg.wParam >= key_0 && msg.wParam < key_f1
-						|| msg.wParam >= key_semicolon && msg.wParam <= key_quote)
+				if(msg.wParam <= key_space || (msg.wParam >= key_0
+					&& msg.wParam < key_f1) || (msg.wParam >= key_semicolon
+					&& msg.wParam <= key_quote))
 					continue;
 			}
 			pg->msgkey_queue->unpop();
 			if(msg.message == WM_CHAR)
-			{
 				return (KEYMSG_CHAR | ((int)msg.wParam & 0xFFFF));
-			}
-			else if(msg.message == WM_KEYDOWN)
+			if(msg.message == WM_KEYDOWN)
 			{
 				if(msg.wParam >= 0x70 && msg.wParam < 0x80)
-				{
 					return (KEYMSG_DOWN | ((int)msg.wParam + 0x100));
-				}
 				return (KEYMSG_DOWN | ((int)msg.wParam & 0xFFFF));
 			}
 			else if(msg.message == WM_KEYUP)
-			{
-				return (KEYMSG_UP   | ((int)msg.wParam & 0xFFFF));
-			}
+				return (KEYMSG_UP | ((int)msg.wParam & 0xFFFF));
 		}
 	}
 	return 0;
@@ -372,19 +366,15 @@ getchEx(int flag)
 					{
 						int ogn_key = key;
 						int ret = 0;
+
 						key &= 0xFFFF;
 						ret = key;
 						if(flag)
-						{
 							ret = ogn_key;
-						}
-						else
-						{
-							if((ogn_key & KEYMSG_DOWN) && (msg.wParam >= 0x70 && msg.wParam < 0x80 || msg.wParam > ' ' && msg.wParam < '0'))
-							{
-								ret |= 0x100;
-							}
-						}
+						else if((ogn_key & KEYMSG_DOWN) && (msg.wParam >= 0x70
+							&& msg.wParam < 0x80)
+							|| (msg.wParam > ' ' && msg.wParam < '0'))
+							ret |= 0x100;
 						return ret;
 					}
 				}

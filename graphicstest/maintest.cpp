@@ -17,6 +17,7 @@ class graph : public egeControlBase
 public:
 	CTL_PREINIT(graph, egeControlBase)
 	{
+		(void)inheritlevel;
 		int w = 40;
 		size(w * 2, w * 2);
 		//enable(false);
@@ -30,7 +31,7 @@ public:
 		blendmode(1);
 
 		{
-			int w = geth() / 2;
+		//	int w = geth() / 2;
 			COLORREF col = ege::hsv2rgb((float)random(360), 1.0f, 1.0f);
 			setbkcolor_f(col);
 			cleardevice();
@@ -53,10 +54,8 @@ public:
 		move((int)x, (int)y);
 		return 0;
 	}
-	void onDraw(PIMAGE pimg) const
-	{
-		;
-	}
+	void onDraw(PIMAGE) const
+	{}
 private:
 	double dx, dy;
 	double x, y;
@@ -67,6 +66,7 @@ class Window : public egeControlBase
 public:
 	CTL_PREINIT(Window, egeControlBase)
 	{
+		(void)inheritlevel;
 		size(400, 300);
 	} CTL_PREINITEND;
 	Window(CTL_DEFPARAM) : CTL_INITBASE(egeControlBase)
@@ -102,7 +102,7 @@ public:
 		}
 		return 0;
 	}
-	void onDraw(PIMAGE pimg) const
+	void onDraw(PIMAGE) const
 	{
 		setbkcolor_f(m_col, buf());
 		cleardevice(buf());
@@ -122,7 +122,7 @@ class Window2 : public Window
 public:
 	CTL_PREINIT(Window2, Window)
 	{
-		int a = 0;
+		(void)inheritlevel;
 	} CTL_PREINITEND;
 	Window2(CTL_DEFPARAM) : CTL_INITBASE(Window)
 	{
@@ -142,6 +142,8 @@ int main()
 	randomize();
 
 	Window2 w[3];
+
+	(void)w;
 	//fps f;
 	sys_edit edit;
 	scanf("%*s");

@@ -7,7 +7,7 @@
 namespace ege
 {
 
-yconstexpr const auto PI(3.14159265358979323846);
+const double PI = 3.14159265358979323;
 
 enum graphics_drivers       /* define graphics drivers */
 {
@@ -297,7 +297,7 @@ typedef enum key_msg_e
 typedef enum key_flag_e
 {
 	key_flag_shift  = 0x100,
-	key_flag_ctrl   = 0x200,
+	key_flag_ctrl   = 0x200
 } key_flag_e;
 
 typedef enum mouse_msg_e
@@ -305,7 +305,7 @@ typedef enum mouse_msg_e
 	mouse_msg_down      = 0x10,
 	mouse_msg_up        = 0x20,
 	mouse_msg_move      = 0x40,
-	mouse_msg_wheel     = 0x80,
+	mouse_msg_wheel     = 0x80
 } mouse_msg_e;
 typedef enum mouse_flag_e
 {
@@ -313,7 +313,7 @@ typedef enum mouse_flag_e
 	mouse_flag_right    = 2,
 	mouse_flag_mid      = 4,
 	mouse_flag_shift    = 0x100,
-	mouse_flag_ctrl     = 0x200,
+	mouse_flag_ctrl     = 0x200
 } mouse_flag_e;
 
 typedef enum pattern_type_e
@@ -321,7 +321,7 @@ typedef enum pattern_type_e
 	pattern_none            = 0,
 	pattern_lineargradient  = 1,
 	pattern_pathgradient    = 2,
-	pattern_texture         = 3,
+	pattern_texture         = 3
 } pattern_type_e;
 
 struct viewporttype
@@ -349,14 +349,14 @@ struct linestyletype
 	int thickness;
 };
 
-typedef struct key_msg
+struct key_msg
 {
 	int             key;
 	key_msg_e       msg;
 	unsigned int    flags;
-} key_msg;
+};
 
-typedef struct mouse_msg
+struct mouse_msg
 {
 	int             x;
 	int             y;
@@ -391,7 +391,7 @@ typedef struct mouse_msg
 	{
 		return msg == mouse_msg_wheel;
 	}
-} mouse_msg;
+};
 
 typedef struct ege_point
 {

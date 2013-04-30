@@ -151,7 +151,7 @@ updatelist& g_udlist = *g_pudlist;
 state* g_st = NULL;
 
 
-void addpoint(int x, int y, int it = -1)
+void addpoint(int x, int y, int = -1)
 {
 	if(x < 0 || x >= BF_W || y < 0 || y >= BF_H) return;
 	if(pMap[y][x].ed == 0)
@@ -160,7 +160,7 @@ void addpoint(int x, int y, int it = -1)
 	}
 }
 
-void jaddpoint(int x, int y, int it = -1)
+void jaddpoint(int x, int y, int = -1)
 {
 	if(x < 0 || x >= g_w || y < 0 || y >= g_h) return;
 	if(g_st[y * g_w + x].ed == 0)
@@ -197,8 +197,10 @@ int kbmouhit()
 
 int MDraw(double fromx, double fromy, double tox, double toy)
 {
-	int t = clock();
+	clock();
+
 	int ret = 0;
+
 	{
 		int x, y;
 		while(g_udlist.pop(&x, &y))
@@ -254,7 +256,6 @@ int g_updatepoint = 0;
 int JDraw(COMPLEX c, double fromx, double fromy, double tox, double toy, double sr, double cr)
 {
 	int ret = 0;
-	int update = 0;
 	state* st = g_st - 1;
 	clock_t tt = clock();
 	g_updatepoint = 0;
@@ -315,12 +316,16 @@ int JDraw(COMPLEX c, double fromx, double fromy, double tox, double toy, double 
 	return ret;
 }
 
-int JDrawA(COMPLEX c, double fromx, double fromy, double tox, double toy)
+int JDrawA(COMPLEX c, double, double, double, double)
 {
-	clock_t tt = clock();
+	clock();
+
 	int ret = 0;
+
 	g_updatepoint = 0;
+
 	state* st = g_st;
+
 	{
 		int x, y;
 		while(g_udlist.pop(&x, &y))
@@ -387,9 +392,9 @@ int main(int argc, char* argv[])
 	}
 	else if(stricmp(argv[1], "/p") == 0)
 	{
-		HWND hwnd;
-		sscanf(argv[2], "%d", &hwnd);
-		attachHWND(hwnd);
+		void* hwnd;
+		sscanf(argv[2], "%p", &hwnd);
+		attachHWND(::HWND(hwnd));
 		setinitmode(0x107, 0, 0);
 	}
 	else if(stricmp(argv[1], "/s"))
