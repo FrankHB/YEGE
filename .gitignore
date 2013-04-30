@@ -1,0 +1,8 @@
+/EGE/debug/*.a
+/EGE/release/*.a
+
+*.o
+
+*.depend
+
+*.layout
