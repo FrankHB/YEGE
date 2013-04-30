@@ -34,14 +34,11 @@
 * ★setfillstyle函数的自定义填充模式未实现，但一般应用足够
 ****************************************************************************/
 
-#ifndef _GRAPHICS_H_
-#define _GRAPHICS_H_
-
-#ifndef __cplusplus
-#error You must use C++ compiler, or you need filename with '.cpp' suffix
-#endif
+#ifndef INC_GRAPHICS_H_
+#define INC_GRAPHICS_H_
 
 #include "ege.h"
 using namespace ege;
 
 #endif
+

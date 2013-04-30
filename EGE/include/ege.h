@@ -1,22 +1,21 @@
-#pragma once
+#ifndef INC_ege_h_
+#define INC_ege_h_
 
-#if 1
-#include "e_def.h"
-#include "e_color.h"
-#include "e_proc.h"
-#include "e_v3d.h"
-#include "e_env.h"
-#include "e_gdi.h"
-#include "e_time.h"
-#include "e_text.h"
-#include "e_pushtarget.h"
-#include "e_ctl.h"
-#include "e_input.h"
-#include "e_music.h"
-#include "e_compress.h"
-#include "e_random.h"
-#include "e_fps.h"
-#endif
+#include "ege/e_def.h"
+#include "ege/e_color.h"
+#include "ege/e_proc.h"
+#include "ege/e_v3d.h"
+#include "ege/e_env.h"
+#include "ege/e_gdi.h"
+#include "ege/e_time.h"
+#include "ege/e_text.h"
+#include "ege/e_pushtarget.h"
+#include "ege/e_ctl.h"
+#include "ege/e_input.h"
+#include "ege/e_music.h"
+#include "ege/e_compress.h"
+#include "ege/e_random.h"
+#include "ege/e_fps.h"
 
 namespace ege
 {
@@ -30,5 +29,7 @@ setvisualpage(int);
 
 #ifndef _GRAPH_LIB_BUILD_
 #define Sleep(ms) delay_ms(ms)
+#endif
+
 #endif
 
