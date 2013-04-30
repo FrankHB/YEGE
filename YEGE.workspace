@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="YEGE">
+		<Project filename="EGE/EGE.cbp" />
+		<Project filename="ege5star/ege5star.cbp" />
+		<Project filename="egearrow/egearrow.cbp" />
+		<Project filename="egeball/egeball.cbp" />
+		<Project filename="ege5star/ege5star.cbp" />
+		<Project filename="egearrow/egearrow.cbp" />
+		<Project filename="egeball/egeball.cbp" />
+		<Project filename="egecatharine/egecatharine.cbp" />
+		<Project filename="egeclock/egeclock.cbp" />
+		<Project filename="egedemo/egedemo.cbp" />
+		<Project filename="egejulia/egejulia.cbp" />
+		<Project filename="egelines/egelines.cbp" />
+		<Project filename="egemouseball/egemouseball.cbp" />
+		<Project filename="egenet/egenet.cbp" />
+		<Project filename="egerotateimage/egerotateimage.cbp" />
+		<Project filename="egesnake/egesnake.cbp" />
+		<Project filename="egestar/egestar.cbp" />
+		<Project filename="egetetris/egetetris.cbp" />
+		<Project filename="egetriangle/egetriangle.cbp" />
+		<Project filename="egetypegame/egetypegame.cbp" />
+		<Project filename="graphicstest/graphicstest.cbp" />
+		<Project filename="MandelbrotSetBase/MandelbrotSetBase.cbp" />
+		<Project filename="MandelbrotSet/MandelbrotSet.cbp" />
+		<Project filename="MandelbrotSetAni/MandelbrotSetAni.cbp" />
+		<Project filename="MandelbrotSetAniLarge/MandelbrotSetAniLarge.cbp" />
+		<Project filename="setup/setup.cbp" />
+		<Project filename="test_setviewport/test_setviewport.cbp" />
+		<Project filename="tutorial/tutorial.cbp" />
+	</Workspace>
+</CodeBlocks_workspace_file>
