@@ -6,16 +6,16 @@
 
 int main()
 {
-	initgraph( 640, 480 );
+	initgraph(640, 480);
 	setrendermode(RENDER_MANUAL);
 	PIMAGE img = newimage();
 	getimage(img, "bg.jpg");
 	double r = 0;
 	fps f;
-	for ( ; is_run(); delay_fps(60) )
+	for(; is_run(); delay_fps(60))
 	{
 		r += 0.02;
-		if (r > PI * 2) r -= PI * 2;
+		if(r > PI * 2) r -= PI * 2;
 
 		cleardevice();
 		putimage_rotatezoom(NULL, img, 320, 240, 0.5f, 0.5f, r, 0.5f, 0, -1, 1);

@@ -5,10 +5,11 @@
 随机函数的实现
 */
 
-#include "ege_head.h"
+#include "ege/head.h"
 #include <time.h>
 
-namespace ege {
+namespace ege
+{
 
 
 //************************************************************************
@@ -40,22 +41,32 @@ namespace ege {
 #define N 624
 #define M 397
 
-class mtrandom {
+class mtrandom
+{
 public:
-	mtrandom() : left(1) { init(); }
+	mtrandom() : left(1)
+	{
+		init();
+	}
 
-	explicit mtrandom(uint32 seed) : left(1) {    init(seed);    }
+	explicit mtrandom(uint32 seed) : left(1)
+	{
+		init(seed);
+	}
 
-	mtrandom(uint32* init_key, int key_length) : left(1) {
+	mtrandom(uint32* init_key, int key_length) : left(1)
+	{
 		int i = 1, j = 0;
 		int k = N > key_length ? N : key_length;
 		init();
-		for(; k; --k) {
+		for(; k; --k)
+		{
 			state[i] = (state[i] ^ ((state[i - 1] ^ (state[i - 1] >> 30)) * 1664525UL)) + init_key[j] + j; // non linear
 			state[i] &= 4294967295UL; // for WORDSIZE > 32 machines
 			++i;
 			++j;
-			if(i >= N) {
+			if(i >= N)
+			{
 				state[0] = state[N - 1];
 				i = 1;
 			}
@@ -63,11 +74,13 @@ public:
 				j = 0;
 		}
 
-		for(k = N - 1; k; --k) {
+		for(k = N - 1; k; --k)
+		{
 			state[i] = (state[i] ^ ((state[i - 1] ^ (state[i - 1] >> 30)) * 1566083941UL)) - i; // non linear
 			state[i] &= 4294967295UL; // for WORDSIZE > 32 machines
 			++i;
-			if(i >= N) {
+			if(i >= N)
+			{
 				state[0] = state[N - 1];
 				i = 1;
 			}
@@ -76,12 +89,14 @@ public:
 		state[0]  =  2147483648UL; // MSB is 1; assuring non-zero initial array
 	}
 
-	void reset(uint32 rs) {
+	void reset(uint32 rs)
+	{
 		init(rs);
 		next_state();
 	}
 
-	uint32 rand() {
+	uint32 rand()
+	{
 		uint32 y;
 		if(0 == --left)
 			next_state();
@@ -94,19 +109,25 @@ public:
 		return y;
 	}
 
-	double real()    {    return (double)rand() / ((double)(unsigned long)(-1L) + 1);    }
+	double real()
+	{
+		return (double)rand() / ((double)(unsigned long)(-1L) + 1);
+	}
 
 	// generates a random number on [0,1) with 53-bit resolution
-	double res53() {
+	double res53()
+	{
 		uint32 a = rand() >> 5, b = rand() >> 6;
 		return (a * 67108864.0 + b) / 9007199254740992.0;
 	}
 
 private:
-	void init(uint32 seed = 19650218UL) {
+	void init(uint32 seed = 19650218UL)
+	{
 		state[0] =  seed & 4294967295UL;
-		for(int j = 1; j < N; ++j) {
-			state[j]  =  (1812433253UL * (state[j - 1] ^ (state[j - 1]  >>  30)) + j);
+		for(int j = 1; j < N; ++j)
+		{
+			state[j]  = (1812433253UL * (state[j - 1] ^ (state[j - 1]  >>  30)) + j);
 			// See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier.
 			// In the previous versions, MSBs of the seed affect
 			// only MSBs of the array state[].
@@ -115,7 +136,8 @@ private:
 		}
 	}
 
-	void next_state() {
+	void next_state()
+	{
 		uint32* p = state;
 		int i;
 
@@ -129,11 +151,13 @@ private:
 		next = state;
 	}
 
-	uint32 mixbits(uint32 u, uint32 v) const {
+	uint32 mixbits(uint32 u, uint32 v) const
+	{
 		return (u & 2147483648UL) | (v & 2147483647UL);
 	}
 
-	uint32 twist(uint32 u, uint32 v) const {
+	uint32 twist(uint32 u, uint32 v) const
+	{
 		return ((mixbits(u, v)  >>  1) ^ (v & 1UL ? 2567483615UL : 0UL));
 	}
 
@@ -145,37 +169,62 @@ private:
 #undef N
 #undef M
 
-class mtrand_help {
+class mtrand_help
+{
 	static mtrandom r;
 public:
 	mtrand_help() {}
-	void operator()(uint32 s) { r.reset(s); }
-	uint32 operator()() const { return r.rand(); }
-	double operator()(double) { return r.real(); }
+	void operator()(uint32 s)
+	{
+		r.reset(s);
+	}
+	uint32 operator()() const
+	{
+		return r.rand();
+	}
+	double operator()(double)
+	{
+		return r.real();
+	}
 };
 mtrandom mtrand_help:: r;
 
-extern void mtsrand(uint32 s) { mtrand_help()(s); }
-extern uint32 mtirand() { return mtrand_help()(); }
-extern double mtdrand() { return mtrand_help()(1.0); }
+extern void mtsrand(uint32 s)
+{
+	mtrand_help()(s);
+}
+extern uint32 mtirand()
+{
+	return mtrand_help()();
+}
+extern double mtdrand()
+{
+	return mtrand_help()(1.0);
+}
 
 void
-randomize() {
+randomize()
+{
 	static uint32 add = 0;
 	mtsrand((uint32)time(NULL) + add++);
 }
 
 unsigned int
-random(unsigned int n) {
-	if (n == 0) {
+random(unsigned int n)
+{
+	if(n == 0)
+	{
 		return mtirand();
-	} else {
+	}
+	else
+	{
 		return (unsigned int)(mtdrand() * n);
 	}
 }
 
 double
-randomf() {
+randomf()
+{
 	return mtdrand();
 }
 

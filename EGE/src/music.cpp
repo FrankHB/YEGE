@@ -4,10 +4,11 @@ filename  music.cpp
 MUSIC类的定义
 */
 
-#include "ege_head.h"
+#include "ege/head.h"
 #include "mmsystem.h"
 //#include <Digitalv.h>
-typedef struct {
+typedef struct
+{
 	DWORD_PTR   dwCallback;
 	DWORD   dwItem;
 	DWORD   dwValue;
@@ -15,7 +16,8 @@ typedef struct {
 	LPSTR   lpstrAlgorithm;
 	LPSTR   lpstrQuality;
 } MCI_DGV_SETAUDIO_PARMSA;
-typedef struct {
+typedef struct
+{
 	DWORD_PTR   dwCallback;
 	DWORD   dwItem;
 	DWORD   dwValue;
@@ -37,12 +39,14 @@ typedef MCI_DGV_SETAUDIO_PARMSA MCI_DGV_SETAUDIO_PARMS;
 #endif
 // end of Digitalv.h
 
-namespace ege {
+namespace ege
+{
 
 //////////////////////////////////////////////////////////////////////
 // Class MUSIC Construction
 //////////////////////////////////////////////////////////////////////
-MUSIC::MUSIC() {
+MUSIC::MUSIC()
+{
 	m_DID = MUSIC_ERROR;
 	m_dwCallBack = 0;
 }
@@ -50,8 +54,10 @@ MUSIC::MUSIC() {
 //////////////////////////////////////////////////////////////////////
 // Class MUSIC Destruction
 //////////////////////////////////////////////////////////////////////
-MUSIC::~MUSIC() {
-	if ( m_DID != MUSIC_ERROR) {
+MUSIC::~MUSIC()
+{
+	if(m_DID != MUSIC_ERROR)
+	{
 		Close();
 	}
 }
@@ -60,7 +66,8 @@ MUSIC::~MUSIC() {
 // mciOpenFileA(LPCSTR _szStr)
 // open a music file. szStr: Path of the file
 //////////////////////////////////////////////////////////////////////
-DWORD MUSIC::OpenFile(LPCSTR _szStr) {
+DWORD MUSIC::OpenFile(LPCSTR _szStr)
+{
 	MCIERROR        mciERR  = ERROR_SUCCESS;
 	MCI_OPEN_PARMSA mci_p   = {0};
 
@@ -68,16 +75,17 @@ DWORD MUSIC::OpenFile(LPCSTR _szStr) {
 	mci_p.lpstrDeviceType    = NULL;
 	mci_p.dwCallback         = (DWORD_PTR)m_dwCallBack;
 
-	if (m_DID != MUSIC_ERROR)
+	if(m_DID != MUSIC_ERROR)
 		Close();
 
 	mciERR = mciSendCommandA(
-		0,
-		MCI_OPEN,
-		MCI_NOTIFY|MCI_OPEN_ELEMENT,
-		(DWORD_PTR)&mci_p);
+				 0,
+				 MCI_OPEN,
+				 MCI_NOTIFY | MCI_OPEN_ELEMENT,
+				 (DWORD_PTR)&mci_p);
 
-	if (mciERR == ERROR_SUCCESS) {
+	if(mciERR == ERROR_SUCCESS)
+	{
 		m_DID = mci_p.wDeviceID;
 
 		//
@@ -90,7 +98,7 @@ DWORD MUSIC::OpenFile(LPCSTR _szStr) {
 			mciSendCommandW(
 				m_DID,
 				MCI_SET,
-				MCI_NOTIFY|MCI_SET_TIME_FORMAT,
+				MCI_NOTIFY | MCI_SET_TIME_FORMAT,
 				(DWORD_PTR)&mci_p);
 		}
 	}
@@ -102,7 +110,8 @@ DWORD MUSIC::OpenFile(LPCSTR _szStr) {
 // mciOpenFile(LPCWSTR _szStr)
 // open a music file. szStr: Path of the file
 //////////////////////////////////////////////////////////////////////
-DWORD MUSIC::OpenFile(LPCWSTR _szStr) {
+DWORD MUSIC::OpenFile(LPCWSTR _szStr)
+{
 	MCIERROR        mciERR  = ERROR_SUCCESS;
 	MCI_OPEN_PARMSW mci_p   = {0};
 
@@ -110,16 +119,17 @@ DWORD MUSIC::OpenFile(LPCWSTR _szStr) {
 	mci_p.lpstrDeviceType    = NULL;
 	mci_p.dwCallback         = (DWORD_PTR)m_dwCallBack;
 
-	if (m_DID != MUSIC_ERROR)
+	if(m_DID != MUSIC_ERROR)
 		Close();
 
 	mciERR = mciSendCommandW(
-		0,
-		MCI_OPEN,
-		MCI_NOTIFY|MCI_OPEN_ELEMENT,
-		(DWORD_PTR)&mci_p);
+				 0,
+				 MCI_OPEN,
+				 MCI_NOTIFY | MCI_OPEN_ELEMENT,
+				 (DWORD_PTR)&mci_p);
 
-	if (mciERR == ERROR_SUCCESS) {
+	if(mciERR == ERROR_SUCCESS)
+	{
 		m_DID = mci_p.wDeviceID;
 
 		//
@@ -132,7 +142,7 @@ DWORD MUSIC::OpenFile(LPCWSTR _szStr) {
 			mciSendCommandW(
 				m_DID,
 				MCI_SET,
-				MCI_NOTIFY|MCI_SET_TIME_FORMAT,
+				MCI_NOTIFY | MCI_SET_TIME_FORMAT,
 				(DWORD_PTR)&mci_p);
 		}
 	}
@@ -144,7 +154,8 @@ DWORD MUSIC::OpenFile(LPCWSTR _szStr) {
 // mciPlay(DWORD dwFrom, DWORD dwTo, DWORD dwCallBack)
 // play the music stream.
 //////////////////////////////////////////////////////////////////////
-DWORD MUSIC::Play(DWORD dwFrom, DWORD dwTo) {
+DWORD MUSIC::Play(DWORD dwFrom, DWORD dwTo)
+{
 	ASSERT_TRUE(m_DID);
 	MCIERROR        mciERR  = ERROR_SUCCESS;
 	MCI_PLAY_PARMS  mci_p   = {0};
@@ -154,17 +165,17 @@ DWORD MUSIC::Play(DWORD dwFrom, DWORD dwTo) {
 	mci_p.dwTo          = dwTo;
 	mci_p.dwCallback    = (DWORD_PTR)m_dwCallBack;
 
-	if (dwFrom != MUSIC_ERROR)
+	if(dwFrom != MUSIC_ERROR)
 		dwFlag |= MCI_FROM;
 
-	if (dwTo   != MUSIC_ERROR)
+	if(dwTo   != MUSIC_ERROR)
 		dwFlag |= MCI_TO;
 
 	mciERR = mciSendCommandW(
-		m_DID,
-		MCI_PLAY,
-		dwFlag,
-		(DWORD_PTR)&mci_p);
+				 m_DID,
+				 MCI_PLAY,
+				 dwFlag,
+				 (DWORD_PTR)&mci_p);
 
 	Sleep(1);
 
@@ -175,7 +186,8 @@ DWORD MUSIC::Play(DWORD dwFrom, DWORD dwTo) {
 // mciPause()
 // pause the music stream.
 //////////////////////////////////////////////////////////////////////
-DWORD MUSIC::Pause() {
+DWORD MUSIC::Pause()
+{
 	ASSERT_TRUE(m_DID);
 	MCIERROR            mciERR  = ERROR_SUCCESS;
 	MCI_GENERIC_PARMS   mci_p   = {0};
@@ -183,10 +195,10 @@ DWORD MUSIC::Pause() {
 	mci_p.dwCallback = (DWORD_PTR)m_dwCallBack;
 
 	mciERR = mciSendCommandW(
-		m_DID,
-		MCI_PAUSE,
-		MCI_NOTIFY,
-		(DWORD_PTR)&mci_p);
+				 m_DID,
+				 MCI_PAUSE,
+				 MCI_NOTIFY,
+				 (DWORD_PTR)&mci_p);
 
 	return mciERR;
 }
@@ -195,7 +207,8 @@ DWORD MUSIC::Pause() {
 // mciStop()
 // stop the music stream.
 //////////////////////////////////////////////////////////////////////
-DWORD MUSIC::Stop() {
+DWORD MUSIC::Stop()
+{
 	ASSERT_TRUE(m_DID);
 	MCIERROR            mciERR  = ERROR_SUCCESS;
 	MCI_GENERIC_PARMS   mci_p   = {0};
@@ -203,26 +216,27 @@ DWORD MUSIC::Stop() {
 	mci_p.dwCallback = (DWORD_PTR)m_dwCallBack;
 
 	mciERR = mciSendCommandW(
-		m_DID,
-		MCI_STOP,
-		MCI_NOTIFY,
-		(DWORD_PTR)&mci_p);
+				 m_DID,
+				 MCI_STOP,
+				 MCI_NOTIFY,
+				 (DWORD_PTR)&mci_p);
 
 	return mciERR;
 }
 
-DWORD MUSIC::SetVolume(float value) {
+DWORD MUSIC::SetVolume(float value)
+{
 	ASSERT_TRUE(m_DID);
 	MCIERROR                mciERR  = ERROR_SUCCESS;
 	MCI_DGV_SETAUDIO_PARMSW mci_p   = {0};
-	mci_p.dwItem = MCI_DGV_SETAUDIO_VOLUME; 
-	mci_p.dwValue = (DWORD)(value * 1000); //此处就是音量大小 (0--1000) 
+	mci_p.dwItem = MCI_DGV_SETAUDIO_VOLUME;
+	mci_p.dwValue = (DWORD)(value * 1000); //此处就是音量大小 (0--1000)
 
 	mciERR = mciSendCommandW(
-		m_DID,
-		MCI_SETAUDIO,
-		MCI_DGV_SETAUDIO_VALUE | MCI_DGV_SETAUDIO_ITEM,
-		(DWORD_PTR)&mci_p);
+				 m_DID,
+				 MCI_SETAUDIO,
+				 MCI_DGV_SETAUDIO_VALUE | MCI_DGV_SETAUDIO_ITEM,
+				 (DWORD_PTR)&mci_p);
 
 	return mciERR;
 }
@@ -231,7 +245,8 @@ DWORD MUSIC::SetVolume(float value) {
 // mciSeek(DWORD dwTo)
 // seek the music stream playposition to `dwTo`
 //////////////////////////////////////////////////////////////////////
-DWORD MUSIC::Seek(DWORD dwTo) {
+DWORD MUSIC::Seek(DWORD dwTo)
+{
 	ASSERT_TRUE(m_DID);
 	MCIERROR        mciERR  = ERROR_SUCCESS;
 	MCI_SEEK_PARMS  mci_p   = {0};
@@ -240,10 +255,10 @@ DWORD MUSIC::Seek(DWORD dwTo) {
 	mci_p.dwTo          = dwTo;
 
 	mciERR = mciSendCommandW(
-		m_DID,
-		MCI_SEEK,
-		MCI_NOTIFY,
-		(DWORD_PTR)&mci_p);
+				 m_DID,
+				 MCI_SEEK,
+				 MCI_NOTIFY,
+				 (DWORD_PTR)&mci_p);
 
 	return mciERR;
 }
@@ -252,22 +267,26 @@ DWORD MUSIC::Seek(DWORD dwTo) {
 // mciClose()
 // close the music stream.
 //////////////////////////////////////////////////////////////////////
-DWORD MUSIC::Close() {
-	if(m_DID != MUSIC_ERROR) {
+DWORD MUSIC::Close()
+{
+	if(m_DID != MUSIC_ERROR)
+	{
 		MCIERROR mciERR = ERROR_SUCCESS;
 		MCI_GENERIC_PARMS mci_p = {0};
 
 		mci_p.dwCallback = (DWORD_PTR)m_dwCallBack;
 
 		mciERR = mciSendCommandW(
-			m_DID,
-			MCI_CLOSE,
-			MCI_NOTIFY,
-			(DWORD_PTR)&mci_p);
+					 m_DID,
+					 MCI_CLOSE,
+					 MCI_NOTIFY,
+					 (DWORD_PTR)&mci_p);
 
 		m_DID = MUSIC_ERROR;
 		return mciERR;
-	} else {
+	}
+	else
+	{
 		return ERROR_SUCCESS;
 	}
 }
@@ -276,7 +295,8 @@ DWORD MUSIC::Close() {
 // mciGetPosition()
 // get the playing position. return by milliseconds
 //////////////////////////////////////////////////////////////////////
-DWORD MUSIC::GetPosition() {
+DWORD MUSIC::GetPosition()
+{
 	ASSERT_TRUE(m_DID);
 	MCI_STATUS_PARMS mci_p = {0};
 
@@ -286,7 +306,7 @@ DWORD MUSIC::GetPosition() {
 	mciSendCommandW(
 		m_DID,
 		MCI_STATUS,
-		MCI_NOTIFY|MCI_STATUS_ITEM,
+		MCI_NOTIFY | MCI_STATUS_ITEM,
 		(DWORD_PTR)&mci_p);
 
 	return (DWORD)mci_p.dwReturn;
@@ -296,7 +316,8 @@ DWORD MUSIC::GetPosition() {
 // mciGetLength()
 // get the length of the music stream. return by milliseconds
 //////////////////////////////////////////////////////////////////////
-DWORD MUSIC::GetLength() {
+DWORD MUSIC::GetLength()
+{
 	ASSERT_TRUE(m_DID);
 	MCI_STATUS_PARMS mci_p = {0};
 
@@ -306,13 +327,14 @@ DWORD MUSIC::GetLength() {
 	mciSendCommandW(
 		m_DID,
 		MCI_STATUS,
-		MCI_NOTIFY|MCI_STATUS_ITEM,
+		MCI_NOTIFY | MCI_STATUS_ITEM,
 		(DWORD_PTR)&mci_p);
 
 	return (DWORD)mci_p.dwReturn;
 }
 
-DWORD MUSIC::GetPlayStatus() {
+DWORD MUSIC::GetPlayStatus()
+{
 	ASSERT_TRUE(m_DID);
 	MCI_STATUS_PARMS mci_p = {0};
 
@@ -322,7 +344,7 @@ DWORD MUSIC::GetPlayStatus() {
 	mciSendCommandW(
 		m_DID,
 		MCI_STATUS,
-		MCI_NOTIFY|MCI_STATUS_ITEM,
+		MCI_NOTIFY | MCI_STATUS_ITEM,
 		(DWORD_PTR)&mci_p);
 
 	return (DWORD)mci_p.dwReturn;

@@ -40,7 +40,7 @@ MOUSEMSG    EGEAPI GetMouseMsg();               // £¨²»ÍÆ¼öÊ¹ÓÃµÄº¯Êı£©»ñÈ¡Ò»¸öÊ
 
 void        EGEAPI flushmouse();                // Çå¿ÕÊó±êÏûÏ¢»º³åÇø
 int         EGEAPI showmouse(int bShow);        // ÉèÖÃÊÇ·ñÏÔÊ¾Êó±ê
-int         EGEAPI mousepos(int *x, int *y); // »ñÈ¡µ±Ç°Êó±êÎ»ÖÃ
+int         EGEAPI mousepos(int* x, int* y); // »ñÈ¡µ±Ç°Êó±êÎ»ÖÃ
 
 
 

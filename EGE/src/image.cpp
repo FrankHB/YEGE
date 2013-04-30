@@ -5,20 +5,7 @@
 本文件集中所有对image基本操作的接口和类定义
 */
 
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE
-#endif
-
-#include "ege_head.h"
-
-//#ifdef _ITERATOR_DEBUG_LEVEL
-//#undef _ITERATOR_DEBUG_LEVEL
-//#endif
-
+#include "ege/head.h"
 #include "lpng/png.h"
 #include "lpng/pnginfo.h"
 #include "ocidl.h"
@@ -901,7 +888,7 @@ IMAGE::putimage_transparent(
 			&nWidthSrc,
 			&nHeightSrc
 			);
-		// draw 
+		// draw
 		pdp = img->m_pBuffer + nYOriginDest * img->m_width + nXOriginDest;
 		psp = imgsrc->m_pBuffer + nYOriginSrc  * imgsrc->m_width + nXOriginSrc;
 		ddx = img->m_width - nWidthSrc;
@@ -951,7 +938,7 @@ IMAGE::putimage_alphablend(
 			&nWidthSrc,
 			&nHeightSrc
 			);
-		// draw 
+		// draw
 		pdp = img->m_pBuffer + nYOriginDest * img->m_width + nXOriginDest;
 		psp = imgsrc->m_pBuffer + nYOriginSrc  * imgsrc->m_width + nXOriginSrc;
 		ddx = img->m_width - nWidthSrc;
@@ -1002,7 +989,7 @@ IMAGE::putimage_alphatransparent(
 			&nWidthSrc,
 			&nHeightSrc
 			);
-		// draw 
+		// draw
 		pdp = img->m_pBuffer + nYOriginDest * img->m_width + nXOriginDest;
 		psp = imgsrc->m_pBuffer + nYOriginSrc  * imgsrc->m_width + nXOriginSrc;
 		ddx = img->m_width - nWidthSrc;
@@ -1053,7 +1040,7 @@ IMAGE::putimage_withalpha(
 			&nWidthSrc,
 			&nHeightSrc
 			);
-		// draw 
+		// draw
 		pdp = img->m_pBuffer + nYOriginDest * img->m_width + nXOriginDest;
 		psp = imgsrc->m_pBuffer + nYOriginSrc  * imgsrc->m_width + nXOriginSrc;
 		ddx = img->m_width - nWidthSrc;
@@ -1061,7 +1048,7 @@ IMAGE::putimage_withalpha(
 		for (y=0; y<nHeightSrc; ++y) {
 			for (x=0; x<nWidthSrc; ++x, ++psp, ++pdp) {
 				DWORD alpha = *psp >> 24;
-				//if (*psp != cr) 
+				//if (*psp != cr)
 				{
 					DWORD sa = alpha + 1, da = 0xFF - alpha;
 					DWORD d=*pdp, s=*psp;
@@ -1108,7 +1095,7 @@ IMAGE::putimage_alphafilter(
 			&nWidthSrc,
 			&nHeightSrc
 			);
-		// draw 
+		// draw
 		pdp = img->m_pBuffer + nYOriginDest * img->m_width + nXOriginDest;
 		psp = imgsrc->m_pBuffer + nYOriginSrc  * imgsrc->m_width + nXOriginSrc;
 		pap = imgalpha->m_pBuffer + nYOriginSrc  * imgalpha->m_width + nXOriginSrc;
@@ -1502,7 +1489,7 @@ IMAGE::imagefilter_blurring (
 	return grOk;
 }
 
-int 
+int
 IMAGE::putimage_rotate(
 	PIMAGE imgtexture,
 	int nXOriginDest,
@@ -1518,7 +1505,7 @@ IMAGE::putimage_rotate(
 	return ege::putimage_rotate(this, imgtexture, nXOriginDest, nYOriginDest, centerx, centery, radian, btransparent, alpha, smooth);
 }
 
-int 
+int
 IMAGE::putimage_rotatezoom(
 	PIMAGE imgtexture,
 	int nXOriginDest,

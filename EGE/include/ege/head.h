@@ -5,8 +5,8 @@
 公共声明头文件（私有，不对外使用）
 */
 
-#ifndef _EGE_HEAD_H_
-#define _EGE_HEAD_H_
+#ifndef Inc_ege_head_h_
+#define Inc_ege_head_h_
 
 #define _GRAPH_LIB_BUILD_
 #include "ege.h"
@@ -28,8 +28,8 @@
 #define EGE_GDIPLUS // 使用gdi+函数扩展
 
 #ifdef EGE_GDIPLUS
-	#include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
-	#include <gdiplus.h>
+#include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
+#include <gdiplus.h>
 #endif
 
 #define QUEUE_LEN           1024
@@ -57,16 +57,16 @@
 #define IFNATODOB(A, B) ( (A) || (B, 0) )
 
 #define CONVERT_IMAGE(pimg) ( ((size_t)(pimg)<0x20 ?\
-		((pimg) ?\
-			(graph_setting.img_page[(size_t)(pimg) & 0xF])\
-		: (--graph_setting.update_mark_count, graph_setting.imgtarget))\
-	: pimg) )
+							   ((pimg) ?\
+								(graph_setting.img_page[(size_t)(pimg) & 0xF])\
+								: (--graph_setting.update_mark_count, graph_setting.imgtarget))\
+								   : pimg) )
 
 #define CONVERT_IMAGE_CONST(pimg) ( (size_t)(pimg)<0x20 ?\
-		((pimg) ?\
-			(graph_setting.img_page[(size_t)(pimg) & 0xF])\
-		: graph_setting.imgtarget)\
-	: pimg)
+									((pimg) ?\
+									 (graph_setting.img_page[(size_t)(pimg) & 0xF])\
+									 : graph_setting.imgtarget)\
+										: pimg)
 
 #define CONVERT_IMAGE_F(pimg) CONVERT_IMAGE(pimg)
 
@@ -119,28 +119,31 @@ typedef long POINTER_SIZE;
 #define GRADIENT_FILL_OP_FLAG   0x000000ff
 
 extern "C" {
-WINGDIAPI
-BOOL
-WINAPI
-GradientFill(
-	HDC hdc,
-	PTRIVERTEX pVertex,
-	ULONG nVertex,
-	PVOID pMesh,
-	ULONG nMesh,
-	ULONG ulMode
+	WINGDIAPI
+	BOOL
+	WINAPI
+	GradientFill(
+		HDC hdc,
+		PTRIVERTEX pVertex,
+		ULONG nVertex,
+		PVOID pMesh,
+		ULONG nMesh,
+		ULONG ulMode
 	);
 }
 #endif
 
-namespace ege {
+namespace ege
+{
 
-enum dealmessage_update {
+enum dealmessage_update
+{
 	NORMAL_UPDATE = false,
 	FORCE_UPDATE = true,
 };
 
-struct EGEMSG {
+struct EGEMSG
+{
 	HWND        hwnd;
 	UINT        message;
 	WPARAM      wParam;
@@ -180,17 +183,29 @@ private:
 public:
 	IMAGE();
 	IMAGE(int width, int height);
-	IMAGE(IMAGE &img);              // 拷贝构造函数
-	IMAGE& operator = (const IMAGE &img); // 赋值运算符重载函数
+	IMAGE(IMAGE& img);              // 拷贝构造函数
+	IMAGE& operator = (const IMAGE& img); // 赋值运算符重载函数
 	~IMAGE();
 	void set_pattern(void* obj, int type);
 	void delete_pattern();
 	void gentexture(bool gen);
 public:
-	HDC getdc()        const {return m_hDC;}
-	int getwidth()     const {return m_width; }
-	int getheight()    const {return m_height;}
-	PDWORD getbuffer() const {return m_pBuffer;}
+	HDC getdc()        const
+	{
+		return m_hDC;
+	}
+	int getwidth()     const
+	{
+		return m_width;
+	}
+	int getheight()    const
+	{
+		return m_height;
+	}
+	PDWORD getbuffer() const
+	{
+		return m_pBuffer;
+	}
 
 	int  createimage(int width, int height);
 	int  resize(int width, int height);
@@ -268,7 +283,7 @@ public:
 		int nHeightSrc = 0      // height of source rectangle
 	);
 	int
-	imagefilter_blurring_4 (
+	imagefilter_blurring_4(
 		int intensity,
 		int alpha,
 		int nXOriginDest,
@@ -277,7 +292,7 @@ public:
 		int nHeightDest
 	);
 	int
-	imagefilter_blurring_8 (
+	imagefilter_blurring_8(
 		int intensity,
 		int alpha,
 		int nXOriginDest,
@@ -286,7 +301,7 @@ public:
 		int nHeightDest
 	);
 	int
-	imagefilter_blurring (
+	imagefilter_blurring(
 		int intensity,
 		int alpha,
 		int nXOriginDest = 0,
@@ -321,14 +336,17 @@ public:
 };
 
 // 定义ege全局状态对象
-struct _graph_setting {
-	struct _graph {
+struct _graph_setting
+{
+	struct _graph
+	{
 		int width;
 		int height;
-	}graph;
-	struct _aspectratio {
+	} graph;
+	struct _aspectratio
+	{
 		float xasp, yasp;
-	}aspectratio;
+	} aspectratio;
 
 	int writemode;
 
@@ -358,7 +376,7 @@ struct _graph_setting {
 	bool    timer_stop_mark;
 	bool    skip_timer_mark;
 
-	thread_queue<EGEMSG> *msgkey_queue, *msgmouse_queue;
+	thread_queue<EGEMSG>* msgkey_queue, *msgmouse_queue;
 
 	HANDLE threadui_handle;
 
@@ -403,26 +421,31 @@ struct _graph_setting {
 extern struct _graph_setting& graph_setting;
 
 template<typename T>
-struct count_ptr {
-	explicit count_ptr( T* p ) {
+struct count_ptr
+{
+	explicit count_ptr(T* p)
+	{
 		//m_mutex = new Mutex;
-		m_cnt = new long( 1 );
+		m_cnt = new long(1);
 		m_p = p;
 	}
-	~count_ptr() {
+	~count_ptr()
+	{
 		//m_mutex->Lock();
 		--*m_cnt;
-		if ( *m_cnt == 0 ) {
+		if(*m_cnt == 0)
+		{
 			delete m_p;
-			m_p = static_cast<T*>( 0 );
+			m_p = static_cast<T*>(0);
 			delete m_cnt;
-			m_cnt = static_cast<long*>( 0 );
+			m_cnt = static_cast<long*>(0);
 		}
 		//Mutex* mutex = m_mutex;
 		//m_mutex = static_cast<Mutex*> ( 0 );
 		//mutex->UnLock();
 	}
-	count_ptr( const count_ptr<T>& count_ptr_ ) {
+	count_ptr(const count_ptr<T>& count_ptr_)
+	{
 		//m_mutex = count_ptr_.m_mutex;
 		//m_mutex->Lock();
 		m_p = count_ptr_.m_p;
@@ -430,14 +453,16 @@ struct count_ptr {
 		++*m_cnt;
 		//m_mutex->UnLock();
 	}
-	count_ptr<T>& operator= ( const count_ptr<T>& count_ptr_ ) {
+	count_ptr<T>& operator= (const count_ptr<T>& count_ptr_)
+	{
 		//m_mutex->Lock();
 		--*m_cnt;
-		if ( *m_cnt == 0 ) {
+		if(*m_cnt == 0)
+		{
 			delete m_p;
-			m_p = static_cast<T*>( 0 );
+			m_p = static_cast<T*>(0);
 			delete m_cnt;
-			m_cnt = static_cast<long*>( 0 );
+			m_cnt = static_cast<long*>(0);
 		}
 		//Mutex* mutex = m_mutex;
 		//m_mutex = count_ptr_.m_mutex;
@@ -445,18 +470,21 @@ struct count_ptr {
 
 		//m_mutex->Lock();
 		m_p = count_ptr_.m_p;
-		m_cnt = static_cast<long*>( count_ptr_.m_cnt );
+		m_cnt = static_cast<long*>(count_ptr_.m_cnt);
 		++*m_cnt;
 		//m_mutex->UnLock();
 		return *this;
 	}
-	operator T* () const {
+	operator T* () const
+	{
 		return m_p;
 	}
-	T& operator * () const {
+	T& operator * () const
+	{
 		return *m_p;
 	}
-	T* operator -> () const {
+	T* operator -> () const
+	{
 		return m_p;
 	}
 private:
@@ -467,4 +495,4 @@ private:
 
 } // namespace ege
 
-#endif /*_EGE_HEAD_H_*/
+#endif /*Inc_ege_head_h_*/

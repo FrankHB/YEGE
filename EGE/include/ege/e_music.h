@@ -16,12 +16,18 @@ class MUSIC
 public:
 	MUSIC();
 	virtual ~MUSIC();
-	operator HWND()const{return (HWND)m_dwCallBack;}
+	operator HWND()const
+	{
+		return (HWND)m_dwCallBack;
+	}
 public:
-	int   IsOpen() {return (m_DID != MUSIC_ERROR) ? 1 : 0;}
+	int   IsOpen()
+	{
+		return (m_DID != MUSIC_ERROR) ? 1 : 0;
+	}
 	DWORD OpenFile(LPCSTR  filepath);
 	DWORD OpenFile(LPCWSTR filepath);
-	DWORD Play(DWORD dwFrom=MUSIC_ERROR, DWORD dwTo=MUSIC_ERROR);
+	DWORD Play(DWORD dwFrom = MUSIC_ERROR, DWORD dwTo = MUSIC_ERROR);
 	DWORD Pause();
 	DWORD Seek(DWORD dwTo); //播放位置定位，单位为ms
 	DWORD SetVolume(float value);

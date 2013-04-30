@@ -51,6 +51,7 @@
 		</Linker>
 		<Unit filename="include/ege.h" />
 		<Unit filename="include/ege/button.h" />
+		<Unit filename="include/ege/common.h" />
 		<Unit filename="include/ege/e_base.h" />
 		<Unit filename="include/ege/e_color.h" />
 		<Unit filename="include/ege/e_colorbase.h" />
@@ -72,14 +73,12 @@
 		<Unit filename="include/ege/e_v3d.h" />
 		<Unit filename="include/ege/e_windows.h" />
 		<Unit filename="include/ege/fps.h" />
+		<Unit filename="include/ege/head.h" />
 		<Unit filename="include/ege/label.h" />
+		<Unit filename="include/ege/sbt.h" />
 		<Unit filename="include/ege/sys_edit.h" />
-		<Unit filename="include/ege_common.h" />
-		<Unit filename="include/ege_head.h" />
-		<Unit filename="include/ege_sbt.h" />
 		<Unit filename="include/graphics.h" />
 		<Unit filename="include/thread_queue.h" />
-		<Unit filename="src/buildlogo.cpp" />
 		<Unit filename="src/color.cpp" />
 		<Unit filename="src/e_page.cpp" />
 		<Unit filename="src/egecontrolbase.cpp" />

@@ -2,7 +2,8 @@
 
 #include "e_def.h"
 
-namespace ege {
+namespace ege
+{
 
 // 绘图环境相关函数
 

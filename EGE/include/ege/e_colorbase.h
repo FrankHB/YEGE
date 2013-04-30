@@ -9,7 +9,7 @@ yconstfn u32
 RGBTOBGR(u32 color)
 {
 	return ((color & 0xFF) << 16) | ((color & 0xFF0000) >> 16)
-		| (color & 0xFF00FF00);
+		   | (color & 0xFF00FF00);
 }
 
 yconstfn u32

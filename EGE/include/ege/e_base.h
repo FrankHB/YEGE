@@ -7,9 +7,10 @@
 namespace ege
 {
 
-yconstexpr auto PI(3.14159265358979323846);
+yconstexpr const auto PI(3.14159265358979323846);
 
-enum graphics_drivers {     /* define graphics drivers */
+enum graphics_drivers       /* define graphics drivers */
+{
 	DETECT,         /* requests autodetection */
 	CGA, MCGA, EGA, EGA64, EGAMONO, IBM8514,/* 1 - 6 */
 	HERCMONO, ATT400, VGA, PC3270,          /* 7 - 10 */
@@ -17,7 +18,8 @@ enum graphics_drivers {     /* define graphics drivers */
 	CURRENT_DRIVER = -1
 };
 
-enum graphics_modes { /* graphics modes for each driver */
+enum graphics_modes   /* graphics modes for each driver */
+{
 	CGAC0       = 0,  /* 320x200 palette 0; 1 page  */
 	CGAC1       = 1,  /* 320x200 palette 1; 1 page  */
 	CGAC2       = 2,  /* 320x200 palette 2: 1 page  */
@@ -49,7 +51,8 @@ enum graphics_modes { /* graphics modes for each driver */
 	IBM8514HI   = 1   /*1024x768 256 colors         */
 };
 
-enum graphics_errors {      /* graphresult error return codes */
+enum graphics_errors        /* graphresult error return codes */
+{
 	grOk                =   0,
 	grNoInitGraph       =  -1,
 	grNotDetected       =  -2,
@@ -75,7 +78,8 @@ enum graphics_errors {      /* graphresult error return codes */
 	grInvalidMemory     = 0xCDCDCDCD,
 };
 
-enum message_event {
+enum message_event
+{
 	MSG_EVENT_UP            = 0x00,
 	MSG_EVENT_DOWN          = 0x01,
 	MSG_EVENT_CLICK         = 0x01,
@@ -84,14 +88,16 @@ enum message_event {
 	MSG_EVENT_WHEEL         = 0x10,
 };
 
-enum message_mouse {
+enum message_mouse
+{
 	MSG_MOUSE_LEFT      = 0x01,
 	MSG_MOUSE_RIGHT     = 0x02,
 	MSG_MOUSE_MID       = 0x04,
 };
 
 // 颜色
-enum COLORS {
+enum COLORS
+{
 	BLACK           = 0,
 	BLUE            = EGERGB(0, 0, 0xA8),
 	GREEN           = EGERGB(0, 0xA8, 0),
@@ -111,7 +117,8 @@ enum COLORS {
 };
 
 // 填充模式
-enum fill_patterns {/* Fill patterns for get/setfillstyle */
+enum fill_patterns  /* Fill patterns for get/setfillstyle */
+{
 	EMPTY_FILL,     /* fills area in background color */
 	SOLID_FILL,     /* fills area in solid fill color */
 	LINE_FILL,      /* --- fill */
@@ -138,7 +145,8 @@ enum text_just {        /* Horizontal and vertical justification
 	TOP_TEXT    = 2
 };
 
-enum key_msg_flag {
+enum key_msg_flag
+{
 	KEYMSG_CHAR_FLAG    = 2,
 	KEYMSG_DOWN_FLAG    = 1,
 	KEYMSG_UP_FLAG      = 1,
@@ -149,7 +157,8 @@ enum key_msg_flag {
 	KEYMSG_FIRSTDOWN    = 0x80000,
 };
 
-enum music_state_flag {
+enum music_state_flag
+{
 	MUSIC_MODE_NOT_OPEN = 0x0,
 	MUSIC_MODE_NOT_READY = 0x20C,
 	MUSIC_MODE_PAUSE = 0x211,
@@ -159,7 +168,8 @@ enum music_state_flag {
 	MUSIC_MODE_SEEK = 0x210,
 };
 
-enum initmode_flag {
+enum initmode_flag
+{
 	INIT_NOBORDER       = 0x1,
 	INIT_CHILD          = 0x2,
 	INIT_TOPMOST        = 0x4,
@@ -174,12 +184,14 @@ enum initmode_flag {
 	INIT_ANIMATION  = INIT_DEFAULT | INIT_RENDERMANUAL | INIT_NOFORCEEXIT,
 };
 
-enum rendermode_e {
+enum rendermode_e
+{
 	RENDER_AUTO,
 	RENDER_MANUAL,
 };
 
-typedef enum key_code_e {
+typedef enum key_code_e
+{
 	key_mouse_l     = 0x01,
 	key_mouse_r     = 0x02,
 	key_mouse_m     = 0x04,
@@ -274,40 +286,46 @@ typedef enum key_code_e {
 	key_quote       = 0xde,
 
 	key_ime_process = 0xe5,
-}key_code_e;
+} key_code_e;
 
-typedef enum key_msg_e {
+typedef enum key_msg_e
+{
 	key_msg_down    = 1,
 	key_msg_up      = 2,
 	key_msg_char    = 4,
-}key_msg_e;
-typedef enum key_flag_e {
+} key_msg_e;
+typedef enum key_flag_e
+{
 	key_flag_shift  = 0x100,
 	key_flag_ctrl   = 0x200,
-}key_flag_e;
+} key_flag_e;
 
-typedef enum mouse_msg_e {
+typedef enum mouse_msg_e
+{
 	mouse_msg_down      = 0x10,
 	mouse_msg_up        = 0x20,
 	mouse_msg_move      = 0x40,
 	mouse_msg_wheel     = 0x80,
-}mouse_msg_e;
-typedef enum mouse_flag_e {
+} mouse_msg_e;
+typedef enum mouse_flag_e
+{
 	mouse_flag_left     = 1,
 	mouse_flag_right    = 2,
 	mouse_flag_mid      = 4,
 	mouse_flag_shift    = 0x100,
 	mouse_flag_ctrl     = 0x200,
-}mouse_flag_e;
+} mouse_flag_e;
 
-typedef enum pattern_type_e {
+typedef enum pattern_type_e
+{
 	pattern_none            = 0,
 	pattern_lineargradient  = 1,
 	pattern_pathgradient    = 2,
 	pattern_texture         = 3,
-}pattern_type_e;
+} pattern_type_e;
 
-struct viewporttype {
+struct viewporttype
+{
 	int left;
 	int top;
 	int right;
@@ -315,7 +333,8 @@ struct viewporttype {
 	int clipflag;
 };
 
-struct textsettingstype {
+struct textsettingstype
+{
 	int font;
 	int direction;
 	int charsize;
@@ -323,57 +342,84 @@ struct textsettingstype {
 	int vert;
 };
 
-struct linestyletype {
+struct linestyletype
+{
 	int linestyle;
 	unsigned short upattern;
 	int thickness;
 };
 
-typedef struct key_msg {
+typedef struct key_msg
+{
 	int             key;
 	key_msg_e       msg;
 	unsigned int    flags;
-}key_msg;
+} key_msg;
 
-typedef struct mouse_msg {
+typedef struct mouse_msg
+{
 	int             x;
 	int             y;
 	mouse_msg_e     msg;
 	unsigned int    flags;
 	int             wheel;
-	bool is_left() {return (flags & mouse_flag_left) != 0;}
-	bool is_right() {return (flags & mouse_flag_right) != 0;}
-	bool is_mid() {return (flags & mouse_flag_mid) != 0;}
-	bool is_down() {return msg == mouse_msg_down;}
-	bool is_up() {return msg == mouse_msg_up;}
-	bool is_move() {return msg == mouse_msg_move;}
-	bool is_wheel() {return msg == mouse_msg_wheel;}
-}mouse_msg;
+	bool is_left()
+	{
+		return (flags & mouse_flag_left) != 0;
+	}
+	bool is_right()
+	{
+		return (flags & mouse_flag_right) != 0;
+	}
+	bool is_mid()
+	{
+		return (flags & mouse_flag_mid) != 0;
+	}
+	bool is_down()
+	{
+		return msg == mouse_msg_down;
+	}
+	bool is_up()
+	{
+		return msg == mouse_msg_up;
+	}
+	bool is_move()
+	{
+		return msg == mouse_msg_move;
+	}
+	bool is_wheel()
+	{
+		return msg == mouse_msg_wheel;
+	}
+} mouse_msg;
 
-typedef struct ege_point {
+typedef struct ege_point
+{
 	float x;
 	float y;
-}ege_point;
+} ege_point;
 
-typedef struct ege_rect {
+typedef struct ege_rect
+{
 	float x;
 	float y;
 	float w;
 	float h;
-}ege_rect;
+} ege_rect;
 
 typedef unsigned int color_t;
 
-typedef struct ege_colpoint {
+typedef struct ege_colpoint
+{
 	float   x;
 	float   y;
 	color_t color;
-}ege_colpoint;
+} ege_colpoint;
 
 void EGEAPI setrendermode(rendermode_e mode);
 void EGEAPI initgraph(int Width, int Height, int Flag = INIT_DEFAULT);    // 初始化图形环境
 
-void EGEAPI window_getviewport(struct viewporttype * viewport);
+void EGEAPI window_getviewport(struct viewporttype* viewport);
 void EGEAPI window_getviewport(int* left, int* top, int* right, int* bottom);
 void EGEAPI window_setviewport(int  left, int  top, int  right, int  bottom);
 

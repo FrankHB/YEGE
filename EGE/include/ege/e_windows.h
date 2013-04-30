@@ -9,7 +9,8 @@
 namespace ege
 {
 
-enum line_styles {      /* Line styles for get/setlinestyle */
+enum line_styles        /* Line styles for get/setlinestyle */
+{
 	SOLID_LINE      = PS_SOLID,
 	CENTER_LINE     = PS_DASH,
 	DOTTED_LINE     = PS_DOT,
@@ -21,7 +22,8 @@ enum line_styles {      /* Line styles for get/setlinestyle */
 #if 0
 // 鼠标消息
 EGE_DEPRECATE(MOUSEMSG)
-struct MOUSEMSG {
+struct MOUSEMSG
+{
 	UINT uMsg;              // 当前鼠标消息
 	bool mkCtrl;            // Ctrl 键是否按下
 	bool mkShift;           // Shift 键是否按下
@@ -34,7 +36,8 @@ struct MOUSEMSG {
 };
 #endif
 
-struct msg_createwindow {
+struct msg_createwindow
+{
 	HANDLE hEvent;
 	HWND hwnd;
 	LPCWSTR classname;
@@ -54,4 +57,4 @@ HWND        EGEAPI getHWnd();         // 获取绘图窗口句柄
 HINSTANCE   EGEAPI getHInstance();
 PVOID       EGEAPI getProcfunc();
 
-}
+}
