@@ -3,7 +3,6 @@
 #include <cstdarg>
 #include "zlib.h"
 #include "ege/sys_edit.h"
-#include "ege/common.h"
 
 namespace ege
 {

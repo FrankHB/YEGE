@@ -8,6 +8,7 @@ Code::Blocks 。
 （其它版本未测试，但至少需要 -std=c++0x 的 auto 和 nullptr 等支持，且若在 Code::Blocks 项目使用，需要去除 debug 的 -Og 选项。）
 
 依赖项更改：
+依赖 YBase 的 ydef.h 。
 移除 GDI+ 源代码，需要显式依赖 GDI+（默认 MinGW 已提供）。
 移除 zlib 和 libpng 源代码，需要显式依赖 zlib1.dll 和 libpng16.dll 。
 
@@ -18,6 +19,7 @@ Code::Blocks 。
 去除所有标记为 deprecated 的接口。
 去除 Sleep 宏。
 原型 PVOID EGEAPI getProcfunc(); 更改为 EGEAPI ::WNDPROC getProcfunc(); 。
+移除 Array 和 Set 模版，改用 std::vector 和 std::set 替代。
 
 实现方式：
 随机数改用 C++11 标准库实现。

@@ -1,17 +1,13 @@
 ﻿#include <algorithm>
 #include "ege/head.h"
-#include "ege/common.h"
-//#include <set>
-//#include <vector>
+#include <set>
+#include <vector>
 
 namespace ege
 {
 
-
-//typedef std::set<egeControlBase*> egectlmap;
-typedef Set<egeControlBase*> egectlmap;
-//typedef std::vector<egeControlBase*> egectlvec;
-typedef Array<egeControlBase*> egectlvec;
+typedef std::set<egeControlBase*> egectlmap;
+typedef std::vector<egeControlBase*> egectlvec;
 
 int egeControlBase::s_maxchildid = 1024;
 
@@ -25,9 +21,7 @@ egeControlBase::InitObject::InitObject(egeControlBase* pThis, int inherit_level)
 egeControlBase::InitObject::~InitObject()
 {
 	if(m_this->m_inheritlevel == m_inherit_level)
-	{
 		m_this->initok();
-	}
 }
 egeControlBase::egeControlBase()
 {
@@ -39,14 +33,10 @@ egeControlBase::egeControlBase(int inherit, egeControlBase* pParent)
 	if(s_egeCtlParent.size() > 0)
 	{
 		if(pParent == nullptr)
-		{
 			pParent = *s_egeCtlParent.rbegin();
-		}
 	}
-	{
-		m_inheritlevel = inherit;
-		s_egeCtlParent.push_back(this);
-	}
+	m_inheritlevel = inherit;
+	s_egeCtlParent.push_back(this);
 	init(pParent);
 }
 
