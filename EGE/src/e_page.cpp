@@ -5,16 +5,10 @@
 本文件汇集较独立的函数接口
 */
 
-#ifndef _CRT_NON_CONFORMING_SWPRINTFS
-#define _CRT_NON_CONFORMING_SWPRINTFS
-#endif
-
 #include "ege/head.h"
-
-#include <math.h>
-#include <stdarg.h>
-
-#include "lpng/zlib.h"
+#include <cmath>
+#include <cstdarg>
+#include "zlib.h"
 #include "ege/sys_edit.h"
 #include "ege/common.h"
 

@@ -12,9 +12,9 @@
 
 int g_w, g_h;
 
-/////////////////////////////////////////////////
+
 // 定义复数及乘、加运算
-/////////////////////////////////////////////////
+
 
 // 定义复数
 struct COMPLEX
@@ -42,9 +42,9 @@ COMPLEX operator + (COMPLEX a, COMPLEX b)
 }
 
 
-/////////////////////////////////////////////////
+
 // 定义颜色及初始化颜色
-/////////////////////////////////////////////////
+
 
 // 定义颜色
 int Color[MAXCOLOR];
@@ -250,9 +250,7 @@ int MDraw(double fromx, double fromy, double tox, double toy)
 
 int g_updatepoint = 0;
 
-/////////////////////////////////////////////////
 // 绘制 Julia Set
-/////////////////////////////////////////////////
 int JDraw(COMPLEX c, double fromx, double fromy, double tox, double toy, double sr, double cr)
 {
 	int ret = 0;
@@ -378,9 +376,9 @@ void init_st(int x, int y)
 	memset(g_st, 0, x * y * sizeof(state));
 }
 
-/////////////////////////////////////////////////
+
 // 主函数
-/////////////////////////////////////////////////
+
 int main(int argc, char* argv[])
 {
 	// 初始化绘图窗口及颜色

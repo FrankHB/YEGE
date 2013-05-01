@@ -93,10 +93,10 @@ DWORD MUSIC::OpenFile(LPCSTR _szStr)
 	return mciERR;
 }
 
-//////////////////////////////////////////////////////////////////////
+/////////////////////
 // mciOpenFile(LPCWSTR _szStr)
 // open a music file. szStr: Path of the file
-//////////////////////////////////////////////////////////////////////
+/////////////////////
 DWORD MUSIC::OpenFile(LPCWSTR _szStr)
 {
 	::MCIERROR mciERR  = ERROR_SUCCESS;
@@ -116,13 +116,12 @@ DWORD MUSIC::OpenFile(LPCWSTR _szStr)
 		m_DID = mci_p.wDeviceID;
 
 		// Set time format with milliseconds
-		{
-			MCI_SET_PARMS mci_p = {0};
-			mci_p.dwTimeFormat = MCI_FORMAT_MILLISECONDS;
-			//DWORD dw =
-			mciSendCommandW(m_DID, MCI_SET, MCI_NOTIFY | MCI_SET_TIME_FORMAT,
-				(DWORD_PTR)&mci_p);
-		}
+		auto mci_p = ::MCI_SET_PARMS();
+
+		mci_p.dwTimeFormat = MCI_FORMAT_MILLISECONDS;
+		//DWORD dw =
+		mciSendCommandW(m_DID, MCI_SET, MCI_NOTIFY | MCI_SET_TIME_FORMAT,
+			(DWORD_PTR)&mci_p);
 	}
 	return mciERR;
 }
@@ -163,10 +162,10 @@ DWORD MUSIC::Pause()
 	return mciERR;
 }
 
-//////////////////////////////////////////////////////////////////////
+/////////////////////
 // mciStop()
 // stop the music stream.
-//////////////////////////////////////////////////////////////////////
+/////////////////////
 DWORD MUSIC::Stop()
 {
 	ASSERT_TRUE(m_DID);

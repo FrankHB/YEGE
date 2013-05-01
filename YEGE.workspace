@@ -2,32 +2,75 @@
 <CodeBlocks_workspace_file>
 	<Workspace title="YEGE">
 		<Project filename="EGE/EGE.cbp" />
-		<Project filename="ege5star/ege5star.cbp" />
-		<Project filename="egearrow/egearrow.cbp" />
-		<Project filename="egeball/egeball.cbp" />
-		<Project filename="ege5star/ege5star.cbp" />
-		<Project filename="egearrow/egearrow.cbp" />
-		<Project filename="egeball/egeball.cbp" />
-		<Project filename="egecatharine/egecatharine.cbp" />
-		<Project filename="egeclock/egeclock.cbp" />
-		<Project filename="egedemo/egedemo.cbp" />
-		<Project filename="egejulia/egejulia.cbp" />
-		<Project filename="egelines/egelines.cbp" />
-		<Project filename="egemouseball/egemouseball.cbp" />
-		<Project filename="egenet/egenet.cbp" />
-		<Project filename="egerotateimage/egerotateimage.cbp" />
-		<Project filename="egesnake/egesnake.cbp" />
-		<Project filename="egestar/egestar.cbp" />
-		<Project filename="egetetris/egetetris.cbp" />
-		<Project filename="egetriangle/egetriangle.cbp" />
+		<Project filename="ege5star/ege5star.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egearrow/egearrow.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egeball/egeball.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egecatharine/egecatharine.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egeclock/egeclock.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egedemo/egedemo.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egejulia/egejulia.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egelines/egelines.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egemouseball/egemouseball.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egenet/egenet.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egerotateimage/egerotateimage.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egesnake/egesnake.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egestar/egestar.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egetetris/egetetris.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="egetriangle/egetriangle.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
 		<Project filename="egetypegame/egetypegame.cbp" />
-		<Project filename="graphicstest/graphicstest.cbp" />
-		<Project filename="MandelbrotSetBase/MandelbrotSetBase.cbp" />
-		<Project filename="MandelbrotSet/MandelbrotSet.cbp" />
-		<Project filename="MandelbrotSetAni/MandelbrotSetAni.cbp" />
-		<Project filename="MandelbrotSetAniLarge/MandelbrotSetAniLarge.cbp" />
-		<Project filename="setup/setup.cbp" />
-		<Project filename="test_setviewport/test_setviewport.cbp" />
-		<Project filename="tutorial/tutorial.cbp" />
+		<Project filename="graphicstest/graphicstest.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="MandelbrotSetBase/MandelbrotSetBase.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="MandelbrotSet/MandelbrotSet.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="MandelbrotSetAni/MandelbrotSetAni.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="MandelbrotSetAniLarge/MandelbrotSetAniLarge.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="setup/setup.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="test_setviewport/test_setviewport.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
+		<Project filename="tutorial/tutorial.cbp">
+			<Depends filename="EGE/EGE.cbp" />
+		</Project>
 	</Workspace>
 </CodeBlocks_workspace_file>

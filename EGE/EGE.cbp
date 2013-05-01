@@ -6,30 +6,82 @@
 		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
+		<Option extended_obj_names="1" />
 		<Build>
 			<Target title="debug">
 				<Option output="debug/EGE" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="debug/" />
+				<Option object_output="debug/static/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-Og" />
 				</Compiler>
 			</Target>
 			<Target title="release">
 				<Option output="release/EGE" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="release/" />
+				<Option object_output="release/static/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-O3" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+				</Linker>
+			</Target>
+			<Target title="debug_DLL">
+				<Option output="debug/EGE" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="debug" />
+				<Option object_output="debug/dynamic/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-Og" />
+				</Compiler>
+				<Linker>
+					<Add library="png16" />
+					<Add library="zlib1" />
+					<Add library="gdi32" />
+					<Add library="imm32" />
+					<Add library="msimg32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="winmm" />
+					<Add library="uuid" />
+					<Add library="gdiplus" />
+				</Linker>
+			</Target>
+			<Target title="release_DLL">
+				<Option output="release/EGE" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="release" />
+				<Option object_output="release/dynamic/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O3" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="png16" />
+					<Add library="zlib1" />
+					<Add library="gdi32" />
+					<Add library="imm32" />
+					<Add library="msimg32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="winmm" />
+					<Add library="uuid" />
+					<Add library="gdiplus" />
 				</Linker>
 			</Target>
 		</Build>
@@ -39,16 +91,6 @@
 			<Add option="-Wall" />
 			<Add directory="include" />
 		</Compiler>
-		<Linker>
-			<Add library="gdi32" />
-			<Add library="imm32" />
-			<Add library="msimg32" />
-			<Add library="ole32" />
-			<Add library="oleaut32" />
-			<Add library="winmm" />
-			<Add library="uuid" />
-			<Add library="gdiplus" />
-		</Linker>
 		<Unit filename="include/ege.h" />
 		<Unit filename="include/ege/button.h" />
 		<Unit filename="include/ege/common.h" />
@@ -85,100 +127,28 @@
 		<Unit filename="src/egegapi.cpp" />
 		<Unit filename="src/graphics.cpp" />
 		<Unit filename="src/image.cpp" />
+		<Unit filename="src/libpng/png.h" />
+		<Unit filename="src/libpng/pngconf.h" />
+		<Unit filename="src/libpng/pngdebug.h" />
+		<Unit filename="src/libpng/pnginfo.h" />
+		<Unit filename="src/libpng/pnglibconf.h" />
+		<Unit filename="src/libpng/pngpriv.h" />
+		<Unit filename="src/libpng/pngstruct.h" />
 		<Unit filename="src/logo.cpp" />
-		<Unit filename="src/lpng/adler32.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/compress.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/crc32.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/deflate.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/gzclose.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/gzlib.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/gzread.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/gzwrite.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/infback.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/inffast.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/inflate.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/inftrees.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/png.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngerror.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngget.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngmem.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngpread.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngread.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngrio.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngrtran.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngrutil.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngset.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngtrans.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngwio.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngwrite.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngwtran.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/pngwutil.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/trees.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/uncompr.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/lpng/zutil.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="src/math.cpp" />
 		<Unit filename="src/music.cpp" />
 		<Unit filename="src/random.cpp" />
+		<Unit filename="src/zlib/crc32.h" />
+		<Unit filename="src/zlib/deflate.h" />
+		<Unit filename="src/zlib/gzguts.h" />
+		<Unit filename="src/zlib/inffast.h" />
+		<Unit filename="src/zlib/inffixed.h" />
+		<Unit filename="src/zlib/inflate.h" />
+		<Unit filename="src/zlib/inftrees.h" />
+		<Unit filename="src/zlib/trees.h" />
+		<Unit filename="src/zlib/zconf.h" />
+		<Unit filename="src/zlib/zlib.h" />
+		<Unit filename="src/zlib/zutil.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

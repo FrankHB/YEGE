@@ -8,7 +8,7 @@
 #include "ege/head.h"
 #include <cmath>
 #include <cstdarg>
-#include "lpng/zlib.h"
+#include "zlib.h"
 #include "ege/sys_edit.h"
 #include "ege/common.h"
 

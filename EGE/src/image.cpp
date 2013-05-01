@@ -6,8 +6,9 @@
 */
 
 #include "ege/head.h"
-#include "lpng/png.h"
-#include "lpng/pnginfo.h"
+#include "libpng/png.h"
+#include "libpng/pngstruct.h"
+#include "libpng/pnginfo.h"
 #include "ocidl.h"
 #include "olectl.h"
 
@@ -1111,47 +1112,33 @@ IMAGE::putimage_alphafilter(
 /* private function */
 static
 void
-fix_rect_0size(
-	PIMAGE pdest,
+fix_rect_0size(PIMAGE pdest,
 	int* nXOriginDest,   // x-coord of destination upper-left corner
 	int* nYOriginDest,   // y-coord of destination upper-left corner
 	int* nWidthDest,      // width of destination rectangle
 	int* nHeightDest      // height of destination rectangle
-	) {
-	struct viewporttype _vpt = {0, 0, pdest->m_width, pdest->m_height};
-	if (*nWidthDest == 0) {
+	)
+{
+	struct viewporttype _vpt = {0, 0, pdest->m_width, pdest->m_height, 0};
+
+	if(*nWidthDest == 0)
 		*nWidthDest = pdest->m_width;
-	}
-	if (*nHeightDest == 0) {
+	if(*nHeightDest == 0)
 		*nHeightDest = pdest->m_height;
-	}
-	if (*nXOriginDest < _vpt.left) {
-		int dx = _vpt.left - *nXOriginDest;
-		*nXOriginDest    += dx;
-	}
-	if (*nYOriginDest < _vpt.top) {
-		int dy = _vpt.top - *nYOriginDest;
-		*nYOriginDest    += dy;
-	}
-	if (*nXOriginDest + *nWidthDest > _vpt.right) {
-		int dx = *nXOriginDest + *nWidthDest - _vpt.right;
-		*nWidthDest -= dx;
-	}
-	if (*nYOriginDest + *nHeightDest > _vpt.bottom) {
-		int dy = *nYOriginDest + *nHeightDest - _vpt.bottom;
-		*nHeightDest -= dy;
-	}
+	if(*nXOriginDest < _vpt.left)
+		*nXOriginDest += _vpt.left - *nXOriginDest;
+	if(*nYOriginDest < _vpt.top)
+		*nYOriginDest += _vpt.top - *nYOriginDest;
+	if (*nXOriginDest + *nWidthDest > _vpt.right)
+		*nWidthDest -= *nXOriginDest + *nWidthDest - _vpt.right;
+	if (*nYOriginDest + *nHeightDest > _vpt.bottom)
+		*nHeightDest -= *nYOriginDest + *nHeightDest - _vpt.bottom;
 }
 
 int
-IMAGE::imagefilter_blurring_4 (
-	int intensity,
-	int alpha,
-	int nXOriginDest,
-	int nYOriginDest,
-	int nWidthDest,
-	int nHeightDest
-) {
+IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
+	int nYOriginDest, int nWidthDest, int nHeightDest)
+{
 	inittest(L"IMAGE::imagefilter_blurring_4");
 	struct _graph_setting * pg = &graph_setting;
 	DWORD* buff = pg->g_t_buff;
@@ -2008,7 +1995,7 @@ draw_flat_trangle_alpha(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_sr
 		int s = float2int((float)t2d.p[0].y), e = float2int((float)t2d.p[2].y), h, m = float2int((float)t2d.p[1].y);
 		int rs, re;
 		int i, lh, rh;
-		float dm = t2d.p[1].y;
+	//	float dm = t2d.p[1].y;
 		struct point2d pl, pr, pt;
 		struct point2d spl, spr;
 
@@ -2246,7 +2233,8 @@ draw_flat_trangle_alpha_s(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_
 		int s = float2int((float)t2d.p[0].y), e = float2int((float)t2d.p[2].y), h, m = float2int((float)t2d.p[1].y);
 		int rs, re;
 		int i, lh, rh;
-		float dm = t2d.p[1].y, dh;
+	//	float dm = t2d.p[1].y;
+	//	float dh;
 		struct point2d pl, pr, pt;
 		struct point2d spl, spr;
 
@@ -2258,7 +2246,7 @@ draw_flat_trangle_alpha_s(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_
 		spr.x = t3d.p[2].x - t3d.p[0].x;
 		spl.y = t3d.p[1].y - t3d.p[0].y;
 		spr.y = t3d.p[2].y - t3d.p[0].y;
-		dh = dm - s;
+	//	dh = dm - s;
 		h = m - s;
 		rs = s;
 		if (s < y1) {
@@ -2375,7 +2363,7 @@ draw_flat_trangle_alpha_s(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_
 		spl.y = t3d.p[0].y - t3d.p[2].y;
 		spr.y = t3d.p[1].y - t3d.p[2].y;
 
-		dh = e - dm;
+	//	dh = e - dm;
 		h = e - m;
 		re = e;
 		if (m < y1) {

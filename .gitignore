@@ -7,3 +7,7 @@
 
 *.layout
 *.exe
+
+EGE.dll
+
+libEGE.def

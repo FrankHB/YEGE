@@ -84,7 +84,7 @@ public:
 		if(message == WM_CTLCOLOREDIT)
 		{
 			HDC dc = (HDC)wParam;
-			HBRUSH br = ::CreateSolidBrush(RGBTOBGR(m_bgcolor));
+			::HBRUSH br = ::CreateSolidBrush(RGBTOBGR(m_bgcolor));
 
 			::SetBkColor(dc, RGBTOBGR(m_bgcolor));
 			::SetTextColor(dc, RGBTOBGR(m_color));
