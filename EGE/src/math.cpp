@@ -1,11 +1,4 @@
-/*
-* EGE (Easy Graphics Engine)
-* filename  math.cpp
-
-¶¨ÒåËùÓĞÊıÑ§Ïà¹ØµÄº¯ÊıºÍÀà
-*/
-
-#include "ege/head.h"
+ï»¿#include "ege/head.h"
 #include <math.h>
 
 namespace ege

@@ -1,16 +1,8 @@
-/*
-* EGE (Easy Graphics Engine)
-* filename  egecontrolbase.cpp
-
-egeControlBase»ùÀà¶¨ÒåºÍÏà¹Ø²Ù×÷
-*/
-
-#include <algorithm>
-//#include <set>
-//#include <vector>
-
+ï»¿#include <algorithm>
 #include "ege/head.h"
 #include "ege/common.h"
+//#include <set>
+//#include <vector>
 
 namespace ege
 {
@@ -71,7 +63,7 @@ egeControlBase::~egeControlBase()
 		egectlmap*& cmap = (egectlmap*&)m_childmap;
 		if(cmap)
 		{
-			egectlmap::iterator it = cmap->begin(); // ÒÔºóÒª¸½¼ÓÅÅĞò
+			egectlmap::iterator it = cmap->begin(); // ä»¥åè¦é™„åŠ æ’åº
 			for(; it != cmap->end(); ++it)
 			{
 				m_parent->addchild(*it);
@@ -122,7 +114,7 @@ egeControlBase::init(egeControlBase* parent)
 		m_bAutoDraw = 1;
 		m_bDirectDraw = 0;
 
-		m_zOrder    = m_parent->allocZorder(); // ´ı´¦Àí
+		m_zOrder    = m_parent->allocZorder(); // å¾…å¤„ç†
 		m_w = m_h = 1;
 	}
 	m_zOrderLayer = 0;

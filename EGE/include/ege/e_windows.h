@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <windows.h>
 
@@ -20,19 +20,19 @@ enum line_styles        /* Line styles for get/setlinestyle */
 };
 
 #if 0
-// Êó±êÏûÏ¢
+// é¼ æ ‡æ¶ˆæ¯
 EGE_DEPRECATE(MOUSEMSG)
 struct MOUSEMSG
 {
-	UINT uMsg;              // µ±Ç°Êó±êÏûÏ¢
-	bool mkCtrl;            // Ctrl ¼üÊÇ·ñ°´ÏÂ
-	bool mkShift;           // Shift ¼üÊÇ·ñ°´ÏÂ
-	bool mkLButton;         // Êó±ê×ó¼üÊÇ·ñ°´ÏÂ
-	bool mkMButton;         // Êó±êÖĞ¼üÊÇ·ñ°´ÏÂ
-	bool mkRButton;         // Êó±êÓÒ¼üÊÇ·ñ°´ÏÂ
-	short x;                // µ±Ç°Êó±ê x ×ø±ê
-	short y;                // µ±Ç°Êó±ê y ×ø±ê
-	short wheel;            // Êó±ê¹öÂÖ¹ö¶¯Öµ(120Îª»ùÊı)
+	UINT uMsg;              // å½“å‰é¼ æ ‡æ¶ˆæ¯
+	bool mkCtrl;            // Ctrl é”®æ˜¯å¦æŒ‰ä¸‹
+	bool mkShift;           // Shift é”®æ˜¯å¦æŒ‰ä¸‹
+	bool mkLButton;         // é¼ æ ‡å·¦é”®æ˜¯å¦æŒ‰ä¸‹
+	bool mkMButton;         // é¼ æ ‡ä¸­é”®æ˜¯å¦æŒ‰ä¸‹
+	bool mkRButton;         // é¼ æ ‡å³é”®æ˜¯å¦æŒ‰ä¸‹
+	short x;                // å½“å‰é¼ æ ‡ x åæ ‡
+	short y;                // å½“å‰é¼ æ ‡ y åæ ‡
+	short wheel;            // é¼ æ ‡æ»šè½®æ»šåŠ¨å€¼(120ä¸ºåŸºæ•°)
 };
 #endif
 
@@ -47,13 +47,13 @@ struct msg_createwindow
 	LPVOID param;
 };
 
-void EGEAPI setinitmode(int mode = INIT_DEFAULT, int x = CW_USEDEFAULT, int y = CW_USEDEFAULT); //ÉèÖÃ³õÊ¼»¯Ä£Ê½£¬mode=0ÎªÆÕÍ¨£¬1ÎªÎŞ±ß¿ò´°¿Ú£¬xyÊÇ³õÊ¼´°¿Ú×ø±ê
+void EGEAPI setinitmode(int mode = INIT_DEFAULT, int x = CW_USEDEFAULT, int y = CW_USEDEFAULT); //è®¾ç½®åˆå§‹åŒ–æ¨¡å¼ï¼Œmode=0ä¸ºæ™®é€šï¼Œ1ä¸ºæ— è¾¹æ¡†çª—å£ï¼Œxyæ˜¯åˆå§‹çª—å£åæ ‡
 
 void EGEAPI setcaption(LPCSTR  caption);
 void EGEAPI setcaption(LPCWSTR caption);
 
 int  EGEAPI attachHWND(HWND hWnd);
-HWND        EGEAPI getHWnd();         // »ñÈ¡»æÍ¼´°¿Ú¾ä±ú
+HWND        EGEAPI getHWnd();         // è·å–ç»˜å›¾çª—å£å¥æŸ„
 HINSTANCE   EGEAPI getHInstance();
 PVOID       EGEAPI getProcfunc();
 

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class label : public egeControlBase
 {
@@ -16,7 +16,7 @@ public:
 		m_fontheight = 12;
 		m_alpha = 0xFF;
 		m_transparent = false;
-		strcpy(m_face, "ËÎÌå");
+		strcpy(m_face, "å®‹ä½“");
 		redraw();
 	}
 	void caption(const char* text)

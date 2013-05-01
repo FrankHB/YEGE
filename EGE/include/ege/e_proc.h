@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "e_def.h"
 
@@ -19,7 +19,7 @@ msg: see 'enum message_event'
 key: keycode
 return zero means process this message, otherwise means pass it and then process with 'getkey' function
 */
-//int message_addkeyhandler(void* param, LPMSG_KEY_PROC func);        //ÉèÖÃ¼üÅÌ»Øµ÷º¯Êý
+//int message_addkeyhandler(void* param, LPMSG_KEY_PROC func);        //è®¾ç½®é”®ç›˜å›žè°ƒå‡½æ•°
 /*
 callback function define as:
 int __stdcall on_msg_mouse(void* param, unsigned msg, int key, int x, int y);
@@ -28,7 +28,7 @@ key: see 'enum message_mouse', if msg==MSG_EVENT_WHELL, key is a int number that
 x,y: current mouse (x, y)
 return zero means process this message, otherwise means pass it and then process with 'GetMouseMsg' function
 */
-//int message_addmousehandler(void* param, LPMSG_MOUSE_PROC func);    //ÉèÖÃÊó±ê»Øµ÷º¯Êý
+//int message_addmousehandler(void* param, LPMSG_MOUSE_PROC func);    //è®¾ç½®é¼ æ ‡å›žè°ƒå‡½æ•°
 int EGEAPI SetCloseHandler(LPCALLBACK_PROC func);
 
 }

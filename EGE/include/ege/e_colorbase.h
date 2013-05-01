@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <cstdint>
 
@@ -80,7 +80,7 @@ EGEAGRAY(u8 a, u32 gray)
 	return EGEGRAY(gray) | (a << 24);
 }
 
-// ¼æÈÝºê
+// å…¼å®¹å®
 #define RGBtoGRAY   rgb2gray
 #define RGBtoHSL    rgb2hsl
 #define RGBtoHSV    rgb2hsv

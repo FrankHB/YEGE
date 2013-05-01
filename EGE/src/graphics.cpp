@@ -1,6 +1,4 @@
-//±àÒëÎª¶¯Ì¬¿âÊ±£¬ÐèÒª¶¨Òå PNG_BULIDDLL£¬ÒÔµ¼³ödllº¯Êý
-
-#ifdef _WIN64
+ï»¿#ifdef _WIN64
 #define ARCH "x64"
 #else
 #define ARCH "x86"
@@ -51,15 +49,15 @@ ui_msg_process(EGEMSG& qmsg)
 	{
 		if(qmsg.message == WM_KEYDOWN)
 		{
-			pg->egectrl_root->keymsgdown((unsigned)qmsg.wParam, 0); // ÒÔºó²¹¼Óflag
+			pg->egectrl_root->keymsgdown((unsigned)qmsg.wParam, 0); // ä»¥åŽè¡¥åŠ flag
 		}
 		else if(qmsg.message == WM_KEYUP)
 		{
-			pg->egectrl_root->keymsgup((unsigned)qmsg.wParam, 0); // ÒÔºó²¹¼Óflag
+			pg->egectrl_root->keymsgup((unsigned)qmsg.wParam, 0); // ä»¥åŽè¡¥åŠ flag
 		}
 		else if(qmsg.message == WM_CHAR)
 		{
-			pg->egectrl_root->keymsgchar((unsigned)qmsg.wParam, 0); // ÒÔºó²¹¼Óflag
+			pg->egectrl_root->keymsgchar((unsigned)qmsg.wParam, 0); // ä»¥åŽè¡¥åŠ flag
 		}
 	}
 	else if(qmsg.message >= WM_MOUSEFIRST && qmsg.message <= WM_MOUSELAST)
@@ -698,7 +696,7 @@ init_instance(HINSTANCE hInstance, int nCmdShow)
 		lf.lfClipPrecision  = CLIP_DEFAULT_PRECIS;
 		lf.lfQuality        = DEFAULT_QUALITY;
 		lf.lfPitchAndFamily = DEFAULT_PITCH;
-		lstrcpyW(lf.lfFaceName, L"ËÎÌå");
+		lstrcpyW(lf.lfFaceName, L"å®‹ä½“");
 		HFONT hfont = CreateFontIndirectW(&lf);
 		::SendMessage(pg->hwnd, WM_SETFONT, (WPARAM)hfont, NULL);
 		//DeleteObject(hfont);
@@ -1213,7 +1211,7 @@ initgraph(int* gdriver, int* gmode, char*)
 
 	::UpdateWindow(pg->hwnd);
 	{
-		//³õÊ¼»¯Êó±êÎ»ÖÃÊý¾Ý
+		//åˆå§‹åŒ–é¼ æ ‡ä½ç½®æ•°æ®
 		pg->mouse_last_x = pg->dc_w / 2;
 		pg->mouse_last_y = pg->dc_h / 2;
 	}
@@ -1267,11 +1265,11 @@ messageloopthread(LPVOID lpParameter)
 		int nCmdShow = SW_SHOW;
 		register_class(pg, pg->instance);
 
-		/* Ö´ÐÐÓ¦ÓÃ³ÌÐò³õÊ¼»¯: */
+		/* æ‰§è¡Œåº”ç”¨ç¨‹åºåˆå§‹åŒ–: */
 		if(!init_instance(pg->instance, nCmdShow))
 			return 0xFFFFFFFF;
 
-		//Í¼ÐÎ³õÊ¼»¯
+		//å›¾å½¢åˆå§‹åŒ–
 		graph_init(pg);
 
 		pg->mouse_show = 0;

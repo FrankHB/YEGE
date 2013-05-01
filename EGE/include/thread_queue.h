@@ -1,4 +1,4 @@
-#ifndef INC_thread_queue_h_
+﻿#ifndef INC_thread_queue_h_
 #define INC_thread_queue_h_
 
 #include <windows.h>

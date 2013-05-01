@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <wingdi.h>
 #include "e_base.h"
@@ -8,15 +8,15 @@
 namespace ege
 {
 
-//¼üÅÌ´¦Àíº¯Êı
+//é”®ç›˜å¤„ç†å‡½æ•°
 int     EGEAPI kbmsg();
 key_msg EGEAPI getkey();
 EGE_DEPRECATE(getchEx)
 int     EGEAPI getchEx(int flag);
 EGE_DEPRECATE(kbhitEx)
 int     EGEAPI kbhitEx(int flag);
-int     EGEAPI keystate(int key);       // »ñµÃ¼üÂëÎªkeyµÄ¼ü£¨¼ûkey_code_e£©ÊÇ·ñ°´ÏÂ£¬Èç¹ûkeyÊ¹ÓÃÊó±ê°´¼üµÄ¼üÂë£¬Ôò»ñµÃµÄÊÇÊó±ê¼ü×´Ì¬
-void    EGEAPI flushkey();              // Çå¿Õ¼üÅÌÏûÏ¢»º³åÇø
+int     EGEAPI keystate(int key);       // è·å¾—é”®ç ä¸ºkeyçš„é”®ï¼ˆè§key_code_eï¼‰æ˜¯å¦æŒ‰ä¸‹ï¼Œå¦‚æœkeyä½¿ç”¨é¼ æ ‡æŒ‰é”®çš„é”®ç ï¼Œåˆ™è·å¾—çš„æ˜¯é¼ æ ‡é”®çŠ¶æ€
+void    EGEAPI flushkey();              // æ¸…ç©ºé”®ç›˜æ¶ˆæ¯ç¼“å†²åŒº
 
 //#ifndef _GRAPH_LIB_BUILD_
 #if !defined(_INC_CONIO) && !defined(_CONIO_H_)
@@ -30,17 +30,17 @@ int EGEAPI kbhit();
 #endif
 //#endif
 
-//Êó±ê´¦Àíº¯Êı
-int         EGEAPI mousemsg();                  // ¼ì²éÊÇ·ñ´æÔÚÊó±êÏûÏ¢
-mouse_msg   EGEAPI getmouse();                  // »ñÈ¡Ò»¸öÊó±êÏûÏ¢¡£Èç¹ûÃ»ÓĞ£¬¾ÍµÈ´ı
+//é¼ æ ‡å¤„ç†å‡½æ•°
+int         EGEAPI mousemsg();                  // æ£€æŸ¥æ˜¯å¦å­˜åœ¨é¼ æ ‡æ¶ˆæ¯
+mouse_msg   EGEAPI getmouse();                  // è·å–ä¸€ä¸ªé¼ æ ‡æ¶ˆæ¯ã€‚å¦‚æœæ²¡æœ‰ï¼Œå°±ç­‰å¾…
 #if 0
 EGE_DEPRECATE(GetMouseMsg)
-MOUSEMSG    EGEAPI GetMouseMsg();               // £¨²»ÍÆ¼öÊ¹ÓÃµÄº¯Êı£©»ñÈ¡Ò»¸öÊó±êÏûÏ¢¡£Èç¹ûÃ»ÓĞ£¬¾ÍµÈ´ı
+MOUSEMSG    EGEAPI GetMouseMsg();               //ï¼ˆä¸æ¨èä½¿ç”¨çš„å‡½æ•°ï¼‰è·å–ä¸€ä¸ªé¼ æ ‡æ¶ˆæ¯ã€‚å¦‚æœæ²¡æœ‰ï¼Œå°±ç­‰å¾…
 #endif
 
-void        EGEAPI flushmouse();                // Çå¿ÕÊó±êÏûÏ¢»º³åÇø
-int         EGEAPI showmouse(int bShow);        // ÉèÖÃÊÇ·ñÏÔÊ¾Êó±ê
-int         EGEAPI mousepos(int* x, int* y); // »ñÈ¡µ±Ç°Êó±êÎ»ÖÃ
+void        EGEAPI flushmouse();                // æ¸…ç©ºé¼ æ ‡æ¶ˆæ¯ç¼“å†²åŒº
+int         EGEAPI showmouse(int bShow);        // è®¾ç½®æ˜¯å¦æ˜¾ç¤ºé¼ æ ‡
+int         EGEAPI mousepos(int* x, int* y); // è·å–å½“å‰é¼ æ ‡ä½ç½®
 
 
 

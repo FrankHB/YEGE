@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <F:/Programing/YSLib/YBase/include/ydef.h>
 

@@ -1,4 +1,4 @@
-#ifndef INC_ege_common_h_
+﻿#ifndef INC_ege_common_h_
 #define INC_ege_common_h_
 
 //#include <algorithm>

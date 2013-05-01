@@ -1,15 +1,15 @@
-#pragma once
+ï»¿#pragma once
 
 #include "e_def.h"
 
 namespace ege
 {
 
-// »æÍ¼»·¾³Ïà¹Øº¯Êı
+// ç»˜å›¾ç¯å¢ƒç›¸å…³å‡½æ•°
 
-void EGEAPI initgraph(int* gdriver, int* gmode, char* path);   // ¼æÈİ Borland C++ 3.1 µÄÖØÔØ£¬Ö»Ê¹ÓÃ 640x480x24bit
-void EGEAPI closegraph();                                      // ¹Ø±ÕÍ¼ĞÎ»·¾³
-bool EGEAPI is_run();   // ÅĞ¶ÏUIÊÇ·ñÍË³ö
+void EGEAPI initgraph(int* gdriver, int* gmode, char* path);   // å…¼å®¹ Borland C++ 3.1 çš„é‡è½½ï¼Œåªä½¿ç”¨ 640x480x24bit
+void EGEAPI closegraph();                                      // å…³é—­å›¾å½¢ç¯å¢ƒ
+bool EGEAPI is_run();   // åˆ¤æ–­UIæ˜¯å¦é€€å‡º
 
 } // namespace ege
 

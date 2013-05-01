@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "e_def.h"
 
@@ -37,11 +37,11 @@ struct VECTOR3D
 	VECTOR3D& operator -= (const VECTOR3D& _fp);
 	VECTOR3D operator + (const VECTOR3D& _fp) const;
 	VECTOR3D operator - (const VECTOR3D& _fp) const;
-	VECTOR3D& operator *= (float f); //Ëõ·Å
-	VECTOR3D operator * (float f) const; //Ëõ·Å
-	float operator * (const VECTOR3D& _fp) const; //µã³Ë
-	VECTOR3D operator & (const VECTOR3D& _fp) const; //²æ³Ë
-	VECTOR3D& operator &= (const VECTOR3D& _fp); //²æ³Ë
+	VECTOR3D& operator *= (float f); //ç¼©æ”¾
+	VECTOR3D operator * (float f) const; //ç¼©æ”¾
+	float operator * (const VECTOR3D& _fp) const; //ç‚¹ä¹˜
+	VECTOR3D operator & (const VECTOR3D& _fp) const; //å‰ä¹˜
+	VECTOR3D& operator &= (const VECTOR3D& _fp); //å‰ä¹˜
 	float GetModule() const;
 	float GetSqrModule() const
 	{
@@ -53,18 +53,18 @@ struct VECTOR3D
 		*this *= t;
 		return *this;
 	}
-	VECTOR3D& Rotate(float rad, const VECTOR3D& v); //ÈÆÈÎÒâÖáĞı×ª£¬ÓÒÊÖ¶¨Ôò£¬radÎª»¡¶È
+	VECTOR3D& Rotate(float rad, const VECTOR3D& v); //ç»•ä»»æ„è½´æ—‹è½¬ï¼Œå³æ‰‹å®šåˆ™ï¼Œradä¸ºå¼§åº¦
 	VECTOR3D& Rotate(float rad, float x, float y, float z)
 	{
 		VECTOR3D v(x, y, z);
 		return Rotate(rad, v);
 	}
-	VECTOR3D& Rotate(const VECTOR3D& e, const VECTOR3D& s = VECTOR3D(0.0f, 0.0f, 1.0f)); //´Ósµ½eÖ®¼äµÄ¼Ğ½ÇÈ·¶¨Ğı×ª
+	VECTOR3D& Rotate(const VECTOR3D& e, const VECTOR3D& s = VECTOR3D(0.0f, 0.0f, 1.0f)); //ä»såˆ°eä¹‹é—´çš„å¤¹è§’ç¡®å®šæ—‹è½¬
 	static float GetAngel(const VECTOR3D& e, const VECTOR3D& s = VECTOR3D(0.0f, 0.0f, 1.0f));
 };
 
-// 3d ¼ÆËã¸¨Öúº¯Êı
-void EGEAPI rotate_point3d_x(VECTOR3D*   pt, float r); //»¡¶È£¬ÓÒÊÖ¶¨Ôò
+// 3d è®¡ç®—è¾…åŠ©å‡½æ•°
+void EGEAPI rotate_point3d_x(VECTOR3D*   pt, float r); //å¼§åº¦ï¼Œå³æ‰‹å®šåˆ™
 void EGEAPI rotate_point3d_y(VECTOR3D*   pt, float r);
 void EGEAPI rotate_point3d_z(VECTOR3D*   pt, float r);
 

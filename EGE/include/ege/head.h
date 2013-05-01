@@ -1,8 +1,8 @@
-/*
+ï»¿/*
 * EGE (Easy Graphics Engine)
 * filename  ege_head.cpp
 
-¹«¹²ÉùÃ÷Í·ÎÄ¼ş£¨Ë½ÓĞ£¬²»¶ÔÍâÊ¹ÓÃ£©
+å…¬å…±å£°æ˜å¤´æ–‡ä»¶ï¼ˆç§æœ‰ï¼Œä¸å¯¹å¤–ä½¿ç”¨ï¼‰
 */
 
 #ifndef Inc_ege_head_h_
@@ -25,7 +25,7 @@
 #endif
 #endif
 
-#define EGE_GDIPLUS // Ê¹ÓÃgdi+º¯ÊıÀ©Õ¹
+#define EGE_GDIPLUS // ä½¿ç”¨gdi+å‡½æ•°æ‰©å±•
 
 #ifdef EGE_GDIPLUS
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
@@ -145,7 +145,7 @@ struct EGEMSG
 	UINT        flag;
 };
 
-// ¶¨ÒåÍ¼Ïñ¶ÔÏó
+// å®šä¹‰å›¾åƒå¯¹è±¡
 class IMAGE
 {
 	int     m_initflag;
@@ -175,8 +175,8 @@ private:
 public:
 	IMAGE();
 	IMAGE(int width, int height);
-	IMAGE(IMAGE& img);              // ¿½±´¹¹Ôìº¯Êı
-	IMAGE& operator = (const IMAGE& img); // ¸³ÖµÔËËã·ûÖØÔØº¯Êı
+	IMAGE(IMAGE& img);              // æ‹·è´æ„é€ å‡½æ•°
+	IMAGE& operator = (const IMAGE& img); // èµ‹å€¼è¿ç®—ç¬¦é‡è½½å‡½æ•°
 	~IMAGE();
 	void set_pattern(void* obj, int type);
 	void delete_pattern();
@@ -327,7 +327,7 @@ public:
 	);
 };
 
-// ¶¨ÒåegeÈ«¾Ö×´Ì¬¶ÔÏó
+// å®šä¹‰egeå…¨å±€çŠ¶æ€å¯¹è±¡
 struct _graph_setting
 {
 	struct _graph
@@ -360,9 +360,9 @@ struct _graph_setting
 	TCHAR   window_caption[128];
 	int     exit_flag;
 	int     exit_window;
-	int     update_mark_count; //¸üĞÂ±ê¼Ç
+	int     update_mark_count; //æ›´æ–°æ ‡è®°
 	bool    close_manually;
-	bool    use_force_exit; //Ç¿ÖÆ¹Ø±Õ½ø³Ì±ê¼Ç
+	bool    use_force_exit; //å¼ºåˆ¶å…³é—­è¿›ç¨‹æ ‡è®°
 	bool    lock_window;
 	bool    init_finish;
 	bool    timer_stop_mark;
@@ -373,7 +373,7 @@ struct _graph_setting
 	HANDLE threadui_handle;
 
 
-	/*Êó±ê×´Ì¬¼ÇÂ¼*/
+	/*é¼ æ ‡çŠ¶æ€è®°å½•*/
 	int mouse_state_l, mouse_state_m, mouse_state_r;
 	int mouse_last_x, mouse_last_y;
 	int mouse_lastclick_x, mouse_lastclick_y;
@@ -386,14 +386,14 @@ struct _graph_setting
 	void* callback_mouse_param;
 	LPCALLBACK_PROC callback_close;
 
-	/* ¼üÅÌ×´Ì¬¼ÇÂ¼ */
+	/* é”®ç›˜çŠ¶æ€è®°å½• */
 	int keystatemap[MAX_KEY_VCODE];
 
 	/* egeControlBase */
 	egeControlBase* egectrl_root;
 	egeControlBase* egectrl_focus;
 
-	/* Ë½ÓÃÈ«¾Ö±äÁ¿ */
+	/* ç§ç”¨å…¨å±€å˜é‡ */
 #ifdef EGE_GDIPLUS
 	ULONG_PTR g_gdiplusToken;
 #endif
@@ -406,7 +406,7 @@ struct _graph_setting
 
 	HBRUSH savebrush_hbr;
 
-	/* º¯ÊıÓÃÁÙÊ±»º³åÇø */
+	/* å‡½æ•°ç”¨ä¸´æ—¶ç¼“å†²åŒº */
 	DWORD g_t_buff[1024 * 8];
 };
 

@@ -1,11 +1,4 @@
-/*
-* EGE (Easy Graphics Engine)
-* filename  color.cpp
-
-É«²ÊÄ£ÐÍ×ª»»º¯Êý¶¨Òå
-*/
-
-#include "ege/head.h"
+ï»¿#include "ege/head.h"
 #include <cmath>
 #include <algorithm> // for std::min, std::max;
 

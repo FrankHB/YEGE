@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "ege/head.h"
 
 namespace ege

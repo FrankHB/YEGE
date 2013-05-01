@@ -1,11 +1,4 @@
-/*
-* EGE (Easy Graphics Engine)
-* filename  egegapi.cpp
-
-±¾ÎÄ¼þ»ã¼¯½Ï¶ÀÁ¢µÄº¯Êý½Ó¿Ú
-*/
-
-#include "ege/head.h"
+ï»¿#include "ege/head.h"
 #include <cmath>
 #include <cstdarg>
 #include "zlib.h"

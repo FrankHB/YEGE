@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "e_img.h"
 #include <windows.h>
@@ -6,16 +6,16 @@
 namespace ege
 {
 
-int  EGEAPI getimage(PIMAGE pDstImg, LPCSTR  pImgFile, int zoomWidth = 0, int zoomHeight = 0);     // ´ÓÍ¼Æ¬ÎÄ¼ş»ñÈ¡Í¼Ïñ(bmp/jpg/gif/emf/wmf)
-int  EGEAPI getimage(PIMAGE pDstImg, LPCWSTR pImgFile, int zoomWidth = 0, int zoomHeight = 0);     // ´ÓÍ¼Æ¬ÎÄ¼ş»ñÈ¡Í¼Ïñ(bmp/jpg/gif/emf/wmf)
-int  EGEAPI getimage(PIMAGE pDstImg, LPCSTR  pResType, LPCSTR  pResName, int zoomWidth = 0, int zoomHeight = 0);   // ´Ó×ÊÔ´ÎÄ¼ş»ñÈ¡Í¼Ïñ(bmp/jpg/gif/emf/wmf)
-int  EGEAPI getimage(PIMAGE pDstImg, LPCWSTR pResType, LPCWSTR pResName, int zoomWidth = 0, int zoomHeight = 0);   // ´Ó×ÊÔ´ÎÄ¼ş»ñÈ¡Í¼Ïñ(bmp/jpg/gif/emf/wmf)
-void EGEAPI putimage(int dstX, int dstY, const PIMAGE pSrcImg, DWORD dwRop = SRCCOPY);                         // »æÖÆÍ¼Ïñµ½ÆÁÄ»
-void EGEAPI putimage(int dstX, int dstY, int dstWidth, int dstHeight, const PIMAGE pSrcImg, int srcX, int srcY, DWORD dwRop = SRCCOPY);    // »æÖÆÍ¼Ïñµ½ÆÁÄ»(Ö¸¶¨¿í¸ß)
-void EGEAPI putimage(int dstX, int dstY, int dstWidth, int dstHeight, const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, DWORD dwRop = SRCCOPY);   // »æÖÆÍ¼Ïñµ½ÆÁÄ»(Ö¸¶¨Ô´¿í¸ßºÍÄ¿±ê¿í¸ß½øĞĞÀ­Éì)
-void EGEAPI putimage(PIMAGE pDstImg, int dstX, int dstY, const PIMAGE pSrcImg, DWORD dwRop = SRCCOPY);         // »æÖÆÍ¼Ïñµ½ÁíÒ»Í¼ÏñÖĞ
-void EGEAPI putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, const PIMAGE pSrcImg, int srcX, int srcY, DWORD dwRop = SRCCOPY);    // »æÖÆÍ¼Ïñµ½ÁíÒ»Í¼ÏñÖĞ(Ö¸¶¨¿í¸ß)
-void EGEAPI putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, DWORD dwRop = SRCCOPY);   // »æÖÆÍ¼Ïñµ½ÁíÒ»Í¼ÏñÖĞ(Ö¸¶¨Ô´¿í¸ßºÍÄ¿±ê¿í¸ß½øĞĞÀ­Éì)
+int  EGEAPI getimage(PIMAGE pDstImg, LPCSTR  pImgFile, int zoomWidth = 0, int zoomHeight = 0);     // ä»å›¾ç‰‡æ–‡ä»¶è·å–å›¾åƒ(bmp/jpg/gif/emf/wmf)
+int  EGEAPI getimage(PIMAGE pDstImg, LPCWSTR pImgFile, int zoomWidth = 0, int zoomHeight = 0);     // ä»å›¾ç‰‡æ–‡ä»¶è·å–å›¾åƒ(bmp/jpg/gif/emf/wmf)
+int  EGEAPI getimage(PIMAGE pDstImg, LPCSTR  pResType, LPCSTR  pResName, int zoomWidth = 0, int zoomHeight = 0);   // ä»èµ„æºæ–‡ä»¶è·å–å›¾åƒ(bmp/jpg/gif/emf/wmf)
+int  EGEAPI getimage(PIMAGE pDstImg, LPCWSTR pResType, LPCWSTR pResName, int zoomWidth = 0, int zoomHeight = 0);   // ä»èµ„æºæ–‡ä»¶è·å–å›¾åƒ(bmp/jpg/gif/emf/wmf)
+void EGEAPI putimage(int dstX, int dstY, const PIMAGE pSrcImg, DWORD dwRop = SRCCOPY);                         // ç»˜åˆ¶å›¾åƒåˆ°å±å¹•
+void EGEAPI putimage(int dstX, int dstY, int dstWidth, int dstHeight, const PIMAGE pSrcImg, int srcX, int srcY, DWORD dwRop = SRCCOPY);    // ç»˜åˆ¶å›¾åƒåˆ°å±å¹•(æŒ‡å®šå®½é«˜)
+void EGEAPI putimage(int dstX, int dstY, int dstWidth, int dstHeight, const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, DWORD dwRop = SRCCOPY);   // ç»˜åˆ¶å›¾åƒåˆ°å±å¹•(æŒ‡å®šæºå®½é«˜å’Œç›®æ ‡å®½é«˜è¿›è¡Œæ‹‰ä¼¸)
+void EGEAPI putimage(PIMAGE pDstImg, int dstX, int dstY, const PIMAGE pSrcImg, DWORD dwRop = SRCCOPY);         // ç»˜åˆ¶å›¾åƒåˆ°å¦ä¸€å›¾åƒä¸­
+void EGEAPI putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, const PIMAGE pSrcImg, int srcX, int srcY, DWORD dwRop = SRCCOPY);    // ç»˜åˆ¶å›¾åƒåˆ°å¦ä¸€å›¾åƒä¸­(æŒ‡å®šå®½é«˜)
+void EGEAPI putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, DWORD dwRop = SRCCOPY);   // ç»˜åˆ¶å›¾åƒåˆ°å¦ä¸€å›¾åƒä¸­(æŒ‡å®šæºå®½é«˜å’Œç›®æ ‡å®½é«˜è¿›è¡Œæ‹‰ä¼¸)
 int  EGEAPI saveimage(PIMAGE pimg, LPCSTR  filename);
 int  EGEAPI saveimage(PIMAGE pimg, LPCWSTR filename);
 int  EGEAPI savepng(PIMAGE pimg, LPCSTR  filename, int bAlpha = 0);

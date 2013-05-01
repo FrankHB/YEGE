@@ -1,10 +1,4 @@
-/*
-filename  music.cpp
-
-MUSIC¿‡µƒ∂®“Â
-*/
-
-#include "ege/head.h"
+Ôªø#include "ege/head.h"
 #include "mmsystem.h"
 //#include <Digitalv.h>
 struct MCI_DGV_SETAUDIO_PARMSA
@@ -184,7 +178,7 @@ DWORD MUSIC::SetVolume(float value)
 	auto mci_p = ::MCI_DGV_SETAUDIO_PARMSW();
 
 	mci_p.dwItem = MCI_DGV_SETAUDIO_VOLUME;
-	mci_p.dwValue = (DWORD)(value * 1000); //¥À¥¶æÕ «“Ù¡ø¥Û–° (0--1000)
+	mci_p.dwValue = (DWORD)(value * 1000); //Ê≠§Â§ÑÂ∞±ÊòØÈü≥ÈáèÂ§ßÂ∞è (0--1000)
 	mciERR = ::mciSendCommandW(m_DID, MCI_SETAUDIO, MCI_DGV_SETAUDIO_VALUE
 		| MCI_DGV_SETAUDIO_ITEM, (DWORD_PTR)&mci_p);
 	return mciERR;

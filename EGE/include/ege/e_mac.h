@@ -1,6 +1,6 @@
-#pragma once
+ï»¿#pragma once
 
-// »æÍ¼»·¾³³õÊ¼»¯²ÎÊı
+// ç»˜å›¾ç¯å¢ƒåˆå§‹åŒ–å‚æ•°
 #define INITGRAPH(x, y) struct _initgraph_{_initgraph_(){initgraph(x, y);}\
 		~_initgraph_(){closegraph();}}_g_initgraph_
 #define INITGRAPH3(x, y, f) struct _initgraph_{_initgraph_(){initgraph(x, y, f);}\

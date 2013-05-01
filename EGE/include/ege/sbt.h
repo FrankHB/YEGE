@@ -1,4 +1,4 @@
-/* vim: set tabstop=4 shiftwidth=4: */
+﻿/* vim: set tabstop=4 shiftwidth=4: */
 #ifndef Inc_ege_sbt_h_
 #define Inc_ege_sbt_h_
 

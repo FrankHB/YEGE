@@ -1,16 +1,16 @@
-#pragma once
+ï»¿#pragma once
 
 namespace ege
 {
 
-/* Ñ¹Ëõº¯Êı */
-/* Ñ¹ËõÊ±dest»º³åÇøÒª±£Ö¤×îĞ¡´óĞ¡ÎªsourceLen * 1.001 + 16 */
-/* µ÷ÓÃcompress/compress2Ç°£¬*destLen±ØĞëÓĞÖµ£¬±íÊ¾dest»º³åÇøµÄ×î´ó´óĞ¡£¬·µ»ØÊ±Õâ¸öÖµ±íÊ¾Êµ¼Ê´óĞ¡ */
-/* compress2 µÄlevel ´Ó0-9£¬0²»Ñ¹Ëõ£¬9×î´óÑ¹Ëõ£¬compressº¯ÊıÊ¹ÓÃÄ¬ÈÏÖµ6 */
+/* å‹ç¼©å‡½æ•° */
+/* å‹ç¼©æ—¶destç¼“å†²åŒºè¦ä¿è¯æœ€å°å¤§å°ä¸ºsourceLen * 1.001 + 16 */
+/* è°ƒç”¨compress/compress2å‰ï¼Œ*destLenå¿…é¡»æœ‰å€¼ï¼Œè¡¨ç¤ºdestç¼“å†²åŒºçš„æœ€å¤§å¤§å°ï¼Œè¿”å›æ—¶è¿™ä¸ªå€¼è¡¨ç¤ºå®é™…å¤§å° */
+/* compress2 çš„level ä»0-9ï¼Œ0ä¸å‹ç¼©ï¼Œ9æœ€å¤§å‹ç¼©ï¼Œcompresså‡½æ•°ä½¿ç”¨é»˜è®¤å€¼6 */
 int             EGEAPI ege_compress(void* dest, unsigned long* destLen, const void* source, unsigned long sourceLen);
 int             EGEAPI ege_compress2(void* dest, unsigned long* destLen, const void* source, unsigned long sourceLen, int level);
 int             EGEAPI ege_uncompress(void* dest, unsigned long* destLen, const void* source, unsigned long sourceLen);
-unsigned long   EGEAPI ege_uncompress_size(const void* source, unsigned long sourceLen); /* ·µ»Ø0±íÊ¾´íÎó£¬ÆäËü±íÊ¾´óĞ¡ */
+unsigned long   EGEAPI ege_uncompress_size(const void* source, unsigned long sourceLen); /* è¿”å›0è¡¨ç¤ºé”™è¯¯ï¼Œå…¶å®ƒè¡¨ç¤ºå¤§å° */
 
 }
 

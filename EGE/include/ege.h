@@ -1,4 +1,4 @@
-#ifndef INC_ege_h_
+﻿#ifndef INC_ege_h_
 #define INC_ege_h_
 
 #include "ege/e_def.h"

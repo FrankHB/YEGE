@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <wingdi.h>
 #include "e_base.h"
@@ -8,7 +8,7 @@
 namespace ege
 {
 
-//�������
+//音乐类宏
 const auto MUSIC_ERROR(0xFFFFFFFF);
 
 class MUSIC
@@ -29,20 +29,20 @@ public:
 	DWORD OpenFile(LPCWSTR filepath);
 	DWORD Play(DWORD dwFrom = MUSIC_ERROR, DWORD dwTo = MUSIC_ERROR);
 	DWORD Pause();
-	DWORD Seek(DWORD dwTo); //����λ�ö�λ����λΪms
+	DWORD Seek(DWORD dwTo); //播放位置定位，单位为ms
 	DWORD SetVolume(float value);
 	DWORD Close();
 	DWORD Stop();
 	DWORD GetPosition();
 	DWORD GetLength();
-	// ���º���GetPlayStatus�ķ���ֵΪ����֮һ�����忴��׺����
-	// MUSIC_MODE_NOT_OPEN   //û����ȷ��
-	// MUSIC_MODE_NOT_READY  //�豸û׼���� ������ʹ�ã�
-	// MUSIC_MODE_PAUSE  //��ͣ��
-	// MUSIC_MODE_PLAY   //���ڲ���
-	// MUSIC_MODE_STOP   //�ɹ��򿪺󣬻��߲����������״̬
-	// MUSIC_MODE_OPEN   //���� ������ʹ�ã�
-	// MUSIC_MODE_SEEK   //��λ�� ������ʹ�ã�
+	// 以下函数GetPlayStatus的返回值为以下之一（意义看后缀）：
+	// MUSIC_MODE_NOT_OPEN   //没有正确打开
+	// MUSIC_MODE_NOT_READY  //设备没准备好（较少使用）
+	// MUSIC_MODE_PAUSE  //暂停中
+	// MUSIC_MODE_PLAY   //正在播放
+	// MUSIC_MODE_STOP   //成功打开后，或者播放完是这个状态
+	// MUSIC_MODE_OPEN   //打开中（较少使用）
+	// MUSIC_MODE_SEEK   //定位中（较少使用）
 	DWORD GetPlayStatus();
 private:
 	DWORD       m_DID;

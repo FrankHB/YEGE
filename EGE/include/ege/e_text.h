@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "e_windows.h"
 #include "e_img.h"
@@ -6,46 +6,46 @@
 namespace ege
 {
 
-// ÎÄ×ÖÏà¹Øº¯Êı
-void EGEAPI outtext(LPCSTR  textstring, PIMAGE pimg = NULL);                   // ÔÚµ±Ç°Î»ÖÃÊä³öÎÄ×Ö
-void EGEAPI outtext(LPCWSTR textstring, PIMAGE pimg = NULL);                   // ÔÚµ±Ç°Î»ÖÃÊä³öÎÄ×Ö
-void EGEAPI outtext(CHAR  c, PIMAGE pimg = NULL);                              // ÔÚµ±Ç°Î»ÖÃÊä³ö×Ö·û
-void EGEAPI outtext(WCHAR c, PIMAGE pimg = NULL);                              // ÔÚµ±Ç°Î»ÖÃÊä³ö×Ö·û
-void EGEAPI outtextxy(int x, int y, LPCSTR  textstring, PIMAGE pimg = NULL);   // ÔÚÖ¸¶¨Î»ÖÃÊä³öÎÄ×Ö
-void EGEAPI outtextxy(int x, int y, LPCWSTR textstring, PIMAGE pimg = NULL);   // ÔÚÖ¸¶¨Î»ÖÃÊä³öÎÄ×Ö
-void EGEAPI outtextxy(int x, int y, CHAR c, PIMAGE pimg = NULL);               // ÔÚÖ¸¶¨Î»ÖÃÊä³ö×Ö·û
-void EGEAPI outtextxy(int x, int y, WCHAR c, PIMAGE pimg = NULL);              // ÔÚÖ¸¶¨Î»ÖÃÊä³ö×Ö·û
-void EGEAPI outtextrect(int x, int y, int w, int h, LPCSTR  textstring, PIMAGE pimg = NULL); // ÔÚÖ¸¶¨¾ØĞÎ·¶Î§Êä³öÎÄ×Ö
-void EGEAPI outtextrect(int x, int y, int w, int h, LPCWSTR textstring, PIMAGE pimg = NULL); // ÔÚÖ¸¶¨¾ØĞÎ·¶Î§Êä³öÎÄ×Ö
-void EGEAPI xyprintf(int x, int y, LPCSTR  fmt, ...); // ÔÚÖ¸¶¨Î»ÖÃÊä³ö¸ñÊ½»¯×Ö·û´®£¬Ö¸¶¨»æÍ¼Ä¿±êµ÷ÓÃsettarget
-void EGEAPI xyprintf(int x, int y, LPCWSTR fmt, ...); // ÔÚÖ¸¶¨Î»ÖÃÊä³ö¸ñÊ½»¯×Ö·û´®£¬Ö¸¶¨»æÍ¼Ä¿±êµ÷ÓÃsettarget
-void EGEAPI rectprintf(int x, int y, int w, int h, LPCSTR  fmt, ...); // ÔÚÖ¸¶¨¾ØĞÎÊä³ö¸ñÊ½»¯×Ö·û´®£¬Ö¸¶¨»æÍ¼Ä¿±êµ÷ÓÃsettarget
-void EGEAPI rectprintf(int x, int y, int w, int h, LPCWSTR fmt, ...); // ÔÚÖ¸¶¨¾ØĞÎÊä³ö¸ñÊ½»¯×Ö·û´®£¬Ö¸¶¨»æÍ¼Ä¿±êµ÷ÓÃsettarget
-int  EGEAPI textwidth(LPCSTR  textstring, PIMAGE pimg = NULL);                 // »ñÈ¡×Ö·û´®Õ¼ÓÃµÄÏñËØ¿í
-int  EGEAPI textwidth(LPCWSTR textstring, PIMAGE pimg = NULL);                 // »ñÈ¡×Ö·û´®Õ¼ÓÃµÄÏñËØ¿í
+// æ–‡å­—ç›¸å…³å‡½æ•°
+void EGEAPI outtext(LPCSTR  textstring, PIMAGE pimg = NULL);                   // åœ¨å½“å‰ä½ç½®è¾“å‡ºæ–‡å­—
+void EGEAPI outtext(LPCWSTR textstring, PIMAGE pimg = NULL);                   // åœ¨å½“å‰ä½ç½®è¾“å‡ºæ–‡å­—
+void EGEAPI outtext(CHAR  c, PIMAGE pimg = NULL);                              // åœ¨å½“å‰ä½ç½®è¾“å‡ºå­—ç¬¦
+void EGEAPI outtext(WCHAR c, PIMAGE pimg = NULL);                              // åœ¨å½“å‰ä½ç½®è¾“å‡ºå­—ç¬¦
+void EGEAPI outtextxy(int x, int y, LPCSTR  textstring, PIMAGE pimg = NULL);   // åœ¨æŒ‡å®šä½ç½®è¾“å‡ºæ–‡å­—
+void EGEAPI outtextxy(int x, int y, LPCWSTR textstring, PIMAGE pimg = NULL);   // åœ¨æŒ‡å®šä½ç½®è¾“å‡ºæ–‡å­—
+void EGEAPI outtextxy(int x, int y, CHAR c, PIMAGE pimg = NULL);               // åœ¨æŒ‡å®šä½ç½®è¾“å‡ºå­—ç¬¦
+void EGEAPI outtextxy(int x, int y, WCHAR c, PIMAGE pimg = NULL);              // åœ¨æŒ‡å®šä½ç½®è¾“å‡ºå­—ç¬¦
+void EGEAPI outtextrect(int x, int y, int w, int h, LPCSTR  textstring, PIMAGE pimg = NULL); // åœ¨æŒ‡å®šçŸ©å½¢èŒƒå›´è¾“å‡ºæ–‡å­—
+void EGEAPI outtextrect(int x, int y, int w, int h, LPCWSTR textstring, PIMAGE pimg = NULL); // åœ¨æŒ‡å®šçŸ©å½¢èŒƒå›´è¾“å‡ºæ–‡å­—
+void EGEAPI xyprintf(int x, int y, LPCSTR  fmt, ...); // åœ¨æŒ‡å®šä½ç½®è¾“å‡ºæ ¼å¼åŒ–å­—ç¬¦ä¸²ï¼ŒæŒ‡å®šç»˜å›¾ç›®æ ‡è°ƒç”¨settarget
+void EGEAPI xyprintf(int x, int y, LPCWSTR fmt, ...); // åœ¨æŒ‡å®šä½ç½®è¾“å‡ºæ ¼å¼åŒ–å­—ç¬¦ä¸²ï¼ŒæŒ‡å®šç»˜å›¾ç›®æ ‡è°ƒç”¨settarget
+void EGEAPI rectprintf(int x, int y, int w, int h, LPCSTR  fmt, ...); // åœ¨æŒ‡å®šçŸ©å½¢è¾“å‡ºæ ¼å¼åŒ–å­—ç¬¦ä¸²ï¼ŒæŒ‡å®šç»˜å›¾ç›®æ ‡è°ƒç”¨settarget
+void EGEAPI rectprintf(int x, int y, int w, int h, LPCWSTR fmt, ...); // åœ¨æŒ‡å®šçŸ©å½¢è¾“å‡ºæ ¼å¼åŒ–å­—ç¬¦ä¸²ï¼ŒæŒ‡å®šç»˜å›¾ç›®æ ‡è°ƒç”¨settarget
+int  EGEAPI textwidth(LPCSTR  textstring, PIMAGE pimg = NULL);                 // è·å–å­—ç¬¦ä¸²å ç”¨çš„åƒç´ å®½
+int  EGEAPI textwidth(LPCWSTR textstring, PIMAGE pimg = NULL);                 // è·å–å­—ç¬¦ä¸²å ç”¨çš„åƒç´ å®½
 int  EGEAPI textwidth(CHAR  c, PIMAGE pimg = NULL);
 int  EGEAPI textwidth(WCHAR c, PIMAGE pimg = NULL);
-int  EGEAPI textheight(LPCSTR  textstring, PIMAGE pimg = NULL);                // »ñÈ¡×Ö·û´®Õ¼ÓÃµÄÏñËØ¸ß
-int  EGEAPI textheight(LPCWSTR textstring, PIMAGE pimg = NULL);                // »ñÈ¡×Ö·û´®Õ¼ÓÃµÄÏñËØ¸ß
+int  EGEAPI textheight(LPCSTR  textstring, PIMAGE pimg = NULL);                // è·å–å­—ç¬¦ä¸²å ç”¨çš„åƒç´ é«˜
+int  EGEAPI textheight(LPCWSTR textstring, PIMAGE pimg = NULL);                // è·å–å­—ç¬¦ä¸²å ç”¨çš„åƒç´ é«˜
 int  EGEAPI textheight(CHAR  c, PIMAGE pimg = NULL);
 int  EGEAPI textheight(WCHAR c, PIMAGE pimg = NULL);
 void EGEAPI settextjustify(int horiz, int vert, PIMAGE pimg = NULL);
 
-// ÉèÖÃµ±Ç°×ÖÌåÑùÊ½(Ïê¼û°ïÖú)
-//      nHeight: ×Ö·ûµÄÆ½¾ù¸ß¶È£»
-//      nWidth: ×Ö·ûµÄÆ½¾ù¿í¶È(0 ±íÊ¾×ÔÊÊÓ¦)£»
-//      lpszFace: ×ÖÌåÃû³Æ£»
-//      nEscapement: ×Ö·û´®µÄÊéĞ´½Ç¶È(µ¥Î» 0.1 ¶È)£»
-//      nOrientation: Ã¿¸ö×Ö·ûµÄÊéĞ´½Ç¶È(µ¥Î» 0.1 ¶È)£»
-//      nWeight: ×Ö·ûµÄ±Ê»­´ÖÏ¸(0 ±íÊ¾Ä¬ÈÏ´ÖÏ¸)£»
-//      bItalic: ÊÇ·ñĞ±Ìå£»
-//      bUnderline: ÊÇ·ñÏÂ»®Ïß£»
-//      bStrikeOut: ÊÇ·ñÉ¾³ıÏß£»
-//      fbCharSet: Ö¸¶¨×Ö·û¼¯£»
-//      fbOutPrecision: Ö¸¶¨ÎÄ×ÖµÄÊä³ö¾«¶È£»
-//      fbClipPrecision: Ö¸¶¨ÎÄ×ÖµÄ¼ô¼­¾«¶È£»
-//      fbQuality: Ö¸¶¨ÎÄ×ÖµÄÊä³öÖÊÁ¿£»
-//      fbPitchAndFamily: Ö¸¶¨ÒÔ³£¹æ·½Ê½ÃèÊö×ÖÌåµÄ×ÖÌåÏµÁĞ¡£
+// è®¾ç½®å½“å‰å­—ä½“æ ·å¼(è¯¦è§å¸®åŠ©)
+//      nHeight: å­—ç¬¦çš„å¹³å‡é«˜åº¦ï¼›
+//      nWidth: å­—ç¬¦çš„å¹³å‡å®½åº¦(0 è¡¨ç¤ºè‡ªé€‚åº”)ï¼›
+//      lpszFace: å­—ä½“åç§°ï¼›
+//      nEscapement: å­—ç¬¦ä¸²çš„ä¹¦å†™è§’åº¦(å•ä½ 0.1 åº¦)ï¼›
+//      nOrientation: æ¯ä¸ªå­—ç¬¦çš„ä¹¦å†™è§’åº¦(å•ä½ 0.1 åº¦)ï¼›
+//      nWeight: å­—ç¬¦çš„ç¬”ç”»ç²—ç»†(0 è¡¨ç¤ºé»˜è®¤ç²—ç»†)ï¼›
+//      bItalic: æ˜¯å¦æ–œä½“ï¼›
+//      bUnderline: æ˜¯å¦ä¸‹åˆ’çº¿ï¼›
+//      bStrikeOut: æ˜¯å¦åˆ é™¤çº¿ï¼›
+//      fbCharSet: æŒ‡å®šå­—ç¬¦é›†ï¼›
+//      fbOutPrecision: æŒ‡å®šæ–‡å­—çš„è¾“å‡ºç²¾åº¦ï¼›
+//      fbClipPrecision: æŒ‡å®šæ–‡å­—çš„å‰ªè¾‘ç²¾åº¦ï¼›
+//      fbQuality: æŒ‡å®šæ–‡å­—çš„è¾“å‡ºè´¨é‡ï¼›
+//      fbPitchAndFamily: æŒ‡å®šä»¥å¸¸è§„æ–¹å¼æè¿°å­—ä½“çš„å­—ä½“ç³»åˆ—ã€‚
 void EGEAPI setfont(int nHeight, int nWidth, LPCSTR lpszFace,  PIMAGE pimg = NULL);
 void EGEAPI setfont(int nHeight, int nWidth, LPCWSTR lpszFace, PIMAGE pimg = NULL);
 void EGEAPI setfont(int nHeight, int nWidth, LPCSTR lpszFace,  int nEscapement, int nOrientation,
@@ -58,15 +58,15 @@ void EGEAPI setfont(int nHeight, int nWidth, LPCSTR lpszFace,  int nEscapement, 
 void EGEAPI setfont(int nHeight, int nWidth, LPCWSTR lpszFace, int nEscapement, int nOrientation,
 					int nWeight, int bItalic, int bUnderline, int bStrikeOut, BYTE fbCharSet,
 					BYTE fbOutPrecision, BYTE fbClipPrecision, BYTE fbQuality, BYTE fbPitchAndFamily, PIMAGE pimg = NULL);
-void EGEAPI setfont(const LOGFONTA* font, PIMAGE pimg = NULL); // ÉèÖÃµ±Ç°×ÖÌåÑùÊ½
-void EGEAPI setfont(const LOGFONTW* font, PIMAGE pimg = NULL); // ÉèÖÃµ±Ç°×ÖÌåÑùÊ½
-void EGEAPI getfont(LOGFONTA* font, PIMAGE pimg = NULL);       // »ñÈ¡µ±Ç°×ÖÌåÑùÊ½
-void EGEAPI getfont(LOGFONTW* font, PIMAGE pimg = NULL);       // »ñÈ¡µ±Ç°×ÖÌåÑùÊ½
+void EGEAPI setfont(const LOGFONTA* font, PIMAGE pimg = NULL); // è®¾ç½®å½“å‰å­—ä½“æ ·å¼
+void EGEAPI setfont(const LOGFONTW* font, PIMAGE pimg = NULL); // è®¾ç½®å½“å‰å­—ä½“æ ·å¼
+void EGEAPI getfont(LOGFONTA* font, PIMAGE pimg = NULL);       // è·å–å½“å‰å­—ä½“æ ·å¼
+void EGEAPI getfont(LOGFONTW* font, PIMAGE pimg = NULL);       // è·å–å½“å‰å­—ä½“æ ·å¼
 
-//¸ß¼¶ÊäÈëº¯Êı
-// title ¶Ô»°¿ò±êÌâ£¬ text ¶Ô»°¿òÌáÊ¾ÎÄ×Ö£¬ buf½ÓÊÕÊäÈëÊı¾İµÄ×Ö·û´®Ö¸Õë£¬ lenÖ¸³öbufµÄ×î´ó³¤¶È£¬Ò²Í¬Ê±»áÏŞÖÆÊäÈëÄÚÈİ³¤¶È
-int EGEAPI inputbox_getline(LPCSTR  title, LPCSTR  text, LPSTR  buf, int len);  //µ¯³ö¶Ô»°¿ò£¬ÈÃÓÃ»§ÊäÈë£¬µ±Ç°³ÌĞòÔËĞĞÔİÍ££¬·µ»Ø·Ç0±íÊ¾ÊäÈëÓĞĞ§£¬0ÎªÎŞĞ§
-int EGEAPI inputbox_getline(LPCWSTR title, LPCWSTR text, LPWSTR buf, int len);  //µ¯³ö¶Ô»°¿ò£¬ÈÃÓÃ»§ÊäÈë£¬µ±Ç°³ÌĞòÔËĞĞÔİÍ££¬·µ»Ø·Ç0±íÊ¾ÊäÈëÓĞĞ§£¬0ÎªÎŞĞ§
+//é«˜çº§è¾“å…¥å‡½æ•°
+// title å¯¹è¯æ¡†æ ‡é¢˜ï¼Œtext å¯¹è¯æ¡†æç¤ºæ–‡å­—ï¼Œbufæ¥æ”¶è¾“å…¥æ•°æ®çš„å­—ç¬¦ä¸²æŒ‡é’ˆï¼ŒlenæŒ‡å‡ºbufçš„æœ€å¤§é•¿åº¦ï¼Œä¹ŸåŒæ—¶ä¼šé™åˆ¶è¾“å…¥å†…å®¹é•¿åº¦
+int EGEAPI inputbox_getline(LPCSTR  title, LPCSTR  text, LPSTR  buf, int len);  //å¼¹å‡ºå¯¹è¯æ¡†ï¼Œè®©ç”¨æˆ·è¾“å…¥ï¼Œå½“å‰ç¨‹åºè¿è¡Œæš‚åœï¼Œè¿”å›é0è¡¨ç¤ºè¾“å…¥æœ‰æ•ˆï¼Œ0ä¸ºæ— æ•ˆ
+int EGEAPI inputbox_getline(LPCWSTR title, LPCWSTR text, LPWSTR buf, int len);  //å¼¹å‡ºå¯¹è¯æ¡†ï¼Œè®©ç”¨æˆ·è¾“å…¥ï¼Œå½“å‰ç¨‹åºè¿è¡Œæš‚åœï¼Œè¿”å›é0è¡¨ç¤ºè¾“å…¥æœ‰æ•ˆï¼Œ0ä¸ºæ— æ•ˆ
 
 }
 

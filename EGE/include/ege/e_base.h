@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <cmath>
 #include "e_def.h"
@@ -95,7 +95,7 @@ enum message_mouse
 	MSG_MOUSE_MID       = 0x04,
 };
 
-// ÑÕÉ«
+// é¢œè‰²
 enum COLORS
 {
 	BLACK           = 0,
@@ -116,7 +116,7 @@ enum COLORS
 	WHITE           = EGERGB(0xFC, 0xFC, 0xFC),
 };
 
-// Ìî³äÄ£Ê½
+// å¡«å……æ¨¡å¼
 enum fill_patterns  /* Fill patterns for get/setfillstyle */
 {
 	EMPTY_FILL,     /* fills area in background color */
@@ -419,7 +419,7 @@ struct ege_colpoint
 };
 
 void EGEAPI setrendermode(rendermode_e mode);
-void EGEAPI initgraph(int Width, int Height, int Flag = INIT_DEFAULT);    // ³õÊ¼»¯Í¼ĞÎ»·¾³
+void EGEAPI initgraph(int Width, int Height, int Flag = INIT_DEFAULT);    // åˆå§‹åŒ–å›¾å½¢ç¯å¢ƒ
 
 void EGEAPI window_getviewport(struct viewporttype* viewport);
 void EGEAPI window_getviewport(int* left, int* top, int* right, int* bottom);

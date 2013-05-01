@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 
 namespace ege
 {
 
-float       EGEAPI getfps(); // »ñÈ¡µ±Ç°Ö¡ÂÊ
+float       EGEAPI getfps(); // è·å–å½“å‰å¸§ç‡
 
 }
 

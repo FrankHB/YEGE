@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 
 #include "e_base.h"
 
 namespace ege
 {
 
-// ÑÕÉ«Ä£ĞÍ×ª»»º¯Êı
+// é¢œè‰²æ¨¡å‹è½¬æ¢å‡½æ•°
 color_t     EGEAPI rgb2gray(color_t rgb);
 void        EGEAPI rgb2hsl(color_t rgb, float* H, float* S, float* L);
 void        EGEAPI rgb2hsv(color_t rgb, float* H, float* S, float* V);
