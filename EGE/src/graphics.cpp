@@ -30,8 +30,6 @@ static int g_windowpos_y = CW_USEDEFAULT;
 static int g_initoption  = INIT_DEFAULT, g_initcall = 0;
 static HWND g_attach_hwnd = nullptr;
 
-
-float _GetFPS(int add);
 DWORD WINAPI messageloopthread(LPVOID lpParameter);
 
 
@@ -42,63 +40,52 @@ void
 ui_msg_process(EGEMSG& qmsg)
 {
 	auto pg = &graph_setting;
+	const auto egectrl_root(pg->egectrl_root);
+
 	if((qmsg.flag & 1))
 		return;
 	qmsg.flag |= 1;
 	if(qmsg.message >= WM_KEYFIRST && qmsg.message <= WM_KEYLAST)
 	{
 		if(qmsg.message == WM_KEYDOWN)
-		{
-			pg->egectrl_root->keymsgdown((unsigned)qmsg.wParam, 0); // 以后补加flag
-		}
+			egectrl_root->keymsgdown(unsigned(qmsg.wParam), 0); // 以后补加flag
 		else if(qmsg.message == WM_KEYUP)
-		{
-			pg->egectrl_root->keymsgup((unsigned)qmsg.wParam, 0); // 以后补加flag
-		}
+			egectrl_root->keymsgup(unsigned(qmsg.wParam), 0); // 以后补加flag
 		else if(qmsg.message == WM_CHAR)
-		{
-			pg->egectrl_root->keymsgchar((unsigned)qmsg.wParam, 0); // 以后补加flag
-		}
+			egectrl_root->keymsgchar(unsigned(qmsg.wParam), 0); // 以后补加flag
 	}
 	else if(qmsg.message >= WM_MOUSEFIRST && qmsg.message <= WM_MOUSELAST)
 	{
-		int x = (short int)((UINT)qmsg.lParam & 0xFFFF), y = (short int)((UINT)qmsg.lParam >> 16);
+		int x = (short int)((UINT)qmsg.lParam & 0xFFFF),
+			y = (short int)((UINT)qmsg.lParam >> 16);
 		if(qmsg.message == WM_LBUTTONDOWN)
-		{
-			pg->egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_left);
-		}
+			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_left);
 		else if(qmsg.message == WM_LBUTTONUP)
-		{
-			pg->egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_left);
-		}
+			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_left);
 		else if(qmsg.message == WM_RBUTTONDOWN)
-		{
-			pg->egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_right);
-		}
+			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_right);
 		else if(qmsg.message == WM_RBUTTONUP)
-		{
-			pg->egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_right);
-		}
+			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_right);
 		else if(qmsg.message == WM_MOUSEMOVE)
 		{
 			int flag = 0;
 			if(pg->keystatemap[VK_LBUTTON]) flag |= mouse_flag_left;
 			if(pg->keystatemap[VK_RBUTTON]) flag |= mouse_flag_right;
-			pg->egectrl_root->mouse(x, y, mouse_msg_move | flag);
+			egectrl_root->mouse(x, y, mouse_msg_move | flag);
 		}
 	}
 }
 
 int
-redraw_window(_graph_setting* pg, HDC dc)
+redraw_window(_graph_setting* pg, ::HDC dc)
 {
 	int page = pg->visual_page;
 	HDC hDC = pg->img_page[page]->m_hDC;
-	int left = pg->img_page[page]->m_vpt.left, top = pg->img_page[page]->m_vpt.top;
+	int left = pg->img_page[page]->m_vpt.left,
+		top = pg->img_page[page]->m_vpt.top;
 	//HRGN rgn = pg->img_page[page]->m_rgn;
-
-	BitBlt(dc, 0, 0, pg->base_w, pg->base_h, hDC, pg->base_x - left, pg->base_y - top, SRCCOPY);
-
+	::BitBlt(dc, 0, 0, pg->base_w, pg->base_h, hDC, pg->base_x - left,
+		pg->base_y - top, SRCCOPY);
 	pg->update_mark_count = UPDATE_MAX_CALL;
 	return 0;
 }
@@ -106,57 +93,7 @@ redraw_window(_graph_setting* pg, HDC dc)
 int
 graphupdate(_graph_setting* pg)
 {
-	if(pg->exit_window)
-	{
-		return grNoInitGraph;
-	}
-	{
-		HDC hdc;
-		if(IsWindowVisible(pg->hwnd))
-		{
-			hdc = pg->window_dc;
-
-			if(hdc == nullptr)
-			{
-				return grNullPointer;
-			}
-			redraw_window(pg, hdc);
-		}
-		else
-		{
-			pg->update_mark_count = UPDATE_MAX_CALL;
-		}
-		_GetFPS(0x100);
-		{
-			RECT rect, crect;
-			HWND hwnd;
-			int _dw, _dh;
-			GetClientRect(pg->hwnd, &crect);
-			GetWindowRect(pg->hwnd, &rect);
-			int w = pg->dc_w, h = pg->dc_h;
-			_dw = w - (crect.right - crect.left);
-			_dh = h - (crect.bottom - crect.top);
-			if(_dw != 0 || _dh != 0)
-			{
-				hwnd = ::GetParent(pg->hwnd);
-				if(hwnd)
-				{
-					POINT pt = {0, 0};
-					ClientToScreen(hwnd, &pt);
-					rect.left   -= pt.x;
-					rect.top    -= pt.y;
-					rect.right  -= pt.x;
-					rect.bottom -= pt.y;
-				}
-				SetWindowPos(pg->hwnd, nullptr, 0, 0,
-							 rect.right  + _dw - rect.left,
-							 rect.bottom + _dh - rect.top,
-							 SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-			}
-		}
-
-		return grOk;
-	}
+	return pg->_update();
 }
 
 }
@@ -166,9 +103,7 @@ int
 dealmessage(_graph_setting* pg, bool force_update)
 {
 	if(force_update || pg->update_mark_count <= 0)
-	{
 		graphupdate(pg);
-	}
 	return !pg->exit_window;
 }
 

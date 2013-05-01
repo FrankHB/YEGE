@@ -409,11 +409,38 @@ struct _graph_setting
 	/* 函数用临时缓冲区 */
 	DWORD g_t_buff[1024 * 8];
 
+	bool
+	_is_run() const;
+
+	//获取帧数
+	float
+	_get_FPS(int);
+
+	double
+	_get_highfeq_time_ls();
+
 	void
-	_setactivepage(int);
+	_set_activepage(int);
+
 	void
-	_setvisualpage(int);
+	_set_visualpage(int);
+
+	void
+	_delay_ms(long);
+
+	void
+	_delay_update();
+
+	int
+	_redraw_window(::HDC);
+
+	int
+	_update();
 };
+
+int dealmessage(_graph_setting* pg, bool force_update);
+void guiupdate(_graph_setting* pg, egeControlBase*& root);
+int getflush();
 
 extern _graph_setting& graph_setting;
 

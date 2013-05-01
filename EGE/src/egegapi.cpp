@@ -7,75 +7,22 @@
 namespace ege
 {
 
-int dealmessage(_graph_setting* pg, bool force_update);
-void guiupdate(_graph_setting* pg, egeControlBase*& root);
-float _GetFPS(int add);
-int getflush();
-
-double
-get_highfeq_time_ls(_graph_setting* pg)
-{
-	static LARGE_INTEGER llFeq; /* 此实为常数 */
-	LARGE_INTEGER llNow;
-
-	if(pg->get_highfeq_time_start.QuadPart == 0)
-	{
-		if(1)
-		{
-			SetThreadAffinityMask(::GetCurrentThread(), 0);
-			QueryPerformanceCounter(&pg->get_highfeq_time_start);
-			QueryPerformanceFrequency(&llFeq);
-		}
-		else if(0)
-		{
-			::timeBeginPeriod(1);
-			pg->get_highfeq_time_start.QuadPart = ::timeGetTime();
-			::timeEndPeriod(1);
-			llFeq.QuadPart = 1000;
-		}
-		else if(1)
-		{
-			pg->get_highfeq_time_start.QuadPart = ::GetTickCount();
-			llFeq.QuadPart = 1000;
-		}
-		else if(0)
-		{
-			::GetSystemTimeAsFileTime((LPFILETIME)&pg->get_highfeq_time_start);
-			llFeq.QuadPart = 10000000;
-		}
-		return 0;
-	}
-	else
-	{
-		if(1)
-		{
-			QueryPerformanceCounter(&llNow);
-		}
-		else if(0)
-		{
-			::timeBeginPeriod(1);
-			llNow.QuadPart = ::timeGetTime();
-			::timeEndPeriod(1);
-		}
-		else if(1)
-		{
-			llNow.QuadPart = ::GetTickCount();
-		}
-		else if(0)
-		{
-			::GetSystemTimeAsFileTime((LPFILETIME)&llNow);
-		}
-		llNow.QuadPart -= pg->get_highfeq_time_start.QuadPart;
-		return (double)llNow.QuadPart / llFeq.QuadPart;
-	}
-}
-
 bool
 is_run()
 {
-	auto pg = &graph_setting;
-	if(pg->exit_window || pg->exit_flag) return false;
-	return true;
+	return graph_setting._is_run();
+}
+
+void
+setactivepage(int page)
+{
+	graph_setting._set_activepage(page);
+}
+
+void
+setvisualpage(int page)
+{
+	graph_setting._set_visualpage(page);
 }
 
 void
@@ -109,9 +56,7 @@ ege_sleep(long ms)
 	if(hTimer)
 	{
 		if(::SetWaitableTimer(hTimer, &liDueTime, 0, nullptr, nullptr, FALSE))
-		{
 			::WaitForSingleObject(hTimer, INFINITE); // != WAIT_OBJECT_0;
-		}
 		//::CloseHandle(hTimer);
 	}
 	else
@@ -127,74 +72,7 @@ delay(long ms)
 void
 delay_ms(long ms)
 {
-	auto pg = &graph_setting;
-	egeControlBase*& root = pg->egectrl_root;
-	pg->skip_timer_mark = true;
-	if(ms == 0)
-	{
-		if(pg->update_mark_count < UPDATE_MAX_CALL)
-		{
-			ege_sleep(1);
-			root->draw(nullptr);
-			dealmessage(pg, FORCE_UPDATE);
-			root->update();
-			{
-				int l, t, r, b, c;
-				getviewport(&l, &t, &r, &b, &c);
-				setviewport(l, t, r, b, c);
-			}
-		}
-		pg->delay_ms_dwLast = get_highfeq_time_ls(pg) * 1000.0;
-		pg->skip_timer_mark = false;
-		return;
-	}
-	{
-		double delay_time = ms;
-		double dw = get_highfeq_time_ls(pg) * 1000.0;
-		int f = 100;
-
-		if(ms >= 50)
-		{
-			f = 0;
-		}
-		pg->delay_ms_dwLast = 0;
-		if(pg->delay_ms_dwLast == 0)
-		{
-			pg->delay_ms_dwLast = get_highfeq_time_ls(pg) * 1000.0;
-		}
-		if(pg->delay_ms_dwLast + 200.0 > dw)
-		{
-			dw = pg->delay_ms_dwLast;
-		}
-
-		//ege_sleep(1);
-		root->draw(nullptr);
-		while(dw + delay_time >= get_highfeq_time_ls(pg) * 1000.0)
-		{
-			if(f <= 0 || pg->update_mark_count < UPDATE_MAX_CALL)
-			{
-				dealmessage(pg, FORCE_UPDATE);
-				f = 256;
-			}
-			else
-			{
-				ege_sleep((int)(dw + delay_time - get_highfeq_time_ls(pg) * 1000.0));
-			}
-			f -= 1;
-		}
-		dealmessage(pg, FORCE_UPDATE);
-		dw = get_highfeq_time_ls(pg) * 1000.0;
-		guiupdate(pg, root);
-		if(pg->delay_ms_dwLast + 200.0 <= dw || pg->delay_ms_dwLast > dw)
-		{
-			pg->delay_ms_dwLast = dw;
-		}
-		else
-		{
-			pg->delay_ms_dwLast += delay_time;
-		}
-	}
-	pg->skip_timer_mark = false;
+	graph_setting._delay_ms(ms);
 }
 
 /*
@@ -218,12 +96,12 @@ delay_fps(double fps)
 	pg->skip_timer_mark = true;
 	double delay_time = 1000.0 / fps;
 	double avg_max_time = delay_time * 10.0; // 误差时间在这个数值以内做平衡
-	double dw = get_highfeq_time_ls(pg) * 1000.0;
+	double dw = pg->_get_highfeq_time_ls() * 1000.0;
 	int nloop = 0;
 
 	if(pg->delay_fps_dwLast == 0)
 	{
-		pg->delay_fps_dwLast = get_highfeq_time_ls(pg) * 1000.0;
+		pg->delay_fps_dwLast = pg->_get_highfeq_time_ls() * 1000.0;
 	}
 	if(pg->delay_fps_dwLast + delay_time + avg_max_time > dw)
 	{
@@ -232,18 +110,19 @@ delay_fps(double fps)
 	root->draw(nullptr);
 	for(; nloop >= 0; --nloop)
 	{
-		if((dw + delay_time + (100.0) >= get_highfeq_time_ls(pg) * 1000.0))
+		if((dw + delay_time + (100.0) >= pg->_get_highfeq_time_ls() * 1000.0))
 		{
 			do
 			{
-				ege_sleep((int)(dw + delay_time - get_highfeq_time_ls(pg) * 1000.0));
-			}
-			while(dw + delay_time >= get_highfeq_time_ls(pg) * 1000.0);
+				ege_sleep((int)(dw + delay_time - pg->_get_highfeq_time_ls()
+					* 1000.0));
+			} while(dw + delay_time >= pg->_get_highfeq_time_ls() * 1000.0);
 		}
 		dealmessage(pg, FORCE_UPDATE);
-		dw = get_highfeq_time_ls(pg) * 1000.0;
+		dw = pg->_get_highfeq_time_ls() * 1000.0;
 		guiupdate(pg, root);
-		if(pg->delay_fps_dwLast + delay_time + avg_max_time <= dw || pg->delay_fps_dwLast > dw)
+		if(pg->delay_fps_dwLast + delay_time + avg_max_time <= dw
+			|| pg->delay_fps_dwLast > dw)
 		{
 			pg->delay_fps_dwLast = dw;
 		}
@@ -276,44 +155,35 @@ delay_jfps(double fps)
 	pg->skip_timer_mark = true;
 	double delay_time = 1000.0 / fps;
 	double avg_max_time = delay_time * 10.0;
-	double dw = get_highfeq_time_ls(pg) * 1000.0;
+	double dw = pg->_get_highfeq_time_ls() * 1000.0;
 	int nloop = 0;
 
 	if(pg->delay_fps_dwLast == 0)
-	{
-		pg->delay_fps_dwLast = get_highfeq_time_ls(pg) * 1000.0;
-	}
+		pg->delay_fps_dwLast = pg->_get_highfeq_time_ls() * 1000.0;
 	if(pg->delay_fps_dwLast + delay_time + avg_max_time > dw)
-	{
 		dw = pg->delay_fps_dwLast;
-	}
 	root->draw(nullptr);
 	for(; nloop >= 0; --nloop)
 	{
 		int bSleep = 0;
-		while(dw + delay_time >= get_highfeq_time_ls(pg) * 1000.0)
+
+		while(dw + delay_time >= pg->_get_highfeq_time_ls() * 1000.0)
 		{
-			ege_sleep((int)(dw + delay_time - get_highfeq_time_ls(pg) * 1000.0));
+			ege_sleep((int)(dw + delay_time - pg->_get_highfeq_time_ls()
+				* 1000.0));
 			bSleep = 1;
 		}
 		if(bSleep)
-		{
 			dealmessage(pg, FORCE_UPDATE);
-		}
 		else
-		{
-			_GetFPS(-0x100);
-		}
-		dw = get_highfeq_time_ls(pg) * 1000.0;
+			graph_setting._get_FPS(-0x100);
+		dw = pg->_get_highfeq_time_ls() * 1000.0;
 		guiupdate(pg, root);
-		if(pg->delay_fps_dwLast + delay_time + avg_max_time <= dw || pg->delay_fps_dwLast > dw)
-		{
+		if(pg->delay_fps_dwLast + delay_time + avg_max_time <= dw
+			|| pg->delay_fps_dwLast > dw)
 			pg->delay_fps_dwLast = dw;
-		}
 		else
-		{
 			pg->delay_fps_dwLast += delay_time;
-		}
 	}
 	pg->skip_timer_mark = false;
 }
@@ -329,9 +199,8 @@ int showmouse(int bShow)
 int
 mousepos(int* x, int* y)
 {
-	auto pg = &graph_setting;
-	*x = pg->mouse_last_x;
-	*y = pg->mouse_last_y;
+	*x = graph_setting.mouse_last_x;
+	*y = graph_setting.mouse_last_y;
 	return 0;
 }
 
@@ -2535,33 +2404,29 @@ getHWnd()
 HINSTANCE
 getHInstance()
 {
-	auto pg = &graph_setting;
-	return pg->instance;
+	return graph_setting.instance;
 }
 
 int
 message_addkeyhandler(void* param, LPMSG_KEY_PROC func)
 {
-	auto pg = &graph_setting;
-	pg->callback_key = func;
-	pg->callback_key_param = param;
+	graph_setting.callback_key = func;
+	graph_setting.callback_key_param = param;
 	return grOk;
 }
 
 int
 message_addmousehandler(void* param, LPMSG_MOUSE_PROC func)
 {
-	auto pg = &graph_setting;
-	pg->callback_mouse = func;
-	pg->callback_mouse_param = param;
+	graph_setting.callback_mouse = func;
+	graph_setting.callback_mouse_param = param;
 	return grOk;
 }
 
 int
 SetCloseHandler(LPCALLBACK_PROC func)
 {
-	auto pg = &graph_setting;
-	pg->callback_close = func;
+	graph_setting.callback_close = func;
 	return grOk;
 }
 
@@ -2612,9 +2477,7 @@ inputbox_getline(LPCWSTR title, LPCWSTR text, LPWSTR buf, int len)
 
 	lock_window = pg->lock_window;
 	if(!lock_window)
-	{
 		setrendermode(RENDER_MANUAL);
-	}
 
 	sys_edit edit(true);
 	edit.create(true);
@@ -2636,21 +2499,22 @@ inputbox_getline(LPCWSTR title, LPCWSTR text, LPWSTR buf, int len)
 					exit = true;
 					break;
 				}
-			}
-			while(kbmsg());
-			if(exit) break;
+			} while(kbmsg());
+			if(exit)
+				break;
 		}
-
 		putimage(0, 0, &bg);
 		if(bInit == 0)
 		{
 			bInit = 1;
 			setbkcolor(EGERGB(0x80, 0xA0, 0x80), &window);
-			draw_frame(&window, 0, 0, w - 1, h - 1, EGERGB(0xA0, 0xC0, 0xA0), EGERGB(0x50, 0x70, 0x50));
+			draw_frame(&window, 0, 0, w - 1, h - 1,
+				EGERGB(0xA0, 0xC0, 0xA0), EGERGB(0x50, 0x70, 0x50));
 			setfillcolor(EGERGB(0, 0, 0xA0), &window);
 			for(int dy = 1; dy < 24; dy++)
 			{
-				setcolor(HSLtoRGB(240.0f, 1.0f, 0.5f + float(dy / 24.0 * 0.3)), &window);
+				setcolor(HSLtoRGB(240.0f, 1.0f,
+					0.5f + float(dy / 24.0 * 0.3)), &window);
 				line(1, dy, w - 1, dy, &window);
 			}
 			setcolor(0xFFFFFF, &window);
@@ -2682,49 +2546,9 @@ inputbox_getline(LPCWSTR title, LPCWSTR text, LPWSTR buf, int len)
 }
 
 float
-_GetFPS(int add)  //获取帧数
-{
-	static int      fps = 0;
-	static int      fps_inv = 0;
-	static double   time = 0;
-	static float    flret = 0;
-	static float    fret = 0;
-	static float    fret_inv = 0;
-
-	auto pg = &graph_setting;
-	double cur = get_highfeq_time_ls(pg);
-	if(add == 0x100)
-	{
-		fps += 1;
-	}
-	else if(add == -0x100)
-	{
-		fps += 1;
-		fps_inv += 1;
-	}
-	if(cur - time >= 0.5)
-	{
-		flret = fret;
-		fret = (float)(fps / (cur - time));
-		fret_inv = (float)((fps - fps_inv) / (cur - time));
-		fps = 0;
-		fps_inv = 0;
-		time = cur;
-	}
-	if(add > 0)
-	{
-		return (fret + flret) / 2;
-	}
-	else
-	{
-		return fret_inv;
-	}
-}
-
-float
 getfps()
 {
-	return _GetFPS(0);
+	return graph_setting._get_FPS(0);
 }
 
 double
@@ -2735,81 +2559,47 @@ fclock()
 	{
 		pg->fclock_start = ::GetTickCount();
 	}
-	return (::GetTickCount() - pg->fclock_start) / 1000.0; //get_highfeq_time_ls(pg);
+	return (::GetTickCount() - pg->fclock_start) / 1000.0; //pg->_get_highfeq_time_ls();
 }
 
 int
-ege_compress(void* dest, unsigned long* destLen, const void* source, unsigned long sourceLen)
+ege_compress(void* dest, unsigned long* destLen, const void* source,
+	unsigned long sourceLen)
 {
 	if(sourceLen == 0)
-	{
 		return -1;
-	}
-	{
-		int ret = compress(
-					  (Bytef*)dest + sizeof(unsigned long),
-					  (uLongf*)destLen,
-					  (Bytef*)source,
-					  (uLong)sourceLen
-				  );
-		((unsigned long*)dest)[0] = sourceLen;
-		*destLen += 4;
-		return ret;
-	}
+	int ret = compress((Bytef*)dest + sizeof(unsigned long),
+		(uLongf*)destLen, (Bytef*)source, (uLong)sourceLen);
+	((unsigned long*)dest)[0] = sourceLen;
+	*destLen += 4;
+	return ret;
 }
 
 int
 ege_compress2(void* dest, unsigned long* destLen, const void* source, unsigned long sourceLen, int level)
 {
 	if(sourceLen == 0)
-	{
 		return -1;
-	}
-	{
-		int ret = compress2(
-					  (Bytef*)dest + sizeof(unsigned long),
-					  (uLongf*)destLen,
-					  (Bytef*)source,
-					  (uLong)sourceLen,
-					  level
-				  );
-		*(unsigned long*)dest = sourceLen;
-		*destLen += sizeof(unsigned long);
-		return ret;
-	}
+	int ret = compress2((Bytef*)dest + sizeof(unsigned long),
+		(uLongf*)destLen, (Bytef*)source, (uLong)sourceLen, level);
+	*(unsigned long*)dest = sourceLen;
+	*destLen += sizeof(unsigned long);
+	return ret;
 }
 
 unsigned long
 ege_uncompress_size(const void* source, unsigned long sourceLen)
 {
-	if(sourceLen > sizeof(unsigned long))
-	{
-		return ((unsigned long*)source)[0];
-	}
-	else
-	{
-		return 0;
-	}
+	return sourceLen > sizeof(unsigned long) ? ((unsigned long*)source)[0] : 0;
 }
 
 int
 ege_uncompress(void* dest, unsigned long* destLen, const void* source, unsigned long sourceLen)
 {
 	*(uLongf*)destLen = ege_uncompress_size(source, sourceLen);
-	if(*(uLongf*)destLen > 0)
-	{
-		int ret = uncompress(
-					  (Bytef*)dest,
-					  (uLongf*)destLen,
-					  (Bytef*)source + sizeof(unsigned long),
-					  (uLong)sourceLen - sizeof(unsigned long)
-				  );
-		return ret;
-	}
-	else
-	{
-		return -1;
-	}
+	return *(uLongf*)destLen > 0 ? uncompress((Bytef*)dest, (uLongf*)destLen,
+		(Bytef*)source + sizeof(unsigned long),
+		(uLong)sourceLen - sizeof(unsigned long)) : -1;
 }
 
 } // namespace ege

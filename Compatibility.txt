@@ -16,6 +16,7 @@ Code::Blocks 。
 入口统一为 ::main 。
 编译为 DLL 无需定义宏。
 移除宏 SHOW_CONSOLE 。若需要控制台，在 Code::Blocks 选项内选择，或确保编译命令行无 -mwindows 。
+无 Logo 。
 去除所有标记为 deprecated 的接口。
 去除 Sleep 宏。
 原型 PVOID EGEAPI getProcfunc(); 更改为 EGEAPI ::WNDPROC getProcfunc(); 。

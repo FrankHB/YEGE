@@ -653,10 +653,8 @@ IMAGE::getimage(LPCWSTR pResType, LPCWSTR pResName, int, int)
 		pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 			lWidth, -lHeight, nullptr);
 		pPicture->Release();
-
 		return grOk;
 	}
-
 	return grIOerror;
 }
 int

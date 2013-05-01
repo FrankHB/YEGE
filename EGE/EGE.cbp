@@ -124,9 +124,9 @@
 		<Unit filename="include/graphics.h" />
 		<Unit filename="include/thread_queue.h" />
 		<Unit filename="src/color.cpp" />
-		<Unit filename="src/e_page.cpp" />
 		<Unit filename="src/egecontrolbase.cpp" />
 		<Unit filename="src/egegapi.cpp" />
+		<Unit filename="src/global.cpp" />
 		<Unit filename="src/graphics.cpp" />
 		<Unit filename="src/image.cpp" />
 		<Unit filename="src/libpng/png.h" />
