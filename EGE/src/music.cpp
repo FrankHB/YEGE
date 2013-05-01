@@ -1,37 +1,6 @@
 ﻿#include "ege/head.h"
-#include "mmsystem.h"
-//#include <Digitalv.h>
-struct MCI_DGV_SETAUDIO_PARMSA
-{
-	DWORD_PTR   dwCallback;
-	DWORD   dwItem;
-	DWORD   dwValue;
-	DWORD   dwOver;
-	LPSTR   lpstrAlgorithm;
-	LPSTR   lpstrQuality;
-};
-struct MCI_DGV_SETAUDIO_PARMSW
-{
-	DWORD_PTR   dwCallback;
-	DWORD   dwItem;
-	DWORD   dwValue;
-	DWORD   dwOver;
-	LPWSTR  lpstrAlgorithm;
-	LPWSTR  lpstrQuality;
-};
-#ifdef UNICODE
-typedef MCI_DGV_SETAUDIO_PARMSW MCI_DGV_SETAUDIO_PARMS;
-#else
-typedef MCI_DGV_SETAUDIO_PARMSA MCI_DGV_SETAUDIO_PARMS;
-#endif // UNICODE
-#ifndef MCI_DGV_SETAUDIO_VOLUME
-#define MCI_DGV_SETAUDIO_ITEM               0x00800000L
-#define MCI_DGV_SETAUDIO_VALUE              0x01000000L
-
-#define MCI_DGV_SETAUDIO_VOLUME             0x00004002L
-#define MCI_SETAUDIO                        0x0873
-#endif
-// end of Digitalv.h
+#include <mmsystem.h>
+#include <Digitalv.h>
 
 namespace ege
 {
@@ -52,7 +21,8 @@ MUSIC::~MUSIC()
 
 // mciOpenFileA(LPCSTR _szStr)
 // open a music file. szStr: Path of the file
-DWORD MUSIC::OpenFile(LPCSTR _szStr)
+DWORD
+MUSIC::OpenFile(const char* _szStr)
 {
 	MCIERROR mciERR = ERROR_SUCCESS;
 	auto mci_p = MCI_OPEN_PARMSA();
@@ -87,11 +57,11 @@ DWORD MUSIC::OpenFile(LPCSTR _szStr)
 	return mciERR;
 }
 
-/////////////////////
+
 // mciOpenFile(LPCWSTR _szStr)
 // open a music file. szStr: Path of the file
-/////////////////////
-DWORD MUSIC::OpenFile(LPCWSTR _szStr)
+DWORD
+MUSIC::OpenFile(const wchar_t* _szStr)
 {
 	::MCIERROR mciERR  = ERROR_SUCCESS;
 	auto mci_p = ::MCI_OPEN_PARMSW();
@@ -156,10 +126,10 @@ DWORD MUSIC::Pause()
 	return mciERR;
 }
 
-/////////////////////
+
 // mciStop()
 // stop the music stream.
-/////////////////////
+
 DWORD MUSIC::Stop()
 {
 	ASSERT_TRUE(m_DID);
