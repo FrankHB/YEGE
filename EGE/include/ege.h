@@ -14,7 +14,7 @@
 #include "ege/e_input.h"
 #include "ege/e_music.h"
 #include "ege/e_compress.h"
-#include "ege/e_random.h"
+#include "ege/random.h"
 #include "ege/e_fps.h"
 
 namespace ege
