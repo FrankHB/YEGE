@@ -383,32 +383,13 @@ int main(int argc, char* argv[])
 {
 	// 初始化绘图窗口及颜色
 	setinitmode(0x005, 0, 0);
-	if(argc < 2)
-	{
-		MessageBoxW(NULL, L"本屏幕保护程序无配置", L"JuliaSet", MB_OK);
-		return 0;
-	}
-	else if(stricmp(argv[1], "/p") == 0)
-	{
-		void* hwnd;
-		sscanf(argv[2], "%p", &hwnd);
-		attachHWND(::HWND(hwnd));
-		setinitmode(0x107, 0, 0);
-	}
-	else if(stricmp(argv[1], "/s"))
-	{
-		MessageBoxW(NULL, L"本屏幕保护程序无配置", L"JuliaSet", MB_OK);
-		return 0;
-	}
-
 	//initgraph(320, 240);
 	initgraph(-1, -1);
-
 	randomize();
 	showmouse(0);
 	flushmouse();
-	while(kbhit()) getch();
-
+	while(kbhit())
+		getch();
 	//InitColor();
 	InitLog();
 	g_w = getwidth(NULL);
@@ -419,21 +400,20 @@ int main(int argc, char* argv[])
 	init_st(g_w, g_h);
 	int n_update = 0;
 	double ftime = fclock();
-	{
-		double dc = 64, dca = 128, db = 16;
-		col_r = randomf() * dc + db;
-		col_g = randomf() * dc + db;
-		col_b = randomf() * dc + db;
-		col_ar = randomf() * dca;
-		col_ag = randomf() * dca;
-		col_ab = randomf() * dca;
-		rotate = randomf() * 360;
-		sr = sin(rotate), cr = cos(rotate);
-	}
+	double dc = 64, dca = 128, db = 16;
+	col_r = randomf() * dc + db;
+	col_g = randomf() * dc + db;
+	col_b = randomf() * dc + db;
+	col_ar = randomf() * dca;
+	col_ag = randomf() * dca;
+	col_ab = randomf() * dca;
+	rotate = randomf() * 360;
+	sr = sin(rotate), cr = cos(rotate);
 	setrendermode(RENDER_MANUAL);
 	for(int loop = 1; kbmouhit() == 0; ++loop)
 	{
 		int ret;
+
 		if(loop <= 4)
 		{
 			ret = JDraw(c, z.re - r * d, z.im - r, z.re + r * d, z.im + r, sr, cr);
@@ -441,21 +421,16 @@ int main(int argc, char* argv[])
 			{
 				g_udlist.swap();
 				for(int y = 0; y < g_h; y++)
-				{
 					for(int x = 0; x < g_w; x++)
-					{
 						if(g_st[y * g_w + x].ed == 0)
-						{
 							g_udlist.push(x, y);
-						}
-					}
-				}
 				g_udlist.swap();
 			}
 		}
 		else
 		{
 			static int t = 0;
+
 			ret = JDrawA(c, z.re - r * d, z.im - r, z.re + r * d, z.im + r);
 			if(clock() - t > 30)
 			{
@@ -464,22 +439,20 @@ int main(int argc, char* argv[])
 			}
 		}
 		if(g_updatepoint == 0)
-		{
-			n_update++;
-		}
+			++n_update;
 		else
-		{
 			n_update = 0;
-		}
 		if(0)
 		{
 			char str[500];
+
 			sprintf(str, "%d %d %f %f", g_w, g_h, r, d);
 			outtextxy(0, 0, str);
 		}
 		if(ret == 0 || n_update > 8 || loop > 1000)
 		{
 			loop = 0;
+
 			if(g_mi[0][0] == 0)
 			{
 				delay(1);
@@ -493,17 +466,16 @@ int main(int argc, char* argv[])
 				for(int i = 0; i < 4;)
 				{
 					if(MDraw(-1.9, -1.2, 0.5, 1.2) == 0)
-					{
 						++i;
-					}
 					else
-					{
 						i = 0;
-					}
-					if(kbmouhit()) return 0;
+					if(kbmouhit())
+						return 0;
 				}
 			}
+
 			double dc = 64, dca = 128, db = 16;
+
 			col_r = randomf() * dc + db;
 			col_g = randomf() * dc + db;
 			col_b = randomf() * dc + db;
@@ -527,17 +499,12 @@ int main(int argc, char* argv[])
 			init_st(g_w, g_h);
 			n_update = 0;
 			if(fclock() - ftime < 3)
-			{
 				delay_ms((int)((3 - (fclock() - ftime)) * 1000));
-			}
 			else
-			{
 				delay(1);
-			}
 			ftime = fclock();
 		}
 	}
-
 	closegraph();
 	return 0;
 }
