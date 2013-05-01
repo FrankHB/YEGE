@@ -30,11 +30,8 @@ egeControlBase::egeControlBase()
 
 egeControlBase::egeControlBase(int inherit, egeControlBase* pParent)
 {
-	if(s_egeCtlParent.size() > 0)
-	{
-		if(pParent == nullptr)
-			pParent = *s_egeCtlParent.rbegin();
-	}
+	if(s_egeCtlParent.size() > 0 && !pParent)
+		pParent = *s_egeCtlParent.rbegin();
 	m_inheritlevel = inherit;
 	s_egeCtlParent.push_back(this);
 	init(pParent);
@@ -50,15 +47,9 @@ egeControlBase::~egeControlBase()
 	if(m_parent)
 	{
 		m_parent->delchild(this);
-		egectlmap*& cmap = (egectlmap*&)m_childmap;
-		if(cmap)
-		{
-			egectlmap::iterator it = cmap->begin(); // 以后要附加排序
-			for(; it != cmap->end(); ++it)
-			{
-				m_parent->addchild(*it);
-			}
-		}
+		if(const auto cmap = (egectlmap*)m_childmap)
+			for(auto p_ctl : *cmap)
+				m_parent->addchild(p_ctl);
 	}
 	delimage(m_mainbuf);
 	delimage(m_mainFilter);
@@ -70,19 +61,17 @@ egeControlBase::init(egeControlBase* parent)
 	auto pg = &graph_setting;
 	egeControlBase*& root = pg->egectrl_root;
 	m_parent = nullptr;
-	m_mainbuf   = newimage();
+	m_mainbuf = newimage();
 	m_mainFilter = newimage();
 	if(root == nullptr)
 	{
 		root = this;
 		m_parent = nullptr;
-
-		m_bVisable  = 0;
-		m_bEnable   = 0;
+		m_bVisable = 0;
+		m_bEnable = 0;
 		m_bAutoDraw = 0;
 		m_bDirectDraw = 1;
-
-		m_zOrder    = 0;
+		m_zOrder = 0;
 		m_w = getwidth();
 		m_h = getheight();
 	}
@@ -98,24 +87,21 @@ egeControlBase::init(egeControlBase* parent)
 			root->addchild(this);
 			m_parent = root;
 		}
-
-		m_bVisable  = 1;
-		m_bEnable   = 1;
+		m_bVisable = 1;
+		m_bEnable = 1;
 		m_bAutoDraw = 1;
 		m_bDirectDraw = 0;
-
-		m_zOrder    = m_parent->allocZorder(); // 待处理
+		m_zOrder = m_parent->allocZorder(); // 待处理
 		m_w = m_h = 1;
 	}
 	m_zOrderLayer = 0;
 	m_allocId = 0x10000;
 	m_allocZorder = 1;
-	m_bCapture  = 0;
+	m_bCapture = 0;
 	m_bCapMouse = 0;
 	m_bInputFocus = 0;
 	m_childmap = nullptr;
 	m_childzorder = nullptr;
-
 	m_x = m_y = 0;
 	m_rop = SRCCOPY;
 	m_AlphablendMode = 0;
@@ -124,9 +110,7 @@ egeControlBase::init(egeControlBase* parent)
 int egeControlBase::allocZorder()
 {
 	if(m_allocZorder > 0x800000)
-	{
 		fixzorder();
-	}
 	return m_allocZorder++;
 }
 
@@ -142,26 +126,21 @@ bool ctlcmp(const egeControlBase* pa, const egeControlBase* pb)
 
 void egeControlBase::sortzorder()
 {
-	egectlvec*& cvec = (egectlvec*&)m_childzorder;
-	if(cvec)
-	{
+	if(const auto cvec = (egectlvec*)m_childzorder)
 		std::sort(cvec->begin(), cvec->end(), ctlcmp);
-	}
 }
 
 int egeControlBase::addchild(egeControlBase* pChild)
 {
 	egectlmap*& cmap = (egectlmap*&)m_childmap;
 	egectlvec*& cvec = (egectlvec*&)m_childzorder;
-	if(cmap == nullptr)
+	if(!cmap)
 	{
 		cmap = new egectlmap;
 		cvec = new egectlvec;
 	}
 	if(pChild->m_parent)
-	{
 		pChild->m_parent->delchild(pChild);
-	}
 	++s_maxchildid;
 	cmap->insert(pChild);
 	cvec->push_back(pChild);
@@ -174,20 +153,20 @@ int egeControlBase::addchild(egeControlBase* pChild)
 
 int egeControlBase::delchild(egeControlBase* pChild)
 {
-	egectlmap*& cmap = (egectlmap*&)m_childmap;
-	egectlvec*& cvec = (egectlvec*&)m_childzorder;
-	if(cmap == nullptr)
-	{
+	auto& cmap = (egectlmap*&)m_childmap;
+
+	if(!cmap)
 		return 0;
-	}
-	egectlmap::iterator it = cmap->find(pChild);
+
+	auto& cvec = (egectlvec*&)m_childzorder;
+	auto it = cmap->find(pChild);
+
 	if(it != cmap->end())
 	{
-		egectlvec::iterator itv = cvec->begin();
+		auto itv = cvec->begin();
+
 		for(; itv != cvec->end(); itv++)
-		{
 			if(*itv == *it) break;
-		}
 		onDelChild(*it);
 		cmap->erase(it);
 		pChild->m_parent = nullptr;
@@ -203,16 +182,13 @@ int egeControlBase::delchild(egeControlBase* pChild)
 
 void egeControlBase::fixzorder()
 {
-	egectlmap*& cmap = (egectlmap*&)m_childmap;
-	egectlvec*& cvec = (egectlvec*&)m_childzorder;
-	if(cmap)
+	if(const auto cmap = (egectlmap*)m_childmap)
 	{
+		egectlvec*& cvec = (egectlvec*&)m_childzorder;
 		int z = 1;
-		for(egectlvec::iterator it = cvec->begin() ; it != cvec->end(); it++)
-		{
-			(*it)->m_zOrder = z;
-			z++;
-		}
+
+		for(auto p_ctl : *cvec)
+			p_ctl->m_zOrder = z++;
 		m_allocZorder = z;
 	}
 }
@@ -239,12 +215,11 @@ void egeControlBase::mouse(int x, int y, int flag)
 {
 	auto pg = &graph_setting;
 	int ret = 0;
+
 	x -= m_x, y -= m_y;
-	{
-		PushTarget _target;
-		settarget(buf());
-		ret = onMouse(x, y, flag);
-	}
+	PushTarget _target;
+	settarget(buf());
+	ret = onMouse(x, y, flag);
 	if(ret == 0)
 	{
 		egectlmap*& cmap = (egectlmap*&)m_childmap;
@@ -252,36 +227,42 @@ void egeControlBase::mouse(int x, int y, int flag)
 		if(cmap)
 		{
 			egectlvec vec = *cvec;
-			egectlvec::reverse_iterator it = vec.rbegin();
+			auto it = vec.rbegin();
+
 			for(; it != vec.rend(); ++it)
-			{
 				if((*it)->iscapmouse())
 				{
 					(*it)->mouse(x, y, flag);
 					break;
 				}
-			}
-			if(it == vec.rend()) it = vec.rbegin();
+			if(it == vec.rend())
+				it = vec.rbegin();
 			for(; it != vec.rend(); ++it)
 			{
 				egeControlBase* pc = *it;
 				if(!pc->isvisable() || !pc->isenable()) continue;
 				if(x >= pc->getx() && y >= pc->gety() &&
-						x < pc->getx() + pc->getw() && y < pc->gety() + pc->geth())
+					x < pc->getx() + pc->getw() && y < pc->gety() + pc->geth())
 				{
-					if(pc->m_AlphablendMode == 0 || pc->isdirectdraw() || getpixel(x - pc->getx(), y - pc->gety(), pc->filter()))
+					if(pc->m_AlphablendMode == 0 || pc->isdirectdraw()
+						|| getpixel(x - pc->getx(), y - pc->gety(),
+						pc->filter()))
 					{
 						if((flag & mouse_msg_down))
 						{
 							int ret = pc->onGetFocus();
+
 							if(ret == 0)
 							{
 								pc->capture(true);
 								pc->m_zOrder = allocZorder();
 								sortzorder();
-								if(pg->egectrl_focus && pg->egectrl_focus != pc && pg->egectrl_focus != pc->parent())
+								if(pg->egectrl_focus && pg->egectrl_focus != pc
+									&& pg->egectrl_focus != pc->parent())
 								{
-									for(egeControlBase* pcb = pg->egectrl_focus; pcb != pc && pcb->parent(); pcb = pcb->parent())
+									for(egeControlBase* pcb = pg->egectrl_focus;
+										pcb != pc && pcb->parent();
+										pcb = pcb->parent())
 									{
 										pcb->onLostFocus();
 										pcb->capture(false);
@@ -294,9 +275,7 @@ void egeControlBase::mouse(int x, int y, int flag)
 						break;
 					}
 					else
-					{
 						continue;
-					}
 				}
 			}
 		}
