@@ -1959,8 +1959,6 @@ clearviewport(PIMAGE pimg)
 	CONVERT_IMAGE_END;
 }
 
-#ifdef EGE_GDIPLUS
-
 void
 ege_line(float x1, float y1, float x2, float y2, PIMAGE pimg)
 {
@@ -2377,8 +2375,7 @@ ege_puttexture(PIMAGE srcimg, ege_rect dest, ege_rect src, PIMAGE pimg)
 			ia.SetColorMatrix(&mx);
 			// */
 			//graphics.SetTransform();
-			graphics.DrawImage(
-				(Gdiplus::Image*)srcimg->m_texture,
+			graphics.DrawImage((Gdiplus::Image*)srcimg->m_texture,
 				Gdiplus::RectF(dest.x, dest.y, dest.w, dest.h),
 				src.x,
 				src.y,
@@ -2392,13 +2389,10 @@ ege_puttexture(PIMAGE srcimg, ege_rect dest, ege_rect src, PIMAGE pimg)
 	CONVERT_IMAGE_END;
 }
 
-#endif //EGEGDIPLUS
-
 HWND
 getHWnd()
 {
-	auto pg = &graph_setting;
-	return pg->hwnd;
+	return graph_setting.hwnd;
 }
 
 HINSTANCE

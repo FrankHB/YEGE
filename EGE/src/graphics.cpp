@@ -1095,13 +1095,11 @@ init_img_page(_graph_setting* pg)
 		graph_init(pg);
 		::ShowWindow(pg->hwnd, SW_SHOW);
 	}
-#ifdef EGE_GDIPLUS
 	else
 	{
 		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 		Gdiplus::GdiplusStartup(&pg->g_gdiplusToken, &gdiplusStartupInput, nullptr);
 	}
-#endif
 	g_has_init = true;
 }
 

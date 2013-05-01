@@ -9,14 +9,14 @@ Code::Blocks 。
 
 依赖项更改：
 依赖 YBase 的 ydef.h 。
-移除 GDI+ 源代码，需要显式依赖 GDI+（默认 MinGW 已提供）。
+移除 GDI+ 源代码，需要显式依赖 GDI+（默认 MinGW 已提供）；移除 EGE_GDIPLUS 宏。
 移除 zlib 和 libpng 源代码，需要显式依赖 zlib1.dll 和 libpng16.dll 。
 
 非兼容接口：
 入口统一为 ::main 。
 编译为 DLL 无需定义宏。
-移除宏 SHOW_CONSOLE 。若需要控制台，在 Code::Blocks 选项内选择，或确保编译命令行无 -mwindows 。
-无 Logo 。
+移除 SHOW_CONSOLE 宏。若需要控制台，在 Code::Blocks 选项内选择，或确保编译命令行无 -mwindows 。
+无 Logo 显示。
 去除所有标记为 deprecated 的接口。
 去除 Sleep 宏。
 原型 PVOID EGEAPI getProcfunc(); 更改为 EGEAPI ::WNDPROC getProcfunc(); 。

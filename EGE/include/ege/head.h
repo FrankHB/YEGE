@@ -25,12 +25,8 @@
 #endif
 #endif
 
-#define EGE_GDIPLUS // 使用gdi+函数扩展
-
-#ifdef EGE_GDIPLUS
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
 #include <gdiplus.h>
-#endif
 
 #define QUEUE_LEN           1024
 #define BITMAP_PAGE_SIZE    4
@@ -95,14 +91,8 @@ typedef _W64 unsigned long ULONG_PTR, *PULONG_PTR;
 #endif
 
 typedef ULONG_PTR DWORD_PTR, *PDWORD_PTR;
-
 typedef unsigned int uint32;
-
-#if !defined(_MSC_VER) || _MSC_VER > 1200
 typedef intptr_t POINTER_SIZE;
-#else
-typedef long POINTER_SIZE;
-#endif
 
 #ifndef _MSC_VER
 #define GRADIENT_FILL_RECT_H    0x00000000
@@ -394,9 +384,7 @@ struct _graph_setting
 	egeControlBase* egectrl_focus;
 
 	/* 私用全局变量 */
-#ifdef EGE_GDIPLUS
 	ULONG_PTR g_gdiplusToken;
-#endif
 	LARGE_INTEGER get_highfeq_time_start;
 	DWORD         fclock_start;
 	//double delay_dwLast;
