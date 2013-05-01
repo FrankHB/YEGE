@@ -62,7 +62,7 @@ void
 _graph_setting::_set_activepage(int page)
 {
 	active_page = page;
-	if(img_page[page] == nullptr)
+	if(!img_page[page])
 	{
 		img_page[page] = new IMAGE;
 		img_page[page]->createimage(dc_w, dc_h);
