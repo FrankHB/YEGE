@@ -145,6 +145,42 @@ _graph_setting::_delay_update()
 	skip_timer_mark = false;
 }
 
+void
+_graph_setting::_on_paint(::HWND hwnd)
+{
+	if(!lock_window)
+	{
+		::PAINTSTRUCT ps;
+
+		_on_repaint(hwnd, ::BeginPaint(hwnd, &ps));
+	}
+	else
+	{
+		::ValidateRect(hwnd, nullptr);
+		--update_mark_count;
+	}
+}
+
+void
+_graph_setting::_on_repaint(::HWND hwnd, ::HDC dc)
+{
+	bool release = false;
+
+	img_timer_update->copyimage(img_page[visual_page]);
+	if(!dc)
+	{
+		dc = ::GetDC(hwnd);
+		release = true;
+	}
+
+	int left = img_timer_update->m_vpt.left, top = img_timer_update->m_vpt.top;
+
+	::BitBlt(dc, 0, 0, base_w, base_h, img_timer_update->m_hDC,
+		base_x - left, base_y - top, SRCCOPY);
+	if(release)
+		::ReleaseDC(hwnd, dc);
+}
+
 int
 _graph_setting::_redraw_window(::HDC dc)
 {

@@ -534,25 +534,18 @@ setmode(int gdriver, int gmode)
 
 	if(gdriver == TRUECOLORSIZE)
 	{
-		RECT rect;
+		::RECT rect;
+
 		if(g_attach_hwnd)
-		{
-			GetClientRect(g_attach_hwnd, &rect);
-		}
+			::GetClientRect(g_attach_hwnd, &rect);
 		else
-		{
-			GetWindowRect(GetDesktopWindow(), &rect);
-		}
-		pg->dc_w = (short)(gmode & 0xFFFF);
-		pg->dc_h = (short)((unsigned int)gmode >> 16);
+			::GetWindowRect(GetDesktopWindow(), &rect);
+		pg->dc_w = short(gmode & 0xFFFF);
+		pg->dc_h = short((unsigned int)gmode >> 16);
 		if(pg->dc_w < 0)
-		{
 			pg->dc_w = rect.right;
-		}
 		if(pg->dc_h < 0)
-		{
 			pg->dc_h = rect.bottom;
-		}
 	}
 	else
 	{
@@ -569,7 +562,8 @@ init_instance(HINSTANCE hInstance, int nCmdShow)
 	//WCHAR Title[256] = {0};
 	//WCHAR Title2[256] = {0};
 
-	//WideCharToMultiByte(CP_UTF8, 0, pg->window_caption, lstrlenW(pg->window_caption), (LPSTR)Title, 256, 0, 0);
+	//WideCharToMultiByte(CP_UTF8, 0, pg->window_caption,
+	//	lstrlenW(pg->window_caption), (LPSTR)Title, 256, 0, 0);
 	//MultiByteToWideChar(CP_UTF8, 0, (LPSTR)Title, -1, Title2, 256);
 	dw = GetSystemMetrics(SM_CXFRAME) * 2;
 	dh = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) * 2;
@@ -580,41 +574,24 @@ init_instance(HINSTANCE hInstance, int nCmdShow)
 		SetWindowLongPtrW(g_attach_hwnd, GWL_STYLE, style);
 	}
 
-	pg->hwnd = CreateWindowEx(
-				   g_windowexstyle,
-				   pg->window_class_name,
-				   pg->window_caption,
-				   g_windowstyle & ~WS_VISIBLE,
-				   g_windowpos_x,
-				   g_windowpos_y,
-				   pg->dc_w + dw,
-				   pg->dc_h + dh,
-				   g_attach_hwnd,
-				   nullptr,
-				   hInstance,
-				   nullptr
-			   );
-
+	pg->hwnd = ::CreateWindowEx(g_windowexstyle, pg->window_class_name,
+		pg->window_caption, g_windowstyle & ~WS_VISIBLE, g_windowpos_x,
+		g_windowpos_y, pg->dc_w + dw, pg->dc_h + dh, g_attach_hwnd, nullptr,
+		hInstance, nullptr);
 	if(!pg->hwnd)
-	{
 		return FALSE;
-	}
-
 	if(g_attach_hwnd)
 	{
 		//SetParent(pg->hwnd, g_attach_hwnd);
 		wchar_t name[64];
-		swprintf(name, L"ege_%X", (DWORD)(DWORD_PTR)g_attach_hwnd);
+
+		std::swprintf(name, L"ege_%X", (DWORD)(DWORD_PTR)g_attach_hwnd);
 		if(CreateEventW(nullptr, FALSE, TRUE, name))
-		{
 			if(GetLastError() == ERROR_ALREADY_EXISTS)
-			{
-				PostMessage(pg->hwnd, WM_CLOSE, 0, 0);
-			}
-		}
+				::PostMessage(pg->hwnd, WM_CLOSE, 0, 0);
 	}
-	//SetWindowTextA(pg->hwnd, (LPCSTR)Title);
-	SetWindowLongPtrW(pg->hwnd, GWLP_USERDATA, (LONG_PTR)pg);
+	//::SetWindowTextA(pg->hwnd, (LPCSTR)Title);
+	::SetWindowLongPtrW(pg->hwnd, GWLP_USERDATA, (LONG_PTR)pg);
 
 	/* {
 		LOGFONTW lf = {0};
@@ -637,13 +614,11 @@ init_instance(HINSTANCE hInstance, int nCmdShow)
 		//DeleteObject(hfont);
 	} //*/
 
-
 	pg->exit_window = 0;
-	ShowWindow(pg->hwnd, nCmdShow);
+	::ShowWindow(pg->hwnd, nCmdShow);
 	if(g_windowexstyle & WS_EX_TOPMOST)
-	{
-		SetWindowPos(pg->hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
-	}
+		::SetWindowPos(pg->hwnd, HWND_TOPMOST, 0, 0, 0, 0,
+			SWP_NOSIZE | SWP_NOMOVE);
 	return TRUE;
 }
 
@@ -663,9 +638,7 @@ EnumResNameProc( HMODULE hModule, LPCSTR, LPSTR lpszName, LONG_PTR lParam
 	}
 	return TRUE;
 }
-
 #else
-
 BOOL
 CALLBACK
 EnumResNameProc(
@@ -675,7 +648,8 @@ EnumResNameProc(
 	LONG_PTR lParam
 )
 {
-	HICON hico = (HICON)LoadImageW(hModule, lpszName, IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
+	HICON hico = (HICON)LoadImageW(hModule, lpszName, IMAGE_ICON,
+		0, 0, LR_DEFAULTSIZE);
 	if(hico)
 	{
 		*((HICON*)lParam) = hico;
@@ -686,7 +660,6 @@ EnumResNameProc(
 #endif
 
 }
-
 
 void
 DefCloseHandler()
@@ -699,24 +672,6 @@ namespace
 {
 
 void
-on_repaint(_graph_setting* pg, HWND hwnd, HDC dc)
-{
-	int page = pg->visual_page;
-	bool release = false;
-	pg->img_timer_update->copyimage(pg->img_page[page]);
-	if(dc == nullptr)
-	{
-		dc = GetDC(hwnd);
-		release = true;
-	}
-	int left = pg->img_timer_update->m_vpt.left, top = pg->img_timer_update->m_vpt.top;
-
-	BitBlt(dc, 0, 0, pg->base_w, pg->base_h, pg->img_timer_update->m_hDC, pg->base_x - left, pg->base_y - top, SRCCOPY);
-	if(release)
-		ReleaseDC(hwnd, dc);
-}
-
-void
 on_timer(_graph_setting* pg, HWND hwnd, unsigned id)
 {
 	if(!pg->skip_timer_mark && id == RENDER_TIMER_ID)
@@ -724,30 +679,13 @@ on_timer(_graph_setting* pg, HWND hwnd, unsigned id)
 		if(pg->update_mark_count <= 0)
 		{
 			pg->update_mark_count = UPDATE_MAX_CALL;
-			on_repaint(pg, hwnd, nullptr);
+			pg->_on_repaint(hwnd, nullptr);
 		}
 		if(pg->timer_stop_mark)
 		{
 			pg->timer_stop_mark = false;
 			pg->skip_timer_mark = true;
 		}
-	}
-}
-
-void
-on_paint(_graph_setting* pg, HWND hwnd)
-{
-	if(! pg->lock_window)
-	{
-		PAINTSTRUCT ps;
-		HDC hdc;
-		hdc = BeginPaint(hwnd, &ps);
-		on_repaint(pg, hwnd, hdc);
-	}
-	else
-	{
-		ValidateRect(hwnd, nullptr);
-		pg->update_mark_count --;
 	}
 }
 
@@ -880,7 +818,7 @@ wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_PAINT:
 		if(pg == pg_w)
-			on_paint(pg, hWnd);
+			pg->_on_paint(hWnd);
 		break;
 	case WM_CLOSE:
 		if(pg == pg_w)

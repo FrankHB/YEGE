@@ -419,6 +419,12 @@ struct _graph_setting
 	void
 	_delay_update();
 
+	void
+	_on_paint(::HWND);
+
+	void
+	_on_repaint(::HWND, ::HDC);
+
 	int
 	_redraw_window(::HDC);
 
