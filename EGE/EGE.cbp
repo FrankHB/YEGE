@@ -109,7 +109,6 @@
 		<Unit filename="include/ege/e_music.h" />
 		<Unit filename="include/ege/e_proc.h" />
 		<Unit filename="include/ege/e_pushtarget.h" />
-		<Unit filename="include/ege/e_random.h" />
 		<Unit filename="include/ege/e_text.h" />
 		<Unit filename="include/ege/e_time.h" />
 		<Unit filename="include/ege/e_v3d.h" />
@@ -117,6 +116,7 @@
 		<Unit filename="include/ege/fps.h" />
 		<Unit filename="include/ege/head.h" />
 		<Unit filename="include/ege/label.h" />
+		<Unit filename="include/ege/random.h" />
 		<Unit filename="include/ege/sbt.h" />
 		<Unit filename="include/ege/sys_edit.h" />
 		<Unit filename="include/graphics.h" />
@@ -134,7 +134,6 @@
 		<Unit filename="src/libpng/pnglibconf.h" />
 		<Unit filename="src/libpng/pngpriv.h" />
 		<Unit filename="src/libpng/pngstruct.h" />
-		<Unit filename="src/logo.cpp" />
 		<Unit filename="src/math.cpp" />
 		<Unit filename="src/music.cpp" />
 		<Unit filename="src/random.cpp" />

@@ -97,6 +97,9 @@
 			<Add option="-Wall" />
 			<Add directory="../EGE/include" />
 		</Compiler>
+		<Linker>
+			<Add library="gdi32" />
+		</Linker>
 		<Unit filename="maintest.cpp" />
 		<Extensions>
 			<code_completion />
