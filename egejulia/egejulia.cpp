@@ -148,7 +148,7 @@ struct updatelist
 	}
 }* g_pudlist = new updatelist;
 updatelist& g_udlist = *g_pudlist;
-state* g_st = NULL;
+state* g_st = nullptr;
 
 
 void addpoint(int x, int y, int = -1)
@@ -379,7 +379,7 @@ void init_st(int x, int y)
 
 // 主函数
 
-int main(int argc, char* argv[])
+int main()
 {
 	// 初始化绘图窗口及颜色
 	setinitmode(0x005, 0, 0);
@@ -392,8 +392,8 @@ int main(int argc, char* argv[])
 		getch();
 	//InitColor();
 	InitLog();
-	g_w = getwidth(NULL);
-	g_h = getheight(NULL);
+	g_w = getwidth(nullptr);
+	g_h = getheight(nullptr);
 	g_st = (state*)malloc(g_w * g_h * sizeof(state));
 	COMPLEX c = {0.262, 0.002}, z = {0, 0};
 	double r = 1.5, d = g_w / (double)g_h, rotate = 0, sr = sin(rotate), cr = cos(rotate);

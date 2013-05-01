@@ -169,7 +169,7 @@ typedef struct PIXEL
 	int calc;
 	PIXEL()
 	{
-		last2 = last = c = NULL;
+		last2 = last = c = nullptr;
 	}
 } PIXEL;
 
@@ -196,7 +196,7 @@ COMPLEX* new_cp()
 		g_cp_pool_index ++;
 		if(g_cp_pool_index >= CPPOOLSIZE) g_cp_pool_index -= CPPOOLSIZE;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void delete_cp(COMPLEX** p)
@@ -205,7 +205,7 @@ void delete_cp(COMPLEX** p)
 	{
 		int index = (COMPLEXPOOL*)*p - g_cpnum_pool;
 		g_cpnum_pool[index].use = 0;
-		*p = NULL;
+		*p = nullptr;
 		if(g_cpnum_pool[g_cp_pool_index].use)
 		{
 			g_cp_pool_index = index;

@@ -1094,7 +1094,7 @@ public:
 		for(len = 255 ; len >= 0; delay_fps(60))
 		{
 			cleardevice();
-			putimage_alphablend(NULL, &img, 0, 0, len);
+			putimage_alphablend(nullptr, &img, 0, 0, len);
 			len -= 3;
 		}
 		return new SceneMenu;
@@ -1109,7 +1109,7 @@ int main()
 	SceneBase* scene = new SceneIntroduce; //SceneIntroduce; SceneMenu
 	setbkmode(TRANSPARENT);
 //    BeginBatchDraw();
-	for(SceneBase* newscene = scene; newscene != NULL; delay_fps(60))
+	for(SceneBase* newscene = scene; newscene != nullptr; delay_fps(60))
 	{
 		newscene = scene->Update();
 		if(newscene != scene)

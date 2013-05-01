@@ -1,0 +1,28 @@
+﻿YEGE 以 EGE 13.03 为基础修改。
+
+增加 IDE 支持：
+Code::Blocks 。
+
+限制实现需求：
+限 MinGW G++ 4.8.0 或以上，需要 -std=c++11 支持。
+（其它版本未测试，但至少需要 -std=c++0x 的 auto 和 nullptr 等支持，且若在 Code::Blocks 项目使用，需要去除 debug 的 -Og 选项。）
+
+依赖项更改：
+移除 GDI+ 源代码，需要显式依赖 GDI+（默认 MinGW 已提供）。
+移除 zlib 和 libpng 源代码，需要显式依赖 zlib1.dll 和 libpng16.dll 。
+
+非兼容接口：
+入口统一为 ::main 。
+编译为 DLL 无需定义宏。
+移除宏 SHOW_CONSOLE 。若需要控制台，在 Code::Blocks 选项内选择，或确保编译命令行无 -mwindows 。
+去除所有标记为 deprecated 的接口。
+去除 Sleep 宏。
+原型 PVOID EGEAPI getProcfunc(); 更改为 EGEAPI ::WNDPROC getProcfunc(); 。
+
+实现方式：
+随机数改用 C++11 标准库实现。
+
+实现质量(QoI) ：
+EGE 库中加入 -Wall -Wextra -Wmissing-include-dirs -Wzero-as-null-pointer-constant -pedantic-errors 保证无错误和警告。
+其它项目中加入 -Wall -Wextra -pedantic 保证无警告。
+

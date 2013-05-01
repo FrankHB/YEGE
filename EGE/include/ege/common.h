@@ -61,7 +61,7 @@ public:
 	{
 		m_capacity = 0;
 		m_size = 0;
-		m_arr = NULL;
+		m_arr = nullptr;
 	}
 	Array(const Array& arr)
 	{
@@ -78,13 +78,13 @@ public:
 		if(m_arr)
 		{
 			delete m_arr;
-			m_arr = NULL;
+			m_arr = nullptr;
 		}
 	}
 	void
 	resize(size_t sz, T c = T())
 	{
-		if(m_arr == NULL)
+		if(m_arr == nullptr)
 		{
 			m_arr = new T[sz];
 			for(size_t i = 0; i < sz; ++i)
@@ -151,7 +151,7 @@ public:
 	Array&
 	push_back(const T& obj)
 	{
-		if(m_arr == NULL)
+		if(m_arr == nullptr)
 		{
 			resize(8);
 		}
@@ -185,7 +185,7 @@ public:
 	insert(iterator position, const T& val)
 	{
 		size_t pos = position - m_arr;
-		if(m_arr == NULL)
+		if(m_arr == nullptr)
 		{
 			resize(8);
 		}

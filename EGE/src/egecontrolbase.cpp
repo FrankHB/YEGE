@@ -31,14 +31,14 @@ egeControlBase::InitObject::~InitObject()
 }
 egeControlBase::egeControlBase()
 {
-	init(NULL);
+	init(nullptr);
 }
 
 egeControlBase::egeControlBase(int inherit, egeControlBase* pParent)
 {
 	if(s_egeCtlParent.size() > 0)
 	{
-		if(pParent == 0)
+		if(pParent == nullptr)
 		{
 			pParent = *s_egeCtlParent.rbegin();
 		}
@@ -77,15 +77,15 @@ egeControlBase::~egeControlBase()
 void
 egeControlBase::init(egeControlBase* parent)
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	egeControlBase*& root = pg->egectrl_root;
-	m_parent = NULL;
+	m_parent = nullptr;
 	m_mainbuf   = newimage();
 	m_mainFilter = newimage();
-	if(root == NULL)
+	if(root == nullptr)
 	{
 		root = this;
-		m_parent = NULL;
+		m_parent = nullptr;
 
 		m_bVisable  = 0;
 		m_bEnable   = 0;
@@ -123,8 +123,8 @@ egeControlBase::init(egeControlBase* parent)
 	m_bCapture  = 0;
 	m_bCapMouse = 0;
 	m_bInputFocus = 0;
-	m_childmap = NULL;
-	m_childzorder = NULL;
+	m_childmap = nullptr;
+	m_childzorder = nullptr;
 
 	m_x = m_y = 0;
 	m_rop = SRCCOPY;
@@ -163,7 +163,7 @@ int egeControlBase::addchild(egeControlBase* pChild)
 {
 	egectlmap*& cmap = (egectlmap*&)m_childmap;
 	egectlvec*& cvec = (egectlvec*&)m_childzorder;
-	if(cmap == NULL)
+	if(cmap == nullptr)
 	{
 		cmap = new egectlmap;
 		cvec = new egectlvec;
@@ -186,7 +186,7 @@ int egeControlBase::delchild(egeControlBase* pChild)
 {
 	egectlmap*& cmap = (egectlmap*&)m_childmap;
 	egectlvec*& cvec = (egectlvec*&)m_childzorder;
-	if(cmap == NULL)
+	if(cmap == nullptr)
 	{
 		return 0;
 	}
@@ -200,7 +200,7 @@ int egeControlBase::delchild(egeControlBase* pChild)
 		}
 		onDelChild(*it);
 		cmap->erase(it);
-		pChild->m_parent = NULL;
+		pChild->m_parent = nullptr;
 		if(itv != cvec->end())
 		{
 			cvec->erase(itv);
@@ -247,7 +247,7 @@ void egeControlBase::zorderset(int z)
 
 void egeControlBase::mouse(int x, int y, int flag)
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	int ret = 0;
 	x -= m_x, y -= m_y;
 	{
@@ -391,7 +391,7 @@ void egeControlBase::keymsgchar(unsigned key, int flag)
 void egeControlBase::update()
 {
 	egectlmap*& cmap = (egectlmap*&)m_childmap;
-	if(m_parent == NULL)
+	if(m_parent == nullptr)
 	{
 		m_w = getwidth();
 		m_h = getheight();
@@ -411,7 +411,7 @@ void egeControlBase::update()
 void egeControlBase::draw(PIMAGE pimg)
 {
 	PIMAGE pmain = m_mainbuf;
-	if(m_parent == NULL || m_bDirectDraw)
+	if(m_parent == nullptr || m_bDirectDraw)
 		pmain = pimg;
 	{
 		PushTarget _target;

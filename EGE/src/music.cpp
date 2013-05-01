@@ -9,7 +9,7 @@ namespace ege
 MUSIC::MUSIC()
 {
 	m_DID = MUSIC_ERROR;
-	m_dwCallBack = 0;
+	m_dwCallBack = nullptr;
 }
 
 // Class MUSIC Destruction
@@ -28,7 +28,7 @@ MUSIC::OpenFile(const char* _szStr)
 	auto mci_p = MCI_OPEN_PARMSA();
 
 	mci_p.lpstrElementName = _szStr;
-	mci_p.lpstrDeviceType = NULL;
+	mci_p.lpstrDeviceType = nullptr;
 	mci_p.dwCallback = (DWORD_PTR)m_dwCallBack;
 
 	if(m_DID != MUSIC_ERROR)
@@ -67,7 +67,7 @@ MUSIC::OpenFile(const wchar_t* _szStr)
 	auto mci_p = ::MCI_OPEN_PARMSW();
 
 	mci_p.lpstrElementName = _szStr;
-	mci_p.lpstrDeviceType = NULL;
+	mci_p.lpstrDeviceType = nullptr;
 	mci_p.dwCallback = (DWORD_PTR)m_dwCallBack;
 
 	if(m_DID != MUSIC_ERROR)
@@ -109,7 +109,7 @@ MUSIC::Play(DWORD dwFrom, DWORD dwTo)
 	if(dwTo != MUSIC_ERROR)
 		dwFlag |= MCI_TO;
 	mciERR = mciSendCommandW(m_DID, MCI_PLAY, dwFlag, (DWORD_PTR)&mci_p);
-	Sleep(1);
+	::Sleep(1);
 	return mciERR;
 }
 

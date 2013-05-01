@@ -2,8 +2,6 @@
 #ifndef Inc_ege_sbt_h_
 #define Inc_ege_sbt_h_
 
-#define NULL_PTR 0
-
 namespace ege
 {
 
@@ -20,19 +18,19 @@ protected:
 		SBT_Node*   p;
 		sbt_int_t   size;
 		VAL         val;
-		SBT_Node(): l(NULL_PTR), r(NULL_PTR), p(NULL_PTR), size(1)
+		SBT_Node(): l(nullptr), r(nullptr), p(nullptr), size(1)
 		{
 		}
 	};
 	typedef SBT_Node  NodeType;
 public:
 	typedef SBT_Node* TreeType;
-	SBT() : _root(NULL_PTR)
+	SBT() : _root(nullptr)
 	{
 	}
-	SBT(const SBT& sbt) : _root(NULL_PTR)
+	SBT(const SBT& sbt) : _root(nullptr)
 	{
-		_copy(NULL_PTR, _root, sbt.root());
+		_copy(nullptr, _root, sbt.root());
 	}
 	~SBT()
 	{
@@ -62,19 +60,19 @@ public:
 	SBT&
 	operator = (const SBT& sbt)
 	{
-		_copy(NULL_PTR, root(), sbt.root());
+		_copy(nullptr, root(), sbt.root());
 	}
 
 protected:
 	TreeType
 	_clear(TreeType t)
 	{
-		if(t == NULL_PTR)
-			return NULL_PTR;
+		if(t == nullptr)
+			return nullptr;
 		_clear(left(t));
 		_clear(right(t));
 		delete t;
-		return NULL_PTR;
+		return nullptr;
 	}
 	void
 	_copy(TreeType p, TreeType t1, const TreeType t2)
@@ -211,8 +209,8 @@ protected:
 	TreeType
 	_maintain(TreeType t, bool flag)
 	{
-		if(t == NULL_PTR)
-			return NULL_PTR;
+		if(t == nullptr)
+			return nullptr;
 		if(!flag)
 		{
 			if(left(t) && left(left(t))
@@ -254,8 +252,8 @@ protected:
 	TreeType
 	_search(const TreeType t, const VAL& val_) const
 	{
-		if(t == NULL_PTR)
-			return NULL_PTR;
+		if(t == nullptr)
+			return nullptr;
 		if(val_ == val(t))
 			return t;
 		if(val_ < val(t))
@@ -266,7 +264,7 @@ protected:
 	sbt_int_t
 	_lower_bound(const TreeType t, const VAL& val_) const
 	{
-		if(t == NULL_PTR)
+		if(t == nullptr)
 			return 0;
 		// val_ <= val(t)
 		if(!(val(t) < val_))
@@ -282,7 +280,7 @@ protected:
 	sbt_int_t
 	_upper_bound(const TreeType t, const VAL& val_) const
 	{
-		if(t == NULL_PTR)
+		if(t == nullptr)
 			return 0;
 		// val < val(t)
 		if(val_ < val(t))
@@ -298,8 +296,8 @@ protected:
 	TreeType
 	_pred(const TreeType t, const VAL& val_) const
 	{
-		if(t == NULL_PTR)
-			return NULL_PTR;
+		if(t == nullptr)
+			return nullptr;
 		// val <= val(t)
 		if(!(val(t) < val_))
 			return _pred(left(t), val_);
@@ -312,8 +310,8 @@ protected:
 	TreeType
 	_succ(const TreeType t, const VAL& val_) const
 	{
-		if(t == NULL_PTR)
-			return NULL_PTR;
+		if(t == nullptr)
+			return nullptr;
 		// val >= val(t)
 		if(!(val_ < val(t)))
 			return _succ(right(t), val_);
@@ -326,7 +324,7 @@ protected:
 	TreeType
 	_insert(TreeType p, TreeType& t, const VAL& val_)
 	{
-		if(t == NULL_PTR)
+		if(t == nullptr)
 		{
 			t = new NodeType;
 			val(t) = val_;
@@ -355,15 +353,15 @@ protected:
 		for(;;)
 		{
 			TreeType& t = *pt;
-			if(t == NULL_PTR || size(t) <= rank)
-				return NULL_PTR;
+			if(t == nullptr || size(t) <= rank)
+				return nullptr;
 
 			sbt_int_t lsize = safe_size(left(t));
 			size(t) -= 1;
 			if(lsize == rank)
 			{
 				TreeType del = t;
-				if(left(t) == NULL_PTR || right(t) == NULL_PTR)
+				if(left(t) == nullptr || right(t) == nullptr)
 				{
 					TreeType p = parent(t);
 					t = (left(t) ? left(t) : right(t));
@@ -396,14 +394,14 @@ protected:
 		for(;;)
 		{
 			TreeType& t = *pt;
-			if(t == NULL_PTR)
-				return NULL_PTR;
+			if(t == nullptr)
+				return nullptr;
 
 			size(t) -= 1;
 			if(val_ == val(t))
 			{
 				TreeType del = t;
-				if(left(t) == NULL_PTR || right(t) == NULL_PTR)
+				if(left(t) == nullptr || right(t) == nullptr)
 				{
 					TreeType p = parent(t);
 					t = (left(t) ? left(t) : right(t));
@@ -432,8 +430,8 @@ protected:
 	TreeType
 	_select(TreeType t, sbt_int_t rank) const
 	{
-		if(t == NULL_PTR || (size(t) <= rank))
-			return NULL_PTR;
+		if(t == nullptr || (size(t) <= rank))
+			return nullptr;
 		sbt_int_t lsize = safe_size(left(t));
 		if(lsize == rank)
 			return t;
@@ -445,7 +443,7 @@ protected:
 	sbt_int_t
 	_rank(TreeType t, const VAL& val_) const
 	{
-		if(t == NULL_PTR)
+		if(t == nullptr)
 			return -1;
 		if(val(t) == val_)
 			return safe_size(left(t));
@@ -478,7 +476,7 @@ public:
 	TreeType
 	insert(const VAL& val)
 	{
-		return _insert(NULL_PTR, root(), val);
+		return _insert(nullptr, root(), val);
 	}
 	bool
 	remove_select(sbt_int_t rank)

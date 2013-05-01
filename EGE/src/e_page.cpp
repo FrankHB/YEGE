@@ -9,39 +9,39 @@ namespace ege
 {
 
 void
+_graph_setting::_setactivepage(int page)
+{
+	active_page = page;
+	if(img_page[page] == nullptr)
+	{
+		img_page[page] = new IMAGE;
+		img_page[page]->createimage(dc_w, dc_h);
+		dc = img_page[page]->m_hDC;
+	}
+}
+
+void
+_graph_setting::_setvisualpage(int page)
+{
+	visual_page = page;
+	if(!img_page[page])
+	{
+		img_page[page] = new IMAGE;
+		img_page[page]->createimage(dc_w, dc_h);
+	}
+	update_mark_count = 0;
+}
+
+void
 setactivepage(int page)
 {
-	struct _graph_setting* pg = &graph_setting;
-	pg->active_page = page;
-	if(pg->img_page[page] == NULL)
-	{
-		pg->img_page[page] = new IMAGE;
-		pg->img_page[page]->createimage(pg->dc_w, pg->dc_h);
-		pg->dc = pg->img_page[page]->m_hDC;
-	}
+	graph_setting._setactivepage(page);
 }
 
 void
 setvisualpage(int page)
 {
-	struct _graph_setting* pg = &graph_setting;
-	pg->visual_page = page;
-	if(pg->img_page[page] == NULL)
-	{
-		pg->img_page[page] = new IMAGE;
-		pg->img_page[page]->createimage(pg->dc_w, pg->dc_h);
-	}
-	pg->update_mark_count = 0;
+	graph_setting._setvisualpage(page);
 }
-
-#if 0
-void
-swappage()
-{
-	struct _graph_setting* pg = &graph_setting;
-	setvisualpage(pg->active_page);
-	setactivepage(1 - pg->active_page);
-}
-#endif
 
 } // namespace ege

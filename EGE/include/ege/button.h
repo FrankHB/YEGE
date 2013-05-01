@@ -170,12 +170,12 @@ public:
 		_shadow_color = RGB(50, 50, 50);
 		updatesidewidth();
 
-		_on_click = NULL;
-		callback_param = NULL;
+		_on_click = nullptr;
+		callback_param = nullptr;
 		_pushed = false;
 		_alpha = 0xff;
 #ifdef DEBUG
-		_logger = NULL;
+		_logger = nullptr;
 #endif
 		//redraw();
 		//blendmode(true);

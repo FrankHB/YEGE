@@ -22,14 +22,11 @@ namespace ege
 
 EGEAPI void
 setactivepage(int);
+
 EGEAPI void
 setvisualpage(int);
 
 }
-
-#ifndef _GRAPH_LIB_BUILD_
-#define Sleep(ms) delay_ms(ms)
-#endif
 
 #endif
 

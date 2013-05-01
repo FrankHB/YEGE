@@ -14,7 +14,7 @@ float _GetFPS(int add);
 int getflush();
 
 double
-get_highfeq_time_ls(struct _graph_setting* pg)
+get_highfeq_time_ls(_graph_setting* pg)
 {
 	static LARGE_INTEGER llFeq; /* 此实为常数 */
 	LARGE_INTEGER llNow;
@@ -74,7 +74,7 @@ get_highfeq_time_ls(struct _graph_setting* pg)
 bool
 is_run()
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	if(pg->exit_window || pg->exit_flag) return false;
 	return true;
 }
@@ -100,47 +100,23 @@ api_sleep(long dwMilliseconds)
 void
 ege_sleep(long ms)
 {
-	if(ms <= 0) return;
-	if(0)    // 经济模式，占CPU极少
+	if(ms <= 0)
+		return;
+
+	static ::HANDLE hTimer = ::CreateWaitableTimer(nullptr, TRUE, nullptr);
+	::LARGE_INTEGER liDueTime;
+
+	liDueTime.QuadPart = ms * (LONGLONG) - 10000;
+	if(hTimer)
 	{
-		::Sleep(ms);
-	}
-	else if(0)      //精确模式，占CPU略高
-	{
-		static HANDLE hTimer = ::CreateEvent(NULL, TRUE, FALSE, NULL);
-		static MMRESULT resTimer = 0;
-		::ResetEvent(hTimer);
-		if(resTimer) ::timeKillEvent(resTimer);
-		resTimer = ::timeSetEvent(ms, 1, (LPTIMECALLBACK)hTimer, 0, TIME_ONESHOT | TIME_CALLBACK_EVENT_SET);
-		if(resTimer)
+		if(::SetWaitableTimer(hTimer, &liDueTime, 0, nullptr, nullptr, FALSE))
 		{
-			::WaitForSingleObject(hTimer, INFINITE);
-		}
-		else
-		{
-			::Sleep(1);
+			::WaitForSingleObject(hTimer, INFINITE); // != WAIT_OBJECT_0;
 		}
 		//::CloseHandle(hTimer);
 	}
-	else if(1)      //高精模式，占CPU更高
-	{
-		static HANDLE hTimer = ::CreateWaitableTimer(NULL, TRUE, NULL);
-		LARGE_INTEGER liDueTime;
-		liDueTime.QuadPart = ms * (LONGLONG) - 10000;
-
-		if(hTimer)
-		{
-			if(::SetWaitableTimer(hTimer, &liDueTime, 0, NULL, NULL, FALSE))
-			{
-				::WaitForSingleObject(hTimer, INFINITE); // != WAIT_OBJECT_0;
-			}
-			//::CloseHandle(hTimer);
-		}
-		else
-		{
-			::Sleep(ms);
-		}
-	}
+	else
+		::Sleep(ms);
 }
 
 void
@@ -152,7 +128,7 @@ delay(long ms)
 void
 delay_ms(long ms)
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	egeControlBase*& root = pg->egectrl_root;
 	pg->skip_timer_mark = true;
 	if(ms == 0)
@@ -160,7 +136,7 @@ delay_ms(long ms)
 		if(pg->update_mark_count < UPDATE_MAX_CALL)
 		{
 			ege_sleep(1);
-			root->draw(NULL);
+			root->draw(nullptr);
 			dealmessage(pg, FORCE_UPDATE);
 			root->update();
 			{
@@ -193,7 +169,7 @@ delay_ms(long ms)
 		}
 
 		//ege_sleep(1);
-		root->draw(NULL);
+		root->draw(nullptr);
 		while(dw + delay_time >= get_highfeq_time_ls(pg) * 1000.0)
 		{
 			if(f <= 0 || pg->update_mark_count < UPDATE_MAX_CALL)
@@ -238,7 +214,7 @@ delay_fps(long fps)
 void
 delay_fps(double fps)
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	egeControlBase*& root = pg->egectrl_root;
 	pg->skip_timer_mark = true;
 	double delay_time = 1000.0 / fps;
@@ -254,7 +230,7 @@ delay_fps(double fps)
 	{
 		dw = pg->delay_fps_dwLast;
 	}
-	root->draw(NULL);
+	root->draw(nullptr);
 	for(; nloop >= 0; --nloop)
 	{
 		if((dw + delay_time + (100.0) >= get_highfeq_time_ls(pg) * 1000.0))
@@ -296,7 +272,7 @@ delay_jfps(long fps)
 void
 delay_jfps(double fps)
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	egeControlBase*& root = pg->egectrl_root;
 	pg->skip_timer_mark = true;
 	double delay_time = 1000.0 / fps;
@@ -312,7 +288,7 @@ delay_jfps(double fps)
 	{
 		dw = pg->delay_fps_dwLast;
 	}
-	root->draw(NULL);
+	root->draw(nullptr);
 	for(; nloop >= 0; --nloop)
 	{
 		int bSleep = 0;
@@ -345,7 +321,7 @@ delay_jfps(double fps)
 
 int showmouse(int bShow)
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	int ret = pg->mouse_show;
 	pg->mouse_show = bShow;
 	return ret;
@@ -354,7 +330,7 @@ int showmouse(int bShow)
 int
 mousepos(int* x, int* y)
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	*x = pg->mouse_last_x;
 	*y = pg->mouse_last_y;
 	return 0;
@@ -456,7 +432,7 @@ void
 moveto(int x, int y, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE(pimg);
-	MoveToEx(img->m_hDC, x, y, NULL);
+	MoveToEx(img->m_hDC, x, y, nullptr);
 	CONVERT_IMAGE_END;
 }
 
@@ -468,7 +444,7 @@ moverel(int dx, int dy, PIMAGE pimg)
 	GetCurrentPositionEx(img->m_hDC, &pt);
 	dx += pt.x;
 	dy += pt.y;
-	MoveToEx(img->m_hDC, dx, dy, NULL);
+	MoveToEx(img->m_hDC, dx, dy, nullptr);
 	CONVERT_IMAGE_END;
 }
 
@@ -476,7 +452,7 @@ void
 line(int x1, int y1, int x2, int y2, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE(pimg);
-	MoveToEx(img->m_hDC, x1, y1, NULL);
+	MoveToEx(img->m_hDC, x1, y1, nullptr);
 	LineTo(img->m_hDC, x2, y2);
 	CONVERT_IMAGE_END;
 }
@@ -655,7 +631,7 @@ static
 int
 saveBrush(PIMAGE img, int save)   //此函数调用前，已经有Lock
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	if(save)
 	{
 		LOGBRUSH lbr = {0, COLORREF(), ULONG_PTR()};
@@ -675,7 +651,7 @@ saveBrush(PIMAGE img, int save)   //此函数调用前，已经有Lock
 		{
 			pg->savebrush_hbr = (HBRUSH)SelectObject(img->m_hDC, pg->savebrush_hbr);
 			DeleteObject(pg->savebrush_hbr);
-			pg->savebrush_hbr = NULL;
+			pg->savebrush_hbr = nullptr;
 		}
 	}
 	return 0;
@@ -886,14 +862,14 @@ setbkmode(int iBkMode, PIMAGE pimg)
 
 PIMAGE gettarget()
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	return pg->imgtarget_set;
 }
 int settarget(PIMAGE pbuf)
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	pg->imgtarget_set = pbuf;
-	if(pbuf == NULL)
+	if(pbuf == nullptr)
 	{
 		pg->imgtarget = pg->img_page[graph_setting.active_page];
 	}
@@ -1460,7 +1436,7 @@ xyprintf(int x, int y, LPCSTR  fmt, ...)
 	va_list v;
 	va_start(v, fmt);
 	{
-		struct _graph_setting* pg = &graph_setting;
+		auto pg = &graph_setting;
 		char* buff = (char*)pg->g_t_buff;
 		vsprintf(buff, fmt, v);
 		outtextxy(x, y, buff);
@@ -1474,7 +1450,7 @@ xyprintf(int x, int y, LPCWSTR fmt, ...)
 	va_list v;
 	va_start(v, fmt);
 	{
-		struct _graph_setting* pg = &graph_setting;
+		auto pg = &graph_setting;
 		wchar_t* buff = (wchar_t*)pg->g_t_buff;
 		vswprintf(buff, fmt, v);
 		outtextxy(x, y, buff);
@@ -1488,7 +1464,7 @@ rectprintf(int x, int y, int w, int h, LPCSTR  fmt, ...)
 	va_list v;
 	va_start(v, fmt);
 	{
-		struct _graph_setting* pg = &graph_setting;
+		auto pg = &graph_setting;
 		char* buff = (char*)pg->g_t_buff;
 		vsprintf(buff, fmt, v);
 		outtextrect(x, y, w, h, buff);
@@ -1502,7 +1478,7 @@ rectprintf(int x, int y, int w, int h, LPCWSTR fmt, ...)
 	va_list v;
 	va_start(v, fmt);
 	{
-		struct _graph_setting* pg = &graph_setting;
+		auto pg = &graph_setting;
 		wchar_t* buff = (wchar_t*)pg->g_t_buff;
 		vswprintf(buff, fmt, v);
 		outtextrect(x, y, w, h, buff);
@@ -1950,7 +1926,7 @@ void setrendermode(rendermode_e mode)
 {
 	if(mode == RENDER_MANUAL)
 	{
-		struct _graph_setting* pg = &graph_setting;
+		auto pg = &graph_setting;
 		if(!pg->lock_window)
 		{
 			::KillTimer(pg->hwnd, RENDER_TIMER_ID);
@@ -1963,9 +1939,9 @@ void setrendermode(rendermode_e mode)
 	}
 	else
 	{
-		_graph_setting* pg = &graph_setting;
+		auto pg = &graph_setting;
 		delay_ms(0);
-		::SetTimer(pg->hwnd, RENDER_TIMER_ID, 0, NULL);
+		::SetTimer(pg->hwnd, RENDER_TIMER_ID, 0, nullptr);
 		pg->skip_timer_mark = false;
 		pg->lock_window = false;
 	}
@@ -1974,7 +1950,7 @@ void setrendermode(rendermode_e mode)
 void
 swappage()
 {
-	_graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	setvisualpage(pg->active_page);
 	setactivepage(1 - pg->active_page);
 }
@@ -1982,7 +1958,7 @@ swappage()
 void
 window_getviewport(viewporttype* viewport)
 {
-	_graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	viewport->left   = pg->base_x;
 	viewport->top    = pg->base_y;
 	viewport->right  = pg->base_w + pg->base_x;
@@ -1992,7 +1968,7 @@ window_getviewport(viewporttype* viewport)
 void
 window_getviewport(int* left, int* top, int* right, int* bottom)
 {
-	_graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	if(left)   *left   = pg->base_x;
 	if(top)    *top    = pg->base_y;
 	if(right)  *right  = pg->base_w + pg->base_x;
@@ -2002,7 +1978,7 @@ window_getviewport(int* left, int* top, int* right, int* bottom)
 void
 window_setviewport(int left, int top, int right, int bottom)
 {
-	_graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	int same_xy = 0, same_wh = 0;
 	if(pg->base_x == left && pg->base_y == top)
 		same_xy = 1;
@@ -2058,11 +2034,11 @@ getviewport(int* pleft, int* ptop, int* pright, int* pbottom, int* pclip, PIMAGE
 void
 setviewport(int left, int top, int right, int bottom, int clip, PIMAGE pimg)
 {
-	//struct _graph_setting * pg = &graph_setting;
+	//_graph_setting * pg = &graph_setting;
 
 	PIMAGE img = CONVERT_IMAGE(pimg);
 
-	SetViewportOrgEx(img->m_hDC, 0, 0, NULL);
+	SetViewportOrgEx(img->m_hDC, 0, 0, nullptr);
 
 	img->m_vpt.left     = left;
 	img->m_vpt.top      = top;
@@ -2089,8 +2065,8 @@ setviewport(int left, int top, int right, int bottom, int clip, PIMAGE pimg)
 	::SelectClipRgn(img->m_hDC, rgn);
 	::DeleteObject(rgn);
 
-	//OffsetViewportOrgEx(img->m_hDC, img->m_vpt.left, img->m_vpt.top, NULL);
-	::SetViewportOrgEx(img->m_hDC, img->m_vpt.left, img->m_vpt.top, NULL);
+	//OffsetViewportOrgEx(img->m_hDC, img->m_vpt.left, img->m_vpt.top, nullptr);
+	::SetViewportOrgEx(img->m_hDC, img->m_vpt.left, img->m_vpt.top, nullptr);
 
 	CONVERT_IMAGE_END;
 }
@@ -2541,7 +2517,7 @@ ege_puttexture(PIMAGE srcimg, ege_rect dest, ege_rect src, PIMAGE pimg)
 				src.w,
 				src.h,
 				Gdiplus::UnitPixel,
-				NULL
+				nullptr
 			);
 		}
 	}
@@ -2553,21 +2529,21 @@ ege_puttexture(PIMAGE srcimg, ege_rect dest, ege_rect src, PIMAGE pimg)
 HWND
 getHWnd()
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	return pg->hwnd;
 }
 
 HINSTANCE
 getHInstance()
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	return pg->instance;
 }
 
 int
 message_addkeyhandler(void* param, LPMSG_KEY_PROC func)
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	pg->callback_key = func;
 	pg->callback_key_param = param;
 	return grOk;
@@ -2576,7 +2552,7 @@ message_addkeyhandler(void* param, LPMSG_KEY_PROC func)
 int
 message_addmousehandler(void* param, LPMSG_MOUSE_PROC func)
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	pg->callback_mouse = func;
 	pg->callback_mouse_param = param;
 	return grOk;
@@ -2585,7 +2561,7 @@ message_addmousehandler(void* param, LPMSG_MOUSE_PROC func)
 int
 SetCloseHandler(LPCALLBACK_PROC func)
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	pg->callback_close = func;
 	return grOk;
 }
@@ -2606,24 +2582,25 @@ draw_frame(PIMAGE img, int l, int t, int r, int b, color_t lc, color_t dc)
 int
 inputbox_getline(LPCSTR title, LPCSTR text, LPSTR buf, int len)
 {
-	WCHAR _title[256], _text[256], *_buf = (WCHAR*)malloc(len * 2);
-	int ret;
-	MultiByteToWideChar(CP_ACP, 0, title, -1, _title, 256);
-	MultiByteToWideChar(CP_ACP, 0,  text, -1,  _text, 256);
+	const auto _buf(static_cast<WCHAR*>(operator new(len * 2)));
+	WCHAR _title[256], _text[256];
+
+	::MultiByteToWideChar(CP_ACP, 0, title, -1, _title, 256);
+	::MultiByteToWideChar(CP_ACP, 0,  text, -1,  _text, 256);
 	buf[0] = 0;
-	ret = inputbox_getline(_title, _text, _buf, len);
+
+	int ret = inputbox_getline(_title, _text, _buf, len);
+
 	if(ret)
-	{
-		WideCharToMultiByte(CP_ACP, 0, _buf, -1, buf, len, 0, 0);
-	}
-	free(_buf);
+		::WideCharToMultiByte(CP_ACP, 0, _buf, -1, buf, len, nullptr, nullptr);
+	operator delete(_buf);
 	return ret;
 }
 
 int
 inputbox_getline(LPCWSTR title, LPCWSTR text, LPWSTR buf, int len)
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	IMAGE bg;
 	IMAGE window;
 	int w = 400, h = 300, x = (getwidth() - w) / 2, y = (getheight() - h) / 2;
@@ -2715,7 +2692,7 @@ _GetFPS(int add)  //获取帧数
 	static float    fret = 0;
 	static float    fret_inv = 0;
 
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	double cur = get_highfeq_time_ls(pg);
 	if(add == 0x100)
 	{
@@ -2754,7 +2731,7 @@ getfps()
 double
 fclock()
 {
-	struct _graph_setting* pg = &graph_setting;
+	auto pg = &graph_setting;
 	if(pg->fclock_start == 0)
 	{
 		pg->fclock_start = ::GetTickCount();

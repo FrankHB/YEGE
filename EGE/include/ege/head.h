@@ -171,7 +171,7 @@ public:
 	int                 m_pattern_type;
 	void*               m_texture;
 private:
-	void inittest(const WCHAR* strCallFunction = NULL) const;
+	void inittest(const WCHAR* strCallFunction = nullptr) const;
 public:
 	IMAGE();
 	IMAGE(int width, int height);
@@ -342,8 +342,8 @@ struct _graph_setting
 
 	int writemode;
 
-	HDC dc;
-	HDC window_dc;
+	::HDC dc;
+	::HDC window_dc;
 	int dc_w, dc_h;
 	PIMAGE img_page[BITMAP_PAGE_SIZE];
 	int base_x, base_y, base_w, base_h;
@@ -354,8 +354,8 @@ struct _graph_setting
 	PIMAGE  imgtarget_set;
 	PIMAGE  img_timer_update;
 
-	HINSTANCE instance;
-	HWND    hwnd;
+	::HINSTANCE instance;
+	::HWND    hwnd;
 	TCHAR   window_class_name[32];
 	TCHAR   window_caption[128];
 	int     exit_flag;
@@ -408,9 +408,14 @@ struct _graph_setting
 
 	/* 函数用临时缓冲区 */
 	DWORD g_t_buff[1024 * 8];
+
+	void
+	_setactivepage(int);
+	void
+	_setvisualpage(int);
 };
 
-extern struct _graph_setting& graph_setting;
+extern _graph_setting& graph_setting;
 
 template<typename T>
 struct count_ptr

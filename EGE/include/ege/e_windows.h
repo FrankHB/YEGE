@@ -55,6 +55,6 @@ void EGEAPI setcaption(LPCWSTR caption);
 int  EGEAPI attachHWND(HWND hWnd);
 HWND        EGEAPI getHWnd();         // 获取绘图窗口句柄
 HINSTANCE   EGEAPI getHInstance();
-PVOID       EGEAPI getProcfunc();
+EGEAPI ::WNDPROC getProcfunc();
 
 }

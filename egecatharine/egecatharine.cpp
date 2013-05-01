@@ -94,7 +94,7 @@ int main()
 			obj[n].updateobj(); //¸üĞÂÎ»ÖÃ
 		}
 
-		imagefilter_blurring(NULL, 0x4F, 0x100);
+		imagefilter_blurring(nullptr, 0x4F, 0x100);
 		for(n = 0; n < MAXOBJ; ++n)
 		{
 			obj[n].drawobj(); //»æ»­

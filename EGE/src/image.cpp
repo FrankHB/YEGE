@@ -4,8 +4,8 @@
 #include "libpng/pnginfo.h"
 #include "ocidl.h"
 #include "olectl.h"
-
-#include <math.h>
+#include <cmath>
+#include <cstring>
 
 namespace ege {
 
@@ -16,10 +16,10 @@ static HFONT    g_font_def;
 
 IMAGE::IMAGE() {
 	m_initflag = IMAGE_INIT_FLAG;
-	m_hDC = NULL;
-	m_pattern_obj = NULL;
-	m_texture = NULL;
-	PIMAGE img = CONVERT_IMAGE_CONST(0);
+	m_hDC = nullptr;
+	m_pattern_obj = nullptr;
+	m_texture = nullptr;
+	PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
 	if (img) {
 		newimage(img->m_hDC, 1, 1);
 	} else {
@@ -30,10 +30,10 @@ IMAGE::IMAGE() {
 
 IMAGE::IMAGE(int width, int height) {
 	m_initflag = IMAGE_INIT_FLAG;
-	m_hDC = NULL;
-	m_pattern_obj = NULL;
-	m_texture = NULL;
-	PIMAGE img = CONVERT_IMAGE_CONST(0);
+	m_hDC = nullptr;
+	m_pattern_obj = nullptr;
+	m_texture = nullptr;
+	PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
 	if (img) {
 		newimage(img->m_hDC, width, height);
 	} else {
@@ -44,9 +44,9 @@ IMAGE::IMAGE(int width, int height) {
 
 IMAGE::IMAGE(IMAGE &img) {
 	m_initflag = IMAGE_INIT_FLAG;
-	m_hDC = NULL;
-	m_pattern_obj = NULL;
-	m_texture = NULL;
+	m_hDC = nullptr;
+	m_pattern_obj = nullptr;
+	m_texture = nullptr;
 	newimage(img.m_hDC, img.m_width, img.m_height);
 	BitBlt(m_hDC, 0, 0, img.m_width, img.m_height, img.m_hDC, 0, 0, SRCCOPY);
 }
@@ -75,7 +75,7 @@ IMAGE::set_pattern(void* obj, int type) {
 
 void
 IMAGE::delete_pattern() {
-	if (m_pattern_obj == NULL) return;
+	if (m_pattern_obj == nullptr) return;
 
 	if (m_pattern_type == pattern_none) {
 	} else if (m_pattern_type == pattern_lineargradient) {
@@ -85,18 +85,18 @@ IMAGE::delete_pattern() {
 	} else if (m_pattern_type == pattern_texture) {
 		delete (Gdiplus::TextureBrush*)m_pattern_obj;
 	}
-	m_pattern_obj = NULL;
+	m_pattern_obj = nullptr;
 }
 
 void
 IMAGE::gentexture(bool gen) {
 	if (!gen) {
-		if (m_texture != NULL) {
+		if (m_texture != nullptr) {
 			delete (Gdiplus::Bitmap*)m_texture;
-			m_texture = NULL;
+			m_texture = nullptr;
 		}
 	} else {
-		if (m_texture != NULL) {
+		if (m_texture != nullptr) {
 			gentexture(true);
 		}
 		Gdiplus::Bitmap* bitmap = new Gdiplus::Bitmap(getwidth(), getheight(), getwidth() * 4, PixelFormat32bppARGB, (BYTE*)getbuffer());
@@ -111,7 +111,7 @@ IMAGE::deleteimage() {
 	DeleteObject(SelectObject(m_hDC, g_pen_def));
 	DeleteObject(SelectObject(m_hDC, g_font_def));
 	DeleteDC(m_hDC);
-	m_hDC = NULL;
+	m_hDC = nullptr;
 	return 0;
 }
 
@@ -131,9 +131,9 @@ IMAGE::newimage(HDC hdc, int width, int height) {
 
 	memset(&m_vpt, 0, sizeof(m_vpt));
 
-	if (hdc == NULL) {
+	if (hdc == nullptr) {
 		hdc = m_hDC;
-		if (hdc == NULL) {
+		if (hdc == nullptr) {
 			WCHAR str[60];
 			wsprintfW(str, L"Fatal error: read/write at 0x%08x. At function 'newimage', construct PIMAGE before 'initgraph'?", this);
 			MessageBoxW(graph_setting.hwnd, str, L"ERROR message", MB_ICONSTOP);
@@ -145,20 +145,20 @@ IMAGE::newimage(HDC hdc, int width, int height) {
 	} else {
 		dc = CreateCompatibleDC(hdc);
 	}
-	if (dc != NULL) {
+	if (dc != nullptr) {
 		bitmap = CreateDIBSection(
-			NULL,
+			nullptr,
 			&bmi,
 			DIB_RGB_COLORS,
 			(VOID**)&p_bmp_buf,
-			NULL,
+			nullptr,
 			0
 			);
 
-		if (bitmap != NULL) {
+		if (bitmap != nullptr) {
 			HBITMAP hbmp_def = (HBITMAP)SelectObject(dc, bitmap);
 			int b_resize = 0;
-			if (g_hbmp_def == NULL) {
+			if (g_hbmp_def == nullptr) {
 				g_hbmp_def = hbmp_def;
 				g_hbr_def  = (HBRUSH)GetCurrentObject(dc, OBJ_BRUSH);
 				g_pen_def  = (HPEN)GetCurrentObject(dc, OBJ_PEN);
@@ -207,8 +207,8 @@ IMAGE::newimage(HDC hdc, int width, int height) {
 int
 IMAGE::createimage(int width, int height) {
 	inittest(L"IMAGE::createimage");
-	PIMAGE img = CONVERT_IMAGE_CONST(0);
-	if (img == NULL) {
+	PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
+	if (img == nullptr) {
 		img = graph_setting.img_page[graph_setting.active_page];
 	}
 	int ret = newimage(img->m_hDC, width, height);
@@ -222,7 +222,7 @@ IMAGE::createimage(int width, int height) {
 int
 IMAGE::resize(int width, int height) {
 	inittest(L"IMAGE::createimage");
-	PIMAGE img = CONVERT_IMAGE_CONST(0);
+	PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
 	int ret = newimage(img->m_hDC, width, height);
 	CONVERT_IMAGE_END;
 	if (ret) {
@@ -244,7 +244,7 @@ IMAGE::copyimage(const PIMAGE pSrcImg) {
 	const PIMAGE img = CONVERT_IMAGE_CONST(pSrcImg);
 	int ret = 0;
 	if (m_width != img->m_width || m_height != img->m_height)
-		ret = newimage(0, img->m_width, img->m_height);
+		ret = newimage(nullptr, img->m_width, img->m_height);
 	if (ret == 0) {
 		memcpy(getbuffer(), img->getbuffer(), m_width * m_height * 4); // 4 byte per pixel
 	}
@@ -255,7 +255,7 @@ void
 IMAGE::getimage(const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight) {
 	inittest(L"IMAGE::getimage");
 	const PIMAGE img = CONVERT_IMAGE_CONST(pSrcImg);
-	int ret = newimage(0, srcWidth, srcHeight);
+	int ret = newimage(nullptr, srcWidth, srcHeight);
 	if (ret == 0) {
 		BitBlt(m_hDC, 0, 0, srcWidth, srcHeight, img->m_hDC, srcX, srcY, SRCCOPY);
 	}
@@ -264,7 +264,7 @@ IMAGE::getimage(const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcH
 
 void
 IMAGE::getimage(int srcX, int srcY, int srcWidth, int srcHeight) {
-	PIMAGE img = CONVERT_IMAGE_CONST(0);
+	PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
 	getimage(img, srcX, srcY, srcWidth, srcHeight);
 	CONVERT_IMAGE_END;
 }
@@ -284,14 +284,14 @@ IMAGE::putimage(PIMAGE pDstImg, int dstX, int dstY, DWORD dwRop) const {
 
 void
 IMAGE::putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, DWORD dwRop) const {
-	PIMAGE img = CONVERT_IMAGE(0);
+	PIMAGE img = CONVERT_IMAGE(nullptr);
 	putimage(img, dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
 	CONVERT_IMAGE_END;
 }
 
 void
 IMAGE::putimage(int dstX, int dstY, DWORD dwRop) const {
-	PIMAGE img = CONVERT_IMAGE(0);
+	PIMAGE img = CONVERT_IMAGE(nullptr);
 	putimage(img, dstX, dstY, dwRop);
 	CONVERT_IMAGE_END;
 }
@@ -318,11 +318,11 @@ IMAGE::getimage(LPCWSTR filename, int, int) {
 	}
 
 	struct IPicture *pPicture;
-	OLECHAR         wszPath[MAX_PATH*2+1];
-	WCHAR           szPath[MAX_PATH*2+1] = L"";
-	long            lWidth,         lHeight;
-	long            lWidthPixels,   lHeightPixels;
-	HRESULT         hr;
+	OLECHAR wszPath[MAX_PATH * 2 + 1];
+	WCHAR szPath[MAX_PATH * 2 + 1] = L"";
+	long lWidth, lHeight;
+	long lWidthPixels, lHeightPixels;
+	::HRESULT hr;
 
 	if (wcsstr(filename, L"http://")) {
 		lstrcpyW(szPath, filename);
@@ -335,12 +335,12 @@ IMAGE::getimage(LPCWSTR filename, int, int) {
 	}
 
 	lstrcpyW(wszPath, szPath);
-	hr = ::OleLoadPicturePath(wszPath, 0, 0, 0, IID_IPicture,
+	hr = ::OleLoadPicturePath(wszPath, nullptr, 0, 0, IID_IPicture,
 		(void**)&pPicture);
 	if(FAILED(hr))
 		return grIOerror;
 
-	PIMAGE img = CONVERT_IMAGE_CONST(0);
+	PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
 
 	pPicture->get_Width (&lWidth );
 	lWidthPixels  = MulDiv(lWidth,  GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
@@ -349,12 +349,11 @@ IMAGE::getimage(LPCWSTR filename, int, int) {
 	CONVERT_IMAGE_END;
 
 	createimage(lWidthPixels, lHeightPixels);
-	{
-		::HDC dc = m_hDC;
 
-		pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-			lWidth, -lHeight, 0);
-	}
+	::HDC dc = m_hDC;
+
+	pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+		lWidth, -lHeight, nullptr);
 	pPicture->Release();
 	return grOk;
 }
@@ -400,10 +399,10 @@ ERROR_BREAK:
 
 int
 IMAGE::saveimage(LPCSTR  filename) {
-	FILE *fp = NULL;
+	FILE *fp = nullptr;
 	int ret;
 	fp = fopen(filename, "wb");
-	if (fp == NULL) return grIOerror;
+	if (fp == nullptr) return grIOerror;
 	ret = saveimagetofile(this, fp);
 	fclose(fp);
 	return ret;
@@ -411,10 +410,10 @@ IMAGE::saveimage(LPCSTR  filename) {
 
 int
 IMAGE::saveimage(LPCWSTR filename) {
-	FILE *fp = NULL;
+	FILE *fp = nullptr;
 	int ret;
 	fp = _wfopen(filename, L"wb");
-	if (fp == NULL) return grIOerror;
+	if (fp == nullptr) return grIOerror;
 	ret = saveimagetofile(this, fp);
 	fclose(fp);
 	return ret;
@@ -438,20 +437,20 @@ IMAGE::getpngimg(FILE* fp) {
 		fseek(fp, 0, SEEK_SET);
 	}
 
-	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	if (png_ptr == NULL) {
+	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+	if (png_ptr == nullptr) {
 		return -1;
 	}
 	info_ptr = png_create_info_struct(png_ptr);
-	if (info_ptr == NULL) {
-		png_destroy_write_struct(&png_ptr, NULL);
+	if (info_ptr == nullptr) {
+		png_destroy_write_struct(&png_ptr, nullptr);
 		return -1;
 	}
 	png_init_io(png_ptr, fp);
-	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_BGR|PNG_TRANSFORM_EXPAND, NULL);
+	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_BGR|PNG_TRANSFORM_EXPAND, nullptr);
 	png_set_expand(png_ptr);
 
-	newimage(NULL, (int)(info_ptr->width), (int)(info_ptr->height)); //png_get_IHDR
+	newimage(nullptr, (int)(info_ptr->width), (int)(info_ptr->height)); //png_get_IHDR
 	width = info_ptr->width;
 	height = info_ptr->height;
 	depth = info_ptr->pixel_depth;
@@ -471,7 +470,7 @@ IMAGE::getpngimg(FILE* fp) {
 			}
 		}
 	}
-	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+	png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 	return 0;
 }
 
@@ -483,15 +482,15 @@ IMAGE::savepngimg(FILE* fp, int bAlpha) {
 	png_colorp palette;
 	png_byte *image;
 	png_bytep *row_pointers;
-	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 	uint32 pixelsize = bAlpha ? 4 : 3;
 	uint32 width = m_width, height = m_height;
-	if (png_ptr == NULL) {
+	if (png_ptr == nullptr) {
 		return -1;
 	}
 	info_ptr = png_create_info_struct(png_ptr);
-	if (info_ptr == NULL) {
-		png_destroy_write_struct(&png_ptr, NULL);
+	if (info_ptr == nullptr) {
+		png_destroy_write_struct(&png_ptr, nullptr);
 		return -1;
 	}
 
@@ -514,16 +513,16 @@ IMAGE::savepngimg(FILE* fp, int bAlpha) {
 	png_set_packing(png_ptr);
 
 	image = (png_byte *)malloc(width * height * pixelsize * sizeof(png_byte) + 4);
-	if(image == NULL) {
+	if(image == nullptr) {
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		return -1;
 	}
 
 	row_pointers = (png_bytep *)malloc(height * sizeof(png_bytep));
-	if(row_pointers == NULL) {
+	if(row_pointers == nullptr) {
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		free(image);
-		image = NULL;
+		image = nullptr;
 		return -1;
 	}
 
@@ -539,15 +538,15 @@ IMAGE::savepngimg(FILE* fp, int bAlpha) {
 	png_write_end(png_ptr, info_ptr);
 
 	png_free(png_ptr, palette);
-	palette = NULL;
+	palette = nullptr;
 
 	png_destroy_write_struct(&png_ptr, &info_ptr);
 
 	free(row_pointers);
-	row_pointers = NULL;
+	row_pointers = nullptr;
 
 	free(image);
-	image = NULL;
+	image = nullptr;
 
 	return 0;
 }
@@ -555,71 +554,55 @@ IMAGE::savepngimg(FILE* fp, int bAlpha) {
 int
 IMAGE::getimage(LPCSTR pResType, LPCSTR pResName, int, int) {
 	inittest(L"IMAGE::getimage");
-	struct _graph_setting * pg = &graph_setting;
-	HRSRC hrsrc = FindResourceA(pg->instance, pResName, pResType);
 
-	if (hrsrc) {
-		HGLOBAL         hg = LoadResource(0, hrsrc);
-		DWORD           dwSize = SizeofResource(0, hrsrc);
-		HGLOBAL         hGlobal = GlobalAlloc(GMEM_MOVEABLE, dwSize);
-		LPVOID          pvRes = LockResource(hg);
-		LPVOID          pvData;
-		struct IPicture *pPicture;
-		IStream         *pStm;
-		long            lWidth,         lHeight;
-		long            lWidthPixels,   lHeightPixels;
-		HRESULT         hr;
+	auto hrsrc = ::FindResourceA(graph_setting.instance, pResName, pResType);
 
-		if (hGlobal == NULL || (pvData = GlobalLock(hGlobal)) == NULL) {
+	if(hrsrc)
+	{
+		auto hg(::LoadResource(nullptr, hrsrc));
+		auto dwSize(::SizeofResource(nullptr, hrsrc));
+		auto hGlobal(::GlobalAlloc(GMEM_MOVEABLE, dwSize));
+		auto pvRes(::LockResource(hg));
+		LPVOID pvData;
+		IPicture *pPicture;
+		IStream *pStm;
+		long lWidth, lHeight;
+		long lWidthPixels, lHeightPixels;
+		HRESULT hr;
+
+		if(!hGlobal || !(pvData = ::GlobalLock(hGlobal)))
 			return grAllocError;
-		}
-		memcpy(pvData, pvRes, dwSize);
-		GlobalUnlock(hGlobal);
-		if (S_OK != CreateStreamOnHGlobal(hGlobal, TRUE, &pStm)) {
+		std::memcpy(pvData, pvRes, dwSize);
+		::GlobalUnlock(hGlobal);
+		if(S_OK != CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
 			return grNullPointer;
-		}
 
-		hr = OleLoadPicture(
-			pStm,
-			(LONG)dwSize,
-			TRUE,
-			IID_IPicture,
-			(void**)&pPicture
-			);
-
-		GlobalFree(hGlobal);
-
-		if(FAILED(hr)) {
+		hr = OleLoadPicture(pStm, LONG(dwSize), TRUE, IID_IPicture,
+			(void**)&pPicture);
+		::GlobalFree(hGlobal);
+		if(FAILED(hr))
 			return grIOerror;
-		}
 
+		PIMAGE img(CONVERT_IMAGE_CONST(nullptr));
 
-		PIMAGE img = CONVERT_IMAGE_CONST(0);
 		pPicture->get_Width(&lWidth);
-		lWidthPixels = MulDiv(lWidth, GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
+		lWidthPixels = MulDiv(lWidth, GetDeviceCaps(img->m_hDC, LOGPIXELSX),
+			2540);
 		pPicture->get_Height(&lHeight);
-		lHeightPixels = MulDiv(lHeight, GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
+		lHeightPixels = MulDiv(lHeight, GetDeviceCaps(img->m_hDC, LOGPIXELSY),
+			2540);
 		CONVERT_IMAGE_END;
 
 		createimage(lWidthPixels, lHeightPixels);
 		{
-			HDC dc = m_hDC;
+			auto dc(m_hDC);
 
-			pPicture->Render(
-				dc,
-				0, 0,
-				lWidthPixels, lHeightPixels,
-				0, lHeight,
-				lWidth, -lHeight,
-				0
-				);
+			pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+				lWidth, -lHeight, nullptr);
 		}
-
 		pPicture->Release();
-
 		return grOk;
 	}
-
 	return grIOerror;
 }
 
@@ -628,14 +611,12 @@ int
 IMAGE::getimage(LPCWSTR pResType, LPCWSTR pResName, int, int)
 {
 	inittest(L"IMAGE::getimage");
-	struct _graph_setting * pg = &graph_setting;
-	HRSRC hrsrc = FindResourceW(pg->instance, pResName, pResType);
-
+	auto hrsrc = ::FindResourceW(graph_setting.instance, pResName, pResType);
 
 	if(hrsrc)
 	{
-		auto hg = ::LoadResource(0, hrsrc);
-		auto dwSize = ::SizeofResource(0, hrsrc);
+		auto hg = ::LoadResource(nullptr, hrsrc);
+		auto dwSize = ::SizeofResource(nullptr, hrsrc);
 		auto hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, dwSize);
 		auto pvRes = ::LockResource(hg);
 		LPVOID pvData;
@@ -644,24 +625,21 @@ IMAGE::getimage(LPCWSTR pResType, LPCWSTR pResName, int, int)
 		long lWidth, lHeight;
 		long lWidthPixels, lHeightPixels;
 
-		if (hGlobal == NULL || (pvData = GlobalLock(hGlobal)) == NULL)
+		if (hGlobal == nullptr || (pvData = GlobalLock(hGlobal)) == nullptr)
 			return grAllocError;
 		::memcpy(pvData, pvRes, dwSize);
 		::GlobalUnlock(hGlobal);
 		if (S_OK != CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
 			return grNullPointer;
 
-		auto hr = OleLoadPicture(pStm, (LONG)dwSize, TRUE, IID_IPicture,
-			(void**)&pPicture);
+		auto hr(OleLoadPicture(pStm, (LONG)dwSize, TRUE, IID_IPicture,
+			(void**)&pPicture));
 
-		GlobalFree(hGlobal);
-
-		if(FAILED(hr)) {
+		::GlobalFree(hGlobal);
+		if(FAILED(hr))
 			return grIOerror;
-		}
 
-
-		PIMAGE img = CONVERT_IMAGE_CONST(0);
+		PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
 		pPicture->get_Width(&lWidth);
 		lWidthPixels = MulDiv(lWidth, GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
@@ -669,19 +647,11 @@ IMAGE::getimage(LPCWSTR pResType, LPCWSTR pResName, int, int)
 		CONVERT_IMAGE_END;
 
 		createimage(lWidthPixels, lHeightPixels);
-		{
-			HDC dc = m_hDC;
 
-			pPicture->Render(
-				dc,
-				0, 0,
-				lWidthPixels, lHeightPixels,
-				0, lHeight,
-				lWidth, -lHeight,
-				0
-				);
-		}
+		::HDC dc = m_hDC;
 
+		pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+			lWidth, -lHeight, nullptr);
 		pPicture->Release();
 
 		return grOk;
@@ -703,7 +673,7 @@ IMAGE::getimage(void* pMem, long size) {
 		long            lWidthPixels,   lHeightPixels;
 		HRESULT         hr;
 
-		if (hGlobal == NULL || (pvData = GlobalLock(hGlobal)) == NULL) {
+		if (hGlobal == nullptr || (pvData = GlobalLock(hGlobal)) == nullptr) {
 			return grAllocError;
 		}
 		memcpy(pvData, pMem, dwSize);
@@ -727,7 +697,7 @@ IMAGE::getimage(void* pMem, long size) {
 		}
 
 
-		PIMAGE img = CONVERT_IMAGE_CONST(0);
+		PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
 		pPicture->get_Width(&lWidth);
 		lWidthPixels = MulDiv(lWidth, GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
@@ -735,24 +705,14 @@ IMAGE::getimage(void* pMem, long size) {
 		CONVERT_IMAGE_END;
 
 		createimage(lWidthPixels, lHeightPixels);
-		{
-			HDC dc = m_hDC;
 
-			pPicture->Render(
-				dc,
-				0, 0,
-				lWidthPixels, lHeightPixels,
-				0, lHeight,
-				lWidth, -lHeight,
-				0
-				);
-		}
+		auto dc = m_hDC;
 
+		pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+				lWidth, -lHeight, nullptr);
 		pPicture->Release();
-
 		return grOk;
 	}
-
 	return grIOerror;
 }
 
@@ -1133,8 +1093,8 @@ IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 	int nYOriginDest, int nWidthDest, int nHeightDest)
 {
 	inittest(L"IMAGE::imagefilter_blurring_4");
-	struct _graph_setting * pg = &graph_setting;
-	DWORD* buff = pg->g_t_buff;
+
+	DWORD* buff = graph_setting.g_t_buff;
 	int x2, y2, ix, iy;
 	DWORD *pdp, lsum, sumRB, sumG;
 	int ddx, dldx;
@@ -1261,8 +1221,8 @@ IMAGE::imagefilter_blurring_8 (
 	int nHeightDest
 ) {
 	inittest(L"IMAGE::imagefilter_blurring_4");
-	struct _graph_setting * pg = &graph_setting;
-	DWORD* buff = pg->g_t_buff, lbuf;
+
+	DWORD* buff = graph_setting.g_t_buff, lbuf;
 	int x2, y2, ix, iy;
 	DWORD *pdp, lsum, sumRB, sumG;
 	int ddx, dldx;
@@ -2736,7 +2696,7 @@ putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, const 
 
 void
 putimage(int dstX, int dstY, int dstWidth, int dstHeight, const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, DWORD dwRop) {
-	pSrcImg->putimage(NULL, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, dwRop);
+	pSrcImg->putimage(nullptr, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, dwRop);
 }
 
 int
@@ -2848,10 +2808,10 @@ saveimage(PIMAGE pimg, LPCWSTR filename) {
 
 int
 getimage_pngfile(PIMAGE pimg, LPCSTR  filename) {
-	FILE *fp = NULL;
+	FILE *fp = nullptr;
 	int ret;
 	fp = fopen(filename, "rb");
-	if (fp == NULL) return grFileNotFound;
+	if (fp == nullptr) return grFileNotFound;
 	ret = pimg->getpngimg(fp);
 	fclose(fp);
 	return ret;
@@ -2859,10 +2819,10 @@ getimage_pngfile(PIMAGE pimg, LPCSTR  filename) {
 
 int
 getimage_pngfile(PIMAGE pimg, LPCWSTR filename) {
-	FILE *fp = NULL;
+	FILE *fp = nullptr;
 	int ret;
 	fp = _wfopen(filename, L"rb");
-	if (fp == NULL) return grFileNotFound;
+	if (fp == nullptr) return grFileNotFound;
 	ret = pimg->getpngimg(fp);
 	fclose(fp);
 	return ret;
@@ -2870,10 +2830,10 @@ getimage_pngfile(PIMAGE pimg, LPCWSTR filename) {
 
 int
 savepng(PIMAGE pimg, LPCSTR  filename, int bAlpha) {
-	FILE *fp = NULL;
+	FILE *fp = nullptr;
 	int ret;
 	fp = fopen(filename, "wb");
-	if (fp == NULL) return grFileNotFound;
+	if (fp == nullptr) return grFileNotFound;
 	ret = pimg->savepngimg(fp, bAlpha);
 	fclose(fp);
 	return ret;
@@ -2881,10 +2841,10 @@ savepng(PIMAGE pimg, LPCSTR  filename, int bAlpha) {
 
 int
 savepng(PIMAGE pimg, LPCWSTR filename, int bAlpha) {
-	FILE *fp = NULL;
+	FILE *fp = nullptr;
 	int ret;
 	fp = _wfopen(filename, L"wb");
-	if (fp == NULL) return grFileNotFound;
+	if (fp == nullptr) return grFileNotFound;
 	ret = pimg->savepngimg(fp, bAlpha);
 	fclose(fp);
 	return ret;

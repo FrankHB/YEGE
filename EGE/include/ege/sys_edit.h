@@ -17,7 +17,7 @@ public:
 	{
 		CTL_INIT; // must be the first linef
 		directdraw(true);
-		m_hwnd = NULL;
+		m_hwnd = nullptr;
 	}
 	~sys_edit()
 	{
@@ -42,8 +42,8 @@ public:
 		::WaitForSingleObject(msg.hEvent, INFINITE);
 
 		m_hwnd = msg.hwnd;
-		m_hFont     = NULL;
-		m_hBrush    = NULL;
+		m_hFont     = nullptr;
+		m_hBrush    = nullptr;
 		m_color     = 0x0;
 		m_bgcolor   = 0xFFFFFF;
 
@@ -67,14 +67,14 @@ public:
 			msg_createwindow msg
 				= {nullptr, nullptr, nullptr, 0, 0, 0, nullptr};
 			msg.hwnd = m_hwnd;
-			msg.hEvent = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+			msg.hEvent = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
 			::SendMessage(m_hwnd, WM_SETFONT, 0, 0);
 			::DeleteObject(m_hFont);
 			::PostMessageW(getHWnd(), WM_USER + 1, 0, (LPARAM)&msg);
 			::WaitForSingleObject(msg.hEvent, INFINITE);
 			::CloseHandle(msg.hEvent);
 			if(m_hBrush) ::DeleteObject(m_hBrush);
-			m_hwnd = NULL;
+			m_hwnd = nullptr;
 			return 1;
 		}
 		return 0;
@@ -177,18 +177,18 @@ public:
 	void setcolor(color_t color)
 	{
 		m_color = color;
-		::InvalidateRect(m_hwnd, NULL, TRUE);
+		::InvalidateRect(m_hwnd, nullptr, TRUE);
 	}
 	void setbgcolor(color_t bgcolor)
 	{
 		m_bgcolor = bgcolor;
-		//::RedrawWindow(m_hwnd, NULL, NULL, RDW_INVALIDATE);
-		::InvalidateRect(m_hwnd, NULL, TRUE);
+		//::RedrawWindow(m_hwnd, nullptr, nullptr, RDW_INVALIDATE);
+		::InvalidateRect(m_hwnd, nullptr, TRUE);
 	}
 	void setreadonly(bool readonly)
 	{
 		::SendMessageW(m_hwnd, EM_SETREADONLY, (WPARAM)readonly, 0);
-		::InvalidateRect(m_hwnd, NULL, TRUE);
+		::InvalidateRect(m_hwnd, nullptr, TRUE);
 	}
 	void setfocus()
 	{

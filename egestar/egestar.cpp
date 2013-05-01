@@ -48,7 +48,7 @@ int preinit(int argc, char* argv[])
 	g_max = MAXSTAR;
 	if(argc < 2)
 	{
-		//MessageBoxA( NULL, "本屏幕保护程序无配置", "星空屏保", MB_OK );
+		//MessageBoxA( nullptr, "本屏幕保护程序无配置", "星空屏保", MB_OK );
 		//return -1;
 	}
 	else if(stricmp(argv[1], "/p") == 0)          // 小窗口预览模式
@@ -62,7 +62,7 @@ int preinit(int argc, char* argv[])
 	}
 	else if(stricmp(argv[1], "/s"))          // 非测试运行模式
 	{
-		MessageBoxA(NULL, "本屏幕保护程序无配置", "星空屏保", MB_OK);
+		MessageBoxA(nullptr, "本屏幕保护程序无配置", "星空屏保", MB_OK);
 		return -1;
 	}
 	return 0; // 全屏模式

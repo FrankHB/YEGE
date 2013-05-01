@@ -18,7 +18,7 @@
 	void pre_init(int inheritlevel) {\
 
 #define CTL_PREINITEND  }
-#define CTL_DEFPARAM    int inherit = inherit_level_e, ege::egeControlBase* pParent = NULL
+#define CTL_DEFPARAM    int inherit = inherit_level_e, ege::egeControlBase* pParent = nullptr
 #define CTL_INITBASE(parent)    parent(inherit, (ege::egeControlBase*)pParent), _preinit_obj(this, inherit_level_e)
 #define CTL_INIT        InitObject iobj(this, inherit_level_e);\
 	ege::PushTarget _pushtarget(buf());
