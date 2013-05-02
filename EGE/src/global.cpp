@@ -4,9 +4,6 @@
 namespace ege
 {
 
-int
-waitdealmessage(_graph_setting*);
-
 bool
 _graph_setting::_is_run() const
 {
@@ -68,7 +65,7 @@ _graph_setting::_getkey()
 					msg.flags |= key_flag_shift;
 				return msg;
 			}
-		} while(!exit_window && !exit_flag && waitdealmessage(this));
+		} while(!exit_window && !exit_flag && _waitdealmessage());
 	}
 	return ret;
 }
@@ -139,6 +136,14 @@ _graph_setting::_set_visualpage(int page)
 	update_mark_count = 0;
 }
 
+int
+_graph_setting::_dealmessage(bool force_update)
+{
+	if(force_update || update_mark_count <= 0)
+		_update();
+	return !exit_window;
+}
+
 void
 _graph_setting::_delay_ms(long ms)
 {
@@ -164,7 +169,7 @@ _graph_setting::_delay_ms(long ms)
 		{
 			if(f <= 0 || update_mark_count < UPDATE_MAX_CALL)
 			{
-				dealmessage(this, FORCE_UPDATE);
+				_dealmessage(FORCE_UPDATE);
 				f = 256;
 			}
 			else
@@ -172,7 +177,7 @@ _graph_setting::_delay_ms(long ms)
 					* 1000.0));
 			--f;
 		}
-		dealmessage(this, FORCE_UPDATE);
+		_dealmessage(FORCE_UPDATE);
 		dw = _get_highfeq_time_ls() * 1000.0;
 		guiupdate(this, root);
 		if(delay_ms_dwLast + 200.0 <= dw || delay_ms_dwLast > dw)
@@ -190,7 +195,7 @@ _graph_setting::_delay_update()
 	{
 		ege_sleep(1);
 		egectrl_root->draw(nullptr);
-		dealmessage(this, FORCE_UPDATE);
+		_dealmessage(FORCE_UPDATE);
 		egectrl_root->update();
 
 		int l, t, r, b, c;
@@ -208,7 +213,7 @@ _graph_setting::_flushkey()
 	EGEMSG msg;
 
 	if(msgkey_queue->empty())
-		dealmessage(this, NORMAL_UPDATE);
+		_dealmessage(NORMAL_UPDATE);
 	if(!msgkey_queue->empty())
 		while(msgkey_queue->pop(msg))
 			;
@@ -321,6 +326,21 @@ _graph_setting::_update()
 			SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 	}
 	return grOk;
+}
+
+int
+_graph_setting::_waitdealmessage()
+{
+//	MSG msg;
+
+	if(update_mark_count < UPDATE_MAX_CALL)
+	{
+		egectrl_root->draw(nullptr);
+		_update();
+		guiupdate(this, egectrl_root);
+	}
+	ege_sleep(1);
+	return !exit_window;
 }
 
 } // namespace ege

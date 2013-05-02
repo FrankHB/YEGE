@@ -118,7 +118,7 @@ delay_fps(double fps)
 					* 1000.0));
 			} while(dw + delay_time >= pg->_get_highfeq_time_ls() * 1000.0);
 		}
-		dealmessage(pg, FORCE_UPDATE);
+		pg->_dealmessage(FORCE_UPDATE);
 		dw = pg->_get_highfeq_time_ls() * 1000.0;
 		guiupdate(pg, root);
 		if(pg->delay_fps_dwLast + delay_time + avg_max_time <= dw
@@ -174,7 +174,7 @@ delay_jfps(double fps)
 			bSleep = 1;
 		}
 		if(bSleep)
-			dealmessage(pg, FORCE_UPDATE);
+			pg->_dealmessage(FORCE_UPDATE);
 		else
 			graph_setting._get_FPS(-0x100);
 		dw = pg->_get_highfeq_time_ls() * 1000.0;

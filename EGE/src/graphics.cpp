@@ -90,22 +90,8 @@ redraw_window(_graph_setting* pg, ::HDC dc)
 	return 0;
 }
 
-int
-graphupdate(_graph_setting* pg)
-{
-	return pg->_update();
 }
 
-}
-
-
-int
-dealmessage(_graph_setting* pg, bool force_update)
-{
-	if(force_update || pg->update_mark_count <= 0)
-		graphupdate(pg);
-	return !pg->exit_window;
-}
 
 void
 guiupdate(_graph_setting* pg, egeControlBase*& root)
@@ -115,22 +101,6 @@ guiupdate(_graph_setting* pg, egeControlBase*& root)
 	root->update();
 }
 
-
-int
-waitdealmessage(_graph_setting* pg)
-{
-	//MSG msg;
-	if(pg->update_mark_count < UPDATE_MAX_CALL)
-	{
-		egeControlBase*& root = pg->egectrl_root;
-		root->draw(nullptr);
-
-		graphupdate(pg);
-		guiupdate(pg, root);
-	}
-	ege_sleep(1);
-	return !pg->exit_window;
-}
 
 namespace
 {
@@ -208,8 +178,8 @@ getflush()
 	EGEMSG msg;
 	int lastkey = 0;
 	if(pg->msgkey_queue->empty())
-		dealmessage(pg, NORMAL_UPDATE);
-	if(! pg->msgkey_queue->empty())
+		pg->_dealmessage(NORMAL_UPDATE);
+	if(!pg->msgkey_queue->empty())
 		while(pg->msgkey_queue->pop(msg))
 			if(msg.message == WM_CHAR)
 				if(msg.message == WM_CHAR)
@@ -246,9 +216,9 @@ int
 getchEx(int flag)
 {
 	auto pg = &graph_setting;
+
 	if(pg->exit_window)
 		return grNoInitGraph;
-
 	{
 		int key;
 		EGEMSG msg;
@@ -281,8 +251,7 @@ getchEx(int flag)
 					}
 				}
 			}
-		}
-		while(!pg->exit_window && !pg->exit_flag && waitdealmessage(pg));
+		} while(!pg->exit_window && !pg->exit_flag && pg->_waitdealmessage());
 	}
 	return 0;
 }
@@ -336,9 +305,7 @@ peekmouse(_graph_setting* pg)
 	auto msg = EGEMSG();
 
 	if(pg->msgmouse_queue->empty())
-	{
-		dealmessage(pg, NORMAL_UPDATE);
-	}
+		pg->_dealmessage(NORMAL_UPDATE);
 	while(pg->msgmouse_queue->pop(msg))
 	{
 		pg->msgmouse_queue->unpop();
@@ -355,17 +322,10 @@ flushmouse()
 	auto pg = &graph_setting;
 	EGEMSG msg;
 	if(pg->msgmouse_queue->empty())
-	{
-		dealmessage(pg, NORMAL_UPDATE);
-	}
-	if(! pg->msgmouse_queue->empty())
-	{
+		pg->_dealmessage(NORMAL_UPDATE);
+	if(!pg->msgmouse_queue->empty())
 		while(pg->msgmouse_queue->pop(msg))
-		{
 			;
-		}
-	}
-	return ;
 }
 
 int
@@ -437,8 +397,7 @@ getmouse()
 			}
 			return mmsg;
 		}
-	}
-	while(!pg->exit_window && !pg->exit_flag && waitdealmessage(pg));
+	} while(!pg->exit_window && !pg->exit_flag && pg->_waitdealmessage());
 	return mmsg;
 }
 
