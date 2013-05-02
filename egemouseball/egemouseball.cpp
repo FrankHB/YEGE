@@ -151,19 +151,16 @@ void dealMouse(BALL* ball)
 		my = mouse.y;
 
 		if(iCapture == -1 && mouse.msg == mouse_msg_down)
-		{
 			for(i = MAXBALL - 1; i > -1; --i)
 				if(ball[i].resmouse(mouse, dx, dy))
 				{
 					iCapture = i;
 					break;
 				}
-		}
-		else if(iCapture >= 0 && (mouse.msg == mouse_msg_up || mouse.msg == mouse_msg_move))
-		{
+		else if(iCapture >= 0 && (mouse.msg == mouse_msg_up
+			|| mouse.msg == mouse_msg_move))
 			if(ball[iCapture].resmouse(mouse, dx, dy) == 0)
 				iCapture = -1;
-		}
 	}
 	if(iCapture >= 0)
 	{
@@ -174,17 +171,14 @@ void dealMouse(BALL* ball)
 
 int main(void)
 {
-	{
-		setinitmode(INIT_ANIMATION);
-		initgraph(LEN, WID);
-		setcaption("Åö×²Ð¡Çò");
-		randomize();
-	}
-	int i;
+	setinitmode(INIT_ANIMATION);
+	initgraph(LEN, WID);
+	setcaption("Åö×²Ð¡Çò");
+	randomize();
 
 	BALL ball[MAXBALL];
 
-	for(; is_run(); delay_fps(60))
+	for(int i; is_run(); delay_fps(60))
 	{
 		dealMouse(ball);
 
@@ -197,7 +191,6 @@ int main(void)
 			ball[i].drawball();
 
 	}
-
 	closegraph();
 	return 0;
 }
