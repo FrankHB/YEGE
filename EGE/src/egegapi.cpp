@@ -3,6 +3,7 @@
 #include <cstdarg>
 #include "zlib.h"
 #include "ege/sys_edit.h"
+#include <utility> // for std::swap;
 
 namespace ege
 {
@@ -207,62 +208,50 @@ mousepos(int* x, int* y)
 void
 setwritemode(int mode, PIMAGE pimg)
 {
-	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
-	SetROP2(img->m_hDC, mode);
+	auto img(CONVERT_IMAGE_CONST(pimg));
+
+	::SetROP2(img->m_hDC, mode);
 	CONVERT_IMAGE_END;
 }
 
 color_t
 getpixel(int x, int y, PIMAGE pimg)
 {
-	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
+	auto img(CONVERT_IMAGE_CONST(pimg));
 	CONVERT_IMAGE_END;
+
 	x += img->m_vpt.left;
 	y += img->m_vpt.top;
-	if((x < 0) || (y < 0) || (x >= img->m_width) || (y >= img->m_height))
-	{
-		return 0;
-	}
-	color_t col = img->m_pBuffer[y * img->m_width + x];
-	return col;
+	return (x < 0) || (y < 0) || (x >= img->m_width) || (y >= img->m_height) ? 0
+		: color_t(img->m_pBuffer[y * img->m_width + x]);
 }
 
 void
 putpixel(int x, int y, color_t color, PIMAGE pimg)
 {
-	PIMAGE img = CONVERT_IMAGE(pimg);
+	auto img(CONVERT_IMAGE(pimg));
+
 	x += img->m_vpt.left;
 	y += img->m_vpt.top;
-	if((x < 0) || (y < 0) || (x >= img->m_vpt.right) || (y >= img->m_vpt.bottom))
-	{
-		;
-	}
-	else
-	{
+	if(!(x < 0 || y < 0 || x >= img->m_vpt.right || y >= img->m_vpt.bottom))
 		img->m_pBuffer[y * img->m_width + x] = color;
-	}
 	CONVERT_IMAGE_END;
 }
 
 void
 putpixels(int nPoint, int* pPoints, PIMAGE pimg)
 {
-	PIMAGE img = CONVERT_IMAGE(pimg);
+	auto img(CONVERT_IMAGE(pimg));
 	int x, y, c;
 	PDWORD pb = &img->m_pBuffer[img->m_vpt.top * img->m_width + img->m_vpt.left];
 	int w = img->m_vpt.right - img->m_vpt.left, h = img->m_vpt.bottom - img->m_vpt.top;
 	int tw = img->m_width;
+
 	for(int n = 0; n < nPoint; ++n, pPoints += 3)
 	{
 		x = pPoints[0], y = pPoints[1], c = pPoints[2];
-		if((x < 0) || (y < 0) || (x >= w) || (y >= h))
-		{
-			;
-		}
-		else
-		{
+		if(!(x < 0 || y < 0 || x >= w || y >= h))
 			pb[y * tw + x] = RGBTOBGR(c);
-		}
 	}
 	CONVERT_IMAGE_END;
 }
@@ -319,16 +308,16 @@ moverel(int dx, int dy, PIMAGE pimg)
 void
 line(int x1, int y1, int x2, int y2, PIMAGE pimg)
 {
-	PIMAGE img = CONVERT_IMAGE(pimg);
-	MoveToEx(img->m_hDC, x1, y1, nullptr);
-	LineTo(img->m_hDC, x2, y2);
+	auto img(CONVERT_IMAGE(pimg));
+	::MoveToEx(img->m_hDC, x1, y1, nullptr);
+	::LineTo(img->m_hDC, x2, y2);
 	CONVERT_IMAGE_END;
 }
 
 void
 linerel(int dx, int dy, PIMAGE pimg)
 {
-	PIMAGE img = CONVERT_IMAGE(pimg);
+	auto img(CONVERT_IMAGE(pimg));
 	POINT pt;
 	GetCurrentPositionEx(img->m_hDC, &pt);
 	dx += pt.x;
@@ -340,7 +329,7 @@ linerel(int dx, int dy, PIMAGE pimg)
 void
 lineto(int x, int y, PIMAGE pimg)
 {
-	PIMAGE img = CONVERT_IMAGE(pimg);
+	auto img (CONVERT_IMAGE(pimg));
 	LineTo(img->m_hDC, x, y);
 	CONVERT_IMAGE_END;
 }
@@ -351,26 +340,28 @@ void
 line_base(float x1, float y1, float x2, float y2, PIMAGE img)
 {
 	int bswap = 2;
-	color_t col = getcolor(img);
+	auto col = getcolor(img);
 	color_t endp = 0;
-	color_t* pBuffer = (color_t*)img->m_pBuffer;
+	auto pBuffer = (color_t*)img->m_pBuffer;
 	int rw = img->m_width;
+
 	if(x1 > x2)
 	{
-		float ft;
-		SWAP(x1, x2, ft);
-		SWAP(y1, y2, ft);
-		if(bswap) bswap ^= 3;
+		std::swap(x1, x2),
+		std::swap(y1, y2);
+		if(bswap)
+			bswap ^= 3;
 	}
-	if(x2 < img->m_vpt.left) return ;
-	if(x1 > img->m_vpt.right) return ;
+	if(x2 < img->m_vpt.left || x1 > img->m_vpt.right)
+		return;
 	if(x1 < img->m_vpt.left)
 	{
 		if(x2 - x1 < FLOAT_EPS) return;
 		float d = (x2 - img->m_vpt.left) / (x2 - x1);
 		y1 = (y1 - y2) * d + y2;
 		x1 = (float)img->m_vpt.left;
-		if(bswap == 1) bswap = 0;
+		if(bswap == 1)
+			bswap = 0;
 	}
 	if(x2 > img->m_vpt.right)
 	{
@@ -378,118 +369,122 @@ line_base(float x1, float y1, float x2, float y2, PIMAGE img)
 		float d = (img->m_vpt.right - x1) / (x2 - x1);
 		y2 = (y2 - y1) * d + y1;
 		x2 = (float)img->m_vpt.right;
-		if(bswap == 2) bswap = 0;
+		if(bswap == 2)
+			bswap = 0;
 	}
 	if(y1 > y2)
 	{
-		float ft;
-		SWAP(x1, x2, ft);
-		SWAP(y1, y2, ft);
-		if(bswap) bswap ^= 3;
+		std::swap(x1, x2),
+		std::swap(y1, y2);
+		if(bswap)
+			bswap ^= 3;
 	}
-	if(y2 < img->m_vpt.top) return ;
-	if(y1 > img->m_vpt.bottom) return ;
+	if(y2 < img->m_vpt.top)
+		return;
+	if(y1 > img->m_vpt.bottom)
+		return;
 	if(y1 < img->m_vpt.top)
 	{
-		if(y2 - y1 < FLOAT_EPS) return;
+		if(y2 - y1 < FLOAT_EPS)
+			return;
+
 		float d = (y2 - img->m_vpt.top) / (y2 - y1);
+
 		x1 = (x1 - x2) * d + x2;
 		y1 = (float)img->m_vpt.top;
-		if(bswap == 1) bswap = 0;
+		if(bswap == 1)
+			bswap = 0;
 	}
 	if(y2 > img->m_vpt.bottom)
 	{
-		if(y2 - y1 < FLOAT_EPS) return;
+		if(y2 - y1 < FLOAT_EPS)
+			return;
+
 		float d = (img->m_vpt.bottom - y1) / (y2 - y1);
+
 		x2 = (x2 - x1) * d + x1;
 		y2 = (float)img->m_vpt.bottom;
-		if(bswap == 2) bswap = 0;
+		if(bswap == 2)
+			bswap = 0;
 	}
 	if(bswap)
-	{
-		if(bswap == 1)
-		{
-			endp = pBuffer[(int)y1 * rw + (int)x1];
-		}
-		else
-		{
-			endp = pBuffer[(int)y2 * rw + (int)x2];
-		}
-	}
+		endp = pBuffer[bswap == 1 ? (int)y1 * rw + (int)x1
+			: (int)y2 * rw + (int)x2];
 	if(y2 - y1 > fabs(x2 - x1))
 	{
 		int y = (int)(y1 + 0.9f);
 		int ye = (int)(y2);
 		float x, dx;
-		if(y < y1) ++y;
+
+		if(y < y1)
+			++y;
 		dx = (x2 - x1) / (y2 - y1);
 		x = (y - y1) * dx + x1 + 0.5f;
-		if(ye >= img->m_vpt.bottom) ye = img->m_vpt.bottom - 1;
-		if(ye < y2) bswap = 0;
+		if(ye >= img->m_vpt.bottom)
+			ye = img->m_vpt.bottom - 1;
+		if(ye < y2)
+			bswap = 0;
 		for(; y <= ye; ++y, x += dx)
-		{
 			pBuffer[y * rw + (int)x] = col;
-		}
 	}
 	else
 	{
 		if(x1 > x2)
 		{
-			float ft;
-			SWAP(x1, x2, ft);
-			SWAP(y1, y2, ft);
-			if(bswap) bswap ^= 3;
+			std::swap(x1, x2),
+			std::swap(y1, y2);
+			if(bswap)
+				bswap ^= 3;
 		}
+
 		int x = (int)(x1 + 0.9f);
 		int xe = (int)(x2);
 		float y, dy;
-		if(x < x1) ++x;
+
+		if(x < x1)
+			++x;
 		dy = (y2 - y1) / (x2 - x1);
 		y = (x - x1) * dy + y1 + 0.5f;
-		if(xe >= img->m_vpt.right) xe = img->m_vpt.right - 1;
-		if(xe < x2) bswap = 0;
+		if(xe >= img->m_vpt.right)
+			xe = img->m_vpt.right - 1;
+		if(xe < x2)
+			bswap = 0;
 		for(; x <= xe; ++x, y += dy)
-		{
 			pBuffer[(int)y * rw + x] = col;
-		}
 	}
 	if(bswap)
-	{
-		if(bswap == 1)
-		{
-			pBuffer[(int)y1 * rw + (int)x1] = endp;
-		}
-		else
-		{
-			pBuffer[(int)y2 * rw + (int)x2] = endp;
-		}
-	}
+		pBuffer[bswap == 1 ? (int)y1 * rw + (int)x1
+			: (int)y2 * rw + (int)x2] = endp;
 }
 
 void
 lineto_f(float x, float y, PIMAGE pimg)
 {
-	PIMAGE img = CONVERT_IMAGE(pimg);
+	auto img(CONVERT_IMAGE(pimg));
 	POINT pt;
-	GetCurrentPositionEx(img->m_hDC, &pt);
-	line_base((float)pt.x, (float)pt.y, x, y, img);
+
+	::GetCurrentPositionEx(img->m_hDC, &pt);
+	line_base(float(pt.x), float(pt.y), x, y, img);
 	CONVERT_IMAGE_END;
 }
 
 void
 linerel_f(float dx, float dy, PIMAGE pimg)
 {
-	PIMAGE img = CONVERT_IMAGE(pimg);
+	auto img(CONVERT_IMAGE(pimg));
 	POINT pt;
-	GetCurrentPositionEx(img->m_hDC, &pt);
-	line_base((float)pt.x, (float)pt.y, (float)pt.x + dx, (float)pt.y + dy, img);
+
+	::GetCurrentPositionEx(img->m_hDC, &pt);
+	line_base(float(pt.x), float(pt.y), float(pt.x) + dx, float(pt.y) + dy,
+		img);
 	CONVERT_IMAGE_END;
 }
 
 void
 line_f(float x1, float y1, float x2, float y2, PIMAGE pimg)
 {
-	PIMAGE img = CONVERT_IMAGE(pimg);
+	auto img(CONVERT_IMAGE(pimg));
+
 	line_base(x1, y1, x2, y2, img);
 	CONVERT_IMAGE_END;
 }
@@ -513,14 +508,11 @@ saveBrush(PIMAGE img, int save)   //此函数调用前，已经有Lock
 			return 1;
 		}
 	}
-	else
+	else if(pg->savebrush_hbr)
 	{
-		if(pg->savebrush_hbr)
-		{
-			pg->savebrush_hbr = (HBRUSH)SelectObject(img->m_hDC, pg->savebrush_hbr);
-			DeleteObject(pg->savebrush_hbr);
-			pg->savebrush_hbr = nullptr;
-		}
+		pg->savebrush_hbr = (HBRUSH)SelectObject(img->m_hDC, pg->savebrush_hbr);
+		DeleteObject(pg->savebrush_hbr);
+		pg->savebrush_hbr = nullptr;
 	}
 	return 0;
 }
@@ -539,7 +531,7 @@ void rectangle(int left, int top, int right, int bottom, PIMAGE pimg)
 color_t
 getcolor(PIMAGE pimg)
 {
-	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
+	auto img(CONVERT_IMAGE_CONST(pimg));
 
 	if(img && img->m_hDC)
 	{
@@ -560,7 +552,7 @@ getcolor(PIMAGE pimg)
 void
 setcolor(color_t color, PIMAGE pimg)
 {
-	PIMAGE img = CONVERT_IMAGE(pimg);
+	auto img(CONVERT_IMAGE(pimg));
 
 	if(img && img->m_hDC)
 	{
@@ -595,16 +587,12 @@ setcolor(color_t color, PIMAGE pimg)
 						len = 1;
 					}
 					else
-					{
-						len++;
-					}
+						++len;
 				}
 				else
 				{
 					if(st == 0)
-					{
-						len++;
-					}
+						++len;
 					else
 					{
 						st = 0;
@@ -613,16 +601,13 @@ setcolor(color_t color, PIMAGE pimg)
 					}
 				}
 			}
-			hpen = ExtCreatePen(PS_GEOMETRIC, img->m_linestyle.thickness, &lbr, bn, style);
+			hpen = ::ExtCreatePen(PS_GEOMETRIC, img->m_linestyle.thickness,
+				&lbr, bn, style);
 		}
 		else
-		{
 			hpen = CreatePenIndirect(&lPen);
-		}
 		if(hpen)
-		{
 			DeleteObject(SelectObject(img->m_hDC, hpen));
-		}
 	}
 	CONVERT_IMAGE_END;
 }
