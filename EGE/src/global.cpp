@@ -4,6 +4,9 @@
 namespace ege
 {
 
+int
+waitdealmessage(_graph_setting*);
+
 bool
 _graph_setting::_is_run() const
 {
@@ -35,6 +38,39 @@ _graph_setting::_get_FPS(int add)
 		time = cur;
 	}
 	return add > 0 ? (fret + flret) / 2 : fret_inv;
+}
+
+key_msg
+_graph_setting::_getkey()
+{
+	key_msg ret{0, key_msg_none, 0};
+
+	if(!exit_window)
+	{
+		int key = 0;
+
+		do
+		{
+			if((key = _getkey_p()))
+			{
+				key_msg msg{0, key_msg_none, 0};
+
+				if(key & KEYMSG_DOWN)
+					msg.msg = key_msg_down;
+				else if(key & KEYMSG_UP)
+					msg.msg = key_msg_up;
+				else if(key & KEYMSG_CHAR)
+					msg.msg = key_msg_char;
+				msg.key = key & 0xFFFF;
+				if(keystate(VK_CONTROL))
+					msg.flags |= key_flag_ctrl;
+				if(keystate(VK_SHIFT))
+					msg.flags |= key_flag_shift;
+				return msg;
+			}
+		} while(!exit_window && !exit_flag && waitdealmessage(this));
+	}
+	return ret;
 }
 
 int
@@ -164,6 +200,28 @@ _graph_setting::_delay_update()
 	}
 	delay_ms_dwLast = _get_highfeq_time_ls() * 1000.0;
 	skip_timer_mark = false;
+}
+
+void
+_graph_setting::_flushkey()
+{
+	EGEMSG msg;
+
+	if(msgkey_queue->empty())
+		dealmessage(this, NORMAL_UPDATE);
+	if(!msgkey_queue->empty())
+		while(msgkey_queue->pop(msg))
+			;
+}
+
+int
+_graph_setting::_keystate(int key)
+{
+	if(key < 0 || key >= MAX_KEY_VCODE)
+		return -1;
+	if(!(::USHORT(::GetKeyState(key)) & 0x8000))
+		keystatemap[key] = 0;
+	return keystatemap[key];
 }
 
 void

@@ -115,8 +115,6 @@ guiupdate(_graph_setting* pg, egeControlBase*& root)
 	root->update();
 }
 
-namespace
-{
 
 int
 waitdealmessage(_graph_setting* pg)
@@ -133,6 +131,9 @@ waitdealmessage(_graph_setting* pg)
 	ege_sleep(1);
 	return !pg->exit_window;
 }
+
+namespace
+{
 
 int
 peekkey(_graph_setting* pg)
@@ -301,64 +302,19 @@ getch()
 key_msg
 getkey()
 {
-	auto pg(&graph_setting);
-	key_msg ret{0, key_msg_none, 0};
-
-	if(pg->exit_window)
-		return ret;
-	{
-		int key = 0;
-
-		do
-		{
-			if((key = pg->_getkey_p()))
-			{
-				key_msg msg{0, key_msg_none, 0};
-
-				if(key & KEYMSG_DOWN)
-					msg.msg = key_msg_down;
-				else if(key & KEYMSG_UP)
-					msg.msg = key_msg_up;
-				else if(key & KEYMSG_CHAR)
-					msg.msg = key_msg_char;
-				msg.key = key & 0xFFFF;
-				if(keystate(VK_CONTROL)) msg.flags |= key_flag_ctrl;
-				if(keystate(VK_SHIFT)) msg.flags |= key_flag_shift;
-				return msg;
-			}
-		} while(!pg->exit_window && !pg->exit_flag && waitdealmessage(pg));
-	}
-	return ret;
+	return graph_setting._getkey();
 }
 
 void
 flushkey()
 {
-	auto pg = &graph_setting;
-	EGEMSG msg;
-
-	if(pg->msgkey_queue->empty())
-		dealmessage(pg, NORMAL_UPDATE);
-	if(! pg->msgkey_queue->empty())
-		while(pg->msgkey_queue->pop(msg))
-			;
-	return ;
+	graph_setting._flushkey();
 }
 
 int
 keystate(int key)
 {
-	auto pg = &graph_setting;
-	if(key < 0 || key >= MAX_KEY_VCODE)
-	{
-		return -1;
-	}
-	SHORT s = GetKeyState(key);
-	if(((USHORT)s & 0x8000) == 0)
-	{
-		pg->keystatemap[key] = 0;
-	}
-	return pg->keystatemap[key];
+	return graph_setting._keystate(key);
 }
 
 
