@@ -220,7 +220,7 @@ void draw_net(struct net* pnet)
 
 	for(y = 0; y <= pnet->h; ++y)
 	{
-		//if (y % g_mod_show == 0)
+		//if(y % g_mod_show == 0)
 		{
 			for(x = 0; x <= pnet->w + 1; ++x)
 			{
@@ -233,7 +233,7 @@ void draw_net(struct net* pnet)
 	}
 	for(x = 0; x <= pnet->w; ++x)
 	{
-		//if (x % g_mod_show == 0)
+		//if(x % g_mod_show == 0)
 		{
 			for(y = 0; y <= pnet->h + 1; ++y)
 			{

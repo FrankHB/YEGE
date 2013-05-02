@@ -216,9 +216,9 @@ struct calclist
         m_list[m_len] = y<<W_B + x;
         PIXEL* p = (PIXEL*)pMap;
         int t = m_len;
-        for ( ; t>1; t >>= 1)
+        for( ; t>1; t >>= 1)
         {
-            if (p[m_list[t]].nIter < p[m_list[t>>1]].nIter)
+            if(p[m_list[t]].nIter < p[m_list[t>>1]].nIter)
             {
                 std::swap(m_list[t], m_list[t>>1]);
             }
@@ -230,11 +230,11 @@ struct calclist
         int t = y<<W_B + x;
         int t2 = t<<1;
         PIXEL* p = (PIXEL*)pMap;
-        for ( ; t2 < m_len; t2 = (t<<1))
+        for( ; t2 < m_len; t2 = (t<<1))
         {
-            if (p[m_list[t2]].nIter <= p[m_list[t2+1]].nIter)
+            if(p[m_list[t2]].nIter <= p[m_list[t2+1]].nIter)
             {
-                if (p[m_list[t]].nIter <= p[m_list[t2]].nIter)
+                if(p[m_list[t]].nIter <= p[m_list[t2]].nIter)
                 {
                     return ;
                 }
@@ -247,7 +247,7 @@ struct calclist
             else
             {
                 t2 += 1;
-                if (p[m_list[t]].nIter <= p[m_list[t2]].nIter)
+                if(p[m_list[t]].nIter <= p[m_list[t2]].nIter)
                 {
                     return ;
                 }
@@ -258,9 +258,9 @@ struct calclist
                 }
             }
         }
-        if (t2 <= m_len)
+        if(t2 <= m_len)
         {
-            if (p[m_list[t]].nIter > p[m_list[t2]].nIter)
+            if(p[m_list[t]].nIter > p[m_list[t2]].nIter)
             {
                 std::swap(m_list[t], m_list[t2]);
             }
@@ -268,7 +268,7 @@ struct calclist
     }
     int pop(int x, int y)
     {
-        if (m_len <= 0) return -1;
+        if(m_len <= 0) return -1;
         int t = y<<W_B + x;
         std::swap(m_list[t], m_list[m_len]);
         --m_len;
@@ -354,7 +354,7 @@ void InitColor()
 	*/
 }
 
-//#define func(z, c, ed) {z*=z; if (z.re > 4) {ed = 1; break;} z+=c;} //(z * z * z * z * z * z + c)
+//#define func(z, c, ed) {z*=z; if(z.re > 4) {ed = 1; break;} z+=c;} //(z * z * z * z * z * z + c)
 #define func(z, c) z *= z, z += c;
 
 inline
@@ -392,7 +392,7 @@ int MandelbrotEx(PIXEL& z, COMPLEX& c)
 		//func(z.last, c, z.ed);
 		--k;
 		func(z.last, c);
-		//if (z.last.re > r || z.last.re < mr || z.last.im > r || z.last.im < mr)
+		//if(z.last.re > r || z.last.re < mr || z.last.im > r || z.last.im < mr)
 		{
 			if(abs(z.last) > 4.0)
 			{

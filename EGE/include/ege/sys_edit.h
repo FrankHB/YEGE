@@ -92,7 +92,7 @@ public:
 			::DeleteObject(m_hBrush);
 			m_hBrush = br;
 			return (LRESULT)br;
-			//} else if (message == WM_SETFOCUS) {
+			//} else if(message == WM_SETFOCUS) {
 			//    int a = 0;
 			//    int b = 1;
 			//    return 0;

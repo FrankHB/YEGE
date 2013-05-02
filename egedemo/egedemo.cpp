@@ -253,9 +253,9 @@ public:
 \n    initgraph(640, 480);\
 \n    int y, x;\
 \n    setbkcolor(DARKGRAY);\
-\n    for (y = 0; y < 8; ++y)\
+\n    for(y = 0; y < 8; ++y)\
 \n    {\
-\n        for (x = 0; x < 8; ++x)\
+\n        for(x = 0; x < 8; ++x)\
 \n        {\
 \n            setfillcolor(((x^y)&1) ? BLACK : WHITE );\
 \n            bar(x * 30, y * 30,\
@@ -321,9 +321,9 @@ public:
 \n    initgraph(640, 480);\
 \n    int y, x;\
 \n    setbkcolor(DARKGRAY);\
-\n    for (y = 0; y < 8; ++y)\
+\n    for(y = 0; y < 8; ++y)\
 \n    {\
-\n        for (x = 0; x < 8; ++x)\
+\n        for(x = 0; x < 8; ++x)\
 \n        {\
 \n            setfillstyle(((x^y)&1) ? BLACK : WHITE );\
 \n            bar(x * 30, y * 30,\
@@ -385,7 +385,7 @@ public:
 \n    initgraph(640, 480);\
 \n    {\
 \n        int y;\
-\n        for (y = 0; y < 360; ++y)\
+\n        for(y = 0; y < 360; ++y)\
 \n        {\
 \n            setcolor(HSVtoRGB((float)y, 1.0f, 1.0f));\
 \n            line(0, y, 200, y);\
@@ -461,22 +461,22 @@ public:
 \n    int x = 0, dx = 1, color = 0; //x表示圆的横坐标，dx表示速度方向\
 \n    //动画主循环，kbhit()检测当前有没有按键，有就退出\
 \n    //delay_fps(60)控制这个循环每秒循环60次\
-\n    for (; kbhit() == 0; delay_fps(60))\
+\n    for(; kbhit() == 0; delay_fps(60))\
 \n    {\
 \n        cleardevice();\
 \n        //根据x来调整dx的符号\
-\n        if (x >= 320)\
+\n        if(x >= 320)\
 \n        {\
 \n            dx = -1;\
 \n        }\
-\n        else if (x <= 0)\
+\n        else if(x <= 0)\
 \n        {\
 \n            dx = 1;\
 \n        }\
 \n        //通过对dx的控制，间接控制x的增减方向\
 \n        x += dx;\
 \n        color += 1;\
-\n        if (color >= 360)\
+\n        if(color >= 360)\
 \n        {\
 \n            color = 0;\
 \n        }\
@@ -549,16 +549,16 @@ public:
 \n    int x = 0, dx = 1; //x表示圆的横坐标，dx表示速度方向\
 \n    //动画主循环，kbhit()检测当前有没有按键，有就退出\
 \n    //delay_fps(60)控制这个循环每秒循环60次\
-\n    for (; kbhit() == 0; delay_fps(60))\
+\n    for(; kbhit() == 0; delay_fps(60))\
 \n    {\
 \n        //清屏\
 \n        cleardevice();\
 \n        //根据x来调整dx的符号\
-\n        if (x >= 320)\
+\n        if(x >= 320)\
 \n        {\
 \n            dx = -1;\
 \n        }\
-\n        else if (x <= 0)\
+\n        else if(x <= 0)\
 \n        {\
 \n            dx = 1;\
 \n        }\
@@ -619,7 +619,7 @@ public:
 	SceneBase* Update()
 	{
 		char str[] = "#include \"graphics.h\"\n\nint main()\n{\n    initgraph(640, 480);\n    int n; //声明变量x\n    //变量x从0到320，取出每个横坐标\
-\n    for (int n = 0; n < 320; n++)\
+\n    for(int n = 0; n < 320; n++)\
 \n    {\
 \n        //映射到-8到8的浮点数范围\
 \n        double x = ((double)n - 160) / 20;\
@@ -675,7 +675,7 @@ public:
 	SceneBase* Update()
 	{
 		char str[] = "#include \"graphics.h\"\n\nint main()\n{\n    initgraph(640, 480);\n    int n; //声明变量x\n    //变量x从0到320，取出每个横坐标\
-\n    for (int n = 0; n < 320; n++)\
+\n    for(int n = 0; n < 320; n++)\
 \n    {\
 \n        //映射到-2到2的浮点数范围\
 \n        double x = ((double)n - 160) / 80;\
@@ -725,7 +725,7 @@ public:
 	}
 	SceneBase* Update()
 	{
-		char str[] = "#include \"graphics.h\"\n\nint main()\n{\n    initgraph(640, 480);\n    int x; //声明变量x\n    //变量x从100到300，步长为3，这样画出虚线\n    for (x = 100; x < 300; x += 3)\n    {\n        //在y=100的地方画绿点，多个连续点构成线\n        putpixel(x, 100, GREEN);\n    }\n    getch();\n    return 0;\n}";
+		char str[] = "#include \"graphics.h\"\n\nint main()\n{\n    initgraph(640, 480);\n    int x; //声明变量x\n    //变量x从100到300，步长为3，这样画出虚线\n    for(x = 100; x < 300; x += 3)\n    {\n        //在y=100的地方画绿点，多个连续点构成线\n        putpixel(x, 100, GREEN);\n    }\n    getch();\n    return 0;\n}";
 		setbkcolor_f(BLACK);
 		cleardevice();
 		setcolor(LIGHTGRAY);
@@ -761,7 +761,7 @@ public:
 	}
 	SceneBase* Update()
 	{
-		char str[] = "#include \"graphics.h\"\n\nint main()\n{\n    initgraph(640, 480);\n    int x; //声明变量x\n    //变量x从100到300\n    for (x = 100; x < 300; x++)\n    {\n        //在y=100的地方画红点，多个连续点构成线\n        putpixel(x, 100, RED);\n    }\n    getch();\n    return 0;\n}";
+		char str[] = "#include \"graphics.h\"\n\nint main()\n{\n    initgraph(640, 480);\n    int x; //声明变量x\n    //变量x从100到300\n    for(x = 100; x < 300; x++)\n    {\n        //在y=100的地方画红点，多个连续点构成线\n        putpixel(x, 100, RED);\n    }\n    getch();\n    return 0;\n}";
 		setbkcolor_f(BLACK);
 		cleardevice();
 		setcolor(LIGHTGRAY);
@@ -871,13 +871,13 @@ public:
 \n{\
 \n    int a;\
 \n    cleardevice();\
-\n    for (a = 0; a < n; ++a)\
+\n    for(a = 0; a < n; ++a)\
 \n    {\
 \n        setcolor(WHITE);\
 \n        setfillstyle(HSLtoRGB(120.0f, 1.0f, (float)(arr[a] / 32.0)));\
 \n        fillellipse(100, 20 * a, 9, 9);\
 \n    }\
-\n    if (i >= 0)\
+\n    if(i >= 0)\
 \n    {\
 \n        setfillstyle(HSLtoRGB(120.0f, 1.0f, 1.0f)));\
 \n        fillellipse(80, 20 * i + 30, 9, 9);\
@@ -891,7 +891,7 @@ public:
 \n    int a, b;\
 \n    initgraph(640, 480);\
 \n    randomize();\
-\n    for (a = 0; a < 20; ++a)\
+\n    for(a = 0; a < 20; ++a)\
 \n    {\
 \n        arr[a] = random(32);\
 \n    }\
@@ -900,11 +900,11 @@ public:
 \n    outtextxy(0, 0, \"请按任意键开始演示\");\
 \n    getch();\
 \n    cleardevice();\
-\n    for (b = 20; b > 0; --b)\
+\n    for(b = 20; b > 0; --b)\
 \n    {\
-\n        for (a = 1; a < b; ++a)\
+\n        for(a = 1; a < b; ++a)\
 \n        {\
-\n            if ( arr[a] < arr[a-1])\
+\n            if( arr[a] < arr[a-1])\
 \n            {\
 \n                int t = arr[a];\
 \n                arr[a] = arr[b];\
@@ -978,7 +978,7 @@ public:
 \n    {\
 \n        int t = clock(); //记录超始时间\
 \n        char str[100];\
-\n        for (; kbhit() == 0; delay_fps(60))\
+\n        for(; kbhit() == 0; delay_fps(60))\
 \n        {\
 \n            cleardevice();\
 \n            //把clock()-t的结果输出到字符串str\

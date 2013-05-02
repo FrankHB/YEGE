@@ -133,7 +133,7 @@ void draw_polys(struct polys* p) //»æÖÆ¶à±ßÐÎ¶ÓÁÐ£¨Ö»»­µÚÒ»¸öºÍ×îºóÒ»¸ö£¬×îºóÒ»¸
 {
 	draw_poly(&(p->p[p->n_poly - 1]),        0);
 	draw_poly(&(p->p[          0]), p->color);
-	//for (int i = 0; i < 4; ++i)
+	//for(int i = 0; i < 4; ++i)
 	//    draw_poly(&(p->p[i]), p->color);
 }
 

@@ -356,11 +356,11 @@ int JDrawA(COMPLEX c, double, double, double, double)
 				}
 			}
 			/*
-			if (clock() - tt > 10)
+			if(clock() - tt > 10)
 			{
 			    delay(1);
 			    tt = clock();
-			    if (0 && kbmouhit())
+			    if(0 && kbmouhit())
 			    {
 			        return -1;
 			    }

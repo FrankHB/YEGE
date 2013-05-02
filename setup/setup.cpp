@@ -254,7 +254,7 @@ void setup()
 		imagefilter_blurring(nullptr, 0xF0, 0x100);
 		delay_fps(60);
 	}
-	//for ( ; kbhit() != -1; delay_fps(60))
+	//for( ; kbhit() != -1; delay_fps(60))
 	{
 	}
 

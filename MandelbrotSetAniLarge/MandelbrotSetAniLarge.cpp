@@ -148,10 +148,10 @@ inline
 bool abs4(const COMPLEX& c)
 {
 	//Float limit = 16.0, mlimit = -limit;
-	//if (c.re > limit || c.re < mlimit || c.im > limit || c.im < mlimit) return true;
+	//if(c.re > limit || c.re < mlimit || c.im > limit || c.im < mlimit) return true;
 	double d1 = mpf_get_d(c.re.get_mpf_t()), d2 = mpf_get_d(c.im.get_mpf_t());
 	return d1 * d1 + d2 * d2 > 4.0;
-	//if (c.re * c.re + c.im * c.im > 16.0) return true;
+	//if(c.re * c.re + c.im * c.im > 16.0) return true;
 	//return false;
 }
 
@@ -367,7 +367,7 @@ void InitColor()
 	*/
 }
 
-//#define func(z, c, ed) {z*=z; if (z.re > 4) {ed = 1; break;} z+=c;} //(z * z * z * z * z * z + c)
+//#define func(z, c, ed) {z*=z; if(z.re > 4) {ed = 1; break;} z+=c;} //(z * z * z * z * z * z + c)
 #define func(z, c) z *= z, z += c;
 
 int g_base_iters = BASEITERATIONS;
@@ -458,9 +458,9 @@ void initqueue(int bcross)
 	}
 	/*
 	int sh = SC_H / 2 - 1, sw = SC_W / 2 - 1;
-	for (int y=0; y<SC_H / 2; y += 159)
+	for(int y=0; y<SC_H / 2; y += 159)
 	{
-	    for (int x=0; x<SC_W / 2; x += 159)
+	    for(int x=0; x<SC_W / 2; x += 159)
 	    {
 	        pMap[sh + y][sw + x].calc = 1;
 	        pMap[sh + y][sw - x].calc = 1;
@@ -490,12 +490,12 @@ void initqueue(int bcross)
 	}
 	// */
 	/*
-	for (int y=1; y<SC_H-1; y++)
+	for(int y=1; y<SC_H-1; y++)
 	{
-	    for (int x=1; x<SC_W-1; x++)
+	    for(int x=1; x<SC_W-1; x++)
 	    {
 	        PIXEL& p = pMap[y][x];
-	        if (p.ed)
+	        if(p.ed)
 	        {
 	            pMap[y-1][x].calc = 1;
 	            pMap[y+1][x].calc = 1;
@@ -515,7 +515,7 @@ void initqueue(int bcross)
 				//p.nMinIter = 0;
 				g_udlist.push(x, y);
 			}
-			/*else if (p.ed == 0 && (random(20000)) == 0)
+			/*else if(p.ed == 0 && (random(20000)) == 0)
 			{
 			    g_udlist.push(x, y);
 			    p.calc = 1;
@@ -526,7 +526,7 @@ void initqueue(int bcross)
 	{
 	    int x = SC_W / 2, y = SC_H / 2;
 	    PIXEL& p = pMap[y][x];
-	    if (p.ed == 0)
+	    if(p.ed == 0)
 	    {
 	        g_udlist.push(x, y);
 	        p.calc = 1;
@@ -556,7 +556,7 @@ void addpoint(int x, int y, int it = -1)
 int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int mode = 0)
 {
 	int t = clock();
-	//if (mode == 0)
+	//if(mode == 0)
 	{
 		int x, y;
 		while(g_udlist.pop(&x, &y))
@@ -856,7 +856,7 @@ int WinMain()
 			//Draw(from.re, from.im, to.re, to.im, mode);
 			int mend = 0xFFFFFFF;
 			int minmark = 0;
-			//if (g_prec <= 64) minmark = 0, mend = 16;
+			//if(g_prec <= 64) minmark = 0, mend = 16;
 			int addmark = 0;
 
 			initqueue(g_prec <= 64);
@@ -901,10 +901,10 @@ int WinMain()
 					{
 						//g_base_iters += (m + 1) * g_iters;
 						//mend = m * 2 + 1;
-						//if (mend < g_prec) mend = g_prec;
+						//if(mend < g_prec) mend = g_prec;
 						mend = 16;
 					}//*/
-					//if (mend < (m + 1) * 2)
+					//if(mend < (m + 1) * 2)
 					//    mend = (m + 1) * 2;
 					m = -1;
 					addmark = 0;

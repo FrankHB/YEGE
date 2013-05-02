@@ -36,11 +36,6 @@
 #define MAX_KEY_VCODE       256
 #define FLOAT_EPS           1e-3f
 
-
-#ifndef SWAP
-#define SWAP(_a, _b, _t) {_t = _a; _a = _b; _b = _t; }
-#endif
-
 #define IFATODOB(A, B)  ( (A) && (B, 0) )
 #define IFNATODOB(A, B) ( (A) || (B, 0) )
 

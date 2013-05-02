@@ -4,7 +4,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#define for if (0); else for
+#define for if(0); else for
 
 ege::ege_point getpos(ege::ege_point center, float rad, float r)
 {

@@ -405,7 +405,7 @@ void InitColor()
 	*/
 }
 
-//#define func(z, c, ed) {z*=z; if (z.re > 4) {ed = 1; break;} z+=c;} //(z * z * z * z * z * z + c)
+//#define func(z, c, ed) {z*=z; if(z.re > 4) {ed = 1; break;} z+=c;} //(z * z * z * z * z * z + c)
 #define func(z, c) z *= z, z += c;
 
 int g_base_iters = BASEITERATIONS;
@@ -499,9 +499,9 @@ void initqueue(int bcross)
 	}
 	/*
 	int sh = SC_H / 2 - 1, sw = SC_W / 2 - 1;
-	for (int y=0; y<SC_H / 2; y += 159)
+	for(int y=0; y<SC_H / 2; y += 159)
 	{
-	    for (int x=0; x<SC_W / 2; x += 159)
+	    for(int x=0; x<SC_W / 2; x += 159)
 	    {
 	        pMap[sh + y][sw + x].calc = 1;
 	        pMap[sh + y][sw - x].calc = 1;
@@ -531,12 +531,12 @@ void initqueue(int bcross)
 	}
 	// */
 	/*
-	for (int y=1; y<SC_H-1; y++)
+	for(int y=1; y<SC_H-1; y++)
 	{
-	    for (int x=1; x<SC_W-1; x++)
+	    for(int x=1; x<SC_W-1; x++)
 	    {
 	        PIXEL& p = pMap[y][x];
-	        if (p.ed)
+	        if(p.ed)
 	        {
 	            pMap[y-1][x].calc = 1;
 	            pMap[y+1][x].calc = 1;
@@ -556,7 +556,7 @@ void initqueue(int bcross)
 				//p.nMinIter = 0;
 				g_udlist.push(x, y);
 			}
-			/*else if (p.ed == 0 && (random(20000)) == 0)
+			/*else if(p.ed == 0 && (random(20000)) == 0)
 			{
 			    g_udlist.push(x, y);
 			    p.calc = 1;
@@ -567,7 +567,7 @@ void initqueue(int bcross)
 	{
 	    int x = SC_W / 2, y = SC_H / 2;
 	    PIXEL& p = pMap[y][x];
-	    if (p.ed == 0)
+	    if(p.ed == 0)
 	    {
 	        g_udlist.push(x, y);
 	        p.calc = 1;
@@ -673,7 +673,7 @@ int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy)
 				addpoint(x, y);
 			if(clock() - t > 5000)
 			{
-				//	if (keystate('J') && keystate('N'))
+				//	if(keystate('J') && keystate('N'))
 				return 1;
 				delay(0);
 				t = clock();
@@ -752,7 +752,7 @@ main()
 	/*{
 	    FILE * fp = fopen("MandelbrotSetAni.ini", "r");
 	    char str[1024] = {0};
-	    if (fp)
+	    if(fp)
 	    {
 	        fgets(str, 1024, fp);
 	        center.re = str;
@@ -844,7 +844,7 @@ main()
 			//Draw(from.re, from.im, to.re, to.im);
 			unsigned mend = 0xFFFFFFF;
 			int minmark = 0;
-			//if (g_prec <= 64) minmark = 0, mend = 16;
+			//if(g_prec <= 64) minmark = 0, mend = 16;
 			int addmark = 0;
 
 			initqueue((delta.re > 0.005));
