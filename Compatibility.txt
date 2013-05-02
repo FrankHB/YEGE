@@ -21,6 +21,7 @@ Code::Blocks 。
 去除 Sleep 宏。
 原型 PVOID EGEAPI getProcfunc(); 更改为 EGEAPI ::WNDPROC getProcfunc(); 。
 移除 Array 和 Set 模版，改用 std::vector 和 std::set 替代。
+移除 _Cdecl 宏。
 
 实现方式：
 随机数改用 C++11 标准库实现。

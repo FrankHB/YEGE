@@ -4,7 +4,6 @@
 #include <cwchar>
 #define yconstfn constexpr
 
-#define _Cdecl
 #define EGEAPI
 
 #ifdef _GRAPH_LIB_BUILD_
