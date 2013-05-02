@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-#include <F:/Programing/YSLib/YBase/include/ydef.h>
+//#include <F:/Programing/YSLib/YBase/include/ydef.h>
+#include <cwchar>
+#define yconstfn constexpr
 
 #define _Cdecl
 #define EGEAPI
