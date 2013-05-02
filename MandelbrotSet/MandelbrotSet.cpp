@@ -625,7 +625,7 @@ int WinMain()
 	randomize();
 	InitColor();
 	setfont(12, 0, "ÀŒÃÂ");
-	SetWindowTextA(GetHWnd(), "Mandelbrot Set by ”˘€‡√¿«Ÿ -- PowerEasyX V0.3.4 Release (20110129)");
+	::SetWindowTextA(GetHWnd(), "Mandelbrot Set by ”˘€‡√¿«Ÿ -- PowerEasyX V0.3.4 Release (20110129)");
 	//mpf_set_prec(100);
 
 
@@ -840,7 +840,7 @@ int WinMain()
 					outtextrect(0, rh + th * tel * 2, 640, th * tel, str);
 					gmp_sprintf(str, "%-6d %9d", mpf_get_prec(y.get_mpf_t()), g_miniter);;
 					outtextxy(0, rh + th * tel * 3, str);
-					//SetWindowTextA(GetHWnd(), str);
+					//::SetWindowTextA(GetHWnd(), str);
 				}
 				break;
 

@@ -144,8 +144,8 @@ int getpath_scene()
 		sprintf(strpath, "%s%s", strbasepath, ver[it]);
 		if(::RegOpenKeyEx(HKEY_LOCAL_MACHINE, strpath, 0, KEY_READ, &key) == ERROR_SUCCESS)
 		{
-			DWORD dwtype = REG_SZ;
-			DWORD dwsize = MAX_PATH;
+			::DWORD dwtype = REG_SZ;
+			::DWORD dwsize = MAX_PATH;
 			if(::RegQueryValueEx(key, "ProductDir", nullptr, &dwtype, (BYTE*)(installpath[it]), &dwsize))
 			{
 				::RegQueryValueEx(key, "InstallDir", nullptr, &dwtype, (BYTE*)(installpath[it]), &dwsize);

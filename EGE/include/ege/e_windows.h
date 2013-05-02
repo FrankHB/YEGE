@@ -25,7 +25,7 @@ enum line_styles        /* Line styles for get/setlinestyle */
 EGE_DEPRECATE(MOUSEMSG)
 struct MOUSEMSG
 {
-	UINT uMsg;              // 当前鼠标消息
+	::UINT uMsg;              // 当前鼠标消息
 	bool mkCtrl;            // Ctrl 键是否按下
 	bool mkShift;           // Shift 键是否按下
 	bool mkLButton;         // 鼠标左键是否按下
@@ -40,10 +40,10 @@ struct MOUSEMSG
 struct msg_createwindow
 {
 	HANDLE hEvent;
-	HWND hwnd;
+	::HWND hwnd;
 	const wchar_t* classname;
-	DWORD style;
-	DWORD exstyle;
+	::DWORD style;
+	::DWORD exstyle;
 	unsigned id;
 	LPVOID param;
 };
@@ -53,9 +53,9 @@ void EGEAPI setinitmode(int mode = INIT_DEFAULT, int x = CW_USEDEFAULT, int y = 
 void EGEAPI setcaption(const char*  caption);
 void EGEAPI setcaption(const wchar_t* caption);
 
-int  EGEAPI attachHWND(HWND hWnd);
-HWND        EGEAPI getHWnd();         // 获取绘图窗口句柄
-HINSTANCE   EGEAPI getHInstance();
+int  EGEAPI attachHWND(::HWND hWnd);
+::HWND        EGEAPI getHWnd();         // 获取绘图窗口句柄
+::HINSTANCE   EGEAPI getHInstance();
 EGEAPI ::WNDPROC getProcfunc();
 
 }

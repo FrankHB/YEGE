@@ -39,7 +39,7 @@ public:
 		msg.exstyle = WS_EX_CLIENTEDGE;// | WS_EX_STATICEDGE;
 		msg.param = this;
 
-		::PostMessageW(getHWnd(), WM_USER + 1, 1, (LPARAM)&msg);
+		::PostMessageW(getHWnd(), WM_USER + 1, 1, (::LPARAM)&msg);
 		::WaitForSingleObject(msg.hEvent, INFINITE);
 
 		m_hwnd = msg.hwnd;
@@ -48,9 +48,9 @@ public:
 		m_color     = 0x0;
 		m_bgcolor   = 0xFFFFFF;
 
-		::SetWindowLongPtrW(m_hwnd, GWLP_USERDATA, (LONG_PTR)this);
+		::SetWindowLongPtrW(m_hwnd, GWLP_USERDATA, (::LONG_PTR)this);
 		m_callback = ::GetWindowLongPtrW(m_hwnd, GWLP_WNDPROC);
-		::SetWindowLongPtrW(m_hwnd, GWLP_WNDPROC, (LONG_PTR)getProcfunc());
+		::SetWindowLongPtrW(m_hwnd, GWLP_WNDPROC, (::LONG_PTR)getProcfunc());
 		{
 			char fontname[]{'\xcb', '\xce', '\xcc', '\xe5', 0, 0};
 			setfont(12, 6, fontname);
@@ -70,7 +70,7 @@ public:
 			msg.hEvent = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
 			::SendMessage(m_hwnd, WM_SETFONT, 0, 0);
 			::DeleteObject(m_hFont);
-			::PostMessageW(getHWnd(), WM_USER + 1, 0, (LPARAM)&msg);
+			::PostMessageW(getHWnd(), WM_USER + 1, 0, (::LPARAM)&msg);
 			::WaitForSingleObject(msg.hEvent, INFINITE);
 			::CloseHandle(msg.hEvent);
 			if(m_hBrush) ::DeleteObject(m_hBrush);
@@ -79,11 +79,11 @@ public:
 		}
 		return 0;
 	}
-	LRESULT onMessage(UINT message, WPARAM wParam, LPARAM lParam)
+	LRESULT onMessage(::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 	{
 		if(message == WM_CTLCOLOREDIT)
 		{
-			HDC dc = (HDC)wParam;
+			::HDC dc = (::HDC)wParam;
 			::HBRUSH br = ::CreateSolidBrush(RGBTOBGR(m_bgcolor));
 
 			::SetBkColor(dc, RGBTOBGR(m_bgcolor));
@@ -99,7 +99,7 @@ public:
 		}
 		else
 		{
-			return ((LRESULT(CALLBACK*)(HWND, UINT, WPARAM, LPARAM))m_callback)(m_hwnd, message, wParam, lParam);
+			return ((LRESULT(CALLBACK*)(::HWND, ::UINT, ::WPARAM, ::LPARAM))m_callback)(m_hwnd, message, wParam, lParam);
 		}
 		//return 0;
 	}
@@ -111,16 +111,16 @@ public:
 	void setfont(int h, int w, const char* fontface)
 	{
 		{
-			LOGFONTA lf{h, w, 0, 0, FW_DONTCARE, 0, 0, 0, DEFAULT_CHARSET,
+			::LOGFONTA lf{h, w, 0, 0, FW_DONTCARE, 0, 0, 0, DEFAULT_CHARSET,
 				OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
 				DEFAULT_PITCH, 0};
-			lstrcpyA(lf.lfFaceName, fontface);
+			::lstrcpyA(lf.lfFaceName, fontface);
 
-			::HFONT hFont = CreateFontIndirectA(&lf);
+			::HFONT hFont = ::CreateFontIndirectA(&lf);
 
 			if(hFont)
 			{
-				::SendMessageA(m_hwnd, WM_SETFONT, (WPARAM)hFont, 0);
+				::SendMessageA(m_hwnd, WM_SETFONT, (::WPARAM)hFont, 0);
 				::DeleteObject(m_hFont);
 				m_hFont = hFont;
 			}
@@ -129,17 +129,17 @@ public:
 	void setfont(int h, int w, const wchar_t* fontface)
 	{
 		{
-			LOGFONTW lf{h, w, 0, 0, FW_DONTCARE, 0, 0, 0, DEFAULT_CHARSET,
+			::LOGFONTW lf{h, w, 0, 0, FW_DONTCARE, 0, 0, 0, DEFAULT_CHARSET,
 				OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
 				DEFAULT_PITCH, 0};
 
-			lstrcpyW(lf.lfFaceName, fontface);
+			::lstrcpyW(lf.lfFaceName, fontface);
 
-			::HFONT hFont = CreateFontIndirectW(&lf);
+			::HFONT hFont = ::CreateFontIndirectW(&lf);
 
 			if(hFont)
 			{
-				::SendMessageW(m_hwnd, WM_SETFONT, (WPARAM)hFont, 0);
+				::SendMessageW(m_hwnd, WM_SETFONT, (::WPARAM)hFont, 0);
 				::DeleteObject(m_hFont);
 				m_hFont = hFont;
 			}
@@ -157,23 +157,23 @@ public:
 	}
 	void settext(const char* text)
 	{
-		::SendMessageA(m_hwnd, WM_SETTEXT, 0, (LPARAM)text);
+		::SendMessageA(m_hwnd, WM_SETTEXT, 0, (::LPARAM)text);
 	}
 	void settext(const wchar_t* text)
 	{
-		::SendMessageW(m_hwnd, WM_SETTEXT, 0, (LPARAM)text);
+		::SendMessageW(m_hwnd, WM_SETTEXT, 0, (::LPARAM)text);
 	}
 	void gettext(int maxlen, char* text)
 	{
-		::SendMessageA(m_hwnd, WM_GETTEXT, (WPARAM)maxlen, (LPARAM)text);
+		::SendMessageA(m_hwnd, WM_GETTEXT, (::WPARAM)maxlen, (::LPARAM)text);
 	}
 	void gettext(int maxlen, wchar_t* text)
 	{
-		::SendMessageW(m_hwnd, WM_GETTEXT, (WPARAM)maxlen, (LPARAM)text);
+		::SendMessageW(m_hwnd, WM_GETTEXT, (::WPARAM)maxlen, (::LPARAM)text);
 	}
 	void setmaxlen(int maxlen)
 	{
-		::SendMessageW(m_hwnd, EM_LIMITTEXT, (WPARAM)maxlen, 0);
+		::SendMessageW(m_hwnd, EM_LIMITTEXT, (::WPARAM)maxlen, 0);
 	}
 	void setcolor(color_t color)
 	{
@@ -188,20 +188,20 @@ public:
 	}
 	void setreadonly(bool readonly)
 	{
-		::SendMessageW(m_hwnd, EM_SETREADONLY, (WPARAM)readonly, 0);
+		::SendMessageW(m_hwnd, EM_SETREADONLY, (::WPARAM)readonly, 0);
 		::InvalidateRect(m_hwnd, nullptr, TRUE);
 	}
 	void setfocus()
 	{
-		::PostMessageW(getHWnd(), WM_USER + 2, 0, (LPARAM)m_hwnd);
+		::PostMessageW(getHWnd(), WM_USER + 2, 0, (::LPARAM)m_hwnd);
 	}
 protected:
-	HWND        m_hwnd;
-	HFONT       m_hFont;
-	HBRUSH      m_hBrush;
+	::HWND        m_hwnd;
+	::HFONT       m_hFont;
+	::HBRUSH      m_hBrush;
 	color_t     m_color;
 	color_t     m_bgcolor;
-	LONG_PTR    m_callback;
+	::LONG_PTR    m_callback;
 };
 
 } // namespace ege

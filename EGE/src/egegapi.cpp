@@ -53,7 +53,7 @@ ege_sleep(long ms)
 	static ::HANDLE hTimer = ::CreateWaitableTimer(nullptr, TRUE, nullptr);
 	::LARGE_INTEGER liDueTime;
 
-	liDueTime.QuadPart = ms * (LONGLONG) - 10000;
+	liDueTime.QuadPart = ms * (::LONGLONG) - 10000;
 	if(hTimer)
 	{
 		if(::SetWaitableTimer(hTimer, &liDueTime, 0, nullptr, nullptr, FALSE))
@@ -497,11 +497,11 @@ saveBrush(PIMAGE img, int save)   //此函数调用前，已经有Lock
 	auto pg = &graph_setting;
 	if(save)
 	{
-		::LOGBRUSH lbr{0, COLORREF(), ULONG_PTR()};
+		::LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
 
 		lbr.lbColor = 0;
 		lbr.lbStyle = BS_NULL;
-		pg->savebrush_hbr = CreateBrushIndirect(&lbr);
+		pg->savebrush_hbr = ::CreateBrushIndirect(&lbr);
 		if(pg->savebrush_hbr)
 		{
 			pg->savebrush_hbr = ::HBRUSH(::SelectObject(img->m_hDC,
@@ -511,8 +511,8 @@ saveBrush(PIMAGE img, int save)   //此函数调用前，已经有Lock
 	}
 	else if(pg->savebrush_hbr)
 	{
-		pg->savebrush_hbr = (HBRUSH)SelectObject(img->m_hDC, pg->savebrush_hbr);
-		DeleteObject(pg->savebrush_hbr);
+		pg->savebrush_hbr = (::HBRUSH)::SelectObject(img->m_hDC, pg->savebrush_hbr);
+		::DeleteObject(pg->savebrush_hbr);
 		pg->savebrush_hbr = nullptr;
 	}
 	return 0;
@@ -539,7 +539,7 @@ getcolor(PIMAGE pimg)
 		CONVERT_IMAGE_END;
 		return img->m_color;
 		/*
-		HPEN hpen_c = (HPEN)GetCurrentObject(img->m_hDC, OBJ_PEN);
+		HPEN hpen_c = (HPEN)::GetCurrentObject(img->m_hDC, OBJ_PEN);
 		LOGPEN logPen;
 		GetObject(hpen_c, sizeof(logPen), &logPen);
 		CONVERT_IMAGE_END;
@@ -566,10 +566,10 @@ setcolor(color_t color, PIMAGE pimg)
 		lPen.lopnStyle   = img->m_linestyle.linestyle;
 		lPen.lopnWidth.x = img->m_linestyle.thickness;
 
-		SetTextColor(img->m_hDC, color);
+		::SetTextColor(img->m_hDC, color);
 		if(lPen.lopnStyle == PS_USERSTYLE)
 		{
-			DWORD style[20]{};
+			::DWORD style[20]{};
 			LOGBRUSH lbr;
 			unsigned short upattern = img->m_linestyle.upattern;
 			int n, bn = 0, len = 1, st = 0;
@@ -606,9 +606,9 @@ setcolor(color_t color, PIMAGE pimg)
 				&lbr, bn, style);
 		}
 		else
-			hpen = CreatePenIndirect(&lPen);
+			hpen = ::CreatePenIndirect(&lPen);
 		if(hpen)
-			DeleteObject(SelectObject(img->m_hDC, hpen));
+			::DeleteObject(::SelectObject(img->m_hDC, hpen));
 	}
 	CONVERT_IMAGE_END;
 }
@@ -617,15 +617,15 @@ void
 setfillcolor(color_t color, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
-	LOGBRUSH lbr{0, COLORREF(), ULONG_PTR()};
+	LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
 	img->m_fillcolor = color;
 	color = RGBTOBGR(color);
 	lbr.lbColor = color;
 	lbr.lbHatch = BS_SOLID;
-	HBRUSH hbr = CreateBrushIndirect(&lbr);
+	::HBRUSH hbr = ::CreateBrushIndirect(&lbr);
 	if(hbr)
 	{
-		DeleteObject(SelectObject(img->m_hDC, hbr));
+		::DeleteObject(::SelectObject(img->m_hDC, hbr));
 	}
 	CONVERT_IMAGE_END;
 }
@@ -668,7 +668,7 @@ setbkcolor(color_t color, PIMAGE pimg)
 		int size = img->m_width * img->m_height;
 		color_t col = img->m_bk_color;
 		img->m_bk_color = color;
-		SetBkColor(img->m_hDC, RGBTOBGR(color));
+		::SetBkColor(img->m_hDC, RGBTOBGR(color));
 		for(int n = 0; n < size; n++, p++)
 		{
 			if(*p == col)
@@ -687,7 +687,7 @@ setbkcolor_f(color_t color, PIMAGE pimg)
 	if(img && img->m_hDC)
 	{
 		img->m_bk_color = color;
-		SetBkColor(img->m_hDC, RGBTOBGR(color));
+		::SetBkColor(img->m_hDC, RGBTOBGR(color));
 	}
 	CONVERT_IMAGE_END;
 }
@@ -698,7 +698,7 @@ void setfontbkcolor(color_t color, PIMAGE pimg)
 
 	if(img && img->m_hDC)
 	{
-		SetBkColor(img->m_hDC, RGBTOBGR(color));
+		::SetBkColor(img->m_hDC, RGBTOBGR(color));
 	}
 	CONVERT_IMAGE_END;
 }
@@ -709,7 +709,7 @@ setbkmode(int iBkMode, PIMAGE pimg)
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img && img->m_hDC)
 	{
-		SetBkMode(img->m_hDC, iBkMode);
+		::SetBkMode(img->m_hDC, iBkMode);
 	}
 	CONVERT_IMAGE_END;
 }
@@ -899,8 +899,8 @@ void
 bar(int left, int top, int right, int bottom, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE(pimg);
-	RECT rect{left, top, right, bottom};
-	HBRUSH hbr_last = (HBRUSH)GetCurrentObject(img->m_hDC, OBJ_BRUSH); //(HBRUSH)SelectObject(pg->g_hdc, hbr);
+	::RECT rect{left, top, right, bottom};
+	::HBRUSH hbr_last = (::HBRUSH)::GetCurrentObject(img->m_hDC, OBJ_BRUSH); //(::HBRUSH)::SelectObject(pg->g_hdc, hbr);
 
 	if(img)
 	{
@@ -973,7 +973,7 @@ drawlines(int numlines, const int* polypoints, PIMAGE pimg)
 	PIMAGE img = CONVERT_IMAGE(pimg);
 	if(img)
 	{
-		DWORD* pl = (DWORD*) malloc(sizeof(DWORD) * numlines);
+		::DWORD* pl = (::DWORD*) malloc(sizeof(::DWORD) * numlines);
 		for(int i = 0; i < numlines; ++i) pl[i] = 2;
 		PolyPolyline(img->m_hDC, (POINT*)polypoints, pl, numlines);
 		free(pl);
@@ -1058,7 +1058,7 @@ static
 unsigned int
 private_gettextmode(PIMAGE img)
 {
-	UINT fMode = TA_NOUPDATECP; //TA_UPDATECP;
+	::UINT fMode = TA_NOUPDATECP; //TA_UPDATECP;
 	if(img->m_texttype.horiz == RIGHT_TEXT)
 	{
 		fMode |= TA_RIGHT;
@@ -1089,7 +1089,7 @@ private_textout(PIMAGE img, const char* textstring, int x, int y, int horiz, int
 {
 	if(horiz >= 0 && vert >= 0)
 	{
-		UINT fMode = TA_NOUPDATECP; //TA_UPDATECP;
+		::UINT fMode = TA_NOUPDATECP; //TA_UPDATECP;
 		img->m_texttype.horiz = horiz;
 		img->m_texttype.vert = vert;
 		if(img->m_texttype.horiz == RIGHT_TEXT)
@@ -1112,11 +1112,11 @@ private_textout(PIMAGE img, const char* textstring, int x, int y, int horiz, int
 		{
 			fMode |= TA_TOP;
 		}
-		SetTextAlign(img->m_hDC, fMode);
+		::SetTextAlign(img->m_hDC, fMode);
 	}
 	else
 	{
-		SetTextAlign(img->m_hDC, private_gettextmode(img));
+		::SetTextAlign(img->m_hDC, private_gettextmode(img));
 	}
 	if(textstring)
 	{
@@ -1135,7 +1135,7 @@ private_textout(PIMAGE img, const wchar_t* textstring, int x, int y, int horiz, 
 {
 	if(horiz >= 0 && vert >= 0)
 	{
-		UINT fMode = TA_NOUPDATECP; //TA_UPDATECP;
+		::UINT fMode = TA_NOUPDATECP; //TA_UPDATECP;
 		img->m_texttype.horiz = horiz;
 		img->m_texttype.vert = vert;
 		if(img->m_texttype.horiz == RIGHT_TEXT)
@@ -1158,11 +1158,11 @@ private_textout(PIMAGE img, const wchar_t* textstring, int x, int y, int horiz, 
 		{
 			fMode |= TA_TOP;
 		}
-		SetTextAlign(img->m_hDC, fMode);
+		::SetTextAlign(img->m_hDC, fMode);
 	}
 	else
 	{
-		SetTextAlign(img->m_hDC, private_gettextmode(img));
+		::SetTextAlign(img->m_hDC, private_gettextmode(img));
 	}
 	if(textstring)
 	{
@@ -1170,7 +1170,7 @@ private_textout(PIMAGE img, const wchar_t* textstring, int x, int y, int horiz, 
 		{
 			y -= textheight(textstring, img) / 2;
 		}
-		TextOutW(img->m_hDC, x, y, textstring, (int)lstrlenW(textstring));
+		TextOutW(img->m_hDC, x, y, textstring, (int)::lstrlenW(textstring));
 	}
 }
 
@@ -1262,7 +1262,7 @@ outtextrect(int x, int y, int w, int h, const char*  textstring, PIMAGE pimg)
 	if(img)
 	{
 		unsigned int fmode = private_gettextmode(img);
-		RECT rect{x, y, x + w, y + h};
+		::RECT rect{x, y, x + w, y + h};
 		DrawTextA(img->m_hDC, textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
 	}
 
@@ -1277,7 +1277,7 @@ outtextrect(int x, int y, int w, int h, const wchar_t* textstring, PIMAGE pimg)
 	if(img)
 	{
 		unsigned int fmode = private_gettextmode(img);
-		RECT rect{x, y, x + w, y + h};
+		::RECT rect{x, y, x + w, y + h};
 		DrawTextW(img->m_hDC, textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
 	}
 
@@ -1362,7 +1362,7 @@ textwidth(const wchar_t* textstring, PIMAGE pimg)
 	if(img)
 	{
 		SIZE sz;
-		GetTextExtentPoint32W(img->m_hDC, textstring, (int)lstrlenW(textstring), &sz);
+		GetTextExtentPoint32W(img->m_hDC, textstring, (int)::lstrlenW(textstring), &sz);
 		CONVERT_IMAGE_END;
 		return sz.cx;
 	}
@@ -1406,7 +1406,7 @@ textheight(const wchar_t* textstring, PIMAGE pimg)
 	if(img)
 	{
 		SIZE sz;
-		GetTextExtentPoint32W(img->m_hDC, textstring, (int)lstrlenW(textstring), &sz);
+		GetTextExtentPoint32W(img->m_hDC, textstring, (int)::lstrlenW(textstring), &sz);
 		CONVERT_IMAGE_END;
 		return sz.cy;
 	}
@@ -1476,7 +1476,7 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, PIMAGE pimg)
 	HPEN hpen;
 	if(linestyle == PS_USERSTYLE)
 	{
-		DWORD style[20]{0};
+		::DWORD style[20]{0};
 		LOGBRUSH lbr;
 		int n, bn = 0, len = 1, st = 0;
 		lbr.lbColor = lpen.lopnColor;
@@ -1516,11 +1516,11 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, PIMAGE pimg)
 	}
 	else
 	{
-		hpen = CreatePenIndirect(&lpen);
+		hpen = ::CreatePenIndirect(&lpen);
 	}
 	if(hpen)
 	{
-		DeleteObject(SelectObject(img->m_hDC, hpen));
+		::DeleteObject(::SelectObject(img->m_hDC, hpen));
 	}
 	CONVERT_IMAGE_END;
 }
@@ -1538,10 +1538,10 @@ void
 setfillstyle(int pattern, color_t color, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
-	LOGBRUSH lbr{0, COLORREF(), UINT_PTR()};
+	LOGBRUSH lbr{0, COLORREF(), ::UINT_PTR()};
 	img->m_fillcolor = color;
 	lbr.lbColor = RGBTOBGR(color);
-	//SetBkColor(img->m_hDC, color);
+	//::SetBkColor(img->m_hDC, color);
 	if(pattern < SOLID_FILL)
 	{
 		lbr.lbHatch = BS_NULL;
@@ -1572,10 +1572,10 @@ setfillstyle(int pattern, color_t color, PIMAGE pimg)
 	{
 		lbr.lbHatch = BS_SOLID;
 	}
-	HBRUSH hbr = CreateBrushIndirect(&lbr);
+	::HBRUSH hbr = ::CreateBrushIndirect(&lbr);
 	if(hbr)
 	{
-		DeleteObject(SelectObject(img->m_hDC, hbr));
+		::DeleteObject(::SelectObject(img->m_hDC, hbr));
 	}
 	CONVERT_IMAGE_END;
 }
@@ -1601,13 +1601,13 @@ setfont(
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTA lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
+		::LOGFONTA lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
 			bItalic != 0, bUnderline != 0, bStrikeOut != 0, fbCharSet,
 			fbOutPrecision, fbClipPrecision, fbQuality, fbPitchAndFamily, 0};
 
-		lstrcpyA(lf.lfFaceName, lpszFace);
-		HFONT hfont = CreateFontIndirectA(&lf);
-		DeleteObject(SelectObject(img->m_hDC, hfont));
+		::lstrcpyA(lf.lfFaceName, lpszFace);
+		::HFONT hfont = ::CreateFontIndirectA(&lf);
+		::DeleteObject(::SelectObject(img->m_hDC, hfont));
 	}
 	CONVERT_IMAGE_END;
 }
@@ -1633,13 +1633,13 @@ setfont(
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTW lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
+		::LOGFONTW lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
 			bItalic != 0, bUnderline != 0, bStrikeOut != 0, fbCharSet,
 			fbOutPrecision, fbClipPrecision, fbQuality, fbPitchAndFamily, 0};
 
-		lstrcpyW(lf.lfFaceName, lpszFace);
-		HFONT hfont = CreateFontIndirectW(&lf);
-		DeleteObject(SelectObject(img->m_hDC, hfont));
+		::lstrcpyW(lf.lfFaceName, lpszFace);
+		::HFONT hfont = ::CreateFontIndirectW(&lf);
+		::DeleteObject(::SelectObject(img->m_hDC, hfont));
 	}
 	CONVERT_IMAGE_END;
 }
@@ -1660,14 +1660,14 @@ setfont(
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTA lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
+		::LOGFONTA lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
 			bItalic != 0, bUnderline != 0, bStrikeOut != 0, DEFAULT_CHARSET,
 			OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
 			DEFAULT_PITCH, 0};
 
-		lstrcpyA(lf.lfFaceName, lpszFace);
-		HFONT hfont = CreateFontIndirectA(&lf);
-		DeleteObject(SelectObject(img->m_hDC, hfont));
+		::lstrcpyA(lf.lfFaceName, lpszFace);
+		::HFONT hfont = ::CreateFontIndirectA(&lf);
+		::DeleteObject(::SelectObject(img->m_hDC, hfont));
 	}
 	CONVERT_IMAGE_END;
 }
@@ -1688,14 +1688,14 @@ setfont(
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTW lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
+		::LOGFONTW lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
 			bItalic != 0, bUnderline != 0, bStrikeOut != 0, DEFAULT_CHARSET,
 			OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
 			DEFAULT_PITCH, 0};
 
-		lstrcpyW(lf.lfFaceName, lpszFace);
-		HFONT hfont = CreateFontIndirectW(&lf);
-		DeleteObject(SelectObject(img->m_hDC, hfont));
+		::lstrcpyW(lf.lfFaceName, lpszFace);
+		::HFONT hfont = ::CreateFontIndirectW(&lf);
+		::DeleteObject(::SelectObject(img->m_hDC, hfont));
 	}
 	CONVERT_IMAGE_END;
 }
@@ -1706,13 +1706,13 @@ setfont(int nHeight, int nWidth, const char* lpszFace, PIMAGE pimg)
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTA lf{nHeight, nWidth, 0, 0, FW_DONTCARE, 0, 0, 0,
+		::LOGFONTA lf{nHeight, nWidth, 0, 0, FW_DONTCARE, 0, 0, 0,
 			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
 			DEFAULT_QUALITY, DEFAULT_PITCH, 0};
 
-		lstrcpyA(lf.lfFaceName, lpszFace);
-		HFONT hfont = CreateFontIndirectA(&lf);
-		DeleteObject(SelectObject(img->m_hDC, hfont));
+		::lstrcpyA(lf.lfFaceName, lpszFace);
+		::HFONT hfont = ::CreateFontIndirectA(&lf);
+		::DeleteObject(::SelectObject(img->m_hDC, hfont));
 	}
 	CONVERT_IMAGE_END;
 }
@@ -1723,56 +1723,56 @@ setfont(int nHeight, int nWidth, const wchar_t* lpszFace, PIMAGE pimg)
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTW lf{nHeight, nWidth, 0, 0, FW_DONTCARE, 0, 0, 0,
+		::LOGFONTW lf{nHeight, nWidth, 0, 0, FW_DONTCARE, 0, 0, 0,
 			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
 			DEFAULT_QUALITY, DEFAULT_PITCH, 0};
 
-		lstrcpyW(lf.lfFaceName, lpszFace);
-		HFONT hfont = CreateFontIndirectW(&lf);
-		DeleteObject(SelectObject(img->m_hDC, hfont));
+		::lstrcpyW(lf.lfFaceName, lpszFace);
+		::HFONT hfont = ::CreateFontIndirectW(&lf);
+		::DeleteObject(::SelectObject(img->m_hDC, hfont));
 	}
 	CONVERT_IMAGE_END;
 }
 
 void
-setfont(const LOGFONTA* font, PIMAGE pimg)
+setfont(const ::LOGFONTA* font, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 
 	if(img)
-		::DeleteObject(SelectObject(img->m_hDC, ::CreateFontIndirectA(font)));
+		::DeleteObject(::SelectObject(img->m_hDC, ::CreateFontIndirectA(font)));
 	CONVERT_IMAGE_END;
 }
 
 void
-setfont(const LOGFONTW* font, PIMAGE pimg)
+setfont(const ::LOGFONTW* font, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 
 	if(img)
-		::DeleteObject(SelectObject(img->m_hDC, ::CreateFontIndirectW(font)));
+		::DeleteObject(::SelectObject(img->m_hDC, ::CreateFontIndirectW(font)));
 	CONVERT_IMAGE_END;
 }
 
 void
-getfont(LOGFONTA* font, PIMAGE pimg)
+getfont(::LOGFONTA* font, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 
 	if(img)
 		::GetObjectA((::HFONT)::GetCurrentObject(img->m_hDC, OBJ_FONT),
-			sizeof(LOGFONTA), font);
+			sizeof(::LOGFONTA), font);
 	CONVERT_IMAGE_END;
 }
 
 void
-getfont(LOGFONTW* font, PIMAGE pimg)
+getfont(::LOGFONTW* font, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 
 	if(img)
 		::GetObjectW((::HFONT)::GetCurrentObject(img->m_hDC, OBJ_FONT),
-			sizeof(LOGFONTA), font);
+			sizeof(::LOGFONTA), font);
 	CONVERT_IMAGE_END;
 }
 
@@ -1849,18 +1849,18 @@ window_setviewport(int left, int top, int right, int bottom)
 	/*修正窗口大小*/
 	if(same_wh == 0)
 	{
-		RECT rect, crect;
+		::RECT rect, crect;
 		int dw, dh;
-		GetClientRect(pg->hwnd, &crect);
-		GetWindowRect(pg->hwnd, &rect);
+		::GetClientRect(pg->hwnd, &crect);
+		::GetWindowRect(pg->hwnd, &rect);
 		dw = pg->base_w - crect.right;
 		dh = pg->base_h - crect.bottom;
 		{
-			HWND hwnd = GetParent(pg->hwnd);
+			::HWND hwnd = GetParent(pg->hwnd);
 			if(hwnd)
 			{
 				POINT pt{0, 0};
-				ClientToScreen(hwnd, &pt);
+				::ClientToScreen(hwnd, &pt);
 				rect.left   -= pt.x;
 				rect.top    -= pt.y;
 				rect.right  -= pt.x;
@@ -1934,11 +1934,11 @@ clearviewport(PIMAGE pimg)
 	{
 		::RECT rect{0, 0, img->m_vpt.right - img->m_vpt.left,
 			img->m_vpt.bottom - img->m_vpt.top};
-		::HBRUSH hbr_c = (HBRUSH)GetCurrentObject(img->m_hDC, OBJ_BRUSH);
+		::HBRUSH hbr_c = (::HBRUSH)::GetCurrentObject(img->m_hDC, OBJ_BRUSH);
 		::LOGBRUSH logBrush;
 
 		::GetObject(hbr_c, sizeof(logBrush), &logBrush);
-		::HBRUSH hbr = CreateSolidBrush(logBrush.lbColor);
+		::HBRUSH hbr = ::CreateSolidBrush(logBrush.lbColor);
 		::FillRect(img->m_hDC, &rect, hbr);
 		::DeleteObject(hbr);
 	}
@@ -2360,7 +2360,7 @@ ege_puttexture(PIMAGE srcimg, ege_rect dest, ege_rect src, PIMAGE pimg)
 			};
 			ia.SetColorMatrix(&mx);
 			// */
-			//graphics.SetTransform();
+			//graphics.::SetTransform();
 			graphics.DrawImage((Gdiplus::Image*)srcimg->m_texture,
 				Gdiplus::RectF(dest.x, dest.y, dest.w, dest.h),
 				src.x,
@@ -2375,13 +2375,13 @@ ege_puttexture(PIMAGE srcimg, ege_rect dest, ege_rect src, PIMAGE pimg)
 	CONVERT_IMAGE_END;
 }
 
-HWND
+::HWND
 getHWnd()
 {
 	return graph_setting.hwnd;
 }
 
-HINSTANCE
+::HINSTANCE
 getHInstance()
 {
 	return graph_setting.instance;
@@ -2503,14 +2503,14 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int le
 			outtextxy(3, 3, title, &window);
 			setcolor(0x0, &window);
 			{
-				RECT rect{30, 32, w - 30, 128 - 3};
+				::RECT rect{30, 32, w - 30, 128 - 3};
 				DrawTextW(window.m_hDC, text, -1, &rect, DT_NOPREFIX | DT_LEFT | DT_TOP | TA_NOUPDATECP | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
 			}
 		}
 		putimage(x, y, &window);
 	}
 	edit.gettext(len, buf);
-	len = lstrlenW(buf);
+	len = ::lstrlenW(buf);
 	while(len > 0 && (buf[len - 1] == '\r' || buf[len - 1] == '\n'))
 	{
 		buf[--len] = 0;

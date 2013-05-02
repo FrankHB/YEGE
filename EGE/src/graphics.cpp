@@ -23,14 +23,14 @@ namespace ege
 _graph_setting& graph_setting = *(_graph_setting*)std::malloc(sizeof(_graph_setting));
 
 static bool g_has_init = false;
-static DWORD g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
-static DWORD g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
+static ::DWORD g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
+static ::DWORD g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
 static int g_windowpos_x = CW_USEDEFAULT;
 static int g_windowpos_y = CW_USEDEFAULT;
 static int g_initoption  = INIT_DEFAULT, g_initcall = 0;
-static HWND g_attach_hwnd = nullptr;
+static ::HWND g_attach_hwnd = nullptr;
 
-DWORD WINAPI messageloopthread(LPVOID lpParameter);
+::DWORD WINAPI messageloopthread(LPVOID lpParameter);
 
 
 namespace
@@ -56,8 +56,8 @@ ui_msg_process(EGEMSG& qmsg)
 	}
 	else if(qmsg.message >= WM_MOUSEFIRST && qmsg.message <= WM_MOUSELAST)
 	{
-		int x = (short int)((UINT)qmsg.lParam & 0xFFFF),
-			y = (short int)((UINT)qmsg.lParam >> 16);
+		int x = (short int)((::UINT)qmsg.lParam & 0xFFFF),
+			y = (short int)((::UINT)qmsg.lParam >> 16);
 		if(qmsg.message == WM_LBUTTONDOWN)
 			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_left);
 		else if(qmsg.message == WM_LBUTTONUP)
@@ -80,10 +80,10 @@ int
 redraw_window(_graph_setting* pg, ::HDC dc)
 {
 	int page = pg->visual_page;
-	HDC hDC = pg->img_page[page]->m_hDC;
+	::HDC hDC = pg->img_page[page]->m_hDC;
 	int left = pg->img_page[page]->m_vpt.left,
 		top = pg->img_page[page]->m_vpt.top;
-	//HRGN rgn = pg->img_page[page]->m_rgn;
+	//::HRGN rgn = pg->img_page[page]->m_rgn;
 	::BitBlt(dc, 0, 0, pg->base_w, pg->base_h, hDC, pg->base_x - left,
 		pg->base_y - top, SRCCOPY);
 	pg->update_mark_count = UPDATE_MAX_CALL;
@@ -222,7 +222,7 @@ getchEx(int flag)
 	{
 		int key;
 		EGEMSG msg;
-		DWORD dw = GetTickCount();
+		::DWORD dw = GetTickCount();
 		do
 		{
 			key = kbhitEx(flag);
@@ -433,7 +433,7 @@ setmode(int gdriver, int gmode)
 }
 
 BOOL
-init_instance(HINSTANCE hInstance, int nCmdShow)
+init_instance(::HINSTANCE hInstance, int nCmdShow)
 {
 	auto pg = &graph_setting;
 	int dw = 0, dh = 0;
@@ -441,15 +441,15 @@ init_instance(HINSTANCE hInstance, int nCmdShow)
 	//wchar_t Title2[256]{0};
 
 	//WideCharToMultiByte(CP_UTF8, 0, pg->window_caption,
-	//	lstrlenW(pg->window_caption), (char*)Title, 256, 0, 0);
+	//	::lstrlenW(pg->window_caption), (char*)Title, 256, 0, 0);
 	//MultiByteToWideChar(CP_UTF8, 0, (char*)Title, -1, Title2, 256);
 	dw = GetSystemMetrics(SM_CXFRAME) * 2;
 	dh = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) * 2;
 	if(g_attach_hwnd)
 	{
-		LONG_PTR style = GetWindowLongPtrW(g_attach_hwnd, GWL_STYLE);
+		::LONG_PTR style = ::GetWindowLongPtrW(g_attach_hwnd, GWL_STYLE);
 		style |= WS_CHILDWINDOW | WS_CLIPCHILDREN;
-		SetWindowLongPtrW(g_attach_hwnd, GWL_STYLE, style);
+		::SetWindowLongPtrW(g_attach_hwnd, GWL_STYLE, style);
 	}
 
 	pg->hwnd = ::CreateWindowEx(g_windowexstyle, pg->window_class_name,
@@ -463,16 +463,16 @@ init_instance(HINSTANCE hInstance, int nCmdShow)
 		//SetParent(pg->hwnd, g_attach_hwnd);
 		wchar_t name[64];
 
-		std::swprintf(name, L"ege_%X", (DWORD)(DWORD_PTR)g_attach_hwnd);
-		if(CreateEventW(nullptr, FALSE, TRUE, name))
-			if(GetLastError() == ERROR_ALREADY_EXISTS)
+		std::swprintf(name, L"ege_%X", (::DWORD)(::DWORD_PTR)g_attach_hwnd);
+		if(::CreateEventW(nullptr, FALSE, TRUE, name))
+			if(::GetLastError() == ERROR_ALREADY_EXISTS)
 				::PostMessage(pg->hwnd, WM_CLOSE, 0, 0);
 	}
 	//::SetWindowTextA(pg->hwnd, (const char*)Title);
-	::SetWindowLongPtrW(pg->hwnd, GWLP_USERDATA, (LONG_PTR)pg);
+	::SetWindowLongPtrW(pg->hwnd, GWLP_USERDATA, (::LONG_PTR)pg);
 
 	/*{
-		LOGFONTW lf{0};
+		::LOGFONTW lf{0};
 		lf.lfHeight         = 12;
 		lf.lfWidth          = 6;
 		lf.lfEscapement     = 0;
@@ -486,10 +486,10 @@ init_instance(HINSTANCE hInstance, int nCmdShow)
 		lf.lfClipPrecision  = CLIP_DEFAULT_PRECIS;
 		lf.lfQuality        = DEFAULT_QUALITY;
 		lf.lfPitchAndFamily = DEFAULT_PITCH;
-		lstrcpyW(lf.lfFaceName, L"宋体");
-		HFONT hfont = CreateFontIndirectW(&lf);
-		::SendMessage(pg->hwnd, WM_SETFONT, (WPARAM)hfont, nullptr);
-		//DeleteObject(hfont);
+		::lstrcpyW(lf.lfFaceName, L"宋体");
+		::HFONT hfont = ::CreateFontIndirectW(&lf);
+		::SendMessage(pg->hwnd, WM_SETFONT, (::WPARAM)hfont, nullptr);
+		//::DeleteObject(hfont);
 	} //*/
 
 	pg->exit_window = 0;
@@ -503,7 +503,7 @@ init_instance(HINSTANCE hInstance, int nCmdShow)
 #if !defined(UNICODE)
 BOOL
 CALLBACK
-EnumResNameProc( HMODULE hModule, const char*, char* lpszName, LONG_PTR lParam
+EnumResNameProc(::HMODULE hModule, const char*, char* lpszName, ::LONG_PTR lParam
 )
 {
 	auto hico = (::HICON)::LoadImage(hModule, lpszName, IMAGE_ICON, 0, 0,
@@ -511,7 +511,7 @@ EnumResNameProc( HMODULE hModule, const char*, char* lpszName, LONG_PTR lParam
 
 	if(hico)
 	{
-		*((HICON*)lParam) = hico;
+		*((::HICON*)lParam) = hico;
 		return FALSE;
 	}
 	return TRUE;
@@ -519,17 +519,17 @@ EnumResNameProc( HMODULE hModule, const char*, char* lpszName, LONG_PTR lParam
 #else
 BOOL CALLBACK
 EnumResNameProc(
-	HMODULE hModule,
+	::HMODULE hModule,
 	const wchar_t* lpszType,
 	wchar_t* lpszName,
-	LONG_PTR lParam
+	::LONG_PTR lParam
 )
 {
-	HICON hico = (HICON)LoadImageW(hModule, lpszName, IMAGE_ICON,
+	::HICON hico = (::HICON)::LoadImageW(hModule, lpszName, IMAGE_ICON,
 		0, 0, LR_DEFAULTSIZE);
 	if(hico)
 	{
-		*((HICON*)lParam) = hico;
+		*((::HICON*)lParam) = hico;
 		return FALSE;
 	}
 	return TRUE;
@@ -549,7 +549,7 @@ namespace
 {
 
 void
-on_timer(_graph_setting* pg, HWND hwnd, unsigned id)
+on_timer(_graph_setting* pg, ::HWND hwnd, unsigned id)
 {
 	if(!pg->skip_timer_mark && id == RENDER_TIMER_ID)
 	{
@@ -572,49 +572,49 @@ on_destroy(_graph_setting* pg)
 	pg->exit_window = 1;
 	if(pg->dc)
 	{
-		ReleaseDC(pg->hwnd, pg->window_dc);
+		::ReleaseDC(pg->hwnd, pg->window_dc);
 		// release objects, not finish
 	}
-	PostQuitMessage(0);
+	::PostQuitMessage(0);
 	if(pg->close_manually && pg->use_force_exit)
 	{
-		ExitProcess(0);
+		::ExitProcess(0);
 	}
 }
 
 void
-on_setcursor(_graph_setting* pg, HWND hwnd)
+on_setcursor(_graph_setting* pg, ::HWND hwnd)
 {
 	if(pg->mouse_show)
 	{
-		SetCursor(LoadCursor(nullptr, IDC_ARROW));
+		::SetCursor(::LoadCursor(nullptr, IDC_ARROW));
 	}
 	else
 	{
-		RECT rect;
+		::RECT rect;
 		POINT pt;
 		GetCursorPos(&pt);
-		ScreenToClient(hwnd, &pt);
-		GetClientRect(hwnd, &rect);
+		::ScreenToClient(hwnd, &pt);
+		::GetClientRect(hwnd, &rect);
 		if(pt.x >= rect.left && pt.x < rect.right && pt.y >= rect.top && pt.y <= rect.bottom)
-			SetCursor(nullptr);
+			::SetCursor(nullptr);
 		else
-			SetCursor(LoadCursor(nullptr, IDC_ARROW));
+			::SetCursor(::LoadCursor(nullptr, IDC_ARROW));
 	}
 }
 
 void
-on_ime_control(_graph_setting*, HWND hwnd, UINT, WPARAM wparam, LPARAM lparam)
+on_ime_control(_graph_setting*, ::HWND hwnd, ::UINT, ::WPARAM wparam, ::LPARAM lparam)
 {
 	if(wparam == IMC_SETSTATUSWINDOWPOS)
 	{
 		::HIMC hImc = ImmGetContext(hwnd);
 
-		COMPOSITIONFORM cpf{0, POINT(), RECT()};
+		COMPOSITIONFORM cpf{0, POINT(), ::RECT()};
 
 		cpf.dwStyle = CFS_POINT;
 		cpf.ptCurrentPos = *(LPPOINT)lparam;
-		ImmSetCompositionWindow(hImc, &cpf);
+		::ImmSetCompositionWindow(hImc, &cpf);
 	}
 }
 
@@ -639,8 +639,8 @@ windowmanager(ege::_graph_setting*, bool create, struct msg_createwindow* msg)
 }
 
 void
-on_key(_graph_setting* pg, UINT message, unsigned long keycode,
-	LPARAM keyflag)
+on_key(_graph_setting* pg, ::UINT message, unsigned long keycode,
+	::LPARAM keyflag)
 {
 	unsigned msg = 0;
 
@@ -666,16 +666,16 @@ on_key(_graph_setting* pg, UINT message, unsigned long keycode,
 }
 
 void
-push_mouse_msg(_graph_setting* pg, UINT message, WPARAM wparam,
-	LPARAM lparam)
+push_mouse_msg(_graph_setting* pg, ::UINT message, ::WPARAM wparam,
+	::LPARAM lparam)
 {
 	pg->msgmouse_queue->push(EGEMSG{pg->hwnd, message, wparam, lparam,
-		::GetTickCount(), UINT((pg->mouse_state_m << 2) | (pg->mouse_state_r << 1)
-		| (pg->mouse_state_l << 0)), UINT()});
+		::GetTickCount(), ::UINT((pg->mouse_state_m << 2) | (pg->mouse_state_r << 1)
+		| (pg->mouse_state_l << 0)), ::UINT()});
 }
 
 LRESULT CALLBACK
-wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 {
 	auto pg = &graph_setting;
 	//int wmId, wmEvent;
@@ -699,7 +699,7 @@ wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if(pg->callback_close)
 				pg->callback_close();
 			else
-				return DefWindowProc(hWnd, message, wParam, lParam);
+				return ::DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
 	case WM_DESTROY:
@@ -718,8 +718,8 @@ wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONDBLCLK:
-		pg->mouse_lastclick_x = (short int)((UINT)lParam & 0xFFFF);
-		pg->mouse_lastclick_y = (short int)((UINT)lParam >> 16);
+		pg->mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
+		pg->mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
 		pg->keystatemap[VK_LBUTTON] = 1;
 		SetCapture(hWnd);
 		pg->mouse_state_l = 1;
@@ -728,8 +728,8 @@ wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_MBUTTONDOWN:
 	case WM_MBUTTONDBLCLK:
-		pg->mouse_lastclick_x = (short int)((UINT)lParam & 0xFFFF);
-		pg->mouse_lastclick_y = (short int)((UINT)lParam >> 16);
+		pg->mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
+		pg->mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
 		pg->keystatemap[VK_MBUTTON] = 1;
 		::SetCapture(hWnd);
 		pg->mouse_state_m = 1;
@@ -737,16 +737,16 @@ wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_RBUTTONDOWN:
 	case WM_RBUTTONDBLCLK:
-		pg->mouse_lastclick_x = (short int)((UINT)lParam & 0xFFFF);
-		pg->mouse_lastclick_y = (short int)((UINT)lParam >> 16);
+		pg->mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
+		pg->mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
 		pg->keystatemap[VK_RBUTTON] = 1;
 		SetCapture(hWnd);
 		pg->mouse_state_r = 1;
 		if(hWnd == pg->hwnd) push_mouse_msg(pg, message, wParam, lParam);
 		break;
 	case WM_LBUTTONUP:
-		pg->mouse_lastup_x = (short int)((UINT)lParam & 0xFFFF);
-		pg->mouse_lastup_y = (short int)((UINT)lParam >> 16);
+		pg->mouse_lastup_x = (short int)((::UINT)lParam & 0xFFFF);
+		pg->mouse_lastup_y = (short int)((::UINT)lParam >> 16);
 		pg->mouse_state_l = 0;
 		pg->keystatemap[VK_LBUTTON] = 0;
 		if(pg->mouse_state_l == 0 && pg->mouse_state_m == 0
@@ -755,8 +755,8 @@ wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if(hWnd == pg->hwnd) push_mouse_msg(pg, message, wParam, lParam);
 		break;
 	case WM_MBUTTONUP:
-		pg->mouse_lastup_x = (short int)((UINT)lParam & 0xFFFF);
-		pg->mouse_lastup_y = (short int)((UINT)lParam >> 16);
+		pg->mouse_lastup_x = (short int)((::UINT)lParam & 0xFFFF);
+		pg->mouse_lastup_y = (short int)((::UINT)lParam >> 16);
 		pg->mouse_state_m = 0;
 		pg->keystatemap[VK_MBUTTON] = 0;
 		if(pg->mouse_state_l == 0 && pg->mouse_state_m == 0
@@ -765,8 +765,8 @@ wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if(hWnd == pg->hwnd) push_mouse_msg(pg, message, wParam, lParam);
 		break;
 	case WM_RBUTTONUP:
-		pg->mouse_lastup_x = (short int)((UINT)lParam & 0xFFFF);
-		pg->mouse_lastup_y = (short int)((UINT)lParam >> 16);
+		pg->mouse_lastup_x = (short int)((::UINT)lParam & 0xFFFF);
+		pg->mouse_lastup_y = (short int)((::UINT)lParam >> 16);
 		pg->mouse_state_r = 0;
 		pg->keystatemap[VK_RBUTTON] = 0;
 		if(pg->mouse_state_l == 0 && pg->mouse_state_m == 0
@@ -775,18 +775,18 @@ wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if(hWnd == pg->hwnd) push_mouse_msg(pg, message, wParam, lParam);
 		break;
 	case WM_MOUSEMOVE:
-		pg->mouse_last_x = (short int)((UINT)lParam & 0xFFFF);
-		pg->mouse_last_y = (short int)((UINT)lParam >> 16);
+		pg->mouse_last_x = (short int)((::UINT)lParam & 0xFFFF);
+		pg->mouse_last_y = (short int)((::UINT)lParam >> 16);
 		if(hWnd == pg->hwnd && (pg->mouse_lastup_x != pg->mouse_last_x
 			|| pg->mouse_lastup_y != pg->mouse_last_y))
 			push_mouse_msg(pg, message, wParam, lParam);
 		break;
 	case WM_MOUSEWHEEL:
 		{
-			POINT pt{(short int)((UINT)lParam & 0xFFFF),
-				(short int)((UINT)lParam >> 16)};
+			POINT pt{(short int)((::UINT)lParam & 0xFFFF),
+				(short int)((::UINT)lParam >> 16)};
 
-			ScreenToClient(pg->hwnd, &pt);
+			::ScreenToClient(pg->hwnd, &pt);
 			pg->mouse_last_x = pt.x;
 			pg->mouse_last_y = pt.y;
 			lParam = ((unsigned short)(short int)pg->mouse_last_y << 16)
@@ -808,16 +808,16 @@ wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		windowmanager(pg, (wParam != 0), (struct msg_createwindow*)lParam);
 		break;
 	case WM_USER + 2:
-		::SetFocus((HWND)lParam);
+		::SetFocus((::HWND)lParam);
 		break;
 	case WM_CTLCOLOREDIT:
-		return ((egeControlBase*)::GetWindowLongPtrW((HWND)lParam,
+		return ((egeControlBase*)::GetWindowLongPtrW((::HWND)lParam,
 			GWLP_USERDATA))->onMessage(message, wParam, lParam);
 		break;
 	default:
 		if(pg != pg_w)
 			return ((egeControlBase*)pg_w)->onMessage(message, wParam, lParam);
-		return DefWindowProc(hWnd, message, wParam, lParam);
+		return ::DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	if(pg != pg_w)
 		return ((egeControlBase*)pg_w)->onMessage(message, wParam, lParam);
@@ -836,10 +836,10 @@ namespace
 {
 
 ATOM
-register_class(_graph_setting* pg, HINSTANCE hInstance)
+register_class(_graph_setting* pg, ::HINSTANCE hInstance)
 {
 	static ::WNDCLASSEX wcex;
-	HICON hico = nullptr;
+	::HICON hico = nullptr;
 
 	wcex.cbSize = sizeof(wcex);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
@@ -847,24 +847,24 @@ register_class(_graph_setting* pg, HINSTANCE hInstance)
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon(nullptr, IDI_WINLOGO);
-	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.hIcon = ::LoadIcon(nullptr, IDI_WINLOGO);
+	wcex.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
+	wcex.hbrBackground = (::HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszClassName = pg->window_class_name;
 
-	EnumResourceNames(hInstance, RT_ANIICON, EnumResNameProc, (LONG_PTR)&hico);
+	EnumResourceNames(hInstance, RT_ANIICON, EnumResNameProc, (::LONG_PTR)&hico);
 	if(hico)
 	{
 		wcex.hIcon = hico;
 		goto END_LOAD_ICON;
 	}
-	EnumResourceNames(hInstance, RT_GROUP_ICON, EnumResNameProc, (LONG_PTR)&hico);
+	EnumResourceNames(hInstance, RT_GROUP_ICON, EnumResNameProc, (::LONG_PTR)&hico);
 	if(hico)
 	{
 		wcex.hIcon = hico;
 		goto END_LOAD_ICON;
 	}
-	EnumResourceNames(hInstance, RT_ICON, EnumResNameProc, (LONG_PTR)&hico);
+	EnumResourceNames(hInstance, RT_ICON, EnumResNameProc, (::LONG_PTR)&hico);
 	if(hico)
 	{
 		wcex.hIcon = hico;
@@ -889,7 +889,7 @@ graph_init(_graph_setting* pg)
 	settarget(nullptr);
 	setvisualpage(0);
 	window_setviewport(0, 0, pg->dc_w, pg->dc_h);
-	//ReleaseDC(pg->hwnd, hDC);
+	//::ReleaseDC(pg->hwnd, hDC);
 	return 0;
 }
 
@@ -937,14 +937,14 @@ initgraph(int* gdriver, int* gmode, char*)
 	}
 	setmode(*gdriver, *gmode);
 	pg->instance = GetModuleHandle(nullptr);
-	lstrcpy(pg->window_class_name, TEXT("Easy Graphics Engine"));
-	lstrcpy(pg->window_caption, EGE_TITLE);
+	::lstrcpy(pg->window_class_name, TEXT("Easy Graphics Engine"));
+	::lstrcpy(pg->window_caption, EGE_TITLE);
 	{
 	//	::SECURITY_ATTRIBUTES sa{0};
 		::DWORD pid;
 
 		pg->init_finish = false;
-		pg->threadui_handle = CreateThread(nullptr, 0, messageloopthread,
+		pg->threadui_handle = ::CreateThread(nullptr, 0, messageloopthread,
 			pg, CREATE_SUSPENDED, &pid);
 		ResumeThread(pg->threadui_handle);
 		while(!pg->init_finish)
@@ -986,11 +986,11 @@ void
 closegraph()
 {
 	auto pg = &graph_setting;
-	ShowWindow(pg->hwnd, SW_HIDE);
+	::ShowWindow(pg->hwnd, SW_HIDE);
 }
 
 int
-attachHWND(HWND hWnd)
+attachHWND(::HWND hWnd)
 {
 	g_attach_hwnd = hWnd;
 	return 0;
@@ -998,7 +998,7 @@ attachHWND(HWND hWnd)
 
 
 //private
-DWORD WINAPI
+::DWORD WINAPI
 messageloopthread(LPVOID lpParameter)
 {
 	_graph_setting* pg = (_graph_setting*)lpParameter;
@@ -1021,7 +1021,7 @@ messageloopthread(LPVOID lpParameter)
 			SetCloseHandler(DefCloseHandler);
 		pg->close_manually = true;
 		pg->skip_timer_mark = false;
-		SetTimer(pg->hwnd, RENDER_TIMER_ID, 50, nullptr);
+		::SetTimer(pg->hwnd, RENDER_TIMER_ID, 50, nullptr);
 	}
 	pg->init_finish = true;
 

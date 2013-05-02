@@ -71,8 +71,8 @@
 
 #ifndef __int3264
 #if defined(_WIN64)
-typedef __int64 LONG_PTR, *PLONG_PTR;
-typedef unsigned __int64 ULONG_PTR, *PULONG_PTR;
+typedef __int64 ::LONG_PTR, *P::LONG_PTR;
+typedef unsigned __int64 ::ULONG_PTR, *PULONG_PTR;
 
 #define __int3264   __int64
 
@@ -85,7 +85,7 @@ typedef _W64 unsigned long ULONG_PTR, *PULONG_PTR;
 #endif
 #endif
 
-typedef ULONG_PTR DWORD_PTR, *PDWORD_PTR;
+typedef ::ULONG_PTR DWORD_PTR, *PDWORD_PTR;
 typedef unsigned int uint32;
 typedef intptr_t POINTER_SIZE;
 
@@ -98,8 +98,8 @@ typedef intptr_t POINTER_SIZE;
 extern "C"
 {
 	WINGDIAPI WINAPI BOOL
-	GradientFill(HDC hdc, PTRIVERTEX pVertex, ULONG nVertex, PVOID pMesh,
-		ULONG nMesh, ULONG ulMode);
+	GradientFill(::HDC hdc, PTRIVERTEX pVertex, ::ULONG nVertex, PVOID pMesh,
+		::ULONG nMesh, ::ULONG ulMode);
 }
 #endif
 
@@ -114,13 +114,13 @@ enum dealmessage_update
 
 struct EGEMSG
 {
-	HWND        hwnd;
-	UINT        message;
-	WPARAM      wParam;
-	LPARAM      lParam;
-	DWORD       time;
-	UINT        mousekey;
-	UINT        flag;
+	::HWND        hwnd;
+	::UINT        message;
+	::WPARAM      wParam;
+	::LPARAM      lParam;
+	::DWORD       time;
+	::UINT        mousekey;
+	::UINT        flag;
 };
 
 // 定义图像对象
@@ -128,8 +128,8 @@ class IMAGE
 {
 	int     m_initflag;
 public:
-	HDC         m_hDC;
-	HBITMAP     m_hBmp;
+	::HDC         m_hDC;
+	::HBITMAP     m_hBmp;
 	int         m_width;
 	int         m_height;
 	PDWORD      m_pBuffer;
@@ -137,7 +137,7 @@ public:
 	color_t     m_fillcolor;
 	bool        m_aa;
 private:
-	int  newimage(HDC hdc, int width, int height);
+	int  newimage(::HDC hdc, int width, int height);
 	int  deleteimage();
 public:
 	viewporttype        m_vpt;
@@ -160,7 +160,7 @@ public:
 	void delete_pattern();
 	void gentexture(bool gen);
 public:
-	HDC getdc()        const
+	::HDC getdc()        const
 	{
 		return m_hDC;
 	}
@@ -187,11 +187,11 @@ public:
 	int  getimage(const char* pResType, const char* pResName, int zoomWidth = 0, int zoomHeight = 0);
 	int  getimage(const wchar_t* pResType, const wchar_t* pResName, int zoomWidth = 0, int zoomHeight = 0);
 	int  getimage(void* pMem, long size);
-	void putimage(int dstX, int dstY, DWORD dwRop = SRCCOPY) const;
-	void putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, DWORD dwRop = SRCCOPY) const;
-	void putimage(PIMAGE pDstImg, int dstX, int dstY, DWORD dwRop = SRCCOPY) const;
-	void putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, DWORD dwRop = SRCCOPY) const;
-	void putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, int srcWidth, int srcHeight, DWORD dwRop = SRCCOPY) const;
+	void putimage(int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;
+	void putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop = SRCCOPY) const;
+	void putimage(PIMAGE pDstImg, int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;
+	void putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop = SRCCOPY) const;
+	void putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop = SRCCOPY) const;
 	int  saveimage(const char*  filename);
 	int  saveimage(const wchar_t* filename);
 	int  getpngimg(FILE* fp);
@@ -372,18 +372,18 @@ struct _graph_setting
 	egeControlBase* egectrl_focus;
 
 	/* 私用全局变量 */
-	ULONG_PTR g_gdiplusToken;
-	LARGE_INTEGER get_highfeq_time_start;
-	DWORD         fclock_start;
+	::ULONG_PTR g_gdiplusToken;
+	::LARGE_INTEGER get_highfeq_time_start;
+	::DWORD         fclock_start;
 	//double delay_dwLast;
 	double delay_ms_dwLast;
 	double delay_fps_dwLast;
 	int getch_last_key;
 
-	HBRUSH savebrush_hbr;
+	::HBRUSH savebrush_hbr;
 
 	/* 函数用临时缓冲区 */
-	DWORD g_t_buff[1024 * 8];
+	::DWORD g_t_buff[1024 * 8];
 
 	bool
 	_is_run() const;

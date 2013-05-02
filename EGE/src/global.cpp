@@ -272,7 +272,7 @@ _graph_setting::_redraw_window(::HDC dc)
 	::HDC hDC = img_page[page]->m_hDC;
 	int left = img_page[page]->m_vpt.left,
 		top = img_page[page]->m_vpt.top;
-	//HRGN rgn = img_page[page]->m_rgn;
+	//::HRGN rgn = img_page[page]->m_rgn;
 	::BitBlt(dc, 0, 0, base_w, base_h, hDC, base_x - left, base_y - top,
 		SRCCOPY);
 	update_mark_count = UPDATE_MAX_CALL;

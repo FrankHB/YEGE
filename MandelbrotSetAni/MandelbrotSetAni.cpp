@@ -782,7 +782,7 @@ main()
 	str2float(delta.re, "8.0");
 
 	SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
-	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_LOWEST);
+	::SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_LOWEST);
 	for(; delta.re > mindelta.re; delta.re *= delta_mul, ++ncnt)
 	{
 		setgprec(delta.re);
@@ -876,10 +876,10 @@ main()
 						outtextxy(100, SC_H + 12 * 3, str);
 					}
 					{
-						RECT rect, crect;
+						::RECT rect, crect;
 						int _dw, _dh;
-						GetClientRect(getHWnd(), &crect);
-						GetWindowRect(getHWnd(), &rect);
+						::GetClientRect(getHWnd(), &crect);
+						::GetWindowRect(getHWnd(), &rect);
 						_dw = w - crect.right;
 						_dh = h + dh - crect.bottom;
 						MoveWindow(

@@ -772,8 +772,8 @@ int WinMain()
 	InitColor();
 	setfillstyle(0x0);
 	setfont(12, 0, "ËÎÌå");
-	SetWindowTextA(GetHWnd(), "Mandelbrot Set");
-	//SetWindowTextA(GetHWnd(), "Mandelbrot Set by ÓùÛàÃÀÇÙ -- PowerEasyX V0.3.4 Release (20110129)");
+	::SetWindowTextA(GetHWnd(), "Mandelbrot Set");
+	//::SetWindowTextA(GetHWnd(), "Mandelbrot Set by ÓùÛàÃÀÇÙ -- PowerEasyX V0.3.4 Release (20110129)");
 	//mpf_set_prec(100);
 
 
@@ -812,7 +812,7 @@ int WinMain()
 	delta.re = "2.0";
 
 	SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
-	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_LOWEST);
+	::SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_LOWEST);
 	BeginBatchDraw();
 	for(; delta.re > mindelta.re; delta.re *= delta_mul, ++ncnt)
 	{
@@ -896,10 +896,10 @@ int WinMain()
 						outtextxy(100, SC_H + 12 * 3, str);
 					}
 					{
-						RECT rect, crect;
+						::RECT rect, crect;
 						int _dw, _dh;
-						GetClientRect(GetHWnd(), &crect);
-						GetWindowRect(GetHWnd(), &rect);
+						::GetClientRect(GetHWnd(), &crect);
+						::GetWindowRect(GetHWnd(), &rect);
 						_dw = w - crect.right;
 						_dh = h + dh - crect.bottom;
 						MoveWindow(
