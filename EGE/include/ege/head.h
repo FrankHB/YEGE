@@ -404,6 +404,9 @@ struct _graph_setting
 	float
 	_get_FPS(int);
 
+	int
+	_getkey_p();
+
 	double
 	_get_highfeq_time_ls();
 

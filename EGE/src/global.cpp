@@ -37,6 +37,27 @@ _graph_setting::_get_FPS(int add)
 	return add > 0 ? (fret + flret) / 2 : fret_inv;
 }
 
+int
+_graph_setting::_getkey_p()
+{
+	EGEMSG msg;
+
+	while(msgkey_queue->pop(msg))
+		switch(msg.message)
+		{
+		case WM_CHAR:
+			return KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF);
+		case WM_KEYDOWN:
+			return KEYMSG_DOWN | (int(msg.wParam) & 0xFFFF)
+				| (msg.lParam & 0x40000000 ? 0 : KEYMSG_FIRSTDOWN);
+		case WM_KEYUP:
+			return KEYMSG_UP | (int(msg.wParam) & 0xFFFF);
+		default:
+			break;
+		}
+	return 0;
+}
+
 double
 _graph_setting::_get_highfeq_time_ls()
 {

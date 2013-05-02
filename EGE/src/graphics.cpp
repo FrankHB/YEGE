@@ -135,29 +135,6 @@ waitdealmessage(_graph_setting* pg)
 }
 
 int
-_getkey(_graph_setting* pg)
-{
-	EGEMSG msg;
-
-	while(pg->msgkey_queue->pop(msg))
-	{
-		if(msg.message == WM_CHAR)
-		{
-			return (KEYMSG_CHAR | ((int)msg.wParam & 0xFFFF));
-		}
-		else if(msg.message == WM_KEYDOWN)
-		{
-			return (KEYMSG_DOWN | ((int)msg.wParam & 0xFFFF) | (msg.lParam & 0x40000000 ? 0 : KEYMSG_FIRSTDOWN));
-		}
-		else if(msg.message == WM_KEYUP)
-		{
-			return (KEYMSG_UP   | ((int)msg.wParam & 0xFFFF));
-		}
-	}
-	return 0;
-}
-
-int
 peekkey(_graph_setting* pg)
 {
 	EGEMSG msg;
@@ -175,15 +152,15 @@ peekkey(_graph_setting* pg)
 			}
 			pg->msgkey_queue->unpop();
 			if(msg.message == WM_CHAR)
-				return (KEYMSG_CHAR | ((int)msg.wParam & 0xFFFF));
+				return (KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF));
 			if(msg.message == WM_KEYDOWN)
 			{
 				if(msg.wParam >= 0x70 && msg.wParam < 0x80)
-					return (KEYMSG_DOWN | ((int)msg.wParam + 0x100));
-				return (KEYMSG_DOWN | ((int)msg.wParam & 0xFFFF));
+					return (KEYMSG_DOWN | (int(msg.wParam) + 0x100));
+				return (KEYMSG_DOWN | (int(msg.wParam) & 0xFFFF));
 			}
 			else if(msg.message == WM_KEYUP)
-				return (KEYMSG_UP | ((int)msg.wParam & 0xFFFF));
+				return (KEYMSG_UP | (int(msg.wParam) & 0xFFFF));
 		}
 	}
 	return 0;
@@ -204,15 +181,16 @@ peekallkey(_graph_setting* pg, int flag)
 			pg->msgkey_queue->unpop();
 			if(msg.message == WM_CHAR)
 			{
-				return (KEYMSG_CHAR | ((int)msg.wParam & 0xFFFF));
+				return (KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF));
 			}
 			else if(msg.message == WM_KEYDOWN)
 			{
-				return (KEYMSG_DOWN | ((int)msg.wParam & 0xFFFF) | (msg.lParam & 0x40000000 ? 0 : KEYMSG_FIRSTDOWN));
+				return (KEYMSG_DOWN | (int(msg.wParam) & 0xFFFF)
+					| (msg.lParam & 0x40000000 ? 0 : KEYMSG_FIRSTDOWN));
 			}
 			else if(msg.message == WM_KEYUP)
 			{
-				return (KEYMSG_UP   | ((int)msg.wParam & 0xFFFF));
+				return (KEYMSG_UP   | (int(msg.wParam) & 0xFFFF));
 			}
 		}
 	}
@@ -229,22 +207,12 @@ getflush()
 	EGEMSG msg;
 	int lastkey = 0;
 	if(pg->msgkey_queue->empty())
-	{
 		dealmessage(pg, NORMAL_UPDATE);
-	}
 	if(! pg->msgkey_queue->empty())
-	{
 		while(pg->msgkey_queue->pop(msg))
-		{
 			if(msg.message == WM_CHAR)
-			{
 				if(msg.message == WM_CHAR)
-				{
-					lastkey = (int)msg.wParam;
-				}
-			}
-		}
-	}
+					lastkey = int(msg.wParam);
 	return lastkey;
 }
 
@@ -291,7 +259,7 @@ getchEx(int flag)
 				break;
 			if(key > 0)
 			{
-				key = _getkey(pg);
+				key = pg->_getkey_p();
 				if(key)
 				{
 					msg = pg->msgkey_queue->last();
@@ -343,7 +311,7 @@ getkey()
 
 		do
 		{
-			if((key = _getkey(pg)))
+			if((key = pg->_getkey_p()))
 			{
 				key_msg msg{0, key_msg_none, 0};
 
@@ -368,17 +336,12 @@ flushkey()
 {
 	auto pg = &graph_setting;
 	EGEMSG msg;
+
 	if(pg->msgkey_queue->empty())
-	{
 		dealmessage(pg, NORMAL_UPDATE);
-	}
 	if(! pg->msgkey_queue->empty())
-	{
 		while(pg->msgkey_queue->pop(msg))
-		{
 			;
-		}
-	}
 	return ;
 }
 
