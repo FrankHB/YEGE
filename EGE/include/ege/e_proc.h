@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_proc_h_
+#define Inc_ege_e_proc_h_
 
 #include "e_def.h"
 
@@ -32,4 +33,6 @@ return zero means process this message, otherwise means pass it and then process
 int EGEAPI SetCloseHandler(LPCALLBACK_PROC func);
 
 }
+
+#endif
 

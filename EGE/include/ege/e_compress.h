@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_compress_h_
+#define Inc_ege_e_compress_h_
 
 namespace ege
 {
@@ -13,4 +14,6 @@ int             EGEAPI ege_uncompress(void* dest, unsigned long* destLen, const 
 unsigned long   EGEAPI ege_uncompress_size(const void* source, unsigned long sourceLen); /* 返回0表示错误，其它表示大小 */
 
 }
+
+#endif
 

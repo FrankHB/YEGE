@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_input_h_
+#define Inc_ege_e_input_h_
 
 #include <wingdi.h>
 #include "e_base.h"
@@ -45,4 +46,6 @@ int         EGEAPI mousepos(int* x, int* y); // 获取当前鼠标位置
 
 
 }
+
+#endif
 

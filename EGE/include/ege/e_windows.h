@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_windows_h_
+#define Inc_ege_e_windows_h_
 
 #include <windows.h>
 
@@ -58,3 +59,6 @@ HINSTANCE   EGEAPI getHInstance();
 EGEAPI ::WNDPROC getProcfunc();
 
 }
+
+#endif
+

@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_label_h_
+#define Inc_ege_label_h_
+
+#include "ege/e_ctl.h"
 
 class label : public egeControlBase
 {
@@ -135,4 +138,6 @@ protected:
 	bool m_transparent;
 	int m_fontheight;
 };
+
+#endif
 

@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_base_h_
+#define Inc_ege_e_base_h_
 
 #include <cmath>
 #include "e_def.h"
@@ -426,3 +427,6 @@ void EGEAPI window_getviewport(int* left, int* top, int* right, int* bottom);
 void EGEAPI window_setviewport(int  left, int  top, int  right, int  bottom);
 
 }
+
+#endif
+

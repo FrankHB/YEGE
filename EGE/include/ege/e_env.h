@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_env_h_
+#define Inc_ege_e_env_h_
 
 #include "e_def.h"
 
@@ -12,4 +13,6 @@ void EGEAPI closegraph();                                      // 关闭图形�
 bool EGEAPI is_run();   // 判断UI是否退出
 
 } // namespace ege
+
+#endif
 

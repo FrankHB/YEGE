@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_time_h_
+#define Inc_ege_e_time_h_
 
 #include "e_base.h"
 
@@ -20,4 +21,6 @@ void EGEAPI api_sleep(long dwMilliseconds);
 double EGEAPI fclock(); // 获取以秒为单位的浮点时间，只用于计时用，精度0.01秒，
 
 }
+
+#endif
 

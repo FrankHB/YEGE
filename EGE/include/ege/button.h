@@ -1,4 +1,5 @@
-#pragma once
+#ifndef Inc_ege_button_h_
+#define Inc_ege_button_h_
 
 #include <algorithm>
 
@@ -499,3 +500,6 @@ protected:
 	label* _logger;
 #endif
 };
+
+#endif
+

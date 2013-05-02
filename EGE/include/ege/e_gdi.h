@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_gdi_h_
+#define Inc_ege_e_gdi_h_
 
 #include "e_img.h"
 #include <windows.h>
@@ -24,4 +25,6 @@ int  EGEAPI getimage_pngfile(PIMAGE pimg, LPCSTR  filename);
 int  EGEAPI getimage_pngfile(PIMAGE pimg, LPCWSTR filename);
 
 }
+
+#endif
 

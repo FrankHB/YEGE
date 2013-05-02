@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_v3d_h_
+#define Inc_ege_e_v3d_h_
 
 #include "e_def.h"
 
@@ -69,4 +70,6 @@ void EGEAPI rotate_point3d_y(VECTOR3D*   pt, float r);
 void EGEAPI rotate_point3d_z(VECTOR3D*   pt, float r);
 
 }
+
+#endif
 

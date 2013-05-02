@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_text_h_
+#define Inc_ege_e_text_h_
 
 #include "e_windows.h"
 #include "e_img.h"
@@ -69,4 +70,6 @@ int EGEAPI inputbox_getline(LPCSTR  title, LPCSTR  text, LPSTR  buf, int len);  
 int EGEAPI inputbox_getline(LPCWSTR title, LPCWSTR text, LPWSTR buf, int len);  //弹出对话框，让用户输入，当前程序运行暂停，返回非0表示输入有效，0为无效
 
 }
+
+#endif
 

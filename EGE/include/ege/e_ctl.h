@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_ctl_h_
+#define Inc_ege_e_ctl_h_
 
 #include <wingdi.h>
 #include "e_mac.h"
@@ -292,6 +293,7 @@ public:
 	int     m_inheritlevel;     // 继承层次
 };
 
-
 }
+
+#endif
 

@@ -1,6 +1,7 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_sys_edit_h_
+#define Inc_ege_sys_edit_h_
 
-#include "../ege.h"
+#include "ege/e_ctl.h"
 
 namespace ege
 {
@@ -204,4 +205,6 @@ protected:
 };
 
 } // namespace ege
+
+#endif
 

@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_music_h_
+#define Inc_ege_e_music_h_
 
 #include <wingdi.h>
 #include "e_base.h"
@@ -49,6 +50,7 @@ private:
 	PVOID       m_dwCallBack;
 };
 
-
 }
+
+#endif
 

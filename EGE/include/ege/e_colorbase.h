@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_colorbase_h_
+#define Inc_ege_e_colorbase_h_
 
 #include <cstdint>
 
@@ -86,4 +87,6 @@ EGEAGRAY(u8 a, u32 gray)
 #define RGBtoHSV    rgb2hsv
 #define HSLtoRGB    hsl2rgb
 #define HSVtoRGB    hsv2rgb
+
+#endif
 

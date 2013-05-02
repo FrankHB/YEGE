@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_random_h_
+#define Inc_ege_random_h_
+
 #include "ege/head.h"
 
 namespace ege
@@ -10,4 +12,6 @@ double          EGEAPI randomf();
 
 
 }
+
+#endif
 

@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_color_h_
+#define Inc_ege_e_color_h_
 
 #include "e_base.h"
 
@@ -13,4 +14,6 @@ color_t     EGEAPI hsl2rgb(float H, float S, float L);
 color_t     EGEAPI hsv2rgb(float H, float S, float V);
 
 }
+
+#endif
 

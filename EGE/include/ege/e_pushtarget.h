@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef Inc_ege_e_pushtarget_h_
+#define Inc_ege_e_pushtarget_h_
 
 namespace ege
 {
@@ -24,4 +25,6 @@ private:
 };
 
 }
+
+#endif
 
