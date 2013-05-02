@@ -149,7 +149,7 @@ public:
 	int                 m_pattern_type;
 	void*               m_texture;
 private:
-	void inittest(const WCHAR* strCallFunction = nullptr) const;
+	void inittest(const wchar_t* strCallFunction = nullptr) const;
 public:
 	IMAGE();
 	IMAGE(int width, int height);
@@ -182,18 +182,18 @@ public:
 	void copyimage(const PIMAGE pSrcImg);
 	void getimage(int srcX, int srcY, int srcWidth, int srcHeight);
 	void getimage(const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);
-	int  getimage(LPCSTR pImgFile, int zoomWidth = 0, int zoomHeight = 0);
-	int  getimage(LPCWSTR pImgFile, int zoomWidth = 0, int zoomHeight = 0);
-	int  getimage(LPCSTR pResType, LPCSTR pResName, int zoomWidth = 0, int zoomHeight = 0);
-	int  getimage(LPCWSTR pResType, LPCWSTR pResName, int zoomWidth = 0, int zoomHeight = 0);
+	int  getimage(const char* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
+	int  getimage(const wchar_t* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
+	int  getimage(const char* pResType, const char* pResName, int zoomWidth = 0, int zoomHeight = 0);
+	int  getimage(const wchar_t* pResType, const wchar_t* pResName, int zoomWidth = 0, int zoomHeight = 0);
 	int  getimage(void* pMem, long size);
 	void putimage(int dstX, int dstY, DWORD dwRop = SRCCOPY) const;
 	void putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, DWORD dwRop = SRCCOPY) const;
 	void putimage(PIMAGE pDstImg, int dstX, int dstY, DWORD dwRop = SRCCOPY) const;
 	void putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, DWORD dwRop = SRCCOPY) const;
 	void putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, int srcWidth, int srcHeight, DWORD dwRop = SRCCOPY) const;
-	int  saveimage(LPCSTR  filename);
-	int  saveimage(LPCWSTR filename);
+	int  saveimage(const char*  filename);
+	int  saveimage(const wchar_t* filename);
 	int  getpngimg(FILE* fp);
 	int  savepngimg(FILE* fp, int bAlpha);
 	int

@@ -26,8 +26,8 @@ public:
 	{
 		return (m_DID != MUSIC_ERROR) ? 1 : 0;
 	}
-	DWORD OpenFile(LPCSTR  filepath);
-	DWORD OpenFile(LPCWSTR filepath);
+	DWORD OpenFile(const char*  filepath);
+	DWORD OpenFile(const wchar_t* filepath);
 	DWORD Play(DWORD dwFrom = MUSIC_ERROR, DWORD dwTo = MUSIC_ERROR);
 	DWORD Pause();
 	DWORD Seek(DWORD dwTo); //播放位置定位，单位为ms

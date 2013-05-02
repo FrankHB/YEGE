@@ -27,12 +27,12 @@ setvisualpage(int page)
 }
 
 void
-setcaption(LPCSTR  caption)
+setcaption(const char*  caption)
 {
 	::SetWindowTextA(getHWnd(), caption);
 }
 void
-setcaption(LPCWSTR caption)
+setcaption(const wchar_t* caption)
 {
 	::SetWindowTextW(getHWnd(), caption);
 }
@@ -1085,7 +1085,7 @@ private_gettextmode(PIMAGE img)
 /* private function */
 static
 void
-private_textout(PIMAGE img, LPCSTR textstring, int x, int y, int horiz, int vert)
+private_textout(PIMAGE img, const char* textstring, int x, int y, int horiz, int vert)
 {
 	if(horiz >= 0 && vert >= 0)
 	{
@@ -1131,7 +1131,7 @@ private_textout(PIMAGE img, LPCSTR textstring, int x, int y, int horiz, int vert
 /* private function */
 static
 void
-private_textout(PIMAGE img, LPCWSTR textstring, int x, int y, int horiz, int vert)
+private_textout(PIMAGE img, const wchar_t* textstring, int x, int y, int horiz, int vert)
 {
 	if(horiz >= 0 && vert >= 0)
 	{
@@ -1175,7 +1175,7 @@ private_textout(PIMAGE img, LPCWSTR textstring, int x, int y, int horiz, int ver
 }
 
 void
-outtext(LPCSTR textstring, PIMAGE pimg)
+outtext(const char* textstring, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE(pimg);
 
@@ -1189,7 +1189,7 @@ outtext(LPCSTR textstring, PIMAGE pimg)
 }
 
 void
-outtext(LPCWSTR textstring, PIMAGE pimg)
+outtext(const wchar_t* textstring, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE(pimg);
 
@@ -1210,14 +1210,14 @@ outtext(CHAR c, PIMAGE pimg)
 }
 
 void
-outtext(WCHAR c, PIMAGE pimg)
+outtext(wchar_t c, PIMAGE pimg)
 {
-	WCHAR str[10]{c};
+	wchar_t str[10]{c};
 	outtext(str, pimg);
 }
 
 void
-outtextxy(int x, int y, LPCSTR textstring, PIMAGE pimg)
+outtextxy(int x, int y, const char* textstring, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE(pimg);
 
@@ -1229,7 +1229,7 @@ outtextxy(int x, int y, LPCSTR textstring, PIMAGE pimg)
 }
 
 void
-outtextxy(int x, int y, LPCWSTR textstring, PIMAGE pimg)
+outtextxy(int x, int y, const wchar_t* textstring, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE(pimg);
 
@@ -1248,14 +1248,14 @@ outtextxy(int x, int y, CHAR c, PIMAGE pimg)
 }
 
 void
-outtextxy(int x, int y, WCHAR c, PIMAGE pimg)
+outtextxy(int x, int y, wchar_t c, PIMAGE pimg)
 {
-	WCHAR str[10]{c};
+	wchar_t str[10]{c};
 	outtextxy(x, y, str, pimg);
 }
 
 void
-outtextrect(int x, int y, int w, int h, LPCSTR  textstring, PIMAGE pimg)
+outtextrect(int x, int y, int w, int h, const char*  textstring, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE(pimg);
 
@@ -1270,7 +1270,7 @@ outtextrect(int x, int y, int w, int h, LPCSTR  textstring, PIMAGE pimg)
 }
 
 void
-outtextrect(int x, int y, int w, int h, LPCWSTR textstring, PIMAGE pimg)
+outtextrect(int x, int y, int w, int h, const wchar_t* textstring, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE(pimg);
 
@@ -1285,7 +1285,7 @@ outtextrect(int x, int y, int w, int h, LPCWSTR textstring, PIMAGE pimg)
 }
 
 void
-xyprintf(int x, int y, LPCSTR  fmt, ...)
+xyprintf(int x, int y, const char*  fmt, ...)
 {
 	va_list v;
 	va_start(v, fmt);
@@ -1299,7 +1299,7 @@ xyprintf(int x, int y, LPCSTR  fmt, ...)
 }
 
 void
-xyprintf(int x, int y, LPCWSTR fmt, ...)
+xyprintf(int x, int y, const wchar_t* fmt, ...)
 {
 	va_list v;
 	va_start(v, fmt);
@@ -1313,7 +1313,7 @@ xyprintf(int x, int y, LPCWSTR fmt, ...)
 }
 
 void
-rectprintf(int x, int y, int w, int h, LPCSTR  fmt, ...)
+rectprintf(int x, int y, int w, int h, const char*  fmt, ...)
 {
 	va_list v;
 	va_start(v, fmt);
@@ -1327,7 +1327,7 @@ rectprintf(int x, int y, int w, int h, LPCSTR  fmt, ...)
 }
 
 void
-rectprintf(int x, int y, int w, int h, LPCWSTR fmt, ...)
+rectprintf(int x, int y, int w, int h, const wchar_t* fmt, ...)
 {
 	va_list v;
 	va_start(v, fmt);
@@ -1341,7 +1341,7 @@ rectprintf(int x, int y, int w, int h, LPCWSTR fmt, ...)
 }
 
 int
-textwidth(LPCSTR textstring, PIMAGE pimg)
+textwidth(const char* textstring, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
@@ -1356,7 +1356,7 @@ textwidth(LPCSTR textstring, PIMAGE pimg)
 }
 
 int
-textwidth(LPCWSTR textstring, PIMAGE pimg)
+textwidth(const wchar_t* textstring, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
@@ -1378,14 +1378,14 @@ textwidth(CHAR c, PIMAGE pimg)
 }
 
 int
-textwidth(WCHAR c, PIMAGE pimg)
+textwidth(wchar_t c, PIMAGE pimg)
 {
-	WCHAR str[2]{c};
+	wchar_t str[2]{c};
 	return textwidth(str, pimg);
 }
 
 int
-textheight(LPCSTR textstring, PIMAGE pimg)
+textheight(const char* textstring, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
@@ -1400,7 +1400,7 @@ textheight(LPCSTR textstring, PIMAGE pimg)
 }
 
 int
-textheight(LPCWSTR textstring, PIMAGE pimg)
+textheight(const wchar_t* textstring, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
@@ -1422,9 +1422,9 @@ textheight(CHAR c, PIMAGE pimg)
 }
 
 int
-textheight(WCHAR c, PIMAGE pimg)
+textheight(wchar_t c, PIMAGE pimg)
 {
-	WCHAR str[2]{c};
+	wchar_t str[2]{c};
 	return textheight(str, pimg);
 }
 
@@ -1584,7 +1584,7 @@ void
 setfont(
 	int nHeight,
 	int nWidth,
-	LPCSTR lpszFace,
+	const char* lpszFace,
 	int nEscapement,
 	int nOrientation,
 	int nWeight,
@@ -1616,7 +1616,7 @@ void
 setfont(
 	int nHeight,
 	int nWidth,
-	LPCWSTR lpszFace,
+	const wchar_t* lpszFace,
 	int nEscapement,
 	int nOrientation,
 	int nWeight,
@@ -1648,7 +1648,7 @@ void
 setfont(
 	int nHeight,
 	int nWidth,
-	LPCSTR lpszFace,
+	const char* lpszFace,
 	int nEscapement,
 	int nOrientation,
 	int nWeight,
@@ -1676,7 +1676,7 @@ void
 setfont(
 	int nHeight,
 	int nWidth,
-	LPCWSTR lpszFace,
+	const wchar_t* lpszFace,
 	int nEscapement,
 	int nOrientation,
 	int nWeight,
@@ -1701,7 +1701,7 @@ setfont(
 }
 
 void
-setfont(int nHeight, int nWidth, LPCSTR lpszFace, PIMAGE pimg)
+setfont(int nHeight, int nWidth, const char* lpszFace, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
@@ -1718,7 +1718,7 @@ setfont(int nHeight, int nWidth, LPCSTR lpszFace, PIMAGE pimg)
 }
 
 void
-setfont(int nHeight, int nWidth, LPCWSTR lpszFace, PIMAGE pimg)
+setfont(int nHeight, int nWidth, const wchar_t* lpszFace, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
@@ -2424,10 +2424,10 @@ draw_frame(PIMAGE img, int l, int t, int r, int b, color_t lc, color_t dc)
 }
 
 int
-inputbox_getline(LPCSTR title, LPCSTR text, LPSTR buf, int len)
+inputbox_getline(const char* title, const char* text, char* buf, int len)
 {
-	const auto _buf(static_cast<WCHAR*>(operator new(len * 2)));
-	WCHAR _title[256], _text[256];
+	const auto _buf(static_cast<wchar_t*>(operator new(len * 2)));
+	wchar_t _title[256], _text[256];
 
 	::MultiByteToWideChar(CP_ACP, 0, title, -1, _title, 256);
 	::MultiByteToWideChar(CP_ACP, 0,  text, -1,  _text, 256);
@@ -2442,7 +2442,7 @@ inputbox_getline(LPCSTR title, LPCSTR text, LPSTR buf, int len)
 }
 
 int
-inputbox_getline(LPCWSTR title, LPCWSTR text, LPWSTR buf, int len)
+inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int len)
 {
 	auto pg = &graph_setting;
 	IMAGE bg;

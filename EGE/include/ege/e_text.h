@@ -8,28 +8,28 @@ namespace ege
 {
 
 // 文字相关函数
-void EGEAPI outtext(LPCSTR  textstring, PIMAGE pimg = nullptr);                   // 在当前位置输出文字
-void EGEAPI outtext(LPCWSTR textstring, PIMAGE pimg = nullptr);                   // 在当前位置输出文字
+void EGEAPI outtext(const char*  textstring, PIMAGE pimg = nullptr);                   // 在当前位置输出文字
+void EGEAPI outtext(const wchar_t* textstring, PIMAGE pimg = nullptr);                   // 在当前位置输出文字
 void EGEAPI outtext(CHAR  c, PIMAGE pimg = nullptr);                              // 在当前位置输出字符
-void EGEAPI outtext(WCHAR c, PIMAGE pimg = nullptr);                              // 在当前位置输出字符
-void EGEAPI outtextxy(int x, int y, LPCSTR  textstring, PIMAGE pimg = nullptr);   // 在指定位置输出文字
-void EGEAPI outtextxy(int x, int y, LPCWSTR textstring, PIMAGE pimg = nullptr);   // 在指定位置输出文字
+void EGEAPI outtext(wchar_t c, PIMAGE pimg = nullptr);                              // 在当前位置输出字符
+void EGEAPI outtextxy(int x, int y, const char*  textstring, PIMAGE pimg = nullptr);   // 在指定位置输出文字
+void EGEAPI outtextxy(int x, int y, const wchar_t* textstring, PIMAGE pimg = nullptr);   // 在指定位置输出文字
 void EGEAPI outtextxy(int x, int y, CHAR c, PIMAGE pimg = nullptr);               // 在指定位置输出字符
-void EGEAPI outtextxy(int x, int y, WCHAR c, PIMAGE pimg = nullptr);              // 在指定位置输出字符
-void EGEAPI outtextrect(int x, int y, int w, int h, LPCSTR  textstring, PIMAGE pimg = nullptr); // 在指定矩形范围输出文字
-void EGEAPI outtextrect(int x, int y, int w, int h, LPCWSTR textstring, PIMAGE pimg = nullptr); // 在指定矩形范围输出文字
-void EGEAPI xyprintf(int x, int y, LPCSTR  fmt, ...); // 在指定位置输出格式化字符串，指定绘图目标调用settarget
-void EGEAPI xyprintf(int x, int y, LPCWSTR fmt, ...); // 在指定位置输出格式化字符串，指定绘图目标调用settarget
-void EGEAPI rectprintf(int x, int y, int w, int h, LPCSTR  fmt, ...); // 在指定矩形输出格式化字符串，指定绘图目标调用settarget
-void EGEAPI rectprintf(int x, int y, int w, int h, LPCWSTR fmt, ...); // 在指定矩形输出格式化字符串，指定绘图目标调用settarget
-int  EGEAPI textwidth(LPCSTR  textstring, PIMAGE pimg = nullptr);                 // 获取字符串占用的像素宽
-int  EGEAPI textwidth(LPCWSTR textstring, PIMAGE pimg = nullptr);                 // 获取字符串占用的像素宽
+void EGEAPI outtextxy(int x, int y, wchar_t c, PIMAGE pimg = nullptr);              // 在指定位置输出字符
+void EGEAPI outtextrect(int x, int y, int w, int h, const char*  textstring, PIMAGE pimg = nullptr); // 在指定矩形范围输出文字
+void EGEAPI outtextrect(int x, int y, int w, int h, const wchar_t* textstring, PIMAGE pimg = nullptr); // 在指定矩形范围输出文字
+void EGEAPI xyprintf(int x, int y, const char*  fmt, ...); // 在指定位置输出格式化字符串，指定绘图目标调用settarget
+void EGEAPI xyprintf(int x, int y, const wchar_t* fmt, ...); // 在指定位置输出格式化字符串，指定绘图目标调用settarget
+void EGEAPI rectprintf(int x, int y, int w, int h, const char*  fmt, ...); // 在指定矩形输出格式化字符串，指定绘图目标调用settarget
+void EGEAPI rectprintf(int x, int y, int w, int h, const wchar_t* fmt, ...); // 在指定矩形输出格式化字符串，指定绘图目标调用settarget
+int  EGEAPI textwidth(const char*  textstring, PIMAGE pimg = nullptr);                 // 获取字符串占用的像素宽
+int  EGEAPI textwidth(const wchar_t* textstring, PIMAGE pimg = nullptr);                 // 获取字符串占用的像素宽
 int  EGEAPI textwidth(CHAR  c, PIMAGE pimg = nullptr);
-int  EGEAPI textwidth(WCHAR c, PIMAGE pimg = nullptr);
-int  EGEAPI textheight(LPCSTR  textstring, PIMAGE pimg = nullptr);                // 获取字符串占用的像素高
-int  EGEAPI textheight(LPCWSTR textstring, PIMAGE pimg = nullptr);                // 获取字符串占用的像素高
+int  EGEAPI textwidth(wchar_t c, PIMAGE pimg = nullptr);
+int  EGEAPI textheight(const char*  textstring, PIMAGE pimg = nullptr);                // 获取字符串占用的像素高
+int  EGEAPI textheight(const wchar_t* textstring, PIMAGE pimg = nullptr);                // 获取字符串占用的像素高
 int  EGEAPI textheight(CHAR  c, PIMAGE pimg = nullptr);
-int  EGEAPI textheight(WCHAR c, PIMAGE pimg = nullptr);
+int  EGEAPI textheight(wchar_t c, PIMAGE pimg = nullptr);
 void EGEAPI settextjustify(int horiz, int vert, PIMAGE pimg = nullptr);
 
 // 设置当前字体样式(详见帮助)
@@ -47,16 +47,16 @@ void EGEAPI settextjustify(int horiz, int vert, PIMAGE pimg = nullptr);
 //      fbClipPrecision: 指定文字的剪辑精度；
 //      fbQuality: 指定文字的输出质量；
 //      fbPitchAndFamily: 指定以常规方式描述字体的字体系列。
-void EGEAPI setfont(int nHeight, int nWidth, LPCSTR lpszFace,  PIMAGE pimg = nullptr);
-void EGEAPI setfont(int nHeight, int nWidth, LPCWSTR lpszFace, PIMAGE pimg = nullptr);
-void EGEAPI setfont(int nHeight, int nWidth, LPCSTR lpszFace,  int nEscapement, int nOrientation,
+void EGEAPI setfont(int nHeight, int nWidth, const char* lpszFace,  PIMAGE pimg = nullptr);
+void EGEAPI setfont(int nHeight, int nWidth, const wchar_t* lpszFace, PIMAGE pimg = nullptr);
+void EGEAPI setfont(int nHeight, int nWidth, const char* lpszFace,  int nEscapement, int nOrientation,
 					int nWeight, int bItalic, int bUnderline, int bStrikeOut, PIMAGE pimg = nullptr);
-void EGEAPI setfont(int nHeight, int nWidth, LPCWSTR lpszFace, int nEscapement, int nOrientation,
+void EGEAPI setfont(int nHeight, int nWidth, const wchar_t* lpszFace, int nEscapement, int nOrientation,
 					int nWeight, int bItalic, int bUnderline, int bStrikeOut, PIMAGE pimg = nullptr);
-void EGEAPI setfont(int nHeight, int nWidth, LPCSTR lpszFace,  int nEscapement, int nOrientation,
+void EGEAPI setfont(int nHeight, int nWidth, const char* lpszFace,  int nEscapement, int nOrientation,
 					int nWeight, int bItalic, int bUnderline, int bStrikeOut, BYTE fbCharSet,
 					BYTE fbOutPrecision, BYTE fbClipPrecision, BYTE fbQuality, BYTE fbPitchAndFamily, PIMAGE pimg = nullptr);
-void EGEAPI setfont(int nHeight, int nWidth, LPCWSTR lpszFace, int nEscapement, int nOrientation,
+void EGEAPI setfont(int nHeight, int nWidth, const wchar_t* lpszFace, int nEscapement, int nOrientation,
 					int nWeight, int bItalic, int bUnderline, int bStrikeOut, BYTE fbCharSet,
 					BYTE fbOutPrecision, BYTE fbClipPrecision, BYTE fbQuality, BYTE fbPitchAndFamily, PIMAGE pimg = nullptr);
 void EGEAPI setfont(const LOGFONTA* font, PIMAGE pimg = nullptr); // 设置当前字体样式
@@ -66,8 +66,8 @@ void EGEAPI getfont(LOGFONTW* font, PIMAGE pimg = nullptr);       // 获取当�
 
 //高级输入函数
 // title 对话框标题，text 对话框提示文字，buf接收输入数据的字符串指针，len指出buf的最大长度，也同时会限制输入内容长度
-int EGEAPI inputbox_getline(LPCSTR  title, LPCSTR  text, LPSTR  buf, int len);  //弹出对话框，让用户输入，当前程序运行暂停，返回非0表示输入有效，0为无效
-int EGEAPI inputbox_getline(LPCWSTR title, LPCWSTR text, LPWSTR buf, int len);  //弹出对话框，让用户输入，当前程序运行暂停，返回非0表示输入有效，0为无效
+int EGEAPI inputbox_getline(const char*  title, const char*  text, char* buf, int len);  //弹出对话框，让用户输入，当前程序运行暂停，返回非0表示输入有效，0为无效
+int EGEAPI inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int len);  //弹出对话框，让用户输入，当前程序运行暂停，返回非0表示输入有效，0为无效
 
 }
 

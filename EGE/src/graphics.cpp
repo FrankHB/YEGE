@@ -437,12 +437,12 @@ init_instance(HINSTANCE hInstance, int nCmdShow)
 {
 	auto pg = &graph_setting;
 	int dw = 0, dh = 0;
-	//WCHAR Title[256]{0};
-	//WCHAR Title2[256]{0};
+	//wchar_t Title[256]{0};
+	//wchar_t Title2[256]{0};
 
 	//WideCharToMultiByte(CP_UTF8, 0, pg->window_caption,
-	//	lstrlenW(pg->window_caption), (LPSTR)Title, 256, 0, 0);
-	//MultiByteToWideChar(CP_UTF8, 0, (LPSTR)Title, -1, Title2, 256);
+	//	lstrlenW(pg->window_caption), (char*)Title, 256, 0, 0);
+	//MultiByteToWideChar(CP_UTF8, 0, (char*)Title, -1, Title2, 256);
 	dw = GetSystemMetrics(SM_CXFRAME) * 2;
 	dh = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) * 2;
 	if(g_attach_hwnd)
@@ -468,7 +468,7 @@ init_instance(HINSTANCE hInstance, int nCmdShow)
 			if(GetLastError() == ERROR_ALREADY_EXISTS)
 				::PostMessage(pg->hwnd, WM_CLOSE, 0, 0);
 	}
-	//::SetWindowTextA(pg->hwnd, (LPCSTR)Title);
+	//::SetWindowTextA(pg->hwnd, (const char*)Title);
 	::SetWindowLongPtrW(pg->hwnd, GWLP_USERDATA, (LONG_PTR)pg);
 
 	/*{
@@ -503,7 +503,7 @@ init_instance(HINSTANCE hInstance, int nCmdShow)
 #if !defined(UNICODE)
 BOOL
 CALLBACK
-EnumResNameProc( HMODULE hModule, LPCSTR, LPSTR lpszName, LONG_PTR lParam
+EnumResNameProc( HMODULE hModule, const char*, char* lpszName, LONG_PTR lParam
 )
 {
 	auto hico = (::HICON)::LoadImage(hModule, lpszName, IMAGE_ICON, 0, 0,
@@ -517,12 +517,11 @@ EnumResNameProc( HMODULE hModule, LPCSTR, LPSTR lpszName, LONG_PTR lParam
 	return TRUE;
 }
 #else
-BOOL
-CALLBACK
+BOOL CALLBACK
 EnumResNameProc(
 	HMODULE hModule,
-	LPCWSTR lpszType,
-	LPWSTR lpszName,
+	const wchar_t* lpszType,
+	wchar_t* lpszName,
 	LONG_PTR lParam
 )
 {

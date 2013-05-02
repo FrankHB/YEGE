@@ -61,11 +61,11 @@ IMAGE::~IMAGE()
 	deleteimage();
 }
 
-void IMAGE::inittest(const WCHAR * strCallFunction) const
+void IMAGE::inittest(const wchar_t * strCallFunction) const
 {
 	if(m_initflag != IMAGE_INIT_FLAG)
 	{
-		WCHAR str[60];
+		wchar_t str[60];
 		wsprintfW(str, L"Fatal error: read/write at 0x%p. At function '%s'", this, strCallFunction);
 		MessageBoxW(graph_setting.hwnd, str, L"EGE ERROR message", MB_ICONSTOP);
 		ExitProcess((UINT)grError);
@@ -151,7 +151,7 @@ IMAGE::newimage(HDC hdc, int width, int height)
 		hdc = m_hDC;
 		if(hdc == nullptr)
 		{
-			WCHAR str[60];
+			wchar_t str[60];
 			wsprintfW(str, L"Fatal error: read/write at 0x%08x. At function 'newimage', construct PIMAGE before 'initgraph'?", this);
 			MessageBoxW(graph_setting.hwnd, str, L"ERROR message", MB_ICONSTOP);
 			ExitProcess((UINT)grError);
@@ -339,7 +339,7 @@ IMAGE::putimage(int dstX, int dstY, DWORD dwRop) const
 }
 
 int
-IMAGE::getimage(LPCSTR filename, int zoomWidth, int zoomHeight)
+IMAGE::getimage(const char* filename, int zoomWidth, int zoomHeight)
 {
 	inittest(L"IMAGE::getimage");
 	{
@@ -347,13 +347,13 @@ IMAGE::getimage(LPCSTR filename, int zoomWidth, int zoomHeight)
 		if(ret == 0) return 0;
 	}
 
-	WCHAR           wszPath[MAX_PATH * 2 + 1];
+	wchar_t           wszPath[MAX_PATH * 2 + 1];
 	MultiByteToWideChar(CP_ACP, 0, filename, -1, wszPath, MAX_PATH * 2);
 	return getimage(wszPath, zoomWidth, zoomHeight);
 }
 
 int
-IMAGE::getimage(LPCWSTR filename, int, int)
+IMAGE::getimage(const wchar_t* filename, int, int)
 {
 	inittest(L"IMAGE::getimage");
 	{
@@ -363,7 +363,7 @@ IMAGE::getimage(LPCWSTR filename, int, int)
 
 	struct IPicture* pPicture;
 	OLECHAR wszPath[MAX_PATH * 2 + 1];
-	WCHAR szPath[MAX_PATH * 2 + 1] = L"";
+	wchar_t szPath[MAX_PATH * 2 + 1] = L"";
 	long lWidth, lHeight;
 	long lWidthPixels, lHeightPixels;
 	::HRESULT hr;
@@ -451,7 +451,7 @@ ERROR_BREAK:
 }
 
 int
-IMAGE::saveimage(LPCSTR  filename)
+IMAGE::saveimage(const char*  filename)
 {
 	FILE* fp = nullptr;
 	int ret;
@@ -463,7 +463,7 @@ IMAGE::saveimage(LPCSTR  filename)
 }
 
 int
-IMAGE::saveimage(LPCWSTR filename)
+IMAGE::saveimage(const wchar_t* filename)
 {
 	FILE* fp = nullptr;
 	int ret;
@@ -625,7 +625,7 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 }
 
 int
-IMAGE::getimage(LPCSTR pResType, LPCSTR pResName, int, int)
+IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 {
 	inittest(L"IMAGE::getimage");
 
@@ -682,7 +682,7 @@ IMAGE::getimage(LPCSTR pResType, LPCSTR pResName, int, int)
 
 
 int
-IMAGE::getimage(LPCWSTR pResType, LPCWSTR pResName, int, int)
+IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 {
 	inittest(L"IMAGE::getimage");
 	auto hrsrc = ::FindResourceW(graph_setting.instance, pResName, pResType);
@@ -2914,25 +2914,25 @@ putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, const 
 }
 
 int
-getimage(PIMAGE pDstImg, LPCSTR pImgFile, int zoomWidth, int zoomHeight)
+getimage(PIMAGE pDstImg, const char* pImgFile, int zoomWidth, int zoomHeight)
 {
 	return pDstImg->getimage(pImgFile, zoomWidth, zoomHeight);
 }
 
 int
-getimage(PIMAGE pDstImg, LPCWSTR pImgFile, int zoomWidth, int zoomHeight)
+getimage(PIMAGE pDstImg, const wchar_t* pImgFile, int zoomWidth, int zoomHeight)
 {
 	return pDstImg->getimage(pImgFile, zoomWidth, zoomHeight);
 }
 
 int
-getimage(PIMAGE pDstImg, LPCSTR pResType, LPCSTR pResName, int zoomWidth, int zoomHeight)
+getimage(PIMAGE pDstImg, const char* pResType, const char* pResName, int zoomWidth, int zoomHeight)
 {
 	return pDstImg->getimage(pResType, pResName, zoomWidth, zoomHeight);
 }
 
 int
-getimage(PIMAGE pDstImg, LPCWSTR pResType, LPCWSTR pResName, int zoomWidth, int zoomHeight)
+getimage(PIMAGE pDstImg, const wchar_t* pResType, const wchar_t* pResName, int zoomWidth, int zoomHeight)
 {
 	return pDstImg->getimage(pResType, pResName, zoomWidth, zoomHeight);
 }
@@ -3035,7 +3035,7 @@ imagefilter_blurring(
 }
 
 int
-saveimage(PIMAGE pimg, LPCSTR  filename)
+saveimage(PIMAGE pimg, const char*  filename)
 {
 	const PIMAGE img = CONVERT_IMAGE(pimg);
 	int ret = 0;
@@ -3048,7 +3048,7 @@ saveimage(PIMAGE pimg, LPCSTR  filename)
 }
 
 int
-saveimage(PIMAGE pimg, LPCWSTR filename)
+saveimage(PIMAGE pimg, const wchar_t* filename)
 {
 	const PIMAGE img = CONVERT_IMAGE(pimg);
 	int ret = 0;
@@ -3062,7 +3062,7 @@ saveimage(PIMAGE pimg, LPCWSTR filename)
 
 
 int
-getimage_pngfile(PIMAGE pimg, LPCSTR  filename)
+getimage_pngfile(PIMAGE pimg, const char*  filename)
 {
 	FILE* fp = nullptr;
 	int ret;
@@ -3074,7 +3074,7 @@ getimage_pngfile(PIMAGE pimg, LPCSTR  filename)
 }
 
 int
-getimage_pngfile(PIMAGE pimg, LPCWSTR filename)
+getimage_pngfile(PIMAGE pimg, const wchar_t* filename)
 {
 	FILE* fp = nullptr;
 	int ret;
@@ -3086,7 +3086,7 @@ getimage_pngfile(PIMAGE pimg, LPCWSTR filename)
 }
 
 int
-savepng(PIMAGE pimg, LPCSTR  filename, int bAlpha)
+savepng(PIMAGE pimg, const char*  filename, int bAlpha)
 {
 	FILE* fp = nullptr;
 	int ret;
@@ -3099,7 +3099,7 @@ savepng(PIMAGE pimg, LPCSTR  filename, int bAlpha)
 }
 
 int
-savepng(PIMAGE pimg, LPCWSTR filename, int bAlpha)
+savepng(PIMAGE pimg, const wchar_t* filename, int bAlpha)
 {
 	FILE* fp = nullptr;
 	int ret;

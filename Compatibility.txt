@@ -23,6 +23,9 @@ Code::Blocks 。
 移除 Array 和 Set 模版，改用 std::vector 和 std::set 替代。
 移除 _Cdecl 宏。
 
+兼容接口和实现调整：
+Windows SDK 类型 WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别用 wchar_t 、char* 、const char* 、wchar_t* 和 const wchar_t* 代替。
+
 实现方式：
 随机数改用 C++11 标准库 <random> 实现。
 去除宏 SWAP ，使用 C++ 标准库 std::swap 代替。

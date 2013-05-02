@@ -108,7 +108,7 @@ public:
 		egeControlBase::visable(bvisable);
 		::ShowWindow(m_hwnd, (int)bvisable);
 	}
-	void setfont(int h, int w, LPCSTR fontface)
+	void setfont(int h, int w, const char* fontface)
 	{
 		{
 			LOGFONTA lf{h, w, 0, 0, FW_DONTCARE, 0, 0, 0, DEFAULT_CHARSET,
@@ -126,7 +126,7 @@ public:
 			}
 		}
 	}
-	void setfont(int h, int w, LPCWSTR fontface)
+	void setfont(int h, int w, const wchar_t* fontface)
 	{
 		{
 			LOGFONTW lf{h, w, 0, 0, FW_DONTCARE, 0, 0, 0, DEFAULT_CHARSET,
@@ -155,19 +155,19 @@ public:
 		egeControlBase::size(w, h);
 		::MoveWindow(m_hwnd, m_x, m_y, m_w, m_h, TRUE);
 	}
-	void settext(LPCSTR text)
+	void settext(const char* text)
 	{
 		::SendMessageA(m_hwnd, WM_SETTEXT, 0, (LPARAM)text);
 	}
-	void settext(LPCWSTR text)
+	void settext(const wchar_t* text)
 	{
 		::SendMessageW(m_hwnd, WM_SETTEXT, 0, (LPARAM)text);
 	}
-	void gettext(int maxlen, LPSTR text)
+	void gettext(int maxlen, char* text)
 	{
 		::SendMessageA(m_hwnd, WM_GETTEXT, (WPARAM)maxlen, (LPARAM)text);
 	}
-	void gettext(int maxlen, LPWSTR text)
+	void gettext(int maxlen, wchar_t* text)
 	{
 		::SendMessageW(m_hwnd, WM_GETTEXT, (WPARAM)maxlen, (LPARAM)text);
 	}

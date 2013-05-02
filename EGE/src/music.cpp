@@ -19,7 +19,7 @@ MUSIC::~MUSIC()
 		Close();
 }
 
-// mciOpenFileA(LPCSTR _szStr)
+// mciOpenFileA(const char* _szStr)
 // open a music file. szStr: Path of the file
 DWORD
 MUSIC::OpenFile(const char* _szStr)
@@ -58,7 +58,7 @@ MUSIC::OpenFile(const char* _szStr)
 }
 
 
-// mciOpenFile(LPCWSTR _szStr)
+// mciOpenFile(const wchar_t* _szStr)
 // open a music file. szStr: Path of the file
 DWORD
 MUSIC::OpenFile(const wchar_t* _szStr)
