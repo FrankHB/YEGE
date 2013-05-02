@@ -9,10 +9,10 @@
 
 namespace ege {
 
-static HBITMAP  g_hbmp_def;
-static HBRUSH   g_hbr_def;
-static HPEN     g_pen_def;
-static HFONT    g_font_def;
+static ::HBITMAP g_hbmp_def;
+static ::HBRUSH g_hbr_def;
+static ::HPEN g_pen_def;
+static ::HFONT g_font_def;
 
 IMAGE::IMAGE() {
 	m_initflag = IMAGE_INIT_FLAG;
@@ -1463,50 +1463,52 @@ IMAGE::putimage_rotatezoom(
 	s = (crb | cg) >> 8;\
 }
 
-/* ege 3d 结构 */
-struct point2d {
+struct point2d
+{
 	float x;
 	float y;
 };
 
-struct point3d {
+struct point3d
+{
 	float x;
 	float y;
 	float z;
 };
 
-struct vector2d {
-	struct point2d p[2];
+struct vector2d
+{
+	point2d p[2];
 };
 
-struct vector3d {
-	struct point3d p[2];
+struct vector3d
+{
+	point3d p[2];
 };
 
-typedef struct trangle2d {
-	struct point2d p[3];
+struct triangle2d
+{
+	point2d p[3];
 	int color;
-}trangle2d;
+};
 
-struct trangle3d {
-	struct point3d p[3];
+struct triangle3d
+{
+	point3d p[3];
 	int color;
 };
 
 /* private funcion */
-static
-int float2int(float f) {
-	if (f>=0) {
-		return (int)(f + .5);
-	} else {
-		return (int)(f - .5);
-	}
+static int
+float2int(float f)
+{
+	return f >= 0 ? (int)(f + .5) : (int)(f - .5);
 }
 
 /* private funcion */
-static
-void
-draw_flat_scanline(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_src, const struct vector2d* svt, int x1, int x2) {
+static void
+draw_flat_scanline(PIMAGE dc_dest, const vector2d* vt, PIMAGE dc_src, const vector2d* svt, int x1, int x2)
+{
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
 	DWORD* lp_dest_bmp_byte = (DWORD*)dc_dest->getbuffer();
@@ -1515,7 +1517,7 @@ draw_flat_scanline(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_src, con
 	int src_w = dc_src->getwidth();
 	if (w>0) {
 		int i, bx = s;
-		struct vector2d _svt = *svt;
+		vector2d _svt = *svt;
 		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
 		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
 		{
@@ -1542,7 +1544,7 @@ draw_flat_scanline(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_src, con
 /* private funcion */
 static
 void
-draw_flat_scanline_transparent(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_src, const struct vector2d* svt, int x1, int x2) {
+draw_flat_scanline_transparent(PIMAGE dc_dest, const vector2d* vt, PIMAGE dc_src, const vector2d* svt, int x1, int x2) {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = (int)(vt->p[0].x+.5), e = (int)(vt->p[1].x+.5), y = (int)(vt->p[0].y+.5), w = e - s;
 	DWORD* lp_dest_bmp_byte = (DWORD*)dc_dest->getbuffer();
@@ -1552,7 +1554,7 @@ draw_flat_scanline_transparent(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE
 	int src_w = dc_src->getwidth();
 	if (w>0) {
 		int i, bx = s;
-		struct vector2d _svt = *svt;
+		vector2d _svt = *svt;
 		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
 		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
 		{
@@ -1582,7 +1584,7 @@ draw_flat_scanline_transparent(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE
 /* private funcion */
 static
 void
-draw_flat_scanline_alpha(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_src, const struct vector2d* svt, int x1, int x2, int alpha) {
+draw_flat_scanline_alpha(PIMAGE dc_dest, const vector2d* vt, PIMAGE dc_src, const vector2d* svt, int x1, int x2, int alpha) {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
 	DWORD* lp_dest_bmp_byte = (DWORD*)dc_dest->getbuffer();
@@ -1593,7 +1595,7 @@ draw_flat_scanline_alpha(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_sr
 	int src_w = dc_src->getwidth();
 	if (w>0) {
 		int i, bx = s;
-		struct vector2d _svt = *svt;
+		vector2d _svt = *svt;
 		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
 		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
 		{
@@ -1623,7 +1625,7 @@ draw_flat_scanline_alpha(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_sr
 /* private funcion */
 static
 void
-draw_flat_scanline_alphatrans(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_src, const struct vector2d* svt, int x1, int x2, int alpha) {
+draw_flat_scanline_alphatrans(PIMAGE dc_dest, const vector2d* vt, PIMAGE dc_src, const vector2d* svt, int x1, int x2, int alpha) {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = (int)(vt->p[0].x+.5), e = (int)(vt->p[1].x+.5), y = (int)(vt->p[0].y+.5), w = e - s;
 	DWORD* lp_dest_bmp_byte = (DWORD*)dc_dest->getbuffer();
@@ -1634,7 +1636,7 @@ draw_flat_scanline_alphatrans(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE 
 	int src_w = dc_src->getwidth();
 	if (w>0) {
 		int i, bx = s;
-		struct vector2d _svt = *svt;
+		vector2d _svt = *svt;
 		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
 		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
 		{
@@ -1685,7 +1687,7 @@ color_t bilinear_interpolation(color_t LT, color_t RT, color_t LB, color_t RB, d
 /* private funcion */
 static
 void
-draw_flat_scanline_s(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_src, const struct vector2d* svt, int x1, int x2) {
+draw_flat_scanline_s(PIMAGE dc_dest, const vector2d* vt, PIMAGE dc_src, const vector2d* svt, int x1, int x2) {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
 	DWORD* lp_dest_bmp_byte = (DWORD*)dc_dest->getbuffer();
@@ -1698,7 +1700,7 @@ draw_flat_scanline_s(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_src, c
 
 	if (w>0) {
 		int i, bx = s;
-		struct vector2d _svt = *svt;
+		vector2d _svt = *svt;
 		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
 		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
 		{
@@ -1738,7 +1740,7 @@ draw_flat_scanline_s(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_src, c
 /* private funcion */
 static
 void
-draw_flat_scanline_transparent_s(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_src, const struct vector2d* svt, int x1, int x2) {
+draw_flat_scanline_transparent_s(PIMAGE dc_dest, const vector2d* vt, PIMAGE dc_src, const vector2d* svt, int x1, int x2) {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
 	DWORD* lp_dest_bmp_byte = (DWORD*)dc_dest->getbuffer();
@@ -1751,7 +1753,7 @@ draw_flat_scanline_transparent_s(PIMAGE dc_dest, const struct vector2d* vt, PIMA
 
 	if (w>0) {
 		int i, bx = s;
-		struct vector2d _svt = *svt;
+		vector2d _svt = *svt;
 		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
 		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
 		{
@@ -1793,7 +1795,7 @@ draw_flat_scanline_transparent_s(PIMAGE dc_dest, const struct vector2d* vt, PIMA
 /* private funcion */
 static
 void
-draw_flat_scanline_alpha_s(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_src, const struct vector2d* svt, int x1, int x2, int alpha) {
+draw_flat_scanline_alpha_s(PIMAGE dc_dest, const vector2d* vt, PIMAGE dc_src, const vector2d* svt, int x1, int x2, int alpha) {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
 	DWORD* lp_dest_bmp_byte = (DWORD*)dc_dest->getbuffer();
@@ -1808,7 +1810,7 @@ draw_flat_scanline_alpha_s(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_
 
 	if (w>0) {
 		int i, bx = s;
-		struct vector2d _svt = *svt;
+		vector2d _svt = *svt;
 		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
 		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
 		{
@@ -1853,7 +1855,7 @@ draw_flat_scanline_alpha_s(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_
 /* private funcion */
 static
 void
-draw_flat_scanline_alphatrans_s(PIMAGE dc_dest, const struct vector2d* vt, PIMAGE dc_src, const struct vector2d* svt, int x1, int x2, int alpha) {
+draw_flat_scanline_alphatrans_s(PIMAGE dc_dest, const vector2d* vt, PIMAGE dc_src, const vector2d* svt, int x1, int x2, int alpha) {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
 	DWORD* lp_dest_bmp_byte = (DWORD*)dc_dest->getbuffer();
@@ -1868,7 +1870,7 @@ draw_flat_scanline_alphatrans_s(PIMAGE dc_dest, const struct vector2d* vt, PIMAG
 
 	if (w>0) {
 		int i, bx = s;
-		struct vector2d _svt = *svt;
+		vector2d _svt = *svt;
 		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
 		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
 		{
@@ -1913,9 +1915,9 @@ draw_flat_scanline_alphatrans_s(PIMAGE dc_dest, const struct vector2d* vt, PIMAG
 /* private funcion */
 static
 void
-draw_flat_trangle_alpha(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_src, const struct trangle2d* tt, int x1, int y1, int x2, int y2, int transparent, int alpha) {
-	struct trangle2d  t2d = *dt;
-	struct trangle2d  t3d = *tt;
+draw_flat_trangle_alpha(PIMAGE dc_dest, const triangle2d* dt, PIMAGE dc_src, const triangle2d* tt, int x1, int y1, int x2, int y2, int transparent, int alpha) {
+	triangle2d  t2d = *dt;
+	triangle2d  t3d = *tt;
 	int b_alpha;
 	//int width = x2 - x1, height = y2 - y1;
 
@@ -1925,8 +1927,8 @@ draw_flat_trangle_alpha(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_sr
 		b_alpha = 0;
 	}
 	{
-		struct point2d _t;
-		struct point2d _t3;
+		point2d _t;
+		point2d _t3;
 
 		if (t2d.p[1].y > t2d.p[2].y) {
 			SWAP(t2d.p[1], t2d.p[2], _t);
@@ -1947,8 +1949,8 @@ draw_flat_trangle_alpha(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_sr
 		int rs, re;
 		int i, lh, rh;
 	//	float dm = t2d.p[1].y;
-		struct point2d pl, pr, pt;
-		struct point2d spl, spr;
+		point2d pl, pr, pt;
+		point2d spl, spr;
 
 		pl.x = t2d.p[1].x - t2d.p[0].x;
 		pr.x = t2d.p[2].x - t2d.p[0].x;
@@ -1988,8 +1990,8 @@ draw_flat_trangle_alpha(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_sr
 		rh = float2int((float)(pr.y + t2d.p[0].y)) - float2int((float)(t2d.p[0].y));
 		if (h > 0) {
 			for (i=s; i<m; ++i) {
-				struct vector2d vt;
-				struct vector2d svt;
+				vector2d vt;
+				vector2d svt;
 				//float dt = (float)(i - rs) / h;
 				float dlt = (float)(i - rs) / lh;
 				float drt = (float)(i - rs) / rh;
@@ -2040,8 +2042,8 @@ draw_flat_trangle_alpha(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_sr
 			spr.y *= dd;
 		}
 		if (m >= y1 && m < y2 && m<e) {
-			struct vector2d vt;
-			struct vector2d svt;
+			vector2d vt;
+			vector2d svt;
 
 			vt.p[0].x = t2d.p[0].x + pl.x;
 			vt.p[1].x = t2d.p[0].x + pr.x;
@@ -2104,8 +2106,8 @@ draw_flat_trangle_alpha(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_sr
 		rh = float2int((float)(t2d.p[2].y)) - float2int((float)(pr.y + t2d.p[2].y));
 		if (h > 0) {
 			for (i=e; i>m; --i) {
-				struct vector2d vt;
-				struct vector2d svt;
+				vector2d vt;
+				vector2d svt;
 				//float dt = (float)(re - i) / h;
 				float dlt = (float)(re - i) / lh;
 				float drt = (float)(re - i) / rh;
@@ -2151,9 +2153,9 @@ draw_flat_trangle_alpha(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_sr
 /* private funcion */
 static
 void
-draw_flat_trangle_alpha_s(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_src, const struct trangle2d* tt, int x1, int y1, int x2, int y2, int transparent, int alpha) {
-	struct trangle2d  t2d = *dt;
-	struct trangle2d  t3d = *tt;
+draw_flat_trangle_alpha_s(PIMAGE dc_dest, const triangle2d* dt, PIMAGE dc_src, const triangle2d* tt, int x1, int y1, int x2, int y2, int transparent, int alpha) {
+	triangle2d  t2d = *dt;
+	triangle2d  t3d = *tt;
 	int b_alpha;
 	//int width = x2 - x1, height = y2 - y1;
 
@@ -2163,8 +2165,8 @@ draw_flat_trangle_alpha_s(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_
 		b_alpha = 0;
 	}
 	{
-		struct point2d _t;
-		struct point2d _t3;
+		point2d _t;
+		point2d _t3;
 
 		if (t2d.p[1].y > t2d.p[2].y) {
 			SWAP(t2d.p[1], t2d.p[2], _t);
@@ -2186,8 +2188,8 @@ draw_flat_trangle_alpha_s(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_
 		int i, lh, rh;
 	//	float dm = t2d.p[1].y;
 	//	float dh;
-		struct point2d pl, pr, pt;
-		struct point2d spl, spr;
+		point2d pl, pr, pt;
+		point2d spl, spr;
 
 		pl.x = t2d.p[1].x - t2d.p[0].x;
 		pr.x = t2d.p[2].x - t2d.p[0].x;
@@ -2227,8 +2229,8 @@ draw_flat_trangle_alpha_s(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_
 		rh = float2int((float)(pr.y + t2d.p[0].y)) - float2int((float)(t2d.p[0].y));
 		if (h > 0) {
 			for (i=s; i<m; ++i) {
-				struct vector2d vt;
-				struct vector2d svt;
+				vector2d vt;
+				vector2d svt;
 				//float dt = (float)(i - rs) / h;
 				float dlt = (float)(i - rs) / lh;
 				float drt = (float)(i - rs) / rh;
@@ -2279,8 +2281,8 @@ draw_flat_trangle_alpha_s(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_
 			spr.y *= dd;
 		}
 		if (m >= y1 && m < y2 && m<e) {
-			struct vector2d vt;
-			struct vector2d svt;
+			vector2d vt;
+			vector2d svt;
 
 			vt.p[0].x = t2d.p[0].x + pl.x;
 			vt.p[1].x = t2d.p[0].x + pr.x;
@@ -2344,8 +2346,8 @@ draw_flat_trangle_alpha_s(PIMAGE dc_dest, const struct trangle2d* dt, PIMAGE dc_
 		rh = float2int((float)(t2d.p[2].y)) - float2int((float)(pr.y + t2d.p[2].y));
 		if (h > 0) {
 			for (i=e; i>m; --i) {
-				struct vector2d vt;
-				struct vector2d svt;
+				vector2d vt;
+				vector2d svt;
 				//float dt = (float)(re - i) / h;
 				float dlt = (float)(re - i) / lh;
 				float drt = (float)(re - i) / rh;
@@ -2392,8 +2394,8 @@ int
 putimage_trangle(
 				   PIMAGE imgdest,
 				   PIMAGE imgtexture,
-				   const struct trangle2d * dt,// dest trangle, original
-				   const struct trangle2d * tt,// textture trangle uv 0.0 - 1.0
+				   const triangle2d * dt,// dest trangle, original
+				   const triangle2d * tt,// textture trangle uv 0.0 - 1.0
 				   int btransparent,
 				   int alpha,
 				   int smooth
@@ -2402,8 +2404,8 @@ putimage_trangle(
 	PIMAGE dc_dest = imgdest;
 	PIMAGE dc_src  = imgtexture;
 	if (dc_dest) {
-		struct trangle2d _dt = *dt;
-		struct trangle2d _tt = *tt;
+		triangle2d _dt = *dt;
+		triangle2d _tt = *tt;
 		int x1 = 0, y1 = 0, x2 = dc_dest->getwidth(), y2 = dc_dest->getheight(), i;
 
 		if (smooth) {
@@ -2443,13 +2445,16 @@ putimage_rotate(
 				  int smooth
 				  )
 {
-	PIMAGE dc_dest  = CONVERT_IMAGE(imgdest);
-	PIMAGE dc_src  = imgtexture;
-	if (dc_dest) {
-		struct trangle2d _tt[2];
-		struct trangle2d _dt[2];
+	auto dc_dest(CONVERT_IMAGE(imgdest));
+	auto dc_src(imgtexture);
+
+	if(dc_dest)
+	{
+		triangle2d _tt[2];
+		triangle2d _dt[2];
 		double dx, dy, cr = cos(radian), sr = -sin(radian);
 		int i, j;
+
 		_tt[0].p[0].x = 0;
 		_tt[0].p[0].y = 0;
 		_tt[0].p[1].x = 0;
@@ -2460,7 +2465,7 @@ putimage_rotate(
 		_tt[1].p[1].x = 1;
 		_tt[1].p[1].y = 0;
 		_tt[1].p[2] = _tt[0].p[0];
-		memcpy(&_dt, &_tt, sizeof(trangle2d)*2);
+		memcpy(&_dt, &_tt, sizeof(triangle2d)*2);
 		for (j = 0; j<2; ++j) {
 			for (i = 0; i<3; ++i) {
 				_dt[j].p[i].x = (_dt[j].p[i].x - centerx) * (dc_src->getwidth());
@@ -2512,8 +2517,8 @@ putimage_rotatezoom(
 	PIMAGE dc_dest  = CONVERT_IMAGE(imgdest);
 	PIMAGE dc_src  = imgtexture;
 	if (dc_dest) {
-		struct trangle2d _tt[2];
-		struct trangle2d _dt[2];
+		triangle2d _tt[2];
+		triangle2d _dt[2];
 		double dx, dy, cr = cos(radian), sr = -sin(radian);
 		int i, j;
 		_tt[0].p[0].x = 0;
@@ -2526,7 +2531,7 @@ putimage_rotatezoom(
 		_tt[1].p[1].x = 1;
 		_tt[1].p[1].y = 0;
 		_tt[1].p[2] = _tt[0].p[0];
-		memcpy(&_dt, &_tt, sizeof(trangle2d)*2);
+		memcpy(&_dt, &_tt, sizeof(triangle2d)*2);
 		for (j = 0; j<2; ++j) {
 			for (i = 0; i<3; ++i) {
 				_dt[j].p[i].x = (_dt[j].p[i].x - centerx) * (dc_src->getwidth());
