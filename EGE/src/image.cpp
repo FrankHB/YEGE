@@ -213,9 +213,7 @@ IMAGE::newimage(HDC hdc, int width, int height)
 				ege_enable_aa(false, this);
 			}
 			else
-			{
 				//SetBkMode(dc, bkMode);
-			}
 			setviewport(0, 0, m_width, m_height, 1, this);
 			cleardevice(this);
 		}

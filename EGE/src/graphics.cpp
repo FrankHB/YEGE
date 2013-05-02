@@ -597,13 +597,9 @@ on_setcursor(_graph_setting* pg, HWND hwnd)
 		ScreenToClient(hwnd, &pt);
 		GetClientRect(hwnd, &rect);
 		if(pt.x >= rect.left && pt.x < rect.right && pt.y >= rect.top && pt.y <= rect.bottom)
-		{
 			SetCursor(nullptr);
-		}
 		else
-		{
 			SetCursor(LoadCursor(nullptr, IDC_ARROW));
-		}
 	}
 }
 

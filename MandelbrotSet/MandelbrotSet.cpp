@@ -155,13 +155,13 @@ double abs(const COMPLEX& c)
 #define W_B 10
 #define WIDTH (1<<W_B)
 
-typedef struct PIXEL
+struct PIXEL
 {
 	COMPLEX last;
 	int nIter;
 	int ed;
 	int calc;
-} PIXEL;
+};
 
 PIXEL(*pMap)[WIDTH] = new PIXEL[SC_H][WIDTH];
 

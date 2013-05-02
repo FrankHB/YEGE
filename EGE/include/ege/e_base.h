@@ -396,19 +396,19 @@ struct mouse_msg
 	}
 };
 
-typedef struct ege_point
+struct ege_point
 {
 	float x;
 	float y;
-} ege_point;
+};
 
-typedef struct ege_rect
+struct ege_rect
 {
 	float x;
 	float y;
 	float w;
 	float h;
-} ege_rect;
+};
 
 typedef unsigned int color_t;
 

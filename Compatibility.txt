@@ -1,18 +1,23 @@
 ﻿YEGE 以 EGE 13.03 为基础修改。
+====
 
-增加 IDE 支持：
+增加 IDE 支持
+----
 Code::Blocks 。
 
-限制实现需求：
+限制实现需求
+----
 限 MinGW G++ 4.8.0 或以上，需要 -std=c++11 支持。
 （其它版本未测试，但至少需要 -std=c++0x 的 auto 、nullptr 和初始化列表等 C++11 特性支持，且若在 Code::Blocks 项目使用，需要去除 debug 的 -Og 选项。）
 
-依赖项更改：
+依赖项更改
+----
 计划依赖 YBase 的 ydef.h（当前临时移除）。
 移除 GDI+ 源代码，需要显式依赖 GDI+（默认 MinGW 已提供）；移除 EGE_GDIPLUS 宏。
 移除 zlib 和 libpng 源代码，需要显式依赖 zlib1.dll 和 libpng16.dll 。
 
-非兼容接口：
+非兼容接口
+----
 入口统一为 ::main 。
 编译为 DLL 无需定义宏。
 移除 SHOW_CONSOLE 宏。若需要控制台，在 Code::Blocks 选项内选择，或确保编译命令行无 -mwindows 。
@@ -23,18 +28,23 @@ Code::Blocks 。
 移除 Array 和 Set 模版，改用 std::vector 和 std::set 替代。
 移除 _Cdecl 宏。
 
-兼容接口和实现调整：
+兼容接口和实现调整
+----
 Windows SDK 类型 WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别用 wchar_t 、char* 、const char* 、wchar_t* 和 const wchar_t* 代替。
+所有同名 typedef 结构体名称或 typedef 匿名结构体调整为非 typedef 结构体类型名。
 
-实现方式：
+实现方式
+----
 随机数改用 C++11 标准库 <random> 实现。
 去除宏 SWAP ，使用 C++ 标准库 std::swap 代替。
 
-实现质量(QoI) ：
+实现质量(QoI)
+----
 EGE 库中加入 -Wall -Wextra -Wmissing-include-dirs -Wzero-as-null-pointer-constant -pedantic-errors 保证无错误和警告。
 其它项目中加入 -Wall -Wextra -pedantic 保证无警告。
 
-非外部依赖项风格和格式：
+非外部依赖项代码风格和格式
+----
  "{" 之前不邻接空格。
 指针和空指针的相等比较用 ! 操作符代替，不等比较使用 bool 转换代替。
 

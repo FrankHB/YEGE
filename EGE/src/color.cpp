@@ -5,26 +5,26 @@
 namespace ege
 {
 
-typedef struct COLORHSL
+struct COLORHSL
 {
 	float h;
 	float s;
 	float l;
-} COLORHSL;
+};
 
-typedef struct COLORHSV
+struct COLORHSV
 {
 	float h;
 	float s;
 	float v;
-} COLORHSV;
+};
 
-typedef struct COLORRGB
+struct COLORRGB
 {
 	unsigned char r;
 	unsigned char g;
 	unsigned char b;
-} COLORRGB;
+};
 
 namespace
 {
@@ -115,11 +115,11 @@ _RGBtoHSL(int _col)
 	{
 		_crCol.h = *dp[1];
 		if((dp[2] == &r) && (dp[1] == &g)) _crCol.h = _crCol.h + 0;
-		else    if((dp[2] == &g) && (dp[1] == &b)) _crCol.h = _crCol.h + 2;
-		else    if((dp[2] == &b) && (dp[1] == &r)) _crCol.h = _crCol.h + 4;
-		else    if((dp[2] == &g) && (dp[1] == &r)) _crCol.h = 2 - _crCol.h;
-		else    if((dp[2] == &b) && (dp[1] == &g)) _crCol.h = 4 - _crCol.h;
-		else    if((dp[2] == &r) && (dp[1] == &b)) _crCol.h = 6 - _crCol.h;
+		else if((dp[2] == &g) && (dp[1] == &b)) _crCol.h = _crCol.h + 2;
+		else if((dp[2] == &b) && (dp[1] == &r)) _crCol.h = _crCol.h + 4;
+		else if((dp[2] == &g) && (dp[1] == &r)) _crCol.h = 2 - _crCol.h;
+		else if((dp[2] == &b) && (dp[1] == &g)) _crCol.h = 4 - _crCol.h;
+		else if((dp[2] == &r) && (dp[1] == &b)) _crCol.h = 6 - _crCol.h;
 		_crCol.h /= 6;
 	}
 	return _crCol;
@@ -154,25 +154,17 @@ _HSLtoRGB(float _h, float _s, float _l)
 		dp[2] = 0;
 		xh -= i;
 		if(i & 1)
-		{
 			dp[1] = 1 - xh;
-		}
 		else
-		{
 			dp[1] = xh;
-		}
 #define SATFORMAT(c, s) (((c)-0.5f)*(s)+0.5f)
 		for(n = 0; n < 3; ++n)
-		{
 			dp[n] = SATFORMAT(dp[n], _s);
-		}
 #undef SATFORMAT
 #define BLACKFORMAT(c, v) ((c)*(v)*2)
 #define WHITEFORMAT(c, v) (1-(1-(c))*(1-(v))*2)
 		if(_l == 0.5f)
-		{
 			;
-		}
 		else if(_l < 0.5f)
 		{
 			if(_l < 0)
@@ -196,25 +188,25 @@ _HSLtoRGB(float _h, float _s, float _l)
 				g = dp[1];
 				b = dp[2];
 			}
-			else    if(i == 1)
+			else if(i == 1)
 			{
 				r = dp[1];
 				g = dp[0];
 				b = dp[2];
 			}
-			else    if(i == 2)
+			else if(i == 2)
 			{
 				r = dp[2];
 				g = dp[0];
 				b = dp[1];
 			}
-			else    if(i == 3)
+			else if(i == 3)
 			{
 				r = dp[2];
 				g = dp[1];
 				b = dp[0];
 			}
-			else    if(i == 4)
+			else if(i == 4)
 			{
 				r = dp[1];
 				g = dp[2];
@@ -228,7 +220,6 @@ _HSLtoRGB(float _h, float _s, float _l)
 			}
 		}
 	}
-
 	return EGERGB(DWORD(r * 255), DWORD(g * 255), DWORD(b * 255));
 }
 
@@ -334,6 +325,7 @@ rgb2gray(color_t color)
 {
 	double c;
 	color_t r;
+
 	c = ((color >> 16) & 0xFF) * 0.299;
 	c += ((color >> 8) & 0xFF) * 0.587;
 	c += ((color) & 0xFF) * 0.114;
@@ -345,6 +337,7 @@ void
 rgb2hsl(color_t rgb, float* H, float* S, float* L)
 {
 	COLORHSL hsl = _RGBtoHSL((int)rgb);
+
 	*H = hsl.h * 360.0f;
 	*S = hsl.s;
 	*L = hsl.l;
@@ -361,6 +354,7 @@ rgb2hsv(color_t rgb, float* H, float* S, float* V)
 {
 	COLORRGB crgb;
 	COLORHSV chsv;
+
 	crgb.r = (unsigned char)EGEGET_R(rgb);
 	crgb.g = (unsigned char)EGEGET_G(rgb);
 	crgb.b = (unsigned char)EGEGET_B(rgb);

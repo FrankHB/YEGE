@@ -6,12 +6,12 @@
 
 #define myrand(m) ((float)(randomf() * m ))
 
-typedef struct
+struct Point
 {
 	float x, y;
 	float vx, vy;
 	int color;
-} Point;
+};
 
 class AniObj
 {

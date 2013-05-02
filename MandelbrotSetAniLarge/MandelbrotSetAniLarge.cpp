@@ -163,7 +163,7 @@ bool abs4(const COMPLEX& c)
 
 //typedef complex<double> COMPLEX;
 
-typedef struct PIXEL
+struct PIXEL
 {
 	COMPLEX* last;
 	COMPLEX* last2;
@@ -177,7 +177,7 @@ typedef struct PIXEL
 	{
 		last2 = last = c = nullptr;
 	}
-} PIXEL;
+};
 
 #define CPPOOLSIZE (SC_W * 64)
 struct COMPLEXPOOL

@@ -12,13 +12,13 @@
 #define Distance(x1, y1, x2, y2) (((x1) - (x2))*((x1) - (x2)) + ((y1) - (y2))*((y1) - (y2)))
 
 
-typedef struct
+struct Obj
 {
 	float x, y;
 	float vx, vy;
 	int r;
 	int color;
-} Obj;
+};
 
 
 //定义一个AniObj类
