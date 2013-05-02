@@ -10,11 +10,11 @@ namespace ege
 
 const double PI = 3.14159265358979323;
 
-enum graphics_drivers       /* define graphics drivers */
+enum graphics_drivers /* define graphics drivers */
 {
-	DETECT,         /* requests autodetection */
-	CGA, MCGA, EGA, EGA64, EGAMONO, IBM8514,/* 1 - 6 */
-	HERCMONO, ATT400, VGA, PC3270,          /* 7 - 10 */
+	DETECT, /* requests autodetection */
+	CGA, MCGA, EGA, EGA64, EGAMONO, IBM8514, /* 1 - 6 */
+	HERCMONO, ATT400, VGA, PC3270, /* 7 - 10 */
 	TRUECOLOR, TRUECOLORSIZE,
 	CURRENT_DRIVER = -1
 };

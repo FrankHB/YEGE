@@ -63,7 +63,7 @@ egeControlBase::init(egeControlBase* parent)
 	m_parent = nullptr;
 	m_mainbuf = newimage();
 	m_mainFilter = newimage();
-	if(root == nullptr)
+	if(!root)
 	{
 		root = this;
 		m_parent = nullptr;
@@ -360,7 +360,7 @@ void egeControlBase::keymsgchar(unsigned key, int flag)
 void egeControlBase::update()
 {
 	egectlmap*& cmap = (egectlmap*&)m_childmap;
-	if(m_parent == nullptr)
+	if(!m_parent)
 	{
 		m_w = getwidth();
 		m_h = getheight();
@@ -380,7 +380,7 @@ void egeControlBase::update()
 void egeControlBase::draw(PIMAGE pimg)
 {
 	PIMAGE pmain = m_mainbuf;
-	if(m_parent == nullptr || m_bDirectDraw)
+	if(!m_parent || m_bDirectDraw)
 		pmain = pimg;
 	{
 		PushTarget _target;

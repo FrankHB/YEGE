@@ -183,7 +183,7 @@ public:
 	}
 	//member functions
 	/**
-	* @brief 在回调函数指针为NULL或回调函数返回0时被调用
+	* @brief 在回调函数指针为 nullptr 或回调函数返回0时被调用
 	*/
 	virtual void onClick()
 	{
@@ -250,7 +250,7 @@ public:
 	/**
 	* @brief 设置alpha值
 	*
-	* @param alpha 0x00 - 0xff
+	* @param alpha 0x00 - 0xFF
 	*/
 	void alpha(int alpha)
 	{
@@ -319,7 +319,7 @@ public:
 	/**
 	* @brief 返回回调函数指针
 	*
-	* @return 回调函数指针；若未设置，返回NULL
+	* @return 回调函数指针；若未设置，返回 nullptr
 	*/
 	template <typename T>
 	T callback() const

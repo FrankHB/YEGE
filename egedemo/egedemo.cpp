@@ -1064,7 +1064,7 @@ int main()
 	SceneBase* scene = new SceneIntroduce; //SceneIntroduce; SceneMenu
 	setbkmode(TRANSPARENT);
 //    BeginBatchDraw();
-	for(SceneBase* newscene = scene; newscene != nullptr; delay_fps(60))
+	for(SceneBase* newscene = scene; newscene; delay_fps(60))
 	{
 		newscene = scene->Update();
 		if(newscene != scene)

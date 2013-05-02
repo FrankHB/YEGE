@@ -723,7 +723,7 @@ int settarget(PIMAGE pbuf)
 {
 	auto pg = &graph_setting;
 	pg->imgtarget_set = pbuf;
-	if(pbuf == nullptr)
+	if(!pbuf)
 	{
 		pg->imgtarget = pg->img_page[graph_setting.active_page];
 	}

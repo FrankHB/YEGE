@@ -66,7 +66,7 @@ void EGEAPI getfont(LOGFONTW* font, PIMAGE pimg = nullptr);       // 获取当�
 
 //高级输入函数
 // title 对话框标题，text 对话框提示文字，buf接收输入数据的字符串指针，len指出buf的最大长度，也同时会限制输入内容长度
-int EGEAPI inputbox_getline(const char*  title, const char*  text, char* buf, int len);  //弹出对话框，让用户输入，当前程序运行暂停，返回非0表示输入有效，0为无效
+int EGEAPI inputbox_getline(const char* title, const char*  text, char* buf, int len);  //弹出对话框，让用户输入，当前程序运行暂停，返回非0表示输入有效，0为无效
 int EGEAPI inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int len);  //弹出对话框，让用户输入，当前程序运行暂停，返回非0表示输入有效，0为无效
 
 }

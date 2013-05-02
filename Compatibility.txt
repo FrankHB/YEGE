@@ -34,3 +34,7 @@ Windows SDK 类型 WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别用 wcha
 EGE 库中加入 -Wall -Wextra -Wmissing-include-dirs -Wzero-as-null-pointer-constant -pedantic-errors 保证无错误和警告。
 其它项目中加入 -Wall -Wextra -pedantic 保证无警告。
 
+非外部依赖项风格和格式：
+ "{" 之前不邻接空格。
+指针和空指针的相等比较用 ! 操作符代替，不等比较使用 bool 转换代替。
+

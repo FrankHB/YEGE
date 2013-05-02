@@ -83,7 +83,7 @@ IMAGE::set_pattern(void * obj, int type)
 void
 IMAGE::delete_pattern()
 {
-	if(m_pattern_obj == nullptr) return;
+	if(!m_pattern_obj) return;
 
 	if(m_pattern_type == pattern_none)
 		;
@@ -101,7 +101,7 @@ IMAGE::gentexture(bool gen)
 {
 	if(!gen)
 	{
-		if(m_texture != nullptr)
+		if(m_texture)
 		{
 			delete (Gdiplus::Bitmap*)m_texture;
 			m_texture = nullptr;
@@ -109,7 +109,7 @@ IMAGE::gentexture(bool gen)
 	}
 	else
 	{
-		if(m_texture != nullptr)
+		if(m_texture)
 			gentexture(true);
 		Gdiplus::Bitmap* bitmap = new Gdiplus::Bitmap(getwidth(), getheight(),
 			getwidth() * 4, PixelFormat32bppARGB, (BYTE*)getbuffer());
@@ -146,10 +146,10 @@ IMAGE::newimage(HDC hdc, int width, int height)
 
 	memset(&m_vpt, 0, sizeof(m_vpt));
 
-	if(hdc == nullptr)
+	if(!hdc)
 	{
 		hdc = m_hDC;
-		if(hdc == nullptr)
+		if(!hdc)
 		{
 			wchar_t str[60];
 			wsprintfW(str, L"Fatal error: read/write at 0x%08x. At function 'newimage', construct PIMAGE before 'initgraph'?", this);
@@ -161,7 +161,7 @@ IMAGE::newimage(HDC hdc, int width, int height)
 		dc = m_hDC;
 	else
 		dc = CreateCompatibleDC(hdc);
-	if(dc != nullptr)
+	if(dc)
 	{
 		bitmap = CreateDIBSection(
 			nullptr,
@@ -172,11 +172,11 @@ IMAGE::newimage(HDC hdc, int width, int height)
 			0
 		);
 
-		if(bitmap != nullptr)
+		if(bitmap)
 		{
 			HBITMAP hbmp_def = (HBITMAP)SelectObject(dc, bitmap);
 			int b_resize = 0;
-			if(g_hbmp_def == nullptr)
+			if(!g_hbmp_def)
 			{
 				g_hbmp_def = hbmp_def;
 				g_hbr_def  = (HBRUSH)GetCurrentObject(dc, OBJ_BRUSH);
@@ -236,12 +236,12 @@ IMAGE::createimage(int width, int height)
 {
 	inittest(L"IMAGE::createimage");
 	PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
-	if(img == nullptr)
-	{
+	if(!img)
 		img = graph_setting.img_page[graph_setting.active_page];
-	}
+
 	int ret = newimage(img->m_hDC, width, height);
 	CONVERT_IMAGE_END;
+
 	if(ret)
 	{
 		return ret;
@@ -453,11 +453,13 @@ ERROR_BREAK:
 int
 IMAGE::saveimage(const char*  filename)
 {
-	FILE* fp = nullptr;
-	int ret;
-	fp = fopen(filename, "wb");
-	if(fp == nullptr) return grIOerror;
-	ret = saveimagetofile(this, fp);
+	FILE* fp = fopen(filename, "wb");
+
+	if(!fp)
+		return grIOerror;
+
+	int ret = saveimagetofile(this, fp);
+
 	fclose(fp);
 	return ret;
 }
@@ -465,11 +467,13 @@ IMAGE::saveimage(const char*  filename)
 int
 IMAGE::saveimage(const wchar_t* filename)
 {
-	FILE* fp = nullptr;
-	int ret;
-	fp = _wfopen(filename, L"wb");
-	if(fp == nullptr) return grIOerror;
-	ret = saveimagetofile(this, fp);
+	FILE* fp = _wfopen(filename, L"wb");
+
+	if(!fp)
+		return grIOerror;
+
+	int ret = saveimagetofile(this, fp);
+
 	fclose(fp);
 	return ret;
 }
@@ -488,19 +492,15 @@ IMAGE::getpngimg(FILE * fp)
 		int isn_png = png_sig_cmp((png_const_bytep)header, 0, number);
 
 		if(isn_png)
-		{
 			return grIOerror;
-		}
 		fseek(fp, 0, SEEK_SET);
 	}
 
 	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-	if(png_ptr == nullptr)
-	{
+	if(!png_ptr)
 		return -1;
-	}
 	info_ptr = png_create_info_struct(png_ptr);
-	if(info_ptr == nullptr)
+	if(!info_ptr)
 	{
 		png_destroy_write_struct(&png_ptr, nullptr);
 		return -1;
@@ -552,12 +552,12 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 	uint32 pixelsize = bAlpha ? 4 : 3;
 	uint32 width = m_width, height = m_height;
-	if(png_ptr == nullptr)
+	if(!png_ptr)
 	{
 		return -1;
 	}
 	info_ptr = png_create_info_struct(png_ptr);
-	if(info_ptr == nullptr)
+	if(!info_ptr)
 	{
 		png_destroy_write_struct(&png_ptr, nullptr);
 		return -1;
@@ -582,14 +582,14 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 	png_set_packing(png_ptr);
 
 	image = (png_byte*)malloc(width * height * pixelsize * sizeof(png_byte) + 4);
-	if(image == nullptr)
+	if(!image)
 	{
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		return -1;
 	}
 
 	row_pointers = (png_bytep*)malloc(height * sizeof(png_bytep));
-	if(row_pointers == nullptr)
+	if(!row_pointers)
 	{
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		free(image);
@@ -699,7 +699,7 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 		long lWidth, lHeight;
 		long lWidthPixels, lHeightPixels;
 
-		if(hGlobal == nullptr || (pvData = GlobalLock(hGlobal)) == nullptr)
+		if(!hGlobal || !(pvData = GlobalLock(hGlobal)))
 			return grAllocError;
 		::memcpy(pvData, pvRes, dwSize);
 		::GlobalUnlock(hGlobal);
@@ -747,7 +747,7 @@ IMAGE::getimage(void * pMem, long size)
 		long            lWidthPixels,   lHeightPixels;
 		HRESULT         hr;
 
-		if(hGlobal == nullptr || (pvData = GlobalLock(hGlobal)) == nullptr)
+		if(!hGlobal || !(pvData = GlobalLock(hGlobal)))
 		{
 			return grAllocError;
 		}
@@ -3064,11 +3064,13 @@ saveimage(PIMAGE pimg, const wchar_t* filename)
 int
 getimage_pngfile(PIMAGE pimg, const char*  filename)
 {
-	FILE* fp = nullptr;
-	int ret;
-	fp = fopen(filename, "rb");
-	if(fp == nullptr) return grFileNotFound;
-	ret = pimg->getpngimg(fp);
+	FILE* fp = fopen(filename, "rb");
+
+	if(!fp)
+		return grFileNotFound;
+
+	int ret = pimg->getpngimg(fp);
+
 	fclose(fp);
 	return ret;
 }
@@ -3076,11 +3078,12 @@ getimage_pngfile(PIMAGE pimg, const char*  filename)
 int
 getimage_pngfile(PIMAGE pimg, const wchar_t* filename)
 {
-	FILE* fp = nullptr;
-	int ret;
-	fp = _wfopen(filename, L"rb");
-	if(fp == nullptr) return grFileNotFound;
-	ret = pimg->getpngimg(fp);
+	FILE* fp = _wfopen(filename, L"rb");
+	if(!fp)
+		return grFileNotFound;
+
+	int ret = pimg->getpngimg(fp);
+
 	fclose(fp);
 	return ret;
 }
@@ -3088,12 +3091,13 @@ getimage_pngfile(PIMAGE pimg, const wchar_t* filename)
 int
 savepng(PIMAGE pimg, const char*  filename, int bAlpha)
 {
-	FILE* fp = nullptr;
-	int ret;
-	fp = fopen(filename, "wb");
-	if(fp == nullptr)
+	FILE* fp = fopen(filename, "wb");
+
+	if(!fp)
 		return grFileNotFound;
-	ret = pimg->savepngimg(fp, bAlpha);
+
+	int ret = pimg->savepngimg(fp, bAlpha);
+
 	fclose(fp);
 	return ret;
 }
@@ -3101,12 +3105,13 @@ savepng(PIMAGE pimg, const char*  filename, int bAlpha)
 int
 savepng(PIMAGE pimg, const wchar_t* filename, int bAlpha)
 {
-	FILE* fp = nullptr;
-	int ret;
-	fp = _wfopen(filename, L"wb");
-	if(fp == nullptr)
+	FILE* fp = _wfopen(filename, L"wb");
+
+	if(!fp)
 		return grFileNotFound;
-	ret = pimg->savepngimg(fp, bAlpha);
+
+	int ret = pimg->savepngimg(fp, bAlpha);
+
 	fclose(fp);
 	return ret;
 }
@@ -3114,7 +3119,7 @@ savepng(PIMAGE pimg, const wchar_t* filename, int bAlpha)
 void
 ege_enable_aa(bool enable, PIMAGE pimg)
 {
-	PIMAGE img  = CONVERT_IMAGE(pimg);
+	PIMAGE img = CONVERT_IMAGE(pimg);
 	img->m_aa = enable;
 	CONVERT_IMAGE_END;
 }

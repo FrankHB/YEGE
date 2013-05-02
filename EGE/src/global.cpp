@@ -290,7 +290,7 @@ _graph_setting::_update()
 	{
 		hdc = window_dc;
 
-		if(hdc == nullptr)
+		if(!hdc)
 			return grNullPointer;
 		_redraw_window(hdc);
 	}
