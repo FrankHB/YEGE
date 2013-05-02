@@ -95,7 +95,6 @@
 		</Compiler>
 		<Unit filename="include/ege.h" />
 		<Unit filename="include/ege/button.h" />
-		<Unit filename="include/ege/common.h" />
 		<Unit filename="include/ege/e_base.h" />
 		<Unit filename="include/ege/e_color.h" />
 		<Unit filename="include/ege/e_colorbase.h" />
@@ -119,7 +118,6 @@
 		<Unit filename="include/ege/head.h" />
 		<Unit filename="include/ege/label.h" />
 		<Unit filename="include/ege/random.h" />
-		<Unit filename="include/ege/sbt.h" />
 		<Unit filename="include/ege/sys_edit.h" />
 		<Unit filename="include/graphics.h" />
 		<Unit filename="include/thread_queue.h" />
