@@ -497,14 +497,15 @@ saveBrush(PIMAGE img, int save)   //此函数调用前，已经有Lock
 	auto pg = &graph_setting;
 	if(save)
 	{
-		LOGBRUSH lbr = {0, COLORREF(), ULONG_PTR()};
+		::LOGBRUSH lbr{0, COLORREF(), ULONG_PTR()};
 
 		lbr.lbColor = 0;
 		lbr.lbStyle = BS_NULL;
 		pg->savebrush_hbr = CreateBrushIndirect(&lbr);
 		if(pg->savebrush_hbr)
 		{
-			pg->savebrush_hbr = (HBRUSH)SelectObject(img->m_hDC, pg->savebrush_hbr);
+			pg->savebrush_hbr = ::HBRUSH(::SelectObject(img->m_hDC,
+				pg->savebrush_hbr));
 			return 1;
 		}
 	}
@@ -568,7 +569,7 @@ setcolor(color_t color, PIMAGE pimg)
 		SetTextColor(img->m_hDC, color);
 		if(lPen.lopnStyle == PS_USERSTYLE)
 		{
-			DWORD style[20] = {0};
+			DWORD style[20]{};
 			LOGBRUSH lbr;
 			unsigned short upattern = img->m_linestyle.upattern;
 			int n, bn = 0, len = 1, st = 0;
@@ -616,7 +617,7 @@ void
 setfillcolor(color_t color, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
-	LOGBRUSH lbr = {0, COLORREF(), ULONG_PTR()};
+	LOGBRUSH lbr{0, COLORREF(), ULONG_PTR()};
 	img->m_fillcolor = color;
 	color = RGBTOBGR(color);
 	lbr.lbColor = color;
@@ -898,7 +899,7 @@ void
 bar(int left, int top, int right, int bottom, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE(pimg);
-	RECT rect = {left, top, right, bottom};
+	RECT rect{left, top, right, bottom};
 	HBRUSH hbr_last = (HBRUSH)GetCurrentObject(img->m_hDC, OBJ_BRUSH); //(HBRUSH)SelectObject(pg->g_hdc, hbr);
 
 	if(img)
@@ -1204,14 +1205,14 @@ outtext(LPCWSTR textstring, PIMAGE pimg)
 void
 outtext(CHAR c, PIMAGE pimg)
 {
-	CHAR str[10] = {c};
+	CHAR str[10]{c};
 	outtext(str, pimg);
 }
 
 void
 outtext(WCHAR c, PIMAGE pimg)
 {
-	WCHAR str[10] = {c};
+	WCHAR str[10]{c};
 	outtext(str, pimg);
 }
 
@@ -1242,14 +1243,14 @@ outtextxy(int x, int y, LPCWSTR textstring, PIMAGE pimg)
 void
 outtextxy(int x, int y, CHAR c, PIMAGE pimg)
 {
-	CHAR str[10] = {c};
+	CHAR str[10]{c};
 	outtextxy(x, y, str, pimg);
 }
 
 void
 outtextxy(int x, int y, WCHAR c, PIMAGE pimg)
 {
-	WCHAR str[10] = {c};
+	WCHAR str[10]{c};
 	outtextxy(x, y, str, pimg);
 }
 
@@ -1261,7 +1262,7 @@ outtextrect(int x, int y, int w, int h, LPCSTR  textstring, PIMAGE pimg)
 	if(img)
 	{
 		unsigned int fmode = private_gettextmode(img);
-		RECT rect = {x, y, x + w, y + h};
+		RECT rect{x, y, x + w, y + h};
 		DrawTextA(img->m_hDC, textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
 	}
 
@@ -1276,7 +1277,7 @@ outtextrect(int x, int y, int w, int h, LPCWSTR textstring, PIMAGE pimg)
 	if(img)
 	{
 		unsigned int fmode = private_gettextmode(img);
-		RECT rect = {x, y, x + w, y + h};
+		RECT rect{x, y, x + w, y + h};
 		DrawTextW(img->m_hDC, textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
 	}
 
@@ -1372,14 +1373,14 @@ textwidth(LPCWSTR textstring, PIMAGE pimg)
 int
 textwidth(CHAR c, PIMAGE pimg)
 {
-	CHAR str[2] = {c};
+	CHAR str[2]{c};
 	return textwidth(str, pimg);
 }
 
 int
 textwidth(WCHAR c, PIMAGE pimg)
 {
-	WCHAR str[2] = {c};
+	WCHAR str[2]{c};
 	return textwidth(str, pimg);
 }
 
@@ -1416,14 +1417,14 @@ textheight(LPCWSTR textstring, PIMAGE pimg)
 int
 textheight(CHAR c, PIMAGE pimg)
 {
-	CHAR str[2] = {c};
+	CHAR str[2]{c};
 	return textheight(str, pimg);
 }
 
 int
 textheight(WCHAR c, PIMAGE pimg)
 {
-	WCHAR str[2] = {c};
+	WCHAR str[2]{c};
 	return textheight(str, pimg);
 }
 
@@ -1462,7 +1463,7 @@ void
 setlinestyle(int linestyle, unsigned short upattern, int thickness, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
-	LOGPEN lpen = {0, POINT(), COLORREF()};
+	LOGPEN lpen{0, POINT(), COLORREF()};
 	lpen.lopnColor = RGBTOBGR(getcolor(pimg));
 	img->m_linestyle.thickness = thickness;
 	img->m_linewidth = (float)thickness;
@@ -1475,7 +1476,7 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, PIMAGE pimg)
 	HPEN hpen;
 	if(linestyle == PS_USERSTYLE)
 	{
-		DWORD style[20] = {0};
+		DWORD style[20]{0};
 		LOGBRUSH lbr;
 		int n, bn = 0, len = 1, st = 0;
 		lbr.lbColor = lpen.lopnColor;
@@ -1537,7 +1538,7 @@ void
 setfillstyle(int pattern, color_t color, PIMAGE pimg)
 {
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
-	LOGBRUSH lbr = {0, COLORREF(), UINT_PTR()};
+	LOGBRUSH lbr{0, COLORREF(), UINT_PTR()};
 	img->m_fillcolor = color;
 	lbr.lbColor = RGBTOBGR(color);
 	//SetBkColor(img->m_hDC, color);
@@ -1600,7 +1601,7 @@ setfont(
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTA lf = {nHeight, nWidth, nEscapement, nOrientation, nWeight,
+		LOGFONTA lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
 			bItalic != 0, bUnderline != 0, bStrikeOut != 0, fbCharSet,
 			fbOutPrecision, fbClipPrecision, fbQuality, fbPitchAndFamily, 0};
 
@@ -1632,7 +1633,7 @@ setfont(
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTW lf = {nHeight, nWidth, nEscapement, nOrientation, nWeight,
+		LOGFONTW lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
 			bItalic != 0, bUnderline != 0, bStrikeOut != 0, fbCharSet,
 			fbOutPrecision, fbClipPrecision, fbQuality, fbPitchAndFamily, 0};
 
@@ -1659,7 +1660,7 @@ setfont(
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTA lf = {nHeight, nWidth, nEscapement, nOrientation, nWeight,
+		LOGFONTA lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
 			bItalic != 0, bUnderline != 0, bStrikeOut != 0, DEFAULT_CHARSET,
 			OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
 			DEFAULT_PITCH, 0};
@@ -1687,7 +1688,7 @@ setfont(
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTW lf = {nHeight, nWidth, nEscapement, nOrientation, nWeight,
+		LOGFONTW lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
 			bItalic != 0, bUnderline != 0, bStrikeOut != 0, DEFAULT_CHARSET,
 			OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
 			DEFAULT_PITCH, 0};
@@ -1705,7 +1706,7 @@ setfont(int nHeight, int nWidth, LPCSTR lpszFace, PIMAGE pimg)
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTA lf = {nHeight, nWidth, 0, 0, FW_DONTCARE, 0, 0, 0,
+		LOGFONTA lf{nHeight, nWidth, 0, 0, FW_DONTCARE, 0, 0, 0,
 			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
 			DEFAULT_QUALITY, DEFAULT_PITCH, 0};
 
@@ -1722,7 +1723,7 @@ setfont(int nHeight, int nWidth, LPCWSTR lpszFace, PIMAGE pimg)
 	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
-		LOGFONTW lf = {nHeight, nWidth, 0, 0, FW_DONTCARE, 0, 0, 0,
+		LOGFONTW lf{nHeight, nWidth, 0, 0, FW_DONTCARE, 0, 0, 0,
 			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
 			DEFAULT_QUALITY, DEFAULT_PITCH, 0};
 
@@ -1858,7 +1859,7 @@ window_setviewport(int left, int top, int right, int bottom)
 			HWND hwnd = GetParent(pg->hwnd);
 			if(hwnd)
 			{
-				POINT pt = {0, 0};
+				POINT pt{0, 0};
 				ClientToScreen(hwnd, &pt);
 				rect.left   -= pt.x;
 				rect.top    -= pt.y;
@@ -1931,7 +1932,7 @@ clearviewport(PIMAGE pimg)
 
 	if(img && img->m_hDC)
 	{
-		::RECT rect = {0, 0, img->m_vpt.right - img->m_vpt.left,
+		::RECT rect{0, 0, img->m_vpt.right - img->m_vpt.left,
 			img->m_vpt.bottom - img->m_vpt.top};
 		::HBRUSH hbr_c = (HBRUSH)GetCurrentObject(img->m_hDC, OBJ_BRUSH);
 		::LOGBRUSH logBrush;
@@ -2312,7 +2313,7 @@ ege_gentexture(bool gen, PIMAGE pimg)
 void
 ege_puttexture(PIMAGE srcimg, float x, float y, float w, float h, PIMAGE pimg)
 {
-	ege_rect dest = {x, y, w, h};
+	ege_rect dest{x, y, w, h};
 	ege_puttexture(srcimg, dest, pimg);
 }
 
@@ -2348,7 +2349,7 @@ ege_puttexture(PIMAGE srcimg, ege_rect dest, ege_rect src, PIMAGE pimg)
 			}
 			/*
 			Gdiplus::ImageAttributes ia;
-			Gdiplus::ColorMatrix mx = {
+			Gdiplus::ColorMatrix mx{
 				{
 					{1.0, 0.0, 0.0, 0.0, 0.0},
 					{0.0, 1.0, 0.0, 0.0, 0.0},
@@ -2502,7 +2503,7 @@ inputbox_getline(LPCWSTR title, LPCWSTR text, LPWSTR buf, int len)
 			outtextxy(3, 3, title, &window);
 			setcolor(0x0, &window);
 			{
-				RECT rect = {30, 32, w - 30, 128 - 3};
+				RECT rect{30, 32, w - 30, 128 - 3};
 				DrawTextW(window.m_hDC, text, -1, &rect, DT_NOPREFIX | DT_LEFT | DT_TOP | TA_NOUPDATECP | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
 			}
 		}

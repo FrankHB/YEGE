@@ -358,12 +358,12 @@ int JDrawA(COMPLEX c, double, double, double, double)
 			/*
 			if(clock() - tt > 10)
 			{
-			    delay(1);
-			    tt = clock();
-			    if(0 && kbmouhit())
-			    {
-			        return -1;
-			    }
+				delay(1);
+				tt = clock();
+				if(0 && kbmouhit())
+				{
+					return -1;
+				}
 			}//*/
 		}
 	}
@@ -395,7 +395,7 @@ int main()
 	g_w = getwidth(nullptr);
 	g_h = getheight(nullptr);
 	g_st = (state*)malloc(g_w * g_h * sizeof(state));
-	COMPLEX c = {0.262, 0.002}, z = {0, 0};
+	COMPLEX c{0.262, 0.002}, z{0, 0};
 	double r = 1.5, d = g_w / (double)g_h, rotate = 0, sr = sin(rotate), cr = cos(rotate);
 	init_st(g_w, g_h);
 	int n_update = 0;

@@ -25,14 +25,20 @@
 template <class TFLOAT>
 struct complex
 {
-    TFLOAT re;
-    TFLOAT im;
-    complex()
-    {
-        re = im = 0.0;
-    }
-    TFLOAT& real() { return re; }
-    TFLOAT& imag() { return im; }
+	TFLOAT re;
+	TFLOAT im;
+	complex()
+	{
+		re = im = 0.0;
+	}
+	TFLOAT& real()
+	{
+		return re;
+	}
+	TFLOAT& imag()
+	{
+		return im;
+	}
 };
 
 typedef complex<double> COMPLEX;
@@ -204,77 +210,77 @@ updatelist& g_udlist = *g_pudlist;
 /*
 struct calclist
 {
-    int m_len;
-    int m_list[SC_H*SC_W];
-    void clear()
-    {
-        m_len = 0;
-    }
-    void push(int x, int y)
-    {
-        ++m_len;
-        m_list[m_len] = y<<W_B + x;
-        PIXEL* p = (PIXEL*)pMap;
-        int t = m_len;
-        for( ; t>1; t >>= 1)
-        {
-            if(p[m_list[t]].nIter < p[m_list[t>>1]].nIter)
-            {
-                std::swap(m_list[t], m_list[t>>1]);
-            }
-            else break;
-        }
-    }
-    void update(int x, int y)
-    {
-        int t = y<<W_B + x;
-        int t2 = t<<1;
-        PIXEL* p = (PIXEL*)pMap;
-        for( ; t2 < m_len; t2 = (t<<1))
-        {
-            if(p[m_list[t2]].nIter <= p[m_list[t2+1]].nIter)
-            {
-                if(p[m_list[t]].nIter <= p[m_list[t2]].nIter)
-                {
-                    return ;
-                }
-                else
-                {
-                    std::swap(m_list[t], m_list[t2]);
-                    t = t2;
-                }
-            }
-            else
-            {
-                t2 += 1;
-                if(p[m_list[t]].nIter <= p[m_list[t2]].nIter)
-                {
-                    return ;
-                }
-                else
-                {
-                    std::swap(m_list[t], m_list[t2]);
-                    t = t2;
-                }
-            }
-        }
-        if(t2 <= m_len)
-        {
-            if(p[m_list[t]].nIter > p[m_list[t2]].nIter)
-            {
-                std::swap(m_list[t], m_list[t2]);
-            }
-        }
-    }
-    int pop(int x, int y)
-    {
-        if(m_len <= 0) return -1;
-        int t = y<<W_B + x;
-        std::swap(m_list[t], m_list[m_len]);
-        --m_len;
-        update(x, y);
-        return 0;
-    }
+	int m_len;
+	int m_list[SC_H* SC_W];
+	void clear()
+	{
+		m_len = 0;
+	}
+	void push(int x, int y)
+	{
+		++m_len;
+		m_list[m_len] = y << W_B + x;
+		PIXEL* p = (PIXEL*)pMap;
+		int t = m_len;
+		for(; t > 1; t >>= 1)
+		{
+			if(p[m_list[t]].nIter < p[m_list[t >> 1]].nIter)
+			{
+				std::swap(m_list[t], m_list[t >> 1]);
+			}
+			else break;
+		}
+	}
+	void update(int x, int y)
+	{
+		int t = y << W_B + x;
+		int t2 = t << 1;
+		PIXEL* p = (PIXEL*)pMap;
+		for(; t2 < m_len; t2 = (t << 1))
+		{
+			if(p[m_list[t2]].nIter <= p[m_list[t2 + 1]].nIter)
+			{
+				if(p[m_list[t]].nIter <= p[m_list[t2]].nIter)
+				{
+					return ;
+				}
+				else
+				{
+					std::swap(m_list[t], m_list[t2]);
+					t = t2;
+				}
+			}
+			else
+			{
+				t2 += 1;
+				if(p[m_list[t]].nIter <= p[m_list[t2]].nIter)
+				{
+					return ;
+				}
+				else
+				{
+					std::swap(m_list[t], m_list[t2]);
+					t = t2;
+				}
+			}
+		}
+		if(t2 <= m_len)
+		{
+			if(p[m_list[t]].nIter > p[m_list[t2]].nIter)
+			{
+				std::swap(m_list[t], m_list[t2]);
+			}
+		}
+	}
+	int pop(int x, int y)
+	{
+		if(m_len <= 0) return -1;
+		int t = y << W_B + x;
+		std::swap(m_list[t], m_list[m_len]);
+		--m_len;
+		update(x, y);
+		return 0;
+	}
 };//*/
 
 
@@ -354,7 +360,11 @@ void InitColor()
 	*/
 }
 
-//#define func(z, c, ed) {z*=z; if(z.re > 4) {ed = 1; break;} z+=c;} //(z * z * z * z * z * z + c)
+/*
+#define func(z, c, ed) \
+{z*=z; if(z.re > 4) \
+{ed = 1; break;} z+=c;} //(z * z * z * z * z * z + c)
+*/
 #define func(z, c) z *= z, z += c;
 
 inline
@@ -630,7 +640,7 @@ int WinMain()
 	do
 	{
 		FILE* fp = fopen("MandelbrotSet.ini", "r");
-		char str[1024] = {0};
+		char str[1024]{0};
 		COMPLEX center, delta;
 		center.re = "0";
 		if(fp)

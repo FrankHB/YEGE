@@ -90,23 +90,16 @@ typedef unsigned int uint32;
 typedef intptr_t POINTER_SIZE;
 
 #ifndef _MSC_VER
-#define GRADIENT_FILL_RECT_H    0x00000000
-#define GRADIENT_FILL_RECT_V    0x00000001
-#define GRADIENT_FILL_TRIANGLE  0x00000002
-#define GRADIENT_FILL_OP_FLAG   0x000000ff
+#define GRADIENT_FILL_RECT_H 0x00000000
+#define GRADIENT_FILL_RECT_V 0x00000001
+#define GRADIENT_FILL_TRIANGLE 0x00000002
+#define GRADIENT_FILL_OP_FLAG 0x000000ff
 
-extern "C" {
-	WINGDIAPI
-	BOOL
-	WINAPI
-	GradientFill(
-		HDC hdc,
-		PTRIVERTEX pVertex,
-		ULONG nVertex,
-		PVOID pMesh,
-		ULONG nMesh,
-		ULONG ulMode
-	);
+extern "C"
+{
+	WINGDIAPI WINAPI BOOL
+	GradientFill(HDC hdc, PTRIVERTEX pVertex, ULONG nVertex, PVOID pMesh,
+		ULONG nMesh, ULONG ulMode);
 }
 #endif
 

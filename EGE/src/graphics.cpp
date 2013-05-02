@@ -437,8 +437,8 @@ init_instance(HINSTANCE hInstance, int nCmdShow)
 {
 	auto pg = &graph_setting;
 	int dw = 0, dh = 0;
-	//WCHAR Title[256] = {0};
-	//WCHAR Title2[256] = {0};
+	//WCHAR Title[256]{0};
+	//WCHAR Title2[256]{0};
 
 	//WideCharToMultiByte(CP_UTF8, 0, pg->window_caption,
 	//	lstrlenW(pg->window_caption), (LPSTR)Title, 256, 0, 0);
@@ -471,8 +471,8 @@ init_instance(HINSTANCE hInstance, int nCmdShow)
 	//::SetWindowTextA(pg->hwnd, (LPCSTR)Title);
 	::SetWindowLongPtrW(pg->hwnd, GWLP_USERDATA, (LONG_PTR)pg);
 
-	/* {
-		LOGFONTW lf = {0};
+	/*{
+		LOGFONTW lf{0};
 		lf.lfHeight         = 12;
 		lf.lfWidth          = 6;
 		lf.lfEscapement     = 0;
@@ -615,7 +615,7 @@ on_ime_control(_graph_setting*, HWND hwnd, UINT, WPARAM wparam, LPARAM lparam)
 	{
 		::HIMC hImc = ImmGetContext(hwnd);
 
-		COMPOSITIONFORM cpf = {0, POINT(), RECT()};
+		COMPOSITIONFORM cpf{0, POINT(), RECT()};
 
 		cpf.dwStyle = CFS_POINT;
 		cpf.ptCurrentPos = *(LPPOINT)lparam;
@@ -945,7 +945,7 @@ initgraph(int* gdriver, int* gmode, char*)
 	lstrcpy(pg->window_class_name, TEXT("Easy Graphics Engine"));
 	lstrcpy(pg->window_caption, EGE_TITLE);
 	{
-	//	::SECURITY_ATTRIBUTES sa = {0};
+	//	::SECURITY_ATTRIBUTES sa{0};
 		::DWORD pid;
 
 		pg->init_finish = false;

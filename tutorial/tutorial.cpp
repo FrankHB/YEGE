@@ -205,7 +205,7 @@ public:
 		ege::PushTarget target(filter());
 		ege::cleardevice();
 		ege::ege_enable_aa(true);
-		ege::ege_point center = {(float)getw() / 2.0f, (float)geth() / 2.0f};
+		ege::ege_point center{(float)getw() / 2.0f, (float)geth() / 2.0f};
 		ege::ege_setpattern_lineargradient(0.0f, 0.0f, EGEAGRAY(0xffu, 0xff), 0.0f, (float)geth() / 2.0f, EGEAGRAY(0xffu, 0x0));
 		//ege::ege_setpattern_ellipsegradient(center, EGEAGRAY(0xffu, 0x0),
 		//    0.0f, 0.0f, (float)getw() * 1.5f, (float)geth() * 1.5f, EGEAGRAY(0xffu, 0xff));
@@ -486,9 +486,11 @@ class IniParser
 {
 public:
 	typedef std::map<str_t, str_t>* key_val_ptr;
-	IniParser() {}
-	virtual ~IniParser() {}
-	void clear()
+	IniParser(){}
+	virtual ~IniParser(){}
+
+	void
+	clear()
 	{
 		_data.clear();
 	}

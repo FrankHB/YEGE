@@ -33,7 +33,7 @@ _RGBtoHSL(int _col)
 {
 	COLORHSL _crCol;
 	float r, g, b;
-	float* t, *dp[3] = {&r, &g, &b};
+	float* t, *dp[3]{&r, &g, &b};
 
 	b = EGEGET_B(_col) / 255.0f;
 	g = EGEGET_G(_col) / 255.0f;
@@ -374,15 +374,12 @@ color_t
 hsv2rgb(float H, float S, float V)
 {
 	COLORRGB crgb;
+
 	if(H < 0.0f)
-	{
 		H += (float)(int)(-H / 360.0f + 1) * 360.0f;
-	}
 	if(H >= 360.0f)
-	{
 		H -= (float)(int)(H / 360.0f) * 360.0f;
-	}
-	COLORHSV chsv = {H / 360.0f, S, V};
+	COLORHSV chsv{H / 360.0f, S, V};
 	HSV_TO_RGB(&chsv, &crgb);
 	return EGERGB(crgb.r, crgb.g, crgb.b);
 }

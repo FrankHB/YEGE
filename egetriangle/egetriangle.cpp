@@ -127,8 +127,8 @@ void draw_poly(struct poly* p) //绘制一个多边形
 int main()
 {
 	static struct polys p[10];
-	int n_points[10] = {3, 3, 3, 6, 7};
-	int n_poly[10] = {1, 1, 1, 1, 1};
+	int n_points[10]{3, 3, 3, 6, 7};
+	int n_poly[10]{1, 1, 1, 1, 1};
 	int n_polys = 3, i;
 
 	randomize();

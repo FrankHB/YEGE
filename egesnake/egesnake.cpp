@@ -4,7 +4,7 @@
 
 #define MAP_W 40
 #define MAP_H 30
-const int GCOLOR[] = {DARKGRAY, GREEN, RED};
+const int GCOLOR[]{DARKGRAY, GREEN, RED};
 
 int gw, gh;
 
@@ -61,7 +61,7 @@ int moveSnake(const int dx, const int dy, const bool u = false)
 
 void gameInit(void)
 {
-	int data[] = {6, 0, 2, 0, 0x10000};
+	int data[]{6, 0, 2, 0, 0x10000};
 	memset(game.pool, 0, sizeof(game.pool));
 	memmove(&game, data, sizeof(data));
 }

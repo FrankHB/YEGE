@@ -150,9 +150,9 @@ public:
 	virtual void onResetFilter()
 	{
 	}
-	//virtual void onAddChild(egeControlBase* pChild) {}
-	//virtual void onDelChild(egeControlBase* pChild) {}
-	//virtual void onIdle() {} // 保留接口，未用
+	//virtual void onAddChild(egeControlBase* pChild){}
+	//virtual void onDelChild(egeControlBase* pChild){}
+	//virtual void onIdle(){} // 保留接口，未用
 	// 这里以上的函数可以自行定义（注意声明要一致，不要漏掉OnDraw里的const）
 	//init
 	CTL_PREINIT(button, egeControlBase)

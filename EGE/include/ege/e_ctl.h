@@ -65,22 +65,22 @@ public:
 		return 0;
 	}
 	// 失去输入焦点时调用
-	virtual void onLostFocus() { }
+	virtual void onLostFocus(){}
 	// 设置尺寸前调用，自定义修正函数
-	virtual void onSizing(int*, int*) {}
+	virtual void onSizing(int*, int*){}
 	// 响应尺寸变化函数
-	virtual void onSize(int, int) {}
+	virtual void onSize(int, int){}
 	// 重绘函数，尽量请画到pimg上，以便能控制绘画目标
-	virtual void onDraw(PIMAGE) const {}
+	virtual void onDraw(PIMAGE) const{}
 	// 尺寸变化时调用，用于重画过滤缓冲区内容
 	virtual void onResetFilter()
 	{
 		setbkcolor(BLACK, m_mainFilter);
 		cleardevice(m_mainFilter);
 	}
-	virtual void onAddChild(egeControlBase*) {}
-	virtual void onDelChild(egeControlBase*) {}
-	virtual void onIdle() {} // 保留接口，未用
+	virtual void onAddChild(egeControlBase*){}
+	virtual void onDelChild(egeControlBase*){}
+	virtual void onIdle(){} // 保留接口，未用
 	// 这里以上的函数可以自行定义（注意声明要一致，不要漏掉OnDraw里的const）
 	// 这里以下的public函数可以调用，不可自定义，任何预定义变量都不要直接访问，请使用预定义函数来控制
 public:

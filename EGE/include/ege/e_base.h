@@ -135,8 +135,8 @@ enum fill_patterns  /* Fill patterns for get/setfillstyle */
 	USER_FILL       /* user defined fill */
 };
 
-enum text_just {        /* Horizontal and vertical justification
-						for settextjustify */
+enum text_just /* Horizontal and vertical justification for settextjustify */
+{
 	LEFT_TEXT   = 0,
 	CENTER_TEXT = 1,
 	RIGHT_TEXT  = 2,

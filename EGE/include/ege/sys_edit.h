@@ -30,7 +30,7 @@ public:
 		{
 			destory();
 		}
-		msg_createwindow msg = {nullptr, nullptr, nullptr, 0, 0, 0, nullptr};
+		msg_createwindow msg{nullptr, nullptr, nullptr, 0, 0, 0, nullptr};
 		msg.hEvent = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
 		msg.classname = L"EDIT";
 		msg.id = egeControlBase::allocId();
@@ -52,7 +52,7 @@ public:
 		m_callback = ::GetWindowLongPtrW(m_hwnd, GWLP_WNDPROC);
 		::SetWindowLongPtrW(m_hwnd, GWLP_WNDPROC, (LONG_PTR)getProcfunc());
 		{
-			char fontname[] = {'\xcb', '\xce', '\xcc', '\xe5', 0, 0};
+			char fontname[]{'\xcb', '\xce', '\xcc', '\xe5', 0, 0};
 			setfont(12, 6, fontname);
 		}
 		visable(false);
@@ -65,8 +65,7 @@ public:
 	{
 		if(m_hwnd)
 		{
-			msg_createwindow msg
-				= {nullptr, nullptr, nullptr, 0, 0, 0, nullptr};
+			msg_createwindow msg{nullptr, nullptr, nullptr, 0, 0, 0, nullptr};
 			msg.hwnd = m_hwnd;
 			msg.hEvent = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
 			::SendMessage(m_hwnd, WM_SETFONT, 0, 0);
@@ -91,8 +90,9 @@ public:
 			::SetTextColor(dc, RGBTOBGR(m_color));
 			::DeleteObject(m_hBrush);
 			m_hBrush = br;
-			return (LRESULT)br;
-			//} else if(message == WM_SETFOCUS) {
+			return ::LRESULT(br);
+			//} else if(message == WM_SETFOCUS)
+			//{
 			//    int a = 0;
 			//    int b = 1;
 			//    return 0;
@@ -111,7 +111,7 @@ public:
 	void setfont(int h, int w, LPCSTR fontface)
 	{
 		{
-			LOGFONTA lf = {h, w, 0, 0, FW_DONTCARE, 0, 0, 0, DEFAULT_CHARSET,
+			LOGFONTA lf{h, w, 0, 0, FW_DONTCARE, 0, 0, 0, DEFAULT_CHARSET,
 				OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
 				DEFAULT_PITCH, 0};
 			lstrcpyA(lf.lfFaceName, fontface);
@@ -129,7 +129,7 @@ public:
 	void setfont(int h, int w, LPCWSTR fontface)
 	{
 		{
-			LOGFONTW lf = {h, w, 0, 0, FW_DONTCARE, 0, 0, 0, DEFAULT_CHARSET,
+			LOGFONTW lf{h, w, 0, 0, FW_DONTCARE, 0, 0, 0, DEFAULT_CHARSET,
 				OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
 				DEFAULT_PITCH, 0};
 

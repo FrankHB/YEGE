@@ -29,14 +29,20 @@
 template <class TFLOAT>
 struct complex
 {
-    TFLOAT re;
-    TFLOAT im;
-    complex()
-    {
-        re = im = 0.0;
-    }
-    TFLOAT& real() { return re; }
-    TFLOAT& imag() { return im; }
+	TFLOAT re;
+	TFLOAT im;
+	complex()
+	{
+		re = im = 0.0;
+	}
+	TFLOAT& real()
+	{
+		return re;
+	}
+	TFLOAT& imag()
+	{
+		return im;
+	}
 };
 
 typedef complex<double> COMPLEX;
@@ -405,7 +411,12 @@ void InitColor()
 	*/
 }
 
-//#define func(z, c, ed) {z*=z; if(z.re > 4) {ed = 1; break;} z+=c;} //(z * z * z * z * z * z + c)
+/*
+#define func(z, c, ed) \
+{z*=z; if(z.re > 4) \
+{ed = 1; break;} \
+z+=c;} //(z * z * z * z * z * z + c)
+*/
 #define func(z, c) z *= z, z += c;
 
 int g_base_iters = BASEITERATIONS;
@@ -499,16 +510,14 @@ void initqueue(int bcross)
 	}
 	/*
 	int sh = SC_H / 2 - 1, sw = SC_W / 2 - 1;
-	for(int y=0; y<SC_H / 2; y += 159)
-	{
-	    for(int x=0; x<SC_W / 2; x += 159)
-	    {
-	        pMap[sh + y][sw + x].calc = 1;
-	        pMap[sh + y][sw - x].calc = 1;
-	        pMap[sh - y][sw + x].calc = 1;
-	        pMap[sh - y][sw - x].calc = 1;
-	    }
-	}
+	for(int y = 0; y < SC_H / 2; y += 159)
+		for(int x = 0; x < SC_W / 2; x += 159)
+		{
+			pMap[sh + y][sw + x].calc = 1;
+			pMap[sh + y][sw - x].calc = 1;
+			pMap[sh - y][sw + x].calc = 1;
+			pMap[sh - y][sw - x].calc = 1;
+		}
 	// */
 	//*
 	for(int y = 0; y < SC_H; y++)
@@ -531,19 +540,19 @@ void initqueue(int bcross)
 	}
 	// */
 	/*
-	for(int y=1; y<SC_H-1; y++)
+	for(int y = 1; y < SC_H - 1; y++)
 	{
-	    for(int x=1; x<SC_W-1; x++)
-	    {
-	        PIXEL& p = pMap[y][x];
-	        if(p.ed)
-	        {
-	            pMap[y-1][x].calc = 1;
-	            pMap[y+1][x].calc = 1;
-	            pMap[y][x-1].calc = 1;
-	            pMap[y][x+1].calc = 1;
-	        }
-	    }
+		for(int x = 1; x < SC_W - 1; x++)
+		{
+			PIXEL& p = pMap[y][x];
+			if(p.ed)
+			{
+				pMap[y - 1][x].calc = 1;
+				pMap[y + 1][x].calc = 1;
+				pMap[y][x - 1].calc = 1;
+				pMap[y][x + 1].calc = 1;
+			}
+		}
 	}// */
 	g_udlist.clear();
 	for(int y = 0; y < SC_H; y++)
@@ -565,13 +574,13 @@ void initqueue(int bcross)
 	}
 	/*
 	{
-	    int x = SC_W / 2, y = SC_H / 2;
-	    PIXEL& p = pMap[y][x];
-	    if(p.ed == 0)
-	    {
-	        g_udlist.push(x, y);
-	        p.calc = 1;
-	    }
+		int x = SC_W / 2, y = SC_H / 2;
+		PIXEL& p = pMap[y][x];
+		if(p.ed == 0)
+		{
+			g_udlist.push(x, y);
+			p.calc = 1;
+		}
 	}// */
 	g_udlist.swap();
 }
@@ -749,23 +758,24 @@ main()
 	mindelta.re = 0.00000000000002;
 	setfont(24, 0, "ºÚÌå", &img_logo);
 	outtextxy(0, 0, "http://misakamm.org", &img_logo);
-	/*{
-	    FILE * fp = fopen("MandelbrotSetAni.ini", "r");
-	    char str[1024] = {0};
-	    if(fp)
-	    {
-	        fgets(str, 1024, fp);
-	        center.re = str;
-	        fgets(str, 1024, fp);
-	        center.im = str;
-	        fgets(str, 1024, fp);
-	        mindelta.re = str;
-	        fgets(str, 1024, fp);
-	        //sscanf(str, "%lf", &delta_mul);
-	        fgets(str, 1024, fp);
-	        sscanf(str, "%d", &nbeg);
-	        fclose(fp);
-	    }
+	/*
+	{
+		FILE* fp = fopen("MandelbrotSetAni.ini", "r");
+		char str[1024]{0};
+		if(fp)
+		{
+			fgets(str, 1024, fp);
+			center.re = str;
+			fgets(str, 1024, fp);
+			center.im = str;
+			fgets(str, 1024, fp);
+			mindelta.re = str;
+			fgets(str, 1024, fp);
+			//sscanf(str, "%lf", &delta_mul);
+			fgets(str, 1024, fp);
+			sscanf(str, "%d", &nbeg);
+			fclose(fp);
+		}
 	}//*/
 	//mindelta.re = "0.000000000000001";
 	//delta.re = "2.0";

@@ -5,7 +5,7 @@ Code::Blocks 。
 
 限制实现需求：
 限 MinGW G++ 4.8.0 或以上，需要 -std=c++11 支持。
-（其它版本未测试，但至少需要 -std=c++0x 的 auto 和 nullptr 等支持，且若在 Code::Blocks 项目使用，需要去除 debug 的 -Og 选项。）
+（其它版本未测试，但至少需要 -std=c++0x 的 auto 、nullptr 和初始化列表等 C++11 特性支持，且若在 Code::Blocks 项目使用，需要去除 debug 的 -Og 选项。）
 
 依赖项更改：
 计划依赖 YBase 的 ydef.h（当前临时移除）。

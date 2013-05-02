@@ -5,7 +5,7 @@
 char installpath[8][MAX_PATH];
 char g_output[1024 * 16];
 char strbasepath[] = "SOFTWARE\\";
-char ver[8][64] = { "Microsoft\\VisualStudio\\6.0\\Setup\\Microsoft Viaual C++",
+char ver[8][64]{ "Microsoft\\VisualStudio\\6.0\\Setup\\Microsoft Viaual C++",
 					"Microsoft\\VisualStudio\\8.0\\Setup\\VC",
 					"Microsoft\\VisualStudio\\9.0\\Setup\\VC",
 					"Microsoft\\VisualStudio\\10.0\\Setup\\VC",

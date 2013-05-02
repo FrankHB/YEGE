@@ -140,8 +140,8 @@ void draw_polys(struct polys* p) //»æÖÆ¶à±ßĞÎ¶ÓÁĞ£¨Ö»»­µÚÒ»¸öºÍ×îºóÒ»¸ö£¬×îºóÒ»¸
 int main()
 {
 	static struct polys p[10];
-	int n_points[10] = {4, 3, 5, 6, 7};
-	int n_poly[10] = {80, 40, 10, 5, 1};
+	int n_points[10]{4, 3, 5, 6, 7};
+	int n_poly[10]{80, 40, 10, 5, 1};
 	int n_polys = 2, i;
 
 	randomize();
