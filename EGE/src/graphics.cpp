@@ -127,50 +127,6 @@ kbmsg()
 }
 
 int
-getchEx(int flag)
-{
-	auto pg = &graph_setting;
-
-	if(pg->exit_window)
-		return grNoInitGraph;
-	{
-		int key;
-		EGEMSG msg;
-		::DWORD dw = GetTickCount();
-		do
-		{
-			key = pg->_kbhit_ex(flag);
-			if(key < 0)
-				break;
-			if(key > 0)
-			{
-				key = pg->_getkey_p();
-				if(key)
-				{
-					msg = pg->msgkey_queue->last();
-					if(dw < msg.time + 1000)
-					{
-						int ogn_key = key;
-						int ret = 0;
-
-						key &= 0xFFFF;
-						ret = key;
-						if(flag)
-							ret = ogn_key;
-						else if(((ogn_key & KEYMSG_DOWN) && (msg.wParam >= 0x70
-							&& msg.wParam < 0x80))
-							|| (msg.wParam > ' ' && msg.wParam < '0'))
-							ret |= 0x100;
-						return ret;
-					}
-				}
-			}
-		} while(!pg->exit_window && !pg->exit_flag && pg->_waitdealmessage());
-	}
-	return 0;
-}
-
-int
 kbhit()
 {
 	return graph_setting._kbhit_ex(0);
@@ -179,7 +135,7 @@ kbhit()
 int
 getch()
 {
-	return getchEx(0);
+	return graph_setting._getch_ex(0);
 }
 
 key_msg

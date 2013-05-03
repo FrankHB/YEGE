@@ -37,60 +37,6 @@ _graph_setting::_get_FPS(int add)
 	return add > 0 ? (fret + flret) / 2 : fret_inv;
 }
 
-key_msg
-_graph_setting::_getkey()
-{
-	key_msg ret{0, key_msg_none, 0};
-
-	if(!exit_window)
-	{
-		int key = 0;
-
-		do
-		{
-			if((key = _getkey_p()))
-			{
-				key_msg msg{0, key_msg_none, 0};
-
-				if(key & KEYMSG_DOWN)
-					msg.msg = key_msg_down;
-				else if(key & KEYMSG_UP)
-					msg.msg = key_msg_up;
-				else if(key & KEYMSG_CHAR)
-					msg.msg = key_msg_char;
-				msg.key = key & 0xFFFF;
-				if(keystate(VK_CONTROL))
-					msg.flags |= key_flag_ctrl;
-				if(keystate(VK_SHIFT))
-					msg.flags |= key_flag_shift;
-				return msg;
-			}
-		} while(!exit_window && !exit_flag && _waitdealmessage());
-	}
-	return ret;
-}
-
-int
-_graph_setting::_getkey_p()
-{
-	EGEMSG msg;
-
-	while(msgkey_queue->pop(msg))
-		switch(msg.message)
-		{
-		case WM_CHAR:
-			return KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF);
-		case WM_KEYDOWN:
-			return KEYMSG_DOWN | (int(msg.wParam) & 0xFFFF)
-				| (msg.lParam & 0x40000000 ? 0 : KEYMSG_FIRSTDOWN);
-		case WM_KEYUP:
-			return KEYMSG_UP | (int(msg.wParam) & 0xFFFF);
-		default:
-			break;
-		}
-	return 0;
-}
-
 double
 _graph_setting::_get_highfeq_time_ls()
 {
@@ -217,6 +163,103 @@ _graph_setting::_flushkey()
 	if(!msgkey_queue->empty())
 		while(msgkey_queue->pop(msg))
 			;
+}
+
+int
+_graph_setting::_getch_ex(int flag)
+{
+	if(exit_window)
+		return grNoInitGraph;
+	{
+		int key;
+		EGEMSG msg;
+		::DWORD dw = GetTickCount();
+		do
+		{
+			key = _kbhit_ex(flag);
+			if(key < 0)
+				break;
+			if(key > 0)
+			{
+				key = _getkey_p();
+				if(key)
+				{
+					msg = msgkey_queue->last();
+					if(dw < msg.time + 1000)
+					{
+						int ogn_key = key;
+
+						key &= 0xFFFF;
+
+						int ret = key;
+
+						if(flag)
+							ret = ogn_key;
+						else if(((ogn_key & KEYMSG_DOWN) && (msg.wParam >= 0x70
+							&& msg.wParam < 0x80)) || (msg.wParam > ' '
+							&& msg.wParam < '0'))
+							ret |= 0x100;
+						return ret;
+					}
+				}
+			}
+		} while(!exit_window && !exit_flag && _waitdealmessage());
+	}
+	return 0;
+}
+
+key_msg
+_graph_setting::_getkey()
+{
+	key_msg ret{0, key_msg_none, 0};
+
+	if(!exit_window)
+	{
+		int key = 0;
+
+		do
+		{
+			if((key = _getkey_p()))
+			{
+				key_msg msg{0, key_msg_none, 0};
+
+				if(key & KEYMSG_DOWN)
+					msg.msg = key_msg_down;
+				else if(key & KEYMSG_UP)
+					msg.msg = key_msg_up;
+				else if(key & KEYMSG_CHAR)
+					msg.msg = key_msg_char;
+				msg.key = key & 0xFFFF;
+				if(keystate(VK_CONTROL))
+					msg.flags |= key_flag_ctrl;
+				if(keystate(VK_SHIFT))
+					msg.flags |= key_flag_shift;
+				return msg;
+			}
+		} while(!exit_window && !exit_flag && _waitdealmessage());
+	}
+	return ret;
+}
+
+int
+_graph_setting::_getkey_p()
+{
+	EGEMSG msg;
+
+	while(msgkey_queue->pop(msg))
+		switch(msg.message)
+		{
+		case WM_CHAR:
+			return KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF);
+		case WM_KEYDOWN:
+			return KEYMSG_DOWN | (int(msg.wParam) & 0xFFFF)
+				| (msg.lParam & 0x40000000 ? 0 : KEYMSG_FIRSTDOWN);
+		case WM_KEYUP:
+			return KEYMSG_UP | (int(msg.wParam) & 0xFFFF);
+		default:
+			break;
+		}
+	return 0;
 }
 
 int

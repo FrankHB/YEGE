@@ -392,12 +392,6 @@ struct _graph_setting
 	float
 	_get_FPS(int);
 
-	key_msg
-	_getkey();
-
-	int
-	_getkey_p();
-
 	double
 	_get_highfeq_time_ls();
 
@@ -418,6 +412,15 @@ struct _graph_setting
 
 	void
 	_flushkey();
+
+	int
+	_getch_ex(int);
+
+	key_msg
+	_getkey();
+
+	int
+	_getkey_p();
 
 	int
 	_kbhit_ex(int);
