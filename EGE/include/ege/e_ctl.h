@@ -71,7 +71,7 @@ public:
 	// 响应尺寸变化函数
 	virtual void onSize(int, int){}
 	// 重绘函数，尽量请画到pimg上，以便能控制绘画目标
-	virtual void onDraw(PIMAGE) const{}
+	virtual void onDraw(IMAGE*) const{}
 	// 尺寸变化时调用，用于重画过滤缓冲区内容
 	virtual void onResetFilter()
 	{
@@ -84,11 +84,11 @@ public:
 	// 这里以上的函数可以自行定义（注意声明要一致，不要漏掉OnDraw里的const）
 	// 这里以下的public函数可以调用，不可自定义，任何预定义变量都不要直接访问，请使用预定义函数来控制
 public:
-	PIMAGE buf()
+	IMAGE* buf()
 	{
 		return m_mainbuf;
 	}
-	PIMAGE filter()
+	IMAGE* filter()
 	{
 		return m_mainFilter;
 	}
@@ -96,11 +96,11 @@ public:
 	{
 		return m_parent;
 	}
-	PIMAGE buf() const
+	IMAGE* buf() const
 	{
 		return m_mainbuf;
 	}
-	PIMAGE filter() const
+	IMAGE* filter() const
 	{
 		return m_mainFilter;
 	}
@@ -216,7 +216,7 @@ public:
 
 	int addchild(egeControlBase* pChild);
 	int delchild(egeControlBase* pChild);
-	void draw(PIMAGE pimg);
+	void draw(IMAGE* pimg);
 	void update();
 	void mouse(int x, int y, int flag);
 	void keymsgdown(unsigned key, int flag);
@@ -253,8 +253,8 @@ public:
 #endif
 	void initok();
 private:
-	PIMAGE   m_mainbuf;      // 主缓冲
-	PIMAGE   m_mainFilter;   // 过滤器
+	IMAGE*   m_mainbuf;      // 主缓冲
+	IMAGE*   m_mainFilter;   // 过滤器
 
 private:
 	int m_bVisable;     // 是否可见

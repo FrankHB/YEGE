@@ -22,7 +22,7 @@ IMAGE::IMAGE()
 	m_hDC = nullptr;
 	m_pattern_obj = nullptr;
 	m_texture = nullptr;
-	PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
+	const auto img = CONVERT_IMAGE_CONST(nullptr);
 	if(img)
 		newimage(img->m_hDC, 1, 1);
 	else
@@ -36,7 +36,7 @@ IMAGE::IMAGE(int width, int height)
 	m_hDC = nullptr;
 	m_pattern_obj = nullptr;
 	m_texture = nullptr;
-	PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
+	const auto img = CONVERT_IMAGE_CONST(nullptr);
 	if(img)
 		newimage(img->m_hDC, width, height);
 	else
@@ -152,7 +152,7 @@ IMAGE::newimage(::HDC hdc, int width, int height)
 		if(!hdc)
 		{
 			wchar_t str[60];
-			wsprintfW(str, L"Fatal error: read/write at 0x%08x. At function 'newimage', construct PIMAGE before 'initgraph'?", this);
+			wsprintfW(str, L"Fatal error: read/write at 0x%08x. At function 'newimage', construct IMAGE* before 'initgraph'?", this);
 			::MessageBoxW(graph_setting.hwnd, str, L"ERROR message", MB_ICONSTOP);
 			::ExitProcess((::UINT)grError);
 		}
@@ -233,25 +233,24 @@ int
 IMAGE::createimage(int width, int height)
 {
 	inittest(L"IMAGE::createimage");
-	PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
+
+	auto img = CONVERT_IMAGE_CONST(nullptr);
+
 	if(!img)
 		img = graph_setting.img_page[graph_setting.active_page];
 
 	int ret = newimage(img->m_hDC, width, height);
+
 	CONVERT_IMAGE_END;
 
-	if(ret)
-	{
-		return ret;
-	}
-	return 0;
+	return ret;
 }
 
 int
 IMAGE::resize(int width, int height)
 {
 	inittest(L"IMAGE::createimage");
-	PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
+	const auto img = CONVERT_IMAGE_CONST(nullptr);
 	int ret = newimage(img->m_hDC, width, height);
 	CONVERT_IMAGE_END;
 	if(ret)
@@ -265,15 +264,15 @@ IMAGE&
 IMAGE::operator = (const IMAGE & img)
 {
 	inittest(L"IMAGE::operator=");
-	getimage((PIMAGE)(&img), 0, 0, img.m_width, img.m_height);
+	getimage((IMAGE*)(&img), 0, 0, img.m_width, img.m_height);
 	return *this;
 }
 
 void
-IMAGE::copyimage(const PIMAGE pSrcImg)
+IMAGE::copyimage(IMAGE* pSrcImg)
 {
 	inittest(L"IMAGE::copyimage");
-	const PIMAGE img = CONVERT_IMAGE_CONST(pSrcImg);
+	const auto img = CONVERT_IMAGE_CONST(pSrcImg);
 	int ret = 0;
 	if(m_width != img->m_width || m_height != img->m_height)
 		ret = newimage(nullptr, img->m_width, img->m_height);
@@ -285,37 +284,37 @@ IMAGE::copyimage(const PIMAGE pSrcImg)
 }
 
 void
-IMAGE::getimage(const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
+IMAGE::getimage(IMAGE* const pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
 	inittest(L"IMAGE::getimage");
-	const PIMAGE img = CONVERT_IMAGE_CONST(pSrcImg);
+
+	const auto img = CONVERT_IMAGE_CONST(pSrcImg);
 	int ret = newimage(nullptr, srcWidth, srcHeight);
+
 	if(ret == 0)
-	{
 		BitBlt(m_hDC, 0, 0, srcWidth, srcHeight, img->m_hDC, srcX, srcY, SRCCOPY);
-	}
 	CONVERT_IMAGE_END;
 }
 
 void
 IMAGE::getimage(int srcX, int srcY, int srcWidth, int srcHeight)
 {
-	PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
+	const auto img = CONVERT_IMAGE_CONST(nullptr);
 	getimage(img, srcX, srcY, srcWidth, srcHeight);
 	CONVERT_IMAGE_END;
 }
 
 void
-IMAGE::putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop) const
+IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop) const
 {
 	inittest(L"IMAGE::putimage");
-	PIMAGE img = CONVERT_IMAGE(pDstImg);
+	const auto img = CONVERT_IMAGE(pDstImg);
 	BitBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC, srcX, srcY, dwRop);
 	CONVERT_IMAGE_END;
 }
 
 void
-IMAGE::putimage(PIMAGE pDstImg, int dstX, int dstY, ::DWORD dwRop) const
+IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, ::DWORD dwRop) const
 {
 	putimage(pDstImg, dstX, dstY, m_width, m_height, 0, 0, dwRop);
 }
@@ -323,7 +322,7 @@ IMAGE::putimage(PIMAGE pDstImg, int dstX, int dstY, ::DWORD dwRop) const
 void
 IMAGE::putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop) const
 {
-	PIMAGE img = CONVERT_IMAGE(nullptr);
+	const auto img = CONVERT_IMAGE(nullptr);
 	putimage(img, dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
 	CONVERT_IMAGE_END;
 }
@@ -331,7 +330,7 @@ IMAGE::putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int s
 void
 IMAGE::putimage(int dstX, int dstY, ::DWORD dwRop) const
 {
-	PIMAGE img = CONVERT_IMAGE(nullptr);
+	const auto img = CONVERT_IMAGE(nullptr);
 	putimage(img, dstX, dstY, dwRop);
 	CONVERT_IMAGE_END;
 }
@@ -387,7 +386,7 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 	if(FAILED(hr))
 		return grIOerror;
 
-	PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
+	const auto img = CONVERT_IMAGE_CONST(nullptr);
 
 	pPicture->get_Width(&lWidth);
 	lWidthPixels  = MulDiv(lWidth,  GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
@@ -407,7 +406,7 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 
 // private function
 static int
-saveimagetofile(PIMAGE img, FILE * fp)
+saveimagetofile(IMAGE* img, FILE * fp)
 {
 	auto bmpfHead = ::BITMAPFILEHEADER();
 	auto bmpinfo = ::BITMAPINFOHEADER();
@@ -642,7 +641,7 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 		if(FAILED(hr))
 			return grIOerror;
 
-		PIMAGE img(CONVERT_IMAGE_CONST(nullptr));
+		IMAGE* img(CONVERT_IMAGE_CONST(nullptr));
 
 		pPicture->get_Width(&lWidth);
 		lWidthPixels = MulDiv(lWidth, GetDeviceCaps(img->m_hDC, LOGPIXELSX),
@@ -698,7 +697,7 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 		if(FAILED(hr))
 			return grIOerror;
 
-		PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
+		const auto img = CONVERT_IMAGE_CONST(nullptr);
 		pPicture->get_Width(&lWidth);
 		lWidthPixels = MulDiv(lWidth, GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
@@ -759,7 +758,7 @@ IMAGE::getimage(void * pMem, long size)
 		}
 
 
-		PIMAGE img = CONVERT_IMAGE_CONST(nullptr);
+		const auto img = CONVERT_IMAGE_CONST(nullptr);
 		pPicture->get_Width(&lWidth);
 		lWidthPixels = MulDiv(lWidth, GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
@@ -779,11 +778,11 @@ IMAGE::getimage(void * pMem, long size)
 }
 
 void
-IMAGE::putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
+IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop) const
 {
 	inittest(L"IMAGE::putimage");
-	const PIMAGE img = CONVERT_IMAGE(pDstImg);
+	IMAGE* const img = CONVERT_IMAGE(pDstImg);
 	if(img)
 	{
 		SetStretchBltMode(img->m_hDC, COLORONCOLOR);
@@ -796,7 +795,7 @@ IMAGE::putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 /* private function */
 static
 void
-fix_rect_1size(PIMAGE pdest, PIMAGE psrc,
+fix_rect_1size(IMAGE* pdest, IMAGE* psrc,
 	int * nXOriginDest,  // x-coord of destination upper-left corner
 	int * nYOriginDest,  // y-coord of destination upper-left corner
 	int * nXOriginSrc,   // x-coord of source upper-left corner
@@ -866,7 +865,7 @@ fix_rect_1size(PIMAGE pdest, PIMAGE psrc,
 
 int
 IMAGE::putimage_transparent(
-	PIMAGE imgdest,         // handle to dest
+	IMAGE* imgdest,         // handle to dest
 	int nXOriginDest,       // x-coord of destination upper-left corner
 	int nYOriginDest,       // y-coord of destination upper-left corner
 	color_t crTransparent, // color to make transparent
@@ -877,10 +876,10 @@ IMAGE::putimage_transparent(
 )
 {
 	inittest(L"IMAGE::putimage_transparent");
-	const PIMAGE img = CONVERT_IMAGE(imgdest);
+	IMAGE* const img = CONVERT_IMAGE(imgdest);
 	if(img)
 	{
-		PIMAGE imgsrc = this;
+		IMAGE* imgsrc = this;
 		int y, x;
 		::DWORD ddx, dsx;
 		::DWORD* pdp, *psp, cr;
@@ -908,7 +907,7 @@ IMAGE::putimage_transparent(
 
 int
 IMAGE::putimage_alphablend(
-	PIMAGE imgdest,         // handle to dest
+	IMAGE* imgdest,         // handle to dest
 	int nXOriginDest,       // x-coord of destination upper-left corner
 	int nYOriginDest,       // y-coord of destination upper-left corner
 	unsigned char alpha,    // alpha
@@ -919,10 +918,10 @@ IMAGE::putimage_alphablend(
 )
 {
 	inittest(L"IMAGE::putimage_alphablend");
-	const PIMAGE img = CONVERT_IMAGE(imgdest);
+	IMAGE* const img = CONVERT_IMAGE(imgdest);
 	if(img)
 	{
-		PIMAGE imgsrc = this;
+		IMAGE* imgsrc = this;
 		int y, x;
 		::DWORD ddx, dsx;
 		::DWORD* pdp, *psp;
@@ -962,7 +961,7 @@ IMAGE::putimage_alphablend(
 
 int
 IMAGE::putimage_alphatransparent(
-	PIMAGE imgdest,         // handle to dest
+	IMAGE* imgdest,         // handle to dest
 	int nXOriginDest,       // x-coord of destination upper-left corner
 	int nYOriginDest,       // y-coord of destination upper-left corner
 	color_t crTransparent, // color to make transparent
@@ -974,10 +973,10 @@ IMAGE::putimage_alphatransparent(
 )
 {
 	inittest(L"IMAGE::putimage_alphablend");
-	const PIMAGE img = CONVERT_IMAGE(imgdest);
+	IMAGE* const img = CONVERT_IMAGE(imgdest);
 	if(img)
 	{
-		PIMAGE imgsrc = this;
+		IMAGE* imgsrc = this;
 		int y, x;
 		::DWORD ddx, dsx;
 		::DWORD* pdp, *psp, cr;
@@ -1021,7 +1020,7 @@ IMAGE::putimage_alphatransparent(
 
 int
 IMAGE::putimage_withalpha(
-	PIMAGE imgdest,         // handle to dest
+	IMAGE* imgdest,         // handle to dest
 	int nXOriginDest,       // x-coord of destination upper-left corner
 	int nYOriginDest,       // y-coord of destination upper-left corner
 	int nXOriginSrc,        // x-coord of source upper-left corner
@@ -1031,10 +1030,10 @@ IMAGE::putimage_withalpha(
 )
 {
 	inittest(L"IMAGE::putimage_alphablend");
-	const PIMAGE img = CONVERT_IMAGE(imgdest);
+	IMAGE* const img = CONVERT_IMAGE(imgdest);
 	if(img)
 	{
-		PIMAGE imgsrc = this;
+		IMAGE* imgsrc = this;
 		int y, x;
 		::DWORD ddx, dsx;
 		::DWORD* pdp, *psp;
@@ -1078,10 +1077,10 @@ IMAGE::putimage_withalpha(
 
 int
 IMAGE::putimage_alphafilter(
-	PIMAGE imgdest,         // handle to dest
+	IMAGE* imgdest,         // handle to dest
 	int nXOriginDest,       // x-coord of destination upper-left corner
 	int nYOriginDest,       // y-coord of destination upper-left corner
-	PIMAGE imgalpha,        // alpha
+	IMAGE* imgalpha,        // alpha
 	int nXOriginSrc,        // x-coord of source upper-left corner
 	int nYOriginSrc,        // y-coord of source upper-left corner
 	int nWidthSrc,          // width of source rectangle
@@ -1089,10 +1088,10 @@ IMAGE::putimage_alphafilter(
 )
 {
 	inittest(L"IMAGE::putimage_alphablend");
-	const PIMAGE img = CONVERT_IMAGE(imgdest);
+	IMAGE* const img = CONVERT_IMAGE(imgdest);
 	if(img)
 	{
-		PIMAGE imgsrc = this;
+		IMAGE* imgsrc = this;
 		int y, x;
 		::DWORD ddx, dsx;
 		::DWORD* pdp, *psp, *pap;
@@ -1140,7 +1139,7 @@ IMAGE::putimage_alphafilter(
 /* private function */
 static
 void
-fix_rect_0size(PIMAGE pdest,
+fix_rect_0size(IMAGE* pdest,
 			   int * nXOriginDest,  // x-coord of destination upper-left corner
 			   int * nYOriginDest,  // y-coord of destination upper-left corner
 			   int * nWidthDest,     // width of destination rectangle
@@ -1179,7 +1178,7 @@ IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 	int centerintensity;
 	int intensity2, intensity3, intensity4;
 	int intensity2f, intensity3f, intensity4f;
-	PIMAGE imgdest = this;
+	IMAGE* imgdest = this;
 
 	x2 = nXOriginDest + nWidthDest - 1;
 	y2 = nYOriginDest + nHeightDest - 1;
@@ -1313,7 +1312,7 @@ IMAGE::imagefilter_blurring_8(
 	int intensity2, intensity3, intensity4;
 	int intensity2f, intensity3f, intensity4f;
 
-	PIMAGE imgdest = this;
+	IMAGE* imgdest = this;
 	x2 = nXOriginDest + nWidthDest - 1;
 	y2 = nYOriginDest + nHeightDest - 1;
 	pdp = imgdest->m_pBuffer + nYOriginDest * imgdest->m_width + nXOriginDest;
@@ -1471,7 +1470,7 @@ IMAGE::imagefilter_blurring(
 )
 {
 	inittest(L"IMAGE::imagefilter_blurring");
-	PIMAGE imgdest = this;
+	IMAGE* imgdest = this;
 
 	fix_rect_0size(imgdest, &nXOriginDest, &nYOriginDest, &nWidthDest, &nHeightDest);
 	if(nWidthDest <= 0 || nHeightDest <= 0)
@@ -1511,7 +1510,7 @@ IMAGE::imagefilter_blurring(
 
 int
 IMAGE::putimage_rotate(
-	PIMAGE imgtexture,
+	IMAGE* imgtexture,
 	int nXOriginDest,
 	int nYOriginDest,
 	float centerx,
@@ -1527,7 +1526,7 @@ IMAGE::putimage_rotate(
 
 int
 IMAGE::putimage_rotatezoom(
-	PIMAGE imgtexture,
+	IMAGE* imgtexture,
 	int nXOriginDest,
 	int nYOriginDest,
 	float centerx,
@@ -1602,7 +1601,7 @@ float2int(float f)
 
 /* private funcion */
 static void
-draw_flat_scanline(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_src, const vector2d * svt, int x1, int x2)
+draw_flat_scanline(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
@@ -1643,7 +1642,7 @@ draw_flat_scanline(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_src, const vec
 /* private funcion */
 static
 void
-draw_flat_scanline_transparent(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_src, const vector2d * svt, int x1, int x2)
+draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = (int)(vt->p[0].x + .5), e = (int)(vt->p[1].x + .5), y = (int)(vt->p[0].y + .5), w = e - s;
@@ -1689,7 +1688,7 @@ draw_flat_scanline_transparent(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_sr
 /* private funcion */
 static
 void
-draw_flat_scanline_alpha(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_src, const vector2d * svt, int x1, int x2, int alpha)
+draw_flat_scanline_alpha(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
@@ -1735,7 +1734,7 @@ draw_flat_scanline_alpha(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_src, con
 /* private funcion */
 static
 void
-draw_flat_scanline_alphatrans(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_src, const vector2d * svt, int x1, int x2, int alpha)
+draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = (int)(vt->p[0].x + .5), e = (int)(vt->p[1].x + .5), y = (int)(vt->p[0].y + .5), w = e - s;
@@ -1805,7 +1804,7 @@ color_t bilinear_interpolation(color_t LT, color_t RT, color_t LB, color_t RB,
 /* private funcion */
 static
 void
-draw_flat_scanline_s(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_src, const vector2d * svt, int x1, int x2)
+draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
@@ -1863,7 +1862,7 @@ draw_flat_scanline_s(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_src, const v
 /* private funcion */
 static
 void
-draw_flat_scanline_transparent_s(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_src, const vector2d * svt, int x1, int x2)
+draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
@@ -1924,7 +1923,7 @@ draw_flat_scanline_transparent_s(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_
 /* private funcion */
 static
 void
-draw_flat_scanline_alpha_s(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_src, const vector2d * svt, int x1, int x2, int alpha)
+draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
@@ -1989,7 +1988,7 @@ draw_flat_scanline_alpha_s(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_src, c
 /* private funcion */
 static
 void
-draw_flat_scanline_alphatrans_s(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_src, const vector2d * svt, int x1, int x2, int alpha)
+draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
@@ -2055,7 +2054,7 @@ draw_flat_scanline_alphatrans_s(PIMAGE dc_dest, const vector2d * vt, PIMAGE dc_s
 /* private funcion */
 static
 void
-draw_flat_trangle_alpha(PIMAGE dc_dest, const triangle2d * dt, PIMAGE dc_src, const triangle2d * tt, int x1, int y1, int x2, int y2, int transparent, int alpha)
+draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src, const triangle2d * tt, int x1, int y1, int x2, int y2, int transparent, int alpha)
 {
 	using std::swap;
 
@@ -2303,7 +2302,7 @@ draw_flat_trangle_alpha(PIMAGE dc_dest, const triangle2d * dt, PIMAGE dc_src, co
 /* private funcion */
 static
 void
-draw_flat_trangle_alpha_s(PIMAGE dc_dest, const triangle2d * dt, PIMAGE dc_src,
+draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 						  const triangle2d * tt, int x1, int y1, int x2, int y2, int transparent,
 						  int alpha)
 {
@@ -2584,8 +2583,8 @@ draw_flat_trangle_alpha_s(PIMAGE dc_dest, const triangle2d * dt, PIMAGE dc_src,
 
 int
 putimage_trangle(
-	PIMAGE imgdest,
-	PIMAGE imgtexture,
+	IMAGE* imgdest,
+	IMAGE* imgtexture,
 	const triangle2d * dt,// dest trangle, original
 	const triangle2d * tt,// textture trangle uv 0.0 - 1.0
 	int btransparent,
@@ -2593,8 +2592,8 @@ putimage_trangle(
 	int smooth
 )
 {
-	PIMAGE dc_dest = imgdest;
-	PIMAGE dc_src  = imgtexture;
+	IMAGE* dc_dest = imgdest;
+	IMAGE* dc_src  = imgtexture;
 	if(dc_dest)
 	{
 		triangle2d _dt = *dt;
@@ -2635,8 +2634,8 @@ putimage_trangle(
 
 int
 putimage_rotate(
-	PIMAGE imgdest,
-	PIMAGE imgtexture,
+	IMAGE* imgdest,
+	IMAGE* imgtexture,
 	int nXOriginDest,
 	int nYOriginDest,
 	float centerx,
@@ -2705,8 +2704,8 @@ putimage_rotate(
 
 int
 putimage_rotatezoom(
-	PIMAGE imgdest,
-	PIMAGE imgtexture,
+	IMAGE* imgdest,
+	IMAGE* imgtexture,
 	int nXOriginDest,
 	int nYOriginDest,
 	float centerx,
@@ -2718,8 +2717,8 @@ putimage_rotatezoom(
 	int smooth
 )
 {
-	PIMAGE dc_dest  = CONVERT_IMAGE(imgdest);
-	PIMAGE dc_src  = imgtexture;
+	IMAGE* dc_dest  = CONVERT_IMAGE(imgdest);
+	IMAGE* dc_src  = imgtexture;
 	if(dc_dest)
 	{
 		triangle2d _tt[2];
@@ -2776,9 +2775,9 @@ putimage_rotatezoom(
 
 
 int
-getwidth(PIMAGE pimg)
+getwidth(IMAGE* pimg)
 {
-	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
+	const auto img = CONVERT_IMAGE_CONST(pimg);
 	CONVERT_IMAGE_END;
 	if(img)
 	{
@@ -2788,9 +2787,9 @@ getwidth(PIMAGE pimg)
 }
 
 int
-getheight(PIMAGE pimg)
+getheight(IMAGE* pimg)
 {
-	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
+	const auto img = CONVERT_IMAGE_CONST(pimg);
 	CONVERT_IMAGE_END;
 	if(img)
 	{
@@ -2800,9 +2799,9 @@ getheight(PIMAGE pimg)
 }
 
 int
-getx(PIMAGE pimg)
+getx(IMAGE* pimg)
 {
-	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
+	const auto img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
 		POINT pt;
@@ -2815,9 +2814,9 @@ getx(PIMAGE pimg)
 }
 
 int
-gety(PIMAGE pimg)
+gety(IMAGE* pimg)
 {
-	PIMAGE img = CONVERT_IMAGE_CONST(pimg);
+	const auto img = CONVERT_IMAGE_CONST(pimg);
 	if(img)
 	{
 		POINT pt;
@@ -2829,13 +2828,13 @@ gety(PIMAGE pimg)
 	return -1;
 }
 
-PIMAGE
+IMAGE*
 newimage()
 {
 	return new IMAGE(1, 1);
 }
 
-PIMAGE
+IMAGE*
 newimage(int width, int height)
 {
 	if(width  < 1) width  = 1;
@@ -2844,100 +2843,101 @@ newimage(int width, int height)
 }
 
 void
-delimage(PIMAGE pImg)
+delimage(IMAGE* pImg)
 {
 	delete pImg;
 }
 
-void * getbuffer(PIMAGE pImg)
+void * getbuffer(IMAGE* pImg)
 {
-	PIMAGE img = CONVERT_IMAGE_CONST(pImg);
+	const auto img = CONVERT_IMAGE_CONST(pImg);
 	CONVERT_IMAGE_END;
+
 	return img->getbuffer();
 }
 
 int
-resize(PIMAGE pDstImg, int width, int height)
+resize(IMAGE* pDstImg, int width, int height)
 {
 	return pDstImg->resize(width, height);
 }
 
 void
-getimage(PIMAGE pDstImg, int srcX, int srcY, int srcWidth, int srcHeight)
+getimage(IMAGE* pDstImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
 	pDstImg->getimage(srcX, srcY, srcWidth, srcHeight);
 }
 
 void
-getimage(PIMAGE pDstImg, const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
+getimage(IMAGE* pDstImg, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
 	pDstImg->getimage(pSrcImg, srcX, srcY, srcWidth, srcHeight);
 }
 
 void
-putimage(int dstX, int dstY, const PIMAGE pSrcImg, ::DWORD dwRop)
+putimage(int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
 {
 	pSrcImg->putimage(dstX, dstY, dwRop);
 }
 
 void
-putimage(int dstX, int dstY, int dstWidth, int dstHeight, const PIMAGE pSrcImg, int srcX, int srcY, ::DWORD dwRop)
+putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg, int srcX, int srcY, ::DWORD dwRop)
 {
 	pSrcImg->putimage(dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
 }
 
 void
-putimage(PIMAGE pDstImg, int dstX, int dstY, const PIMAGE pSrcImg, ::DWORD dwRop)
+putimage(IMAGE* pDstImg, int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
 {
 	pSrcImg->putimage(pDstImg, dstX, dstY, dwRop);
 }
 
 void
-putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, const PIMAGE pSrcImg, int srcX, int srcY, ::DWORD dwRop)
+putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg, int srcX, int srcY, ::DWORD dwRop)
 {
 	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
 }
 
 int
-getimage(PIMAGE pDstImg, const char* pImgFile, int zoomWidth, int zoomHeight)
+getimage(IMAGE* pDstImg, const char* pImgFile, int zoomWidth, int zoomHeight)
 {
 	return pDstImg->getimage(pImgFile, zoomWidth, zoomHeight);
 }
 
 int
-getimage(PIMAGE pDstImg, const wchar_t* pImgFile, int zoomWidth, int zoomHeight)
+getimage(IMAGE* pDstImg, const wchar_t* pImgFile, int zoomWidth, int zoomHeight)
 {
 	return pDstImg->getimage(pImgFile, zoomWidth, zoomHeight);
 }
 
 int
-getimage(PIMAGE pDstImg, const char* pResType, const char* pResName, int zoomWidth, int zoomHeight)
+getimage(IMAGE* pDstImg, const char* pResType, const char* pResName, int zoomWidth, int zoomHeight)
 {
 	return pDstImg->getimage(pResType, pResName, zoomWidth, zoomHeight);
 }
 
 int
-getimage(PIMAGE pDstImg, const wchar_t* pResType, const wchar_t* pResName, int zoomWidth, int zoomHeight)
+getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName, int zoomWidth, int zoomHeight)
 {
 	return pDstImg->getimage(pResType, pResName, zoomWidth, zoomHeight);
 }
 
 void
-putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
+putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* const pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
 {
 	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, dwRop);
 }
 
 void
-putimage(int dstX, int dstY, int dstWidth, int dstHeight, const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
+putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* const pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
 {
 	pSrcImg->putimage(nullptr, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, dwRop);
 }
 
 int
 putimage_transparent(
-	PIMAGE imgdest,         // handle to dest
-	PIMAGE imgsrc,          // handle to source
+	IMAGE* imgdest,         // handle to dest
+	IMAGE* imgsrc,          // handle to source
 	int nXOriginDest,       // x-coord of destination upper-left corner
 	int nYOriginDest,       // y-coord of destination upper-left corner
 	color_t crTransparent, // color to make transparent
@@ -2952,8 +2952,8 @@ putimage_transparent(
 
 int
 putimage_alphablend(
-	PIMAGE imgdest,         // handle to dest
-	PIMAGE imgsrc,          // handle to source
+	IMAGE* imgdest,         // handle to dest
+	IMAGE* imgsrc,          // handle to source
 	int nXOriginDest,       // x-coord of destination upper-left corner
 	int nYOriginDest,       // y-coord of destination upper-left corner
 	unsigned char alpha,    // alpha
@@ -2968,8 +2968,8 @@ putimage_alphablend(
 
 int
 putimage_alphatransparent(
-	PIMAGE imgdest,         // handle to dest
-	PIMAGE imgsrc,          // handle to source
+	IMAGE* imgdest,         // handle to dest
+	IMAGE* imgsrc,          // handle to source
 	int nXOriginDest,       // x-coord of destination upper-left corner
 	int nYOriginDest,       // y-coord of destination upper-left corner
 	color_t crTransparent, // color to make transparent
@@ -2985,8 +2985,8 @@ putimage_alphatransparent(
 
 int
 putimage_withalpha(
-	PIMAGE imgdest,         // handle to dest
-	PIMAGE imgsrc,          // handle to source
+	IMAGE* imgdest,         // handle to dest
+	IMAGE* imgsrc,          // handle to source
 	int nXOriginDest,       // x-coord of destination upper-left corner
 	int nYOriginDest,       // y-coord of destination upper-left corner
 	int nXOriginSrc,        // x-coord of source upper-left corner
@@ -3000,7 +3000,7 @@ putimage_withalpha(
 
 int
 imagefilter_blurring(
-	PIMAGE imgdest,         // handle to dest
+	IMAGE* imgdest,         // handle to dest
 	int intensity,
 	int alpha,
 	int nXOriginDest,
@@ -3009,7 +3009,7 @@ imagefilter_blurring(
 	int nHeightDest
 )
 {
-	const PIMAGE img = CONVERT_IMAGE(imgdest);
+	IMAGE* const img = CONVERT_IMAGE(imgdest);
 	int ret = 0;
 	if(img)
 	{
@@ -3020,9 +3020,9 @@ imagefilter_blurring(
 }
 
 int
-saveimage(PIMAGE pimg, const char*  filename)
+saveimage(IMAGE* pimg, const char*  filename)
 {
-	const PIMAGE img = CONVERT_IMAGE(pimg);
+	IMAGE* const img = CONVERT_IMAGE(pimg);
 	int ret = 0;
 	if(img)
 	{
@@ -3033,9 +3033,9 @@ saveimage(PIMAGE pimg, const char*  filename)
 }
 
 int
-saveimage(PIMAGE pimg, const wchar_t* filename)
+saveimage(IMAGE* pimg, const wchar_t* filename)
 {
-	const PIMAGE img = CONVERT_IMAGE(pimg);
+	IMAGE* const img = CONVERT_IMAGE(pimg);
 	int ret = 0;
 	if(img)
 	{
@@ -3047,7 +3047,7 @@ saveimage(PIMAGE pimg, const wchar_t* filename)
 
 
 int
-getimage_pngfile(PIMAGE pimg, const char*  filename)
+getimage_pngfile(IMAGE* pimg, const char*  filename)
 {
 	FILE* fp = fopen(filename, "rb");
 
@@ -3061,7 +3061,7 @@ getimage_pngfile(PIMAGE pimg, const char*  filename)
 }
 
 int
-getimage_pngfile(PIMAGE pimg, const wchar_t* filename)
+getimage_pngfile(IMAGE* pimg, const wchar_t* filename)
 {
 	FILE* fp = _wfopen(filename, L"rb");
 	if(!fp)
@@ -3074,7 +3074,7 @@ getimage_pngfile(PIMAGE pimg, const wchar_t* filename)
 }
 
 int
-savepng(PIMAGE pimg, const char*  filename, int bAlpha)
+savepng(IMAGE* pimg, const char*  filename, int bAlpha)
 {
 	FILE* fp = fopen(filename, "wb");
 
@@ -3088,7 +3088,7 @@ savepng(PIMAGE pimg, const char*  filename, int bAlpha)
 }
 
 int
-savepng(PIMAGE pimg, const wchar_t* filename, int bAlpha)
+savepng(IMAGE* pimg, const wchar_t* filename, int bAlpha)
 {
 	FILE* fp = _wfopen(filename, L"wb");
 
@@ -3102,9 +3102,9 @@ savepng(PIMAGE pimg, const wchar_t* filename, int bAlpha)
 }
 
 void
-ege_enable_aa(bool enable, PIMAGE pimg)
+ege_enable_aa(bool enable, IMAGE* pimg)
 {
-	PIMAGE img = CONVERT_IMAGE(pimg);
+	const auto img = CONVERT_IMAGE(pimg);
 	img->m_aa = enable;
 	CONVERT_IMAGE_END;
 }

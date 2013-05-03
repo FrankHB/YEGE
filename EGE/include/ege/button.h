@@ -143,7 +143,7 @@ public:
 		redraw();
 	}
 	// 重绘函数，尽量请画到pimg上，以便能控制绘画目标
-	virtual void onDraw(PIMAGE pimg) const
+	virtual void onDraw(IMAGE* pimg) const
 	{
 	}
 	// 尺寸变化时调用，用于重画过滤缓冲区内容

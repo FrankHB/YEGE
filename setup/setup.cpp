@@ -97,7 +97,7 @@ private:
 	double m_cr, m_tt;
 	double m_zoom;
 	int m_w, m_h;
-	PIMAGE pmira;
+	IMAGE* pmira;
 };
 
 

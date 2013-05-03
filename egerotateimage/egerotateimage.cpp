@@ -8,7 +8,7 @@ int main()
 {
 	initgraph(640, 480);
 	setrendermode(RENDER_MANUAL);
-	PIMAGE img = newimage();
+	IMAGE* img = newimage();
 	getimage(img, "bg.jpg");
 	double r = 0;
 	fps f;

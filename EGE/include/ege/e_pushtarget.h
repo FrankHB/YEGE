@@ -11,7 +11,7 @@ public:
 	{
 		m_target = gettarget();
 	}
-	PushTarget(PIMAGE target)
+	PushTarget(IMAGE* target)
 	{
 		m_target = gettarget();
 		settarget(target);
@@ -21,7 +21,7 @@ public:
 		settarget(m_target);
 	}
 private:
-	PIMAGE m_target;
+	IMAGE* m_target;
 };
 
 }

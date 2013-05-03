@@ -21,7 +21,7 @@ public:
 		enable(false);
 	}
 
-	void onDraw(PIMAGE pimg) const
+	void onDraw(IMAGE* pimg) const
 	{
 		char str[16] = "fps        ", *pstr = str;
 		double fps = getfps() + 0.005;

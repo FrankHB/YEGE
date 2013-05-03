@@ -377,9 +377,9 @@ void egeControlBase::update()
 	onUpdate();
 }
 
-void egeControlBase::draw(PIMAGE pimg)
+void egeControlBase::draw(IMAGE* pimg)
 {
-	PIMAGE pmain = m_mainbuf;
+	IMAGE* pmain = m_mainbuf;
 	if(!m_parent || m_bDirectDraw)
 		pmain = pimg;
 	{

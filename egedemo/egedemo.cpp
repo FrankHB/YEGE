@@ -289,7 +289,7 @@ public:
 	}
 private:
 	SceneBase* m_parent;
-	PIMAGE img;
+	IMAGE* img;
 };
 
 class SceneForLoop8 : public SceneBase

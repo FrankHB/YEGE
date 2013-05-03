@@ -7,181 +7,409 @@ namespace ege
 {
 
 class IMAGE;
-typedef IMAGE* PIMAGE;
 
 
-// 绘图环境设置
-PIMAGE  gettarget();
-int     settarget(PIMAGE pbuf); // 用 nullptr 设置窗口为绘图目标
+//绘图环境设置
+IMAGE* gettarget();
+int settarget(IMAGE* pbuf); //用 nullptr 设置窗口为绘图目标
 
-void EGEAPI cleardevice(PIMAGE pimg = nullptr);                   // 清屏
+EGEAPI void
+cleardevice(IMAGE* pimg = nullptr);                   //清屏
 
-void EGEAPI getviewport(int* pleft, int* ptop, int* pright, int* pbottom, int* pclip = nullptr, PIMAGE pimg = nullptr); // 获取视图信息
-void EGEAPI setviewport(int left, int top, int right, int bottom, int clip = 1, PIMAGE pimg = nullptr);           // 设置视图
-void EGEAPI clearviewport(PIMAGE pimg = nullptr);                                                                 // 清空视图
+EGEAPI void
+getviewport(int* pleft, int* ptop, int* pright, int* pbottom,
+	int* pclip = nullptr, IMAGE* pimg = nullptr); //获取视图信息
 
-// 绘图属性
-void EGEAPI getlinestyle(int* plinestyle, unsigned short* pupattern = nullptr, int* pthickness = nullptr, PIMAGE pimg = nullptr); // 获取当前线形
-void EGEAPI setlinestyle(int linestyle, unsigned short upattern = 0, int thickness = 1, PIMAGE pimg = nullptr);          // 设置当前线形
-void EGEAPI setlinewidth(float width, PIMAGE pimg = nullptr);          // 设置当前线宽
-void EGEAPI setfillstyle(int pattern, color_t color, PIMAGE pimg = nullptr);  // 设置填充类型
-void EGEAPI setwritemode(int mode, PIMAGE pimg = nullptr);         // 设置绘图位操作模式
+EGEAPI void
+setviewport(int left, int top, int right, int bottom, int clip = 1,
+	IMAGE* pimg = nullptr);           //设置视图
 
-// 色彩函数
-color_t EGEAPI getcolor(PIMAGE pimg = nullptr);                    // 获取当前绘图前景色
-color_t EGEAPI getfillcolor(PIMAGE pimg = nullptr);                // 获取当前绘图填充色
-color_t EGEAPI getbkcolor(PIMAGE pimg = nullptr);                  // 获取当前绘图背景色
-void EGEAPI setcolor(color_t color, PIMAGE pimg = nullptr);        // 设置当前绘图前景色
-void EGEAPI setfillcolor(color_t color, PIMAGE pimg = nullptr);    // 设置当前绘图填充色
-void EGEAPI setbkcolor(color_t color, PIMAGE pimg = nullptr);      // 设置当前绘图背景色（设置并做背景色像素替换）
-void EGEAPI setbkcolor_f(color_t color, PIMAGE pimg = nullptr);    // 快速设置当前绘图背景色（只设置不绘画）
-void EGEAPI setfontbkcolor(color_t color, PIMAGE pimg = nullptr);  // 设置当前文字背景色
-void EGEAPI setbkmode(int iBkMode, PIMAGE pimg = nullptr);         // 设置背景混合模式(0=OPAQUE, 1=TRANSPARENT)
+EGEAPI void
+clearviewport(IMAGE* pimg = nullptr); //清空视图
 
-// 基本绘图函数
 
-color_t     EGEAPI getpixel(int x, int y, PIMAGE pimg = nullptr);                  // 获取点的颜色
-void        EGEAPI putpixel(int x, int y, color_t color, PIMAGE pimg = nullptr);   // 画点
-color_t     EGEAPI getpixel_f(int x, int y, PIMAGE pimg = nullptr);                // 获取点的颜色
-void        EGEAPI putpixel_f(int x, int y, color_t color, PIMAGE pimg = nullptr); // 画点
-void        EGEAPI putpixels(int nPoint, int* pPoints, PIMAGE pimg = nullptr);     // 批量画点
-void        EGEAPI putpixels_f(int nPoint, int* pPoints, PIMAGE pimg = nullptr);   // 批量画点
+//绘图属性
+EGEAPI void
+getlinestyle(int* plinestyle, unsigned short* pupattern = nullptr,
+	int* pthickness = nullptr, IMAGE* pimg = nullptr); //获取当前线形
 
-void EGEAPI moveto(int x, int y, PIMAGE pimg = nullptr);                      // 移动当前点(绝对坐标)
-void EGEAPI moverel(int dx, int dy, PIMAGE pimg = nullptr);                   // 移动当前点(相对坐标)
+EGEAPI void
+setlinestyle(int linestyle, unsigned short upattern = 0, int thickness = 1,
+	IMAGE* pimg = nullptr); //设置当前线形
 
-void EGEAPI line(int x1, int y1, int x2, int y2, PIMAGE pimg = nullptr);      // 画线
-void EGEAPI linerel(int dx, int dy, PIMAGE pimg = nullptr);                   // 画线(至相对坐标)
-void EGEAPI lineto(int x, int y, PIMAGE pimg = nullptr);                      // 画线(至绝对坐标)
-void EGEAPI line_f(float x1, float y1, float x2, float y2, PIMAGE pimg = nullptr);  // 画线
-void EGEAPI linerel_f(float dx, float dy, PIMAGE pimg = nullptr);                   // 画线(至相对坐标)
-void EGEAPI lineto_f(float x, float y, PIMAGE pimg = nullptr);                      // 画线(至绝对坐标)
+EGEAPI void
+setlinewidth(float width, IMAGE* pimg = nullptr); //设置当前线宽
 
-void EGEAPI rectangle(int left, int top, int right, int bottom, PIMAGE pimg = nullptr);   // 画矩形
+EGEAPI void
+setfillstyle(int pattern, color_t color, IMAGE* pimg = nullptr); //设置填充类型
 
-void EGEAPI arc(int x, int y, int stangle, int endangle, int radius, PIMAGE pimg = nullptr);                  // 画圆弧
-void EGEAPI circle(int x, int y, int radius, PIMAGE pimg = nullptr);                                          // 画圆
-void EGEAPI pieslice(int x, int y, int stangle, int endangle, int radius, PIMAGE pimg = nullptr);             // 画填充圆扇形
-void EGEAPI ellipse(int x, int y, int stangle, int endangle, int xradius, int yradius, PIMAGE pimg = nullptr);// 画椭圆弧线
-void EGEAPI fillellipse(int x, int y, int xradius, int yradius, PIMAGE pimg = nullptr);                       // 画填充椭圆
-void EGEAPI sector(int x, int y, int stangle, int endangle, int xradius, int yradius, PIMAGE pimg = nullptr); // 画填充椭圆扇形
+EGEAPI void
+setwritemode(int mode, IMAGE* pimg = nullptr); //设置绘图位操作模式
 
-void EGEAPI arcf(float x, float y, float stangle, float endangle, float radius, PIMAGE pimg = nullptr);                    // 画圆弧
-void EGEAPI circlef(float x, float y, float radius, PIMAGE pimg = nullptr);                                                // 画圆
-void EGEAPI pieslicef(float x, float y, float stangle, float endangle, float radius, PIMAGE pimg = nullptr);               // 画填充圆扇形
-void EGEAPI ellipsef(float x, float y, float stangle, float endangle, float xradius, float yradius, PIMAGE pimg = nullptr);// 画椭圆弧线
-void EGEAPI fillellipsef(float x, float y, float xradius, float yradius, PIMAGE pimg = nullptr);                           // 画填充椭圆
-void EGEAPI sectorf(float x, float y, float stangle, float endangle, float xradius, float yradius, PIMAGE pimg = nullptr); // 画填充椭圆扇形
+//色彩函数
+EGEAPI color_t
+getcolor(IMAGE* pimg = nullptr); //获取当前绘图前景色
 
-void EGEAPI bar(int left, int top, int right, int bottom, PIMAGE pimg = nullptr);                             // 画无边框填充矩形
-void EGEAPI bar3d(int left, int top, int right, int bottom, int depth, int topflag, PIMAGE pimg = nullptr);   // 画有边框三维填充矩形
+EGEAPI color_t
+getfillcolor(IMAGE* pimg = nullptr); //获取当前绘图填充色
 
-void EGEAPI drawpoly(int numpoints, const int* polypoints, PIMAGE pimg = nullptr);     // 画多边形
-void EGEAPI drawlines(int numlines, const int* polypoints, PIMAGE pimg = nullptr);     // 画多条不连续线（扩展函数）
-void EGEAPI drawbezier(int numpoints, const int* polypoints, PIMAGE pimg = nullptr);   // 画bezier曲线（扩展函数）
-void EGEAPI fillpoly(int numpoints, const int* polypoints, PIMAGE pimg = nullptr);     // 画填充的多边形
-void EGEAPI fillpoly_gradient(int numpoints, const ege_colpoint* polypoints, PIMAGE pimg = nullptr); // 画渐变填充的多边形
-void EGEAPI floodfill(int x, int y, int border, PIMAGE pimg = nullptr);                // 按边界颜色填充区域
-void EGEAPI floodfillsurface(int x, int y, color_t areacolor, PIMAGE pimg = nullptr);  // 按起始点颜色填充区域
+EGEAPI color_t
+getbkcolor(IMAGE* pimg = nullptr); //获取当前绘图背景色
 
-// 高级绘图函数（带AA）
-// ege new_api
-void EGEAPI ege_enable_aa(bool enable, PIMAGE pimg = nullptr);
+EGEAPI void
+setcolor(color_t color, IMAGE* pimg = nullptr); //设置当前绘图前景色
 
-void EGEAPI ege_line(float x1, float y1, float x2, float y2, PIMAGE pimg = nullptr);
-void EGEAPI ege_drawpoly(int numpoints, ege_point* polypoints, PIMAGE pimg = nullptr);
-void EGEAPI ege_drawcurve(int numpoints, ege_point* polypoints, PIMAGE pimg = nullptr);
-void EGEAPI ege_rectangle(float x, float y, float w, float h, PIMAGE pimg = nullptr);
-void EGEAPI ege_ellipse(float x, float y, float w, float h, PIMAGE pimg = nullptr);
-void EGEAPI ege_pie(float x, float y, float w, float h, float stangle, float sweepAngle, PIMAGE pimg = nullptr);
+EGEAPI void
+setfillcolor(color_t color, IMAGE* pimg = nullptr); //设置当前绘图填充色
 
-void EGEAPI ege_arc(float x, float y, float w, float h, float stangle, float sweepAngle, PIMAGE pimg = nullptr);
-void EGEAPI ege_bezier(int numpoints, ege_point* polypoints, PIMAGE pimg = nullptr);
+//设置当前绘图背景色（设置并做背景色像素替换）
+EGEAPI void
+setbkcolor(color_t color, IMAGE* pimg = nullptr);
 
-void EGEAPI ege_fillpoly(int numpoints, ege_point* polypoints, PIMAGE pimg = nullptr);
-void EGEAPI ege_fillrect(float x, float y, float w, float h, PIMAGE pimg = nullptr);
-void EGEAPI ege_fillellipse(float x, float y, float w, float h, PIMAGE pimg = nullptr);
-void EGEAPI ege_fillpie(float x, float y, float w, float h, float stangle, float sweepAngle, PIMAGE pimg = nullptr);
+//快速设置当前绘图背景色（只设置不绘画）
+EGEAPI void
+setbkcolor_f(color_t color, IMAGE* pimg = nullptr);
 
-void EGEAPI ege_setpattern_none(PIMAGE pimg = nullptr);
-void EGEAPI ege_setpattern_lineargradient(float x1, float y1, color_t c1, float x2, float y2, color_t c2, PIMAGE pimg = nullptr);
-void EGEAPI ege_setpattern_pathgradient(ege_point center, color_t centercolor,
-										int count, ege_point* points, int colcount, color_t* pointscolor, PIMAGE pimg = nullptr);
-void EGEAPI ege_setpattern_ellipsegradient(ege_point center, color_t centercolor,
-		float x, float y, float w, float h, color_t color, PIMAGE pimg = nullptr);
-void EGEAPI ege_setpattern_texture(PIMAGE srcimg, float x, float y, float w, float h, PIMAGE pimg = nullptr);
+//设置当前文字背景色
+EGEAPI void
+setfontbkcolor(color_t color, IMAGE* pimg = nullptr);
 
-void EGEAPI ege_setalpha(int alpha, PIMAGE pimg = nullptr);
-void EGEAPI ege_gentexture(bool gen, PIMAGE pimg = nullptr);
-void EGEAPI ege_puttexture(PIMAGE srcimg, float x, float y, float w, float h, PIMAGE pimg = nullptr);
-void EGEAPI ege_puttexture(PIMAGE srcimg, ege_rect dest, PIMAGE pimg = nullptr);
-void EGEAPI ege_puttexture(PIMAGE srcimg, ege_rect dest, ege_rect src, PIMAGE pimg = nullptr);
+//设置背景混合模式(0=OPAQUE, 1=TRANSPARENT)
+EGEAPI void
+setbkmode(int iBkMode, IMAGE* pimg = nullptr);
+
+
+//基本绘图函数
+
+EGEAPI color_t
+getpixel(int x, int y, IMAGE* pimg = nullptr); //获取点的颜色
+
+EGEAPI void
+putpixel(int x, int y, color_t color, IMAGE* pimg = nullptr); //画点
+
+EGEAPI color_t
+getpixel_f(int x, int y, IMAGE* pimg = nullptr); //获取点的颜色
+
+EGEAPI void
+putpixel_f(int x, int y, color_t color, IMAGE* pimg = nullptr); //画点
+
+EGEAPI void
+putpixels(int nPoint, int* pPoints, IMAGE* pimg = nullptr); //批量画点
+
+EGEAPI void
+putpixels_f(int nPoint, int* pPoints, IMAGE* pimg = nullptr); //批量画点
+
+
+EGEAPI void
+moveto(int x, int y, IMAGE* pimg = nullptr); //移动当前点(绝对坐标)
+
+EGEAPI void
+moverel(int dx, int dy, IMAGE* pimg = nullptr); //移动当前点(相对坐标)
+
+
+EGEAPI void
+line(int x1, int y1, int x2, int y2, IMAGE* pimg = nullptr);      //画线
+
+EGEAPI void
+linerel(int dx, int dy, IMAGE* pimg = nullptr);                   //画线(至相对坐标)
+
+EGEAPI void
+lineto(int x, int y, IMAGE* pimg = nullptr);                      //画线(至绝对坐标)
+
+EGEAPI void
+line_f(float x1, float y1, float x2, float y2, IMAGE* pimg = nullptr);  //画线
+
+EGEAPI void
+linerel_f(float dx, float dy, IMAGE* pimg = nullptr); //画线(至相对坐标)
+
+EGEAPI void
+lineto_f(float x, float y, IMAGE* pimg = nullptr); //画线(至绝对坐标)
+
+//画矩形
+EGEAPI void
+rectangle(int left, int top, int right, int bottom, IMAGE* pimg = nullptr);
+
+
+//画圆弧
+EGEAPI void
+arc(int x, int y, int stangle, int endangle, int radius, IMAGE* pimg = nullptr);
+
+//画圆
+EGEAPI void
+circle(int x, int y, int radius, IMAGE* pimg = nullptr);
+
+//画填充圆扇形
+EGEAPI void
+pieslice(int x, int y, int stangle, int endangle, int radius,
+	IMAGE* pimg = nullptr);
+
+//画椭圆弧线
+EGEAPI void
+ellipse(int x, int y, int stangle, int endangle, int xradius, int yradius,
+	IMAGE* pimg = nullptr);
+
+//画填充椭圆
+EGEAPI void
+fillellipse(int x, int y, int xradius, int yradius, IMAGE* pimg = nullptr);
+
+//画填充椭圆扇形
+EGEAPI void
+sector(int x, int y, int stangle, int endangle, int xradius, int yradius,
+	IMAGE* pimg = nullptr);
+
+
+//画圆弧
+EGEAPI void
+arcf(float x, float y, float stangle, float endangle, float radius,
+	IMAGE* pimg = nullptr);
+
+//画圆
+EGEAPI void
+circlef(float x, float y, float radius, IMAGE* pimg = nullptr);
+
+//画填充圆扇形
+EGEAPI void
+pieslicef(float x, float y, float stangle, float endangle, float radius,
+	IMAGE* pimg = nullptr);
+
+//画椭圆弧线
+EGEAPI void
+ellipsef(float x, float y, float stangle, float endangle, float xradius,
+	float yradius, IMAGE* pimg = nullptr);
+
+//画填充椭圆
+EGEAPI void
+fillellipsef(float x, float y, float xradius, float yradius,
+	IMAGE* pimg = nullptr);
+
+//画填充椭圆扇形
+EGEAPI void
+sectorf(float x, float y, float stangle, float endangle, float xradius,
+	float yradius, IMAGE* pimg = nullptr);
+
+
+//画无边框填充矩形
+EGEAPI void
+bar(int left, int top, int right, int bottom, IMAGE* pimg = nullptr);
+
+//画有边框三维填充矩形
+EGEAPI void
+bar3d(int left, int top, int right, int bottom, int depth, int topflag,
+	IMAGE* pimg = nullptr);
+
+
+//画多边形
+EGEAPI void
+drawpoly(int numpoints, const int* polypoints, IMAGE* pimg = nullptr);
+
+//画多条不连续线（扩展函数）
+EGEAPI void
+drawlines(int numlines, const int* polypoints, IMAGE* pimg = nullptr);
+
+//画bezier曲线（扩展函数）
+EGEAPI void
+drawbezier(int numpoints, const int* polypoints, IMAGE* pimg = nullptr);
+
+//画填充的多边形
+EGEAPI void
+fillpoly(int numpoints, const int* polypoints, IMAGE* pimg = nullptr);
+
+//画渐变填充的多边形
+EGEAPI void
+fillpoly_gradient(int numpoints, const ege_colpoint* polypoints,
+	IMAGE* pimg = nullptr);
+
+//按边界颜色填充区域
+EGEAPI void
+floodfill(int x, int y, int border, IMAGE* pimg = nullptr);
+
+//按起始点颜色填充区域
+EGEAPI void
+floodfillsurface(int x, int y, color_t areacolor, IMAGE* pimg = nullptr);
+
+
+//高级绘图函数（带AA）
+//ege new_api
+EGEAPI void
+ege_enable_aa(bool enable, IMAGE* pimg = nullptr);
+
+
+EGEAPI void
+ege_line(float x1, float y1, float x2, float y2, IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_drawpoly(int numpoints, ege_point* polypoints, IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_drawcurve(int numpoints, ege_point* polypoints, IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_rectangle(float x, float y, float w, float h, IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_ellipse(float x, float y, float w, float h, IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_pie(float x, float y, float w, float h, float stangle, float sweepAngle,
+	IMAGE* pimg = nullptr);
+
+
+EGEAPI void
+ege_arc(float x, float y, float w, float h, float stangle, float sweepAngle,
+	IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_bezier(int numpoints, ege_point* polypoints, IMAGE* pimg = nullptr);
+
+
+EGEAPI void
+ege_fillpoly(int numpoints, ege_point* polypoints, IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_fillrect(float x, float y, float w, float h, IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_fillellipse(float x, float y, float w, float h, IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_fillpie(float x, float y, float w, float h, float stangle, float sweepAngle,
+	IMAGE* pimg = nullptr);
+
+
+EGEAPI void
+ege_setpattern_none(IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_setpattern_lineargradient(float x1, float y1, color_t c1, float x2, float y2, color_t c2, IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_setpattern_pathgradient(ege_point center, color_t centercolor,
+
+										int count, ege_point* points, int colcount, color_t* pointscolor, IMAGE* pimg = nullptr);
+EGEAPI void
+ege_setpattern_ellipsegradient(ege_point center, color_t centercolor,
+		float x, float y, float w, float h, color_t color,
+		IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_setpattern_texture(IMAGE* srcimg, float x, float y, float w, float h,
+	IMAGE* pimg = nullptr);
+
+
+EGEAPI void
+ege_setalpha(int alpha, IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_gentexture(bool gen, IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_puttexture(IMAGE* srcimg, float x, float y, float w, float h,
+	IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_puttexture(IMAGE* srcimg, ege_rect dest, IMAGE* pimg = nullptr);
+
+EGEAPI void
+ege_puttexture(IMAGE* srcimg, ege_rect dest, ege_rect src,
+	IMAGE* pimg = nullptr);
+
 //
 
 //图片函数
 #define getmaxx getwidth
 #define getmaxy getheight
 
-int EGEAPI getwidth(PIMAGE pimg = nullptr);           // 获取图片宽度
-int EGEAPI getheight(PIMAGE pimg = nullptr);          // 获取图片高度
-int EGEAPI getx(PIMAGE pimg = nullptr);               // 获取当前 x 坐标
-int EGEAPI gety(PIMAGE pimg = nullptr);               // 获取当前 y 坐标
+EGEAPI int
+getwidth(IMAGE* pimg = nullptr);           //获取图片宽度
 
-PIMAGE EGEAPI newimage(); // 创建PIMAGE
-PIMAGE EGEAPI newimage(int width, int height); // 创建PIMAGE
-void   EGEAPI delimage(PIMAGE pImg); // 创建PIMAGE
-void*  EGEAPI getbuffer(PIMAGE pImg);
+EGEAPI int
+getheight(IMAGE* pimg = nullptr);          //获取图片高度
 
-int  EGEAPI resize(PIMAGE pDstImg, int width, int height); //重设尺寸
-void EGEAPI getimage(PIMAGE pDstImg, int srcX, int srcY, int srcWidth, int srcHeight);             // 从屏幕获取图像
-void EGEAPI getimage(PIMAGE pDstImg, const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);   // 从另一个 PIMAGE 对象中获取图像
+EGEAPI int
+getx(IMAGE* pimg = nullptr);               //获取当前 x 坐标
 
-int EGEAPI putimage_transparent(
-	PIMAGE imgdest,         // handle to dest
-	PIMAGE imgsrc,          // handle to source
-	int nXOriginDest,       // x-coord of destination upper-left corner
-	int nYOriginDest,       // y-coord of destination upper-left corner
-	color_t crTransparent,  // color to make transparent
-	int nXOriginSrc = 0,    // x-coord of source upper-left corner
-	int nYOriginSrc = 0,    // y-coord of source upper-left corner
-	int nWidthSrc = 0,      // width of source rectangle
-	int nHeightSrc = 0      // height of source rectangle
+EGEAPI int
+gety(IMAGE* pimg = nullptr);               //获取当前 y 坐标
+
+
+IMAGE* EGEAPI
+newimage(); //创建PIMAGE
+
+IMAGE* EGEAPI
+newimage(int width, int height); //创建PIMAGE
+
+void EGEAPI
+delimage(IMAGE* pImg); //创建PIMAGE
+
+void* EGEAPI
+getbuffer(IMAGE* pImg);
+
+
+EGEAPI int
+resize(IMAGE* pDstImg, int width, int height); //重设尺寸
+
+EGEAPI void
+getimage(IMAGE* pDstImg, int srcX, int srcY, int srcWidth, int srcHeight);             //从屏幕获取图像
+
+EGEAPI void
+getimage(IMAGE* pDstImg, IMAGE* const pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);   //从另一个 IMAGE* 对象中获取图像
+
+
+EGEAPI int
+putimage_transparent(
+	IMAGE* imgdest,         //handle to dest
+	IMAGE* imgsrc,          //handle to source
+	int nXOriginDest,       //x-coord of destination upper-left corner
+	int nYOriginDest,       //y-coord of destination upper-left corner
+	color_t crTransparent,  //color to make transparent
+	int nXOriginSrc = 0,    //x-coord of source upper-left corner
+	int nYOriginSrc = 0,    //y-coord of source upper-left corner
+	int nWidthSrc = 0,      //width of source rectangle
+	int nHeightSrc = 0      //height of source rectangle
 );
-int EGEAPI putimage_alphablend(
-	PIMAGE imgdest,         // handle to dest
-	PIMAGE imgsrc,          // handle to source
-	int nXOriginDest,       // x-coord of destination upper-left corner
-	int nYOriginDest,       // y-coord of destination upper-left corner
-	unsigned char alpha,    // alpha
-	int nXOriginSrc = 0,    // x-coord of source upper-left corner
-	int nYOriginSrc = 0,    // y-coord of source upper-left corner
-	int nWidthSrc = 0,      // width of source rectangle
-	int nHeightSrc = 0      // height of source rectangle
+
+EGEAPI int
+putimage_alphablend(
+	IMAGE* imgdest,         //handle to dest
+	IMAGE* imgsrc,          //handle to source
+	int nXOriginDest,       //x-coord of destination upper-left corner
+	int nYOriginDest,       //y-coord of destination upper-left corner
+	unsigned char alpha,    //alpha
+	int nXOriginSrc = 0,    //x-coord of source upper-left corner
+	int nYOriginSrc = 0,    //y-coord of source upper-left corner
+	int nWidthSrc = 0,      //width of source rectangle
+	int nHeightSrc = 0      //height of source rectangle
 );
-int EGEAPI putimage_alphatransparent(
-	PIMAGE imgdest,         // handle to dest
-	PIMAGE imgsrc,          // handle to source
-	int nXOriginDest,       // x-coord of destination upper-left corner
-	int nYOriginDest,       // y-coord of destination upper-left corner
-	color_t crTransparent,  // color to make transparent
-	unsigned char alpha,    // alpha
-	int nXOriginSrc = 0,    // x-coord of source upper-left corner
-	int nYOriginSrc = 0,    // y-coord of source upper-left corner
-	int nWidthSrc = 0,      // width of source rectangle
-	int nHeightSrc = 0      // height of source rectangle
+
+EGEAPI int
+putimage_alphatransparent(
+	IMAGE* imgdest,         //handle to dest
+	IMAGE* imgsrc,          //handle to source
+	int nXOriginDest,       //x-coord of destination upper-left corner
+	int nYOriginDest,       //y-coord of destination upper-left corner
+	color_t crTransparent,  //color to make transparent
+	unsigned char alpha,    //alpha
+	int nXOriginSrc = 0,    //x-coord of source upper-left corner
+	int nYOriginSrc = 0,    //y-coord of source upper-left corner
+	int nWidthSrc = 0,      //width of source rectangle
+	int nHeightSrc = 0      //height of source rectangle
 );
-int EGEAPI putimage_withalpha(
-	PIMAGE imgdest,         // handle to dest
-	PIMAGE imgsrc,          // handle to source
-	int nXOriginDest,       // x-coord of destination upper-left corner
-	int nYOriginDest,       // y-coord of destination upper-left corner
-	int nXOriginSrc = 0,    // x-coord of source upper-left corner
-	int nYOriginSrc = 0,    // y-coord of source upper-left corner
-	int nWidthSrc = 0,      // width of source rectangle
-	int nHeightSrc = 0      // height of source rectangle
+
+EGEAPI int
+putimage_withalpha(
+	IMAGE* imgdest,         //handle to dest
+	IMAGE* imgsrc,          //handle to source
+	int nXOriginDest,       //x-coord of destination upper-left corner
+	int nYOriginDest,       //y-coord of destination upper-left corner
+	int nXOriginSrc = 0,    //x-coord of source upper-left corner
+	int nYOriginSrc = 0,    //y-coord of source upper-left corner
+	int nWidthSrc = 0,      //width of source rectangle
+	int nHeightSrc = 0      //height of source rectangle
 );
-int EGEAPI imagefilter_blurring(
-	PIMAGE imgdest,         // handle to dest
+
+EGEAPI int
+imagefilter_blurring(
+	IMAGE* imgdest,         //handle to dest
 	int intensity,
 	int alpha,
 	int nXOriginDest = 0,
@@ -189,30 +417,33 @@ int EGEAPI imagefilter_blurring(
 	int nWidthDest = 0,
 	int nHeightDest = 0
 );
-int EGEAPI putimage_rotate(
-	PIMAGE imgdest,
-	PIMAGE imgtexture,
+
+EGEAPI int
+putimage_rotate(
+	IMAGE* imgdest,
+	IMAGE* imgtexture,
 	int nXOriginDest,
 	int nYOriginDest,
 	float centerx,
 	float centery,
 	float radian,
-	int btransparent = 0,           // transparent (1) or not (0)
-	int alpha = -1,                  // in range[0, 256], alpha== -1 means no alpha
+	int btransparent = 0, //transparent (1) or not (0)
+	int alpha = -1, //in range[0, 256], alpha== -1 means no alpha
 	int smooth = 0
 );
 
-int EGEAPI putimage_rotatezoom(
-	PIMAGE imgdest,
-	PIMAGE imgtexture,
+EGEAPI int
+putimage_rotatezoom(
+	IMAGE* imgdest,
+	IMAGE* imgtexture,
 	int nXOriginDest,
 	int nYOriginDest,
 	float centerx,
 	float centery,
 	float radian,
 	float zoom,
-	int btransparent = 0,           // transparent (1) or not (0)
-	int alpha = -1,                  // in range[0, 256], alpha== -1 means no alpha
+	int btransparent = 0, //transparent (1) or not (0)
+	int alpha = -1, //in range[0, 256], alpha== -1 means no alpha
 	int smooth = 0
 );
 

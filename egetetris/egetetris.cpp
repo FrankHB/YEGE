@@ -498,7 +498,7 @@ public:
 	int m_KeyFlag[8];
 	int m_KeyState[8];
 private:
-	PIMAGE m_pcb;
+	IMAGE* m_pcb;
 };
 
 int main()

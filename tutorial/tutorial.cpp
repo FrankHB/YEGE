@@ -111,7 +111,7 @@ public:
 		if(m_key == key) m_key = 0;
 		return 0;
 	}
-	void onDraw(PIMAGE pimg) const
+	void onDraw(IMAGE* pimg) const
 	{
 		char str[10] = "";
 		if(m_key)
@@ -144,7 +144,7 @@ public:
 		move(200, 0);
 		w.move(0, 64);
 	}
-	void onDraw(PIMAGE pimg) const
+	void onDraw(IMAGE* pimg) const
 	{
 		char str[10] = "";
 		if(m_key) sprintf(str, "%c", m_key);
@@ -257,7 +257,7 @@ public:
 
 		ege::fillpoly_gradient(4, rect);
 	}
-	void onDraw(ege::PIMAGE pimg) const
+	void onDraw(ege::IMAGE* pimg) const
 	{
 		draw();
 	}
@@ -443,7 +443,7 @@ int main()
 	printf("");
 	lb.caption("abcdefg");
 	//bt.setcaption("click");
-	PIMAGE img = newimage();
+	IMAGE* img = newimage();
 	getimage(img, "qq_003.jpg");
 	sys_edit edit;
 	edit.create(true);

@@ -54,7 +54,7 @@ public:
 		move((int)x, (int)y);
 		return 0;
 	}
-	void onDraw(PIMAGE) const
+	void onDraw(IMAGE*) const
 	{}
 private:
 	double dx, dy;
@@ -102,7 +102,7 @@ public:
 		}
 		return 0;
 	}
-	void onDraw(PIMAGE) const
+	void onDraw(IMAGE*) const
 	{
 		setbkcolor_f(m_col, buf());
 		cleardevice(buf());

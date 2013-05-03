@@ -126,6 +126,7 @@ struct EGEMSG
 class IMAGE
 {
 	int     m_initflag;
+
 public:
 	::HDC         m_hDC;
 	::HBITMAP     m_hBmp;
@@ -135,9 +136,11 @@ public:
 	color_t     m_color;
 	color_t     m_fillcolor;
 	bool        m_aa;
+
 private:
 	int  newimage(::HDC hdc, int width, int height);
 	int  deleteimage();
+
 public:
 	viewporttype        m_vpt;
 	textsettingstype    m_texttype;
@@ -147,8 +150,10 @@ public:
 	void*               m_pattern_obj;
 	int                 m_pattern_type;
 	void*               m_texture;
+
 private:
 	void inittest(const wchar_t* strCallFunction = nullptr) const;
+
 public:
 	IMAGE();
 	IMAGE(int width, int height);
@@ -158,7 +163,7 @@ public:
 	void set_pattern(void* obj, int type);
 	void delete_pattern();
 	void gentexture(bool gen);
-public:
+
 	::HDC getdc()        const
 	{
 		return m_hDC;
@@ -178,9 +183,9 @@ public:
 
 	int  createimage(int width, int height);
 	int  resize(int width, int height);
-	void copyimage(const PIMAGE pSrcImg);
+	void copyimage(IMAGE* pSrcImg);
 	void getimage(int srcX, int srcY, int srcWidth, int srcHeight);
-	void getimage(const PIMAGE pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);
+	void getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);
 	int  getimage(const char* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
 	int  getimage(const wchar_t* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
 	int  getimage(const char* pResType, const char* pResName, int zoomWidth = 0, int zoomHeight = 0);
@@ -188,16 +193,16 @@ public:
 	int  getimage(void* pMem, long size);
 	void putimage(int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;
 	void putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop = SRCCOPY) const;
-	void putimage(PIMAGE pDstImg, int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;
-	void putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop = SRCCOPY) const;
-	void putimage(PIMAGE pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop = SRCCOPY) const;
+	void putimage(IMAGE* pDstImg, int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;
+	void putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop = SRCCOPY) const;
+	void putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop = SRCCOPY) const;
 	int  saveimage(const char*  filename);
 	int  saveimage(const wchar_t* filename);
 	int  getpngimg(FILE* fp);
 	int  savepngimg(FILE* fp, int bAlpha);
 	int
 	putimage_transparent(
-		PIMAGE imgdest,         // handle to dest
+		IMAGE* imgdest,         // handle to dest
 		int nXOriginDest,       // x-coord of destination upper-left corner
 		int nYOriginDest,       // y-coord of destination upper-left corner
 		color_t crTransparent,  // color to make transparent
@@ -208,7 +213,7 @@ public:
 	);
 	int
 	putimage_alphablend(
-		PIMAGE imgdest,         // handle to dest
+		IMAGE* imgdest,         // handle to dest
 		int nXOriginDest,       // x-coord of destination upper-left corner
 		int nYOriginDest,       // y-coord of destination upper-left corner
 		unsigned char alpha,    // alpha
@@ -219,7 +224,7 @@ public:
 	);
 	int
 	putimage_alphatransparent(
-		PIMAGE imgdest,         // handle to dest
+		IMAGE* imgdest,         // handle to dest
 		int nXOriginDest,       // x-coord of destination upper-left corner
 		int nYOriginDest,       // y-coord of destination upper-left corner
 		color_t crTransparent,  // color to make transparent
@@ -231,7 +236,7 @@ public:
 	);
 	int
 	putimage_withalpha(
-		PIMAGE imgdest,         // handle to dest
+		IMAGE* imgdest,         // handle to dest
 		int nXOriginDest,       // x-coord of destination upper-left corner
 		int nYOriginDest,       // y-coord of destination upper-left corner
 		int nXOriginSrc = 0,    // x-coord of source upper-left corner
@@ -242,10 +247,10 @@ public:
 
 	int
 	putimage_alphafilter(
-		PIMAGE imgdest,         // handle to dest
+		IMAGE* imgdest,         // handle to dest
 		int nXOriginDest,       // x-coord of destination upper-left corner
 		int nYOriginDest,       // y-coord of destination upper-left corner
-		PIMAGE imgalpha,        // alpha
+		IMAGE* imgalpha,        // alpha
 		int nXOriginSrc = 0,    // x-coord of source upper-left corner
 		int nYOriginSrc = 0,    // y-coord of source upper-left corner
 		int nWidthSrc = 0,      // width of source rectangle
@@ -279,7 +284,7 @@ public:
 		int nHeightDest = 0
 	);
 	int putimage_rotate(
-		PIMAGE imgtexture,
+		IMAGE* imgtexture,
 		int nXOriginDest,
 		int nYOriginDest,
 		float centerx,
@@ -291,7 +296,7 @@ public:
 	);
 
 	int putimage_rotatezoom(
-		PIMAGE imgtexture,
+		IMAGE* imgtexture,
 		int nXOriginDest,
 		int nYOriginDest,
 		float centerx,
@@ -322,14 +327,14 @@ struct _graph_setting
 	::HDC dc;
 	::HDC window_dc;
 	int dc_w, dc_h;
-	PIMAGE img_page[BITMAP_PAGE_SIZE];
+	IMAGE* img_page[BITMAP_PAGE_SIZE];
 	int base_x, base_y, base_w, base_h;
 
 	int     visual_page;
 	int     active_page;
-	PIMAGE  imgtarget;
-	PIMAGE  imgtarget_set;
-	PIMAGE  img_timer_update;
+	IMAGE*  imgtarget;
+	IMAGE*  imgtarget_set;
+	IMAGE*  img_timer_update;
 
 	::HINSTANCE instance;
 	::HWND    hwnd;
