@@ -2,6 +2,7 @@
 #define Inc_ege_e_head_h_
 
 #include "ege.h"
+#include "msg.h"
 #include "thread_queue.h"
 
 #ifndef ERROR_SUCCESS
@@ -102,17 +103,6 @@ enum dealmessage_update
 {
 	NORMAL_UPDATE = false,
 	FORCE_UPDATE = true,
-};
-
-struct EGEMSG
-{
-	::HWND        hwnd;
-	::UINT        message;
-	::WPARAM      wParam;
-	::LPARAM      lParam;
-	::DWORD       time;
-	::UINT        mousekey;
-	::UINT        flag;
 };
 
 // 定义图像对象

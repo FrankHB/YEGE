@@ -1,9 +1,9 @@
 ﻿#include "head.h"
-#include "libpng/png.h"
-#include "libpng/pngstruct.h"
-#include "libpng/pnginfo.h"
-#include "ocidl.h"
-#include "olectl.h"
+#include "../libpng/png.h"
+#include "../libpng/pngstruct.h"
+#include "../libpng/pnginfo.h"
+#include <ocidl.h>
+#include <olectl.h>
 #include <cmath>
 #include <cstring>
 #include <utility> // for std::swap;
