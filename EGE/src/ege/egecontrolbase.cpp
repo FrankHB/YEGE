@@ -1,5 +1,6 @@
-﻿#include <algorithm>
-#include "head.h"
+﻿#include "head.h"
+#include "global.h"
+#include <algorithm>
 #include <set>
 #include <vector>
 

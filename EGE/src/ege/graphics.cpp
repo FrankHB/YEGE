@@ -15,6 +15,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "head.h"
+#include "global.h"
 
 
 namespace ege

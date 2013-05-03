@@ -1,7 +1,7 @@
 ﻿#ifndef Inc_ege_msg_h_
 #define Inc_ege_msg_h_
 
-#include "ege/def.h"
+#include <windows.h>
 
 namespace ege
 {

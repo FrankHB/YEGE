@@ -1,4 +1,5 @@
-﻿#include "head.h"
+﻿#include "global.h"
+#include "head.h" // for IMAGE;
 #include <winbase.h>
 
 namespace ege

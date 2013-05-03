@@ -1,4 +1,5 @@
 ﻿#include "head.h"
+#include "global.h"
 #include "../libpng/png.h"
 #include "../libpng/pngstruct.h"
 #include "../libpng/pnginfo.h"

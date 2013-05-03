@@ -1,4 +1,5 @@
 ﻿#include "head.h"
+#include "global.h"
 #include <cstdio>
 #include <cmath>
 #include <cstdarg>
