@@ -161,6 +161,9 @@ struct _graph_setting
 	_init_graph();
 
 	void
+	_init_graph_x(int*, int*);
+
+	void
 	_init_img_page();
 
 	void
