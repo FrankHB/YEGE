@@ -167,6 +167,18 @@ _graph_setting::_flushkey()
 			;
 }
 
+void
+_graph_setting::_flushmouse()
+{
+	EGEMSG msg;
+
+	if(msgmouse_queue->empty())
+		_dealmessage(NORMAL_UPDATE);
+	if(!msgmouse_queue->empty())
+		while(msgmouse_queue->pop(msg))
+			;
+}
+
 int
 _graph_setting::_getch_ex(int flag)
 {
@@ -263,6 +275,79 @@ _graph_setting::_getkey_p()
 		}
 	return 0;
 }
+
+mouse_msg
+_graph_setting::_getmouse()
+{
+	auto mmsg = mouse_msg();
+
+	if(exit_window)
+		return mmsg;
+
+	EGEMSG msg;
+
+	do
+	{
+		msgmouse_queue->pop(msg);
+		if(msg.hwnd)
+		{
+			mmsg.flags |= ((msg.wParam & MK_CONTROL) != 0
+				? mouse_flag_ctrl : 0);
+			mmsg.flags |= ((msg.wParam & MK_SHIFT) != 0 ? mouse_flag_shift : 0);
+			mmsg.x = short(int(msg.lParam) & 0xFFFF);
+			mmsg.y = short(unsigned(msg.lParam) >> 16);
+			mmsg.msg = mouse_msg_move;
+			if(msg.message == WM_LBUTTONDOWN)
+			{
+				mmsg.msg = mouse_msg_down;
+				mmsg.flags |= mouse_flag_left;
+			}
+			else if(msg.message == WM_RBUTTONDOWN)
+			{
+				mmsg.msg = mouse_msg_down;
+				mmsg.flags |= mouse_flag_right;
+			}
+			else if(msg.message == WM_MBUTTONDOWN)
+			{
+				mmsg.msg = mouse_msg_down;
+				mmsg.flags |= mouse_flag_mid;
+			}
+			else if(msg.message == WM_LBUTTONUP)
+			{
+				mmsg.msg = mouse_msg_up;
+				mmsg.flags |= mouse_flag_left;
+			}
+			else if(msg.message == WM_RBUTTONUP)
+			{
+				mmsg.msg = mouse_msg_up;
+				mmsg.flags |= mouse_flag_right;
+			}
+			else if(msg.message == WM_MBUTTONUP)
+			{
+				mmsg.msg = mouse_msg_up;
+				mmsg.flags |= mouse_flag_mid;
+			}
+			else if(msg.message == WM_MOUSEWHEEL)
+			{
+				mmsg.msg = mouse_msg_wheel;
+				mmsg.wheel = short(unsigned(msg.wParam) >> 16);
+			}
+			return mmsg;
+		}
+	} while(!exit_window && !exit_flag && _waitdealmessage());
+	return mmsg;
+}
+
+#if 0
+EGEMSG
+_graph_setting::_getmouse_p()
+{
+	auto msg = EGEMSG();
+
+	msgmouse_queue->pop(msg);
+	return msg;
+}
+#endif
 
 int
 _graph_setting::_kbhit_ex(int flag)
@@ -373,6 +458,21 @@ _graph_setting::_peekallkey(int flag)
 		}
 	}
 	return 0;
+}
+
+EGEMSG
+_graph_setting::_peekmouse()
+{
+	auto msg = EGEMSG();
+
+	if(msgmouse_queue->empty())
+		_dealmessage(NORMAL_UPDATE);
+	while(msgmouse_queue->pop(msg))
+	{
+		msgmouse_queue->unpop();
+		return msg;
+	}
+	return msg;
 }
 
 int

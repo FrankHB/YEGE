@@ -125,6 +125,9 @@ struct _graph_setting
 	void
 	_flushkey();
 
+	void
+	_flushmouse();
+
 	int
 	_getch_ex(int);
 
@@ -133,6 +136,14 @@ struct _graph_setting
 
 	int
 	_getkey_p();
+
+	mouse_msg
+	_getmouse();
+
+#if 0
+	EGEMSG
+	_getmouse_p();
+#endif
 
 	int
 	_kbhit_ex(int);
@@ -151,6 +162,9 @@ struct _graph_setting
 
 	int
 	_peekallkey(int);
+
+	EGEMSG
+	_peekmouse();
 
 	int
 	_redraw_window(::HDC);

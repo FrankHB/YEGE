@@ -22,14 +22,15 @@ namespace ege
 {
 
 static bool g_has_init = false;
-static ::DWORD g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
+static ::DWORD g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
+	| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
 static ::DWORD g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
 static int g_windowpos_x = CW_USEDEFAULT;
 static int g_windowpos_y = CW_USEDEFAULT;
 static int g_initoption  = INIT_DEFAULT, g_initcall = 0;
 static ::HWND g_attach_hwnd = nullptr;
 
-::DWORD WINAPI messageloopthread(LPVOID lpParameter);
+WINAPI ::DWORD messageloopthread(LPVOID lpParameter);
 
 
 namespace
@@ -119,10 +120,8 @@ getflush()
 int
 kbmsg()
 {
-	auto pg = &graph_setting;
-	if(pg->exit_window)
-		return grNoInitGraph;
-	return pg->_peekallkey(1);
+	return graph_setting.exit_window ? grNoInitGraph
+		: graph_setting._peekallkey(1);
 }
 
 int
@@ -155,119 +154,27 @@ keystate(int key)
 	return graph_setting._keystate(key);
 }
 
-
-namespace
-{
-
-EGEMSG
-_getmouse(_graph_setting* pg)
-{
-	auto msg = EGEMSG();
-
-	pg->msgmouse_queue->pop(msg);
-	return msg;
-}
-
-EGEMSG
-peekmouse(_graph_setting* pg)
-{
-	auto msg = EGEMSG();
-
-	if(pg->msgmouse_queue->empty())
-		pg->_dealmessage(NORMAL_UPDATE);
-	while(pg->msgmouse_queue->pop(msg))
-	{
-		pg->msgmouse_queue->unpop();
-		return msg;
-	}
-	return msg;
-}
-
-}
-
 void
 flushmouse()
 {
-	auto pg = &graph_setting;
-	EGEMSG msg;
-	if(pg->msgmouse_queue->empty())
-		pg->_dealmessage(NORMAL_UPDATE);
-	if(!pg->msgmouse_queue->empty())
-		while(pg->msgmouse_queue->pop(msg))
-			;
+	graph_setting._flushmouse();
 }
 
 int
 mousemsg()
 {
-	auto pg = &graph_setting;
-	if(pg->exit_window)
+	if(graph_setting.exit_window)
 		return 0;
-	EGEMSG msg;
-	msg = peekmouse(pg);
-	if(msg.hwnd) return 1;
-	return 0;
+
+	EGEMSG msg(graph_setting._peekmouse());
+
+	return bool(msg.hwnd);
 }
 
 mouse_msg
 getmouse()
 {
-	const auto pg(&graph_setting);
-	auto mmsg = mouse_msg();
-
-	if(pg->exit_window)
-		return mmsg;
-
-	EGEMSG msg;
-	do
-	{
-		pg->msgmouse_queue->pop(msg);
-		if(msg.hwnd)
-		{
-			mmsg.flags |= ((msg.wParam & MK_CONTROL) != 0 ? mouse_flag_ctrl : 0);
-			mmsg.flags |= ((msg.wParam & MK_SHIFT) != 0 ? mouse_flag_shift : 0);
-			mmsg.x = (short)((int)msg.lParam & 0xFFFF);
-			mmsg.y = (short)((unsigned)msg.lParam >> 16);
-			mmsg.msg = mouse_msg_move;
-			if(msg.message == WM_LBUTTONDOWN)
-			{
-				mmsg.msg = mouse_msg_down;
-				mmsg.flags |= mouse_flag_left;
-			}
-			else if(msg.message == WM_RBUTTONDOWN)
-			{
-				mmsg.msg = mouse_msg_down;
-				mmsg.flags |= mouse_flag_right;
-			}
-			else if(msg.message == WM_MBUTTONDOWN)
-			{
-				mmsg.msg = mouse_msg_down;
-				mmsg.flags |= mouse_flag_mid;
-			}
-			else if(msg.message == WM_LBUTTONUP)
-			{
-				mmsg.msg = mouse_msg_up;
-				mmsg.flags |= mouse_flag_left;
-			}
-			else if(msg.message == WM_RBUTTONUP)
-			{
-				mmsg.msg = mouse_msg_up;
-				mmsg.flags |= mouse_flag_right;
-			}
-			else if(msg.message == WM_MBUTTONUP)
-			{
-				mmsg.msg = mouse_msg_up;
-				mmsg.flags |= mouse_flag_mid;
-			}
-			else if(msg.message == WM_MOUSEWHEEL)
-			{
-				mmsg.msg = mouse_msg_wheel;
-				mmsg.wheel = (short)((unsigned)msg.wParam >> 16);
-			}
-			return mmsg;
-		}
-	} while(!pg->exit_window && !pg->exit_flag && pg->_waitdealmessage());
-	return mmsg;
+	return graph_setting._getmouse();
 }
 
 
