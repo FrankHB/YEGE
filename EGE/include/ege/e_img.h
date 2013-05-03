@@ -338,7 +338,7 @@ newimage(); //创建PIMAGE
 IMAGE* EGEAPI
 newimage(int width, int height); //创建PIMAGE
 
-void EGEAPI
+EGEAPI void
 delimage(IMAGE* pImg); //创建PIMAGE
 
 void* EGEAPI
@@ -352,7 +352,7 @@ EGEAPI void
 getimage(IMAGE* pDstImg, int srcX, int srcY, int srcWidth, int srcHeight);             //从屏幕获取图像
 
 EGEAPI void
-getimage(IMAGE* pDstImg, IMAGE* const pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);   //从另一个 IMAGE* 对象中获取图像
+getimage(IMAGE* pDstImg, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);   //从另一个 IMAGE* 对象中获取图像
 
 
 EGEAPI int

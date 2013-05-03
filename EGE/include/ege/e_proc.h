@@ -30,7 +30,7 @@ x,y: current mouse (x, y)
 return zero means process this message, otherwise means pass it and then process with 'GetMouseMsg' function
 */
 //int message_addmousehandler(void* param, LPMSG_MOUSE_PROC func);    //设置鼠标回调函数
-int EGEAPI SetCloseHandler(LPCALLBACK_PROC func);
+EGEAPI int SetCloseHandler(LPCALLBACK_PROC func);
 
 }
 

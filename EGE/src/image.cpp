@@ -284,7 +284,7 @@ IMAGE::copyimage(IMAGE* pSrcImg)
 }
 
 void
-IMAGE::getimage(IMAGE* const pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
+IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
 	inittest(L"IMAGE::getimage");
 
@@ -782,7 +782,7 @@ IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop) const
 {
 	inittest(L"IMAGE::putimage");
-	IMAGE* const img = CONVERT_IMAGE(pDstImg);
+	const auto img = CONVERT_IMAGE(pDstImg);
 	if(img)
 	{
 		SetStretchBltMode(img->m_hDC, COLORONCOLOR);
@@ -876,7 +876,7 @@ IMAGE::putimage_transparent(
 )
 {
 	inittest(L"IMAGE::putimage_transparent");
-	IMAGE* const img = CONVERT_IMAGE(imgdest);
+	const auto img = CONVERT_IMAGE(imgdest);
 	if(img)
 	{
 		IMAGE* imgsrc = this;
@@ -918,7 +918,7 @@ IMAGE::putimage_alphablend(
 )
 {
 	inittest(L"IMAGE::putimage_alphablend");
-	IMAGE* const img = CONVERT_IMAGE(imgdest);
+	const auto img = CONVERT_IMAGE(imgdest);
 	if(img)
 	{
 		IMAGE* imgsrc = this;
@@ -973,7 +973,7 @@ IMAGE::putimage_alphatransparent(
 )
 {
 	inittest(L"IMAGE::putimage_alphablend");
-	IMAGE* const img = CONVERT_IMAGE(imgdest);
+	const auto img = CONVERT_IMAGE(imgdest);
 	if(img)
 	{
 		IMAGE* imgsrc = this;
@@ -1030,7 +1030,7 @@ IMAGE::putimage_withalpha(
 )
 {
 	inittest(L"IMAGE::putimage_alphablend");
-	IMAGE* const img = CONVERT_IMAGE(imgdest);
+	const auto img = CONVERT_IMAGE(imgdest);
 	if(img)
 	{
 		IMAGE* imgsrc = this;
@@ -1088,7 +1088,7 @@ IMAGE::putimage_alphafilter(
 )
 {
 	inittest(L"IMAGE::putimage_alphablend");
-	IMAGE* const img = CONVERT_IMAGE(imgdest);
+	const auto img = CONVERT_IMAGE(imgdest);
 	if(img)
 	{
 		IMAGE* imgsrc = this;
@@ -1772,8 +1772,10 @@ draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src
 				if(s)
 				{
 					::DWORD d = lp_dest_bmp_byte[dest_w * y + i];
-					d = ((d & 0xFF00FF) * da & 0xFF00FF00) | ((d & 0xFF00) * da >> 16 << 16);
-					s = ((s & 0xFF00FF) * sa & 0xFF00FF00) | ((s & 0xFF00) * sa >> 16 << 16);
+					d = ((d & 0xFF00FF) * da & 0xFF00FF00)
+						| ((d & 0xFF00) * da >> 16 << 16);
+					s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
+						| ((s & 0xFF00) * sa >> 16 << 16);
 					lp_dest_bmp_byte[dest_w * y + i] = (d + s) >> 8;
 				}
 			}
@@ -1804,10 +1806,12 @@ color_t bilinear_interpolation(color_t LT, color_t RT, color_t LB, color_t RB,
 /* private funcion */
 static
 void
-draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2)
+draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
+	const vector2d* svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
+	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x),
+		y = float2int((float)vt->p[0].y), w = e - s;
 	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
 	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
 	::DWORD Trb, Tg, Brb, Bg, crb, cg;
@@ -1862,10 +1866,12 @@ draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const v
 /* private funcion */
 static
 void
-draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2)
+draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt,
+	IMAGE* dc_src, const vector2d * svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
+	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x),
+		y = float2int((float)vt->p[0].y), w = e - s;
 	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
 	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
 	::DWORD Trb, Tg, Brb, Bg, crb, cg;
@@ -1923,10 +1929,12 @@ draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_
 /* private funcion */
 static
 void
-draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
+draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
+	const vector2d * svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
+	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x),
+		y = float2int((float)vt->p[0].y), w = e - s;
 	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
 	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
 	::DWORD Trb, Tg, Brb, Bg, crb, cg;
@@ -1976,8 +1984,10 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, c
 				);
 				{
 					::DWORD d = lp_dest_bmp_byte[dest_w * y + i];
-					d = (((d & 0xFF00FF) * da & 0xFF00FF00) | ((d & 0xFF00) * da & 0xFF0000)) >> 8;
-					col = (((col & 0xFF00FF) * sa & 0xFF00FF00) | ((col & 0xFF00) * sa & 0xFF0000)) >> 8;
+					d = (((d & 0xFF00FF) * da & 0xFF00FF00)
+						| ((d & 0xFF00) * da & 0xFF0000)) >> 8;
+					col = (((col & 0xFF00FF) * sa & 0xFF00FF00)
+						| ((col & 0xFF00) * sa & 0xFF0000)) >> 8;
 					lp_dest_bmp_byte[dest_w * y + i] = d + col;
 				}
 			}
@@ -1988,10 +1998,12 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, c
 /* private funcion */
 static
 void
-draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
+draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d * vt,
+	IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
+	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x),
+		y = float2int((float)vt->p[0].y), w = e - s;
 	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
 	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
 	::DWORD Trb, Tg, Brb, Bg, crb, cg;
@@ -2042,8 +2054,10 @@ draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_s
 				if(col)
 				{
 					::DWORD d = lp_dest_bmp_byte[dest_w * y + i];
-					d = (((d & 0xFF00FF) * da & 0xFF00FF00) | ((d & 0xFF00) * da & 0xFF0000)) >> 8;
-					col = (((col & 0xFF00FF) * sa & 0xFF00FF00) | ((col & 0xFF00) * sa & 0xFF0000)) >> 8;
+					d = (((d & 0xFF00FF) * da & 0xFF00FF00)
+						| ((d & 0xFF00) * da & 0xFF0000)) >> 8;
+					col = (((col & 0xFF00FF) * sa & 0xFF00FF00)
+						| ((col & 0xFF00) * sa & 0xFF0000)) >> 8;
 					lp_dest_bmp_byte[dest_w * y + i] = d + col;
 				}
 			}
@@ -2080,7 +2094,8 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src, co
 	}
 	{
 		float dd;
-		int s = float2int((float)t2d.p[0].y), e = float2int((float)t2d.p[2].y), h, m = float2int((float)t2d.p[1].y);
+		int s = float2int((float)t2d.p[0].y), e = float2int((float)t2d.p[2].y),
+			h, m = float2int((float)t2d.p[1].y);
 		int rs, re;
 		int i, lh, rh;
 		//	float dm = t2d.p[1].y;
@@ -2156,16 +2171,16 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src, co
 				{
 					if(transparent)
 						draw_flat_scanline_alphatrans(dc_dest, &vt, dc_src,
-													  &svt, x1, x2, alpha);
+							&svt, x1, x2, alpha);
 					else
 						draw_flat_scanline_alpha(dc_dest, &vt, dc_src, &svt,
-												 x1, x2, alpha);
+							x1, x2, alpha);
 				}
 				else
 				{
 					if(transparent)
 						draw_flat_scanline_transparent(dc_dest, &vt, dc_src,
-													   &svt, x1, x2);
+							&svt, x1, x2);
 					else
 						draw_flat_scanline(dc_dest, &vt, dc_src, &svt, x1, x2);
 				}
@@ -2200,16 +2215,16 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src, co
 			{
 				if(transparent)
 					draw_flat_scanline_alphatrans(dc_dest, &vt, dc_src, &svt,
-												  x1, x2, alpha);
+						x1, x2, alpha);
 				else
 					draw_flat_scanline_alpha(dc_dest, &vt, dc_src, &svt,
-											 x1, x2, alpha);
+						x1, x2, alpha);
 			}
 			else
 			{
 				if(transparent)
 					draw_flat_scanline_transparent(dc_dest, &vt, dc_src, &svt,
-												   x1, x2);
+						x1, x2);
 				else
 					draw_flat_scanline(dc_dest, &vt, dc_src, &svt, x1, x2);
 			}
@@ -2282,16 +2297,16 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src, co
 				{
 					if(transparent)
 						draw_flat_scanline_alphatrans(dc_dest, &vt, dc_src,
-													  &svt, x1, x2, alpha);
+							&svt, x1, x2, alpha);
 					else
 						draw_flat_scanline_alpha(dc_dest, &vt, dc_src, &svt, x1,
-												 x2, alpha);
+							x2, alpha);
 				}
 				else
 				{
 					if(transparent)
 						draw_flat_scanline_transparent(dc_dest, &vt, dc_src,
-													   &svt, x1, x2);
+							&svt, x1, x2);
 					else
 						draw_flat_scanline(dc_dest, &vt, dc_src, &svt, x1, x2);
 				}
@@ -2410,24 +2425,16 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 				if(b_alpha)
 				{
 					if(transparent)
-					{
 						draw_flat_scanline_alphatrans_s(dc_dest, &vt, dc_src, &svt, x1, x2, alpha);
-					}
 					else
-					{
 						draw_flat_scanline_alpha_s(dc_dest, &vt, dc_src, &svt, x1, x2, alpha);
-					}
 				}
 				else
 				{
 					if(transparent)
-					{
 						draw_flat_scanline_transparent_s(dc_dest, &vt, dc_src, &svt, x1, x2);
-					}
 					else
-					{
 						draw_flat_scanline_s(dc_dest, &vt, dc_src, &svt, x1, x2);
-					}
 				}
 			}
 		}
@@ -2462,24 +2469,16 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 			if(b_alpha)
 			{
 				if(transparent)
-				{
 					draw_flat_scanline_alphatrans_s(dc_dest, &vt, dc_src, &svt, x1, x2, alpha);
-				}
 				else
-				{
 					draw_flat_scanline_alpha_s(dc_dest, &vt, dc_src, &svt, x1, x2, alpha);
-				}
 			}
 			else
 			{
 				if(transparent)
-				{
 					draw_flat_scanline_transparent_s(dc_dest, &vt, dc_src, &svt, x1, x2);
-				}
 				else
-				{
 					draw_flat_scanline_s(dc_dest, &vt, dc_src, &svt, x1, x2);
-				}
 			}
 		}
 		pl.x = t2d.p[0].x - t2d.p[2].x;
@@ -2522,8 +2521,10 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 			swap(pl, pr);
 			swap(spl, spr);
 		}
-		lh = float2int((float)(t2d.p[2].y)) - float2int((float)(pl.y + t2d.p[2].y));
-		rh = float2int((float)(t2d.p[2].y)) - float2int((float)(pr.y + t2d.p[2].y));
+		lh = float2int(float(t2d.p[2].y))
+			- float2int(float(pl.y + t2d.p[2].y));
+		rh = float2int(float(t2d.p[2].y))
+			- float2int(float(pr.y + t2d.p[2].y));
 		if(h > 0)
 		{
 			for(i = e; i > m; --i)
@@ -2557,24 +2558,16 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 				if(b_alpha)
 				{
 					if(transparent)
-					{
 						draw_flat_scanline_alphatrans_s(dc_dest, &vt, dc_src, &svt, x1, x2, alpha);
-					}
 					else
-					{
 						draw_flat_scanline_alpha_s(dc_dest, &vt, dc_src, &svt, x1, x2, alpha);
-					}
 				}
 				else
 				{
 					if(transparent)
-					{
 						draw_flat_scanline_transparent_s(dc_dest, &vt, dc_src, &svt, x1, x2);
-					}
 					else
-					{
 						draw_flat_scanline_s(dc_dest, &vt, dc_src, &svt, x1, x2);
-					}
 				}
 			}
 		}
@@ -2594,57 +2587,51 @@ putimage_trangle(
 {
 	IMAGE* dc_dest = imgdest;
 	IMAGE* dc_src  = imgtexture;
+
 	if(dc_dest)
 	{
 		triangle2d _dt = *dt;
 		triangle2d _tt = *tt;
-		int x1 = 0, y1 = 0, x2 = dc_dest->getwidth(), y2 = dc_dest->getheight(), i;
+		int x1 = 0, y1 = 0, x2 = dc_dest->getwidth(),
+			y2 = dc_dest->getheight(), i;
 
 		if(smooth)
 		{
 			for(i = 0; i < 3; ++i)
 			{
-				_tt.p[i].x = (float)float2int((float)(_tt.p[i].x * (dc_src->getwidth() - 2)));
-				_tt.p[i].y = (float)float2int((float)(_tt.p[i].y * (dc_src->getheight() - 2)));
+				_tt.p[i].x = (float)float2int((float)(_tt.p[i].x
+					* (dc_src->getwidth() - 2)));
+				_tt.p[i].y = (float)float2int((float)(_tt.p[i].y
+					* (dc_src->getheight() - 2)));
 			}
 		}
 		else
-		{
 			for(i = 0; i < 3; ++i)
 			{
-				_tt.p[i].x = (float)float2int((float)(_tt.p[i].x * (dc_src->getwidth() - 1)));
-				_tt.p[i].y = (float)float2int((float)(_tt.p[i].y * (dc_src->getheight() - 1)));
+				_tt.p[i].x = (float)float2int((float)(_tt.p[i].x
+					* (dc_src->getwidth() - 1)));
+				_tt.p[i].y = (float)float2int((float)(_tt.p[i].y
+					* (dc_src->getheight() - 1)));
 			}
-		}
-
 		if(smooth)
 		{
 			if(dc_src->getwidth() > 1 && dc_src->getheight() > 1)
-			{
-				draw_flat_trangle_alpha_s(dc_dest, &_dt, dc_src, &_tt, x1, y1, x2, y2, btransparent, alpha);
-			}
+				draw_flat_trangle_alpha_s(dc_dest, &_dt, dc_src, &_tt, x1, y1,
+					x2, y2, btransparent, alpha);
 		}
 		else
-		{
-			draw_flat_trangle_alpha(dc_dest, &_dt, dc_src, &_tt, x1, y1, x2, y2, btransparent, alpha);
-		}
+			draw_flat_trangle_alpha(dc_dest, &_dt, dc_src, &_tt, x1, y1, x2, y2,
+				btransparent, alpha);
 	}
 	return grOk;
 }
 
 int
-putimage_rotate(
-	IMAGE* imgdest,
-	IMAGE* imgtexture,
-	int nXOriginDest,
-	int nYOriginDest,
-	float centerx,
-	float centery,
-	float radian,
-	int btransparent,           // transparent (1) or not (0)
-	int alpha,                  // in range[0, 256], alpha==256 means no alpha
-	int smooth
-)
+putimage_rotate(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
+	int nYOriginDest, float centerx, float centery, float radian,
+	int btransparent, // transparent (1) or not (0)
+	int alpha, // in range[0, 256], alpha==256 means no alpha
+	int smooth)
 {
 	auto dc_dest(CONVERT_IMAGE(imgdest));
 	auto dc_src(imgtexture);
@@ -2668,57 +2655,38 @@ putimage_rotate(
 		_tt[1].p[2] = _tt[0].p[0];
 		memcpy(&_dt, &_tt, sizeof(triangle2d) * 2);
 		for(j = 0; j < 2; ++j)
-		{
 			for(i = 0; i < 3; ++i)
 			{
-				_dt[j].p[i].x = (_dt[j].p[i].x - centerx) * (dc_src->getwidth());
-				_dt[j].p[i].y = (_dt[j].p[i].y - centery) * (dc_src->getheight());
+				_dt[j].p[i].x = (_dt[j].p[i].x - centerx)
+					* (dc_src->getwidth());
+				_dt[j].p[i].y = (_dt[j].p[i].y - centery)
+					* (dc_src->getheight());
 				dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
 				dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
-				_dt[j].p[i].x = (float)float2int((float)((dx + nXOriginDest) + FLOAT_EPS));
-				_dt[j].p[i].y = (float)float2int((float)((dy + nYOriginDest) + FLOAT_EPS));
+				_dt[j].p[i].x = float(float2int(float((dx + nXOriginDest)
+					+ FLOAT_EPS)));
+				_dt[j].p[i].y = float(float2int(float((dy + nYOriginDest)
+					+ FLOAT_EPS)));
 			}
-		}
-		putimage_trangle(
-			dc_dest,
-			imgtexture,
-			&_dt[0],
-			&_tt[0],
-			btransparent,
-			alpha,
-			smooth
-		);
-		putimage_trangle(
-			dc_dest,
-			imgtexture,
-			&_dt[1],
-			&_tt[1],
-			btransparent,
-			alpha,
-			smooth
-		);
+		putimage_trangle(dc_dest, imgtexture, &_dt[0], &_tt[0], btransparent,
+			alpha, smooth);
+		putimage_trangle(dc_dest, imgtexture, &_dt[1], &_tt[1], btransparent,
+			alpha, smooth);
 	}
 	CONVERT_IMAGE_END;
 	return grOk;
 }
 
 int
-putimage_rotatezoom(
-	IMAGE* imgdest,
-	IMAGE* imgtexture,
-	int nXOriginDest,
-	int nYOriginDest,
-	float centerx,
-	float centery,
-	float radian,
-	float zoom,
-	int btransparent,           // transparent (1) or not (0)
-	int alpha,                  // in range[0, 256], alpha==256 means no alpha
-	int smooth
-)
+putimage_rotatezoom(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
+	int nYOriginDest, float centerx, float centery, float radian,
+	float zoom, int btransparent, // transparent (1) or not (0)
+	int alpha, // in range[0, 256], alpha==256 means no alpha
+	int smooth)
 {
-	IMAGE* dc_dest  = CONVERT_IMAGE(imgdest);
-	IMAGE* dc_src  = imgtexture;
+	auto dc_dest = CONVERT_IMAGE(imgdest);
+	auto dc_src = imgtexture;
+
 	if(dc_dest)
 	{
 		triangle2d _tt[2];
@@ -2737,26 +2705,17 @@ putimage_rotatezoom(
 		_tt[1].p[2] = _tt[0].p[0];
 		memcpy(&_dt, &_tt, sizeof(triangle2d) * 2);
 		for(j = 0; j < 2; ++j)
-		{
 			for(i = 0; i < 3; ++i)
 			{
 				_dt[j].p[i].x = (_dt[j].p[i].x - centerx) * (dc_src->getwidth());
 				_dt[j].p[i].y = (_dt[j].p[i].y - centery) * (dc_src->getheight());
 				dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
 				dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
-				_dt[j].p[i].x = (float)float2int((float)((dx * zoom + nXOriginDest) + FLOAT_EPS));
-				_dt[j].p[i].y = (float)float2int((float)((dy * zoom + nYOriginDest) + FLOAT_EPS));
+				_dt[j].p[i].x = float(float2int(float((dx * zoom + nXOriginDest) + FLOAT_EPS)));
+				_dt[j].p[i].y = float(float2int(float((dy * zoom + nYOriginDest) + FLOAT_EPS)));
 			}
-		}
-		putimage_trangle(
-			dc_dest,
-			imgtexture,
-			&_dt[0],
-			&_tt[0],
-			btransparent,
-			alpha,
-			smooth
-		);
+		putimage_trangle(dc_dest, imgtexture, &_dt[0], &_tt[0], btransparent,
+			alpha, smooth);
 		putimage_trangle(
 			dc_dest,
 			imgtexture,
@@ -2869,7 +2828,8 @@ getimage(IMAGE* pDstImg, int srcX, int srcY, int srcWidth, int srcHeight)
 }
 
 void
-getimage(IMAGE* pDstImg, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
+getimage(IMAGE* pDstImg, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth,
+	int srcHeight)
 {
 	pDstImg->getimage(pSrcImg, srcX, srcY, srcWidth, srcHeight);
 }
@@ -2881,7 +2841,8 @@ putimage(int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
 }
 
 void
-putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg, int srcX, int srcY, ::DWORD dwRop)
+putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
+	int srcX, int srcY, ::DWORD dwRop)
 {
 	pSrcImg->putimage(dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
 }
@@ -2893,9 +2854,11 @@ putimage(IMAGE* pDstImg, int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
 }
 
 void
-putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg, int srcX, int srcY, ::DWORD dwRop)
+putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
+	IMAGE* pSrcImg, int srcX, int srcY, ::DWORD dwRop)
 {
-	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
+	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
+		dwRop);
 }
 
 int
@@ -2911,27 +2874,33 @@ getimage(IMAGE* pDstImg, const wchar_t* pImgFile, int zoomWidth, int zoomHeight)
 }
 
 int
-getimage(IMAGE* pDstImg, const char* pResType, const char* pResName, int zoomWidth, int zoomHeight)
+getimage(IMAGE* pDstImg, const char* pResType, const char* pResName,
+	int zoomWidth, int zoomHeight)
 {
 	return pDstImg->getimage(pResType, pResName, zoomWidth, zoomHeight);
 }
 
 int
-getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName, int zoomWidth, int zoomHeight)
+getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName,
+	int zoomWidth, int zoomHeight)
 {
 	return pDstImg->getimage(pResType, pResName, zoomWidth, zoomHeight);
 }
 
 void
-putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* const pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
+putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
+	IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
 {
-	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, dwRop);
+	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
+		srcWidth, srcHeight, dwRop);
 }
 
 void
-putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* const pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
+putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
+	int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
 {
-	pSrcImg->putimage(nullptr, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, dwRop);
+	pSrcImg->putimage(nullptr, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
+		srcWidth, srcHeight, dwRop);
 }
 
 int
@@ -3009,7 +2978,7 @@ imagefilter_blurring(
 	int nHeightDest
 )
 {
-	IMAGE* const img = CONVERT_IMAGE(imgdest);
+	const auto img = CONVERT_IMAGE(imgdest);
 	int ret = 0;
 	if(img)
 	{
@@ -3022,12 +2991,12 @@ imagefilter_blurring(
 int
 saveimage(IMAGE* pimg, const char*  filename)
 {
-	IMAGE* const img = CONVERT_IMAGE(pimg);
+	const auto img = CONVERT_IMAGE(pimg);
+
 	int ret = 0;
+
 	if(img)
-	{
 		ret = img->saveimage(filename);
-	}
 	CONVERT_IMAGE_END;
 	return ret;
 }
@@ -3035,12 +3004,11 @@ saveimage(IMAGE* pimg, const char*  filename)
 int
 saveimage(IMAGE* pimg, const wchar_t* filename)
 {
-	IMAGE* const img = CONVERT_IMAGE(pimg);
+	const auto img = CONVERT_IMAGE(pimg);
 	int ret = 0;
+
 	if(img)
-	{
 		ret = img->saveimage(filename);
-	}
 	CONVERT_IMAGE_END;
 	return ret;
 }

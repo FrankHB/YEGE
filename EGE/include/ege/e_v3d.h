@@ -65,9 +65,9 @@ struct VECTOR3D
 };
 
 // 3d 计算辅助函数
-void EGEAPI rotate_point3d_x(VECTOR3D*   pt, float r); //弧度，右手定则
-void EGEAPI rotate_point3d_y(VECTOR3D*   pt, float r);
-void EGEAPI rotate_point3d_z(VECTOR3D*   pt, float r);
+EGEAPI void rotate_point3d_x(VECTOR3D*   pt, float r); //弧度，右手定则
+EGEAPI void rotate_point3d_y(VECTOR3D*   pt, float r);
+EGEAPI void rotate_point3d_z(VECTOR3D*   pt, float r);
 
 }
 

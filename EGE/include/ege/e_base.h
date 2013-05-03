@@ -419,12 +419,12 @@ struct ege_colpoint
 	color_t color;
 };
 
-void EGEAPI setrendermode(rendermode_e mode);
-void EGEAPI initgraph(int Width, int Height, int Flag = INIT_DEFAULT);    // 初始化图形环境
+EGEAPI void setrendermode(rendermode_e mode);
+EGEAPI void initgraph(int Width, int Height, int Flag = INIT_DEFAULT);    // 初始化图形环境
 
-void EGEAPI window_getviewport(struct viewporttype* viewport);
-void EGEAPI window_getviewport(int* left, int* top, int* right, int* bottom);
-void EGEAPI window_setviewport(int  left, int  top, int  right, int  bottom);
+EGEAPI void window_getviewport(struct viewporttype* viewport);
+EGEAPI void window_getviewport(int* left, int* top, int* right, int* bottom);
+EGEAPI void window_setviewport(int  left, int  top, int  right, int  bottom);
 
 }
 

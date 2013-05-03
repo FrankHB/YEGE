@@ -31,10 +31,10 @@ struct msg_createwindow
 	LPVOID param;
 };
 
-void EGEAPI setinitmode(int mode = INIT_DEFAULT, int x = CW_USEDEFAULT, int y = CW_USEDEFAULT); //设置初始化模式，mode=0为普通，1为无边框窗口，xy是初始窗口坐标
+EGEAPI void setinitmode(int mode = INIT_DEFAULT, int x = CW_USEDEFAULT, int y = CW_USEDEFAULT); //设置初始化模式，mode=0为普通，1为无边框窗口，xy是初始窗口坐标
 
-void EGEAPI setcaption(const char*  caption);
-void EGEAPI setcaption(const wchar_t* caption);
+EGEAPI void setcaption(const char*  caption);
+EGEAPI void setcaption(const wchar_t* caption);
 
 int  EGEAPI attachHWND(::HWND hWnd);
 ::HWND        EGEAPI getHWnd();         // 获取绘图窗口句柄
