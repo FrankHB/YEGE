@@ -8,7 +8,6 @@
 #ifndef Inc_ege_head_h_
 #define Inc_ege_head_h_
 
-#define _GRAPH_LIB_BUILD_
 #include "ege.h"
 #include "thread_queue.h"
 

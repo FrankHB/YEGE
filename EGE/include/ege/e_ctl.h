@@ -271,11 +271,7 @@ private:
 	egeControlBase* m_parent;
 	static int s_maxchildid;   // 下一次子控件分配ID值
 
-#ifdef _GRAPH_LIB_BUILD_
-public:
-#else
 private:
-#endif
 	void* m_childmap;       // 子控件
 	void* m_childzorder;    // 子控件排序
 
