@@ -21,8 +21,6 @@
 namespace ege
 {
 
-_graph_setting& graph_setting = *(_graph_setting*)std::malloc(sizeof(_graph_setting));
-
 static bool g_has_init = false;
 static ::DWORD g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
 static ::DWORD g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;

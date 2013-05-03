@@ -1,6 +1,7 @@
 ﻿#include "global.h"
 #include "head.h" // for IMAGE;
 #include <winbase.h>
+#include <memory> // for std::unique_ptr;
 
 namespace ege
 {
@@ -451,6 +452,22 @@ _graph_setting::_waitdealmessage()
 	ege_sleep(1);
 	return !exit_window;
 }
+
+
+namespace
+{
+
+_graph_setting&
+get_global_state()
+{
+	static std::unique_ptr<_graph_setting> p(new _graph_setting());
+
+	return *p;
+}
+
+}
+
+_graph_setting& graph_setting(get_global_state());
 
 } // namespace ege
 
