@@ -1,6 +1,7 @@
-﻿#ifndef Inc_ege_e_windows_h_
-#define Inc_ege_e_windows_h_
+﻿#ifndef Inc_ege_windows_h_
+#define Inc_ege_windows_h_
 
+#include "ege/def.h"
 #include <windows.h>
 
 #ifndef WM_MOUSEWHEEL

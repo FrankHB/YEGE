@@ -16,7 +16,7 @@ Code::Blocks 。
 移除 GDI+ 源代码，需要显式依赖 GDI+（默认 MinGW 已提供）；移除 EGE_GDIPLUS 宏。
 移除 zlib 和 libpng 源代码，需要显式依赖 zlib1.dll 和 libpng16.dll 。
 
-非兼容接口
+非向后兼容接口
 ----
 入口统一为 ::main 。
 编译为 DLL 无需定义宏。
@@ -25,9 +25,13 @@ Code::Blocks 。
 去除所有标记为 deprecated 的接口。
 去除 Sleep 宏。
 原型 PVOID EGEAPI getProcfunc(); 更改为 EGEAPI ::WNDPROC getProcfunc(); 。
-移除 Array 和 Set 模版，改用 std::vector 和 std::set 替代。
+移除 Array 和 Set 模版。
 移除 _Cdecl 宏。
 移除 PIMAGE 类型，用 IMAGE* 替代。
+
+向后兼容但不保证向前兼容原始实现的接口
+----
+暂无。
 
 兼容接口和实现调整
 ----
@@ -39,6 +43,7 @@ Windows SDK 类型 WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别用 wcha
 实现方式
 ----
 随机数改用 C++11 标准库 <random> 实现。
+移除的 Array 和 Set 模版改用 std::vector 和 std::set 替代。
 移除宏 SWAP ，使用 C++ 标准库 std::swap 代替。
 移除宏 _GRAPH_LIB_BUILD_ 。
 

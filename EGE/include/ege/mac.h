@@ -1,5 +1,5 @@
-﻿#ifndef Inc_ege_e_mac_h_
-#define Inc_ege_e_mac_h_
+﻿#ifndef Inc_ege_mac_h_
+#define Inc_ege_mac_h_
 
 // 绘图环境初始化参数
 #define INITGRAPH(x, y) struct _initgraph_{_initgraph_(){initgraph(x, y);}\

@@ -1,6 +1,7 @@
 #ifndef Inc_ege_button_h_
 #define Inc_ege_button_h_
 
+#include "ege/ctl.h"
 #include <algorithm>
 
 #ifdef DEBUG
@@ -27,7 +28,8 @@ public:
 	*
 	* @return 0
 	*/
-	virtual int onKeyDown(int key, int flag)
+	virtual int
+	onKeyDown(int key, int)
 	{
 		if((key == 13) || (key == 32))
 		{
@@ -44,7 +46,8 @@ public:
 	*
 	* @return 0
 	*/
-	virtual int onKeyUp(int key, int flag)
+	virtual int
+	onKeyUp(int key, int)
 	{
 		if(((key == 13) || (key == 32)) && _pushed)
 		{
@@ -56,9 +59,7 @@ public:
 				}
 			}
 			else
-			{
 				onClick();
-			}
 		}
 		_pushed = false;
 		redraw();
@@ -74,7 +75,8 @@ public:
 	*
 	* @return 0
 	*/
-	virtual int onMouse(int x, int y, int flag)
+	virtual int
+	onMouse(int x, int y, int flag)
 	{
 		if((flag & mouse_flag_left) && (flag & mouse_msg_down))
 		{
@@ -109,7 +111,8 @@ public:
 	*
 	* @return 0
 	*/
-	virtual int onUpdate()
+	virtual int
+	onUpdate()
 	{
 		return 0;
 	}
@@ -118,36 +121,42 @@ public:
 	*
 	* @return 0
 	*/
-	virtual int onGetFocus()
+	virtual int
+	onGetFocus()
 	{
 		return 0;
 	}
 	/**
 	* @brief 失去输入焦点时调用
 	*/
-	virtual void onLostFocus()
+	virtual void
+	onLostFocus()
 	{
 		_pushed = false;
 		redraw();
 	}
 	// 设置尺寸前调用，自定义修正函数
-	virtual void onSizing(int* w, int* h)
+	virtual void
+	onSizing(int* w, int* h)
 	{
 		//egeControlBase::onSizing(w,h);
 	}
 	// 响应尺寸变化函数
-	virtual void onSize(int w, int h)
+	virtual void
+	onSize(int w, int h)
 	{
 		//egeControlBase::onSize(w,h);
 		updatesidewidth();
 		redraw();
 	}
 	// 重绘函数，尽量请画到pimg上，以便能控制绘画目标
-	virtual void onDraw(IMAGE* pimg) const
+	virtual void
+	onDraw(IMAGE* pimg) const
 	{
 	}
 	// 尺寸变化时调用，用于重画过滤缓冲区内容
-	virtual void onResetFilter()
+	virtual void
+	onResetFilter()
 	{
 	}
 	//virtual void onAddChild(egeControlBase* pChild){}
@@ -252,7 +261,8 @@ public:
 	*
 	* @param alpha 0x00 - 0xFF
 	*/
-	void alpha(int alpha)
+	void
+	alpha(int alpha)
 	{
 		if(alpha < 0)
 		{
@@ -281,7 +291,8 @@ public:
 	*
 	* @return alpha
 	*/
-	int alpha() const
+	int
+	alpha() const
 	{
 		return _alpha;
 	}
@@ -290,7 +301,8 @@ public:
 	*
 	* @param color 背景色
 	*/
-	void bgcolor(COLORREF color)
+	void
+	bgcolor(COLORREF color)
 	{
 		_bg_color = color;
 		redraw();
@@ -300,7 +312,8 @@ public:
 	*
 	* @return 背景色
 	*/
-	COLORREF bgcolor() const
+	COLORREF
+	bgcolor() const
 	{
 		return _bg_color;
 	}
@@ -310,7 +323,8 @@ public:
 	* @param fun 回调函数指针，当且仅当返回值为0时会自动调用onClick
 	* @param param 附加参数，将会原样传递给回调函数
 	*/
-	void callback(int (*fun)(void*), void* param)
+	void
+	callback(int(*fun)(void*), void* param)
 	{
 		callback_param = param;
 		_on_click = fun;
@@ -321,8 +335,9 @@ public:
 	*
 	* @return 回调函数指针；若未设置，返回 nullptr
 	*/
-	template <typename T>
-	T callback() const
+	template<typename T>
+	T
+	callback() const
 	{
 		return _on_click;
 	}
@@ -331,7 +346,8 @@ public:
 	*
 	* @param text 文本
 	*/
-	void caption(const char* text)
+	void
+	caption(const char* text)
 	{
 		strcpy(_caption, text);
 		redraw();
@@ -341,7 +357,8 @@ public:
 	*
 	* @return 文本
 	*/
-	const char* caption() const
+	const char*
+	caption() const
 	{
 		return _caption;
 		//redraw();
@@ -351,7 +368,8 @@ public:
 	*
 	* @param fontface 字体名
 	*/
-	void font(const char* fontface)
+	void
+	font(const char* fontface)
 	{
 		strcpy(_face, fontface);
 		redraw();
@@ -361,7 +379,8 @@ public:
 	*
 	* @return 字体名
 	*/
-	const char* font() const
+	const char*
+	font() const
 	{
 		return _face;
 		//redraw();
@@ -371,7 +390,8 @@ public:
 	*
 	* @param height
 	*/
-	void fontsize(int height)
+	void
+	fontsize(int height)
 	{
 		_font_height = height;
 		redraw();
@@ -381,7 +401,8 @@ public:
 	*
 	* @return 字体尺寸
 	*/
-	int fontsize() const
+	int
+	fontsize() const
 	{
 		return _font_height;
 	}
@@ -390,7 +411,8 @@ public:
 	*
 	* @param color 颜色
 	*/
-	void linecolor(COLORREF color)
+	void
+	linecolor(COLORREF color)
 	{
 		_line_color = color;
 		redraw();
@@ -400,7 +422,8 @@ public:
 	*
 	* @return 线条颜色
 	*/
-	COLORREF linecolor() const
+	COLORREF
+	linecolor() const
 	{
 		return _line_color;
 	}
@@ -410,7 +433,8 @@ public:
 	*
 	* @param logger
 	*/
-	void logger(label* logger)
+	void
+	logger(label* logger)
 	{
 		_logger = logger;
 	}
@@ -419,7 +443,8 @@ public:
 	*
 	* @return
 	*/
-	label* logger() const
+	label*
+	logger() const
 	{
 		return _logger;
 	}
@@ -429,7 +454,8 @@ public:
 	*
 	* @param color 阴影颜色
 	*/
-	void shadowcolor(COLORREF color)
+	void
+	shadowcolor(COLORREF color)
 	{
 		_shadow_color = color;
 		redraw();
@@ -439,7 +465,8 @@ public:
 	*
 	* @return 阴影颜色
 	*/
-	COLORREF shadowcolor() const
+	COLORREF
+	shadowcolor() const
 	{
 		return _shadow_color;
 	}
@@ -448,7 +475,8 @@ public:
 	*
 	* @param color 文本颜色
 	*/
-	void textcolor(COLORREF color)
+	void
+	textcolor(COLORREF color)
 	{
 		_text_color = color;
 		redraw();
@@ -458,7 +486,8 @@ public:
 	*
 	* @return 文本颜色
 	*/
-	COLORREF textcolor() const
+	COLORREF
+	textcolor() const
 	{
 		return _text_color;
 	}
@@ -466,7 +495,8 @@ protected:
 	/**
 	* @brief 修正边的宽度
 	*/
-	void updatesidewidth()
+	void
+	updatesidewidth()
 	{
 		_side_width = std::min(geth(), getw()) * 0.2;
 	}
@@ -476,7 +506,8 @@ protected:
 	*
 	* @param msg 调试信息文本
 	*/
-	void logout(const char* msg)
+	void
+	logout(const char* msg)
 	{
 		if(_logger)
 		{

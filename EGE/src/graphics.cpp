@@ -14,7 +14,7 @@
 #include <ctime>
 #include <cstdio>
 #include <cstdlib>
-#include "ege/head.h"
+#include "head.h"
 
 
 namespace ege

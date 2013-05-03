@@ -1,7 +1,7 @@
 ﻿#ifndef Inc_ege_label_h_
 #define Inc_ege_label_h_
 
-#include "ege/e_ctl.h"
+#include "ege/ctl.h"
 
 class label : public egeControlBase
 {

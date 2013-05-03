@@ -1,9 +1,9 @@
-﻿#ifndef Inc_ege_e_base_h_
-#define Inc_ege_e_base_h_
+﻿#ifndef Inc_ege_base_h_
+#define Inc_ege_base_h_
 
 #include <cmath>
-#include "e_def.h"
-#include "e_colorbase.h"
+#include "ege/def.h"
+#include "ege/colorbase.h"
 
 namespace ege
 {

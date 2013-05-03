@@ -1,7 +1,7 @@
-﻿#ifndef Inc_ege_e_gdi_h_
-#define Inc_ege_e_gdi_h_
+﻿#ifndef Inc_ege_gdi_h_
+#define Inc_ege_gdi_h_
 
-#include "e_img.h"
+#include "ege/img.h"
 #include <windows.h>
 
 namespace ege

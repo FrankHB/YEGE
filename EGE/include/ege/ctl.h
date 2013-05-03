@@ -1,9 +1,9 @@
-﻿#ifndef Inc_ege_e_ctl_h_
-#define Inc_ege_e_ctl_h_
+﻿#ifndef Inc_ege_ctl_h_
+#define Inc_ege_ctl_h_
 
+#include "ege/mac.h"
+#include "ege/img.h"
 #include <wingdi.h>
-#include "e_mac.h"
-#include "e_img.h"
 
 namespace ege
 {

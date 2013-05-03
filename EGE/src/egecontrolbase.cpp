@@ -1,5 +1,5 @@
 ﻿#include <algorithm>
-#include "ege/head.h"
+#include "head.h"
 #include <set>
 #include <vector>
 

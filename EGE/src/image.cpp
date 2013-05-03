@@ -1,4 +1,4 @@
-﻿#include "ege/head.h"
+﻿#include "head.h"
 #include "libpng/png.h"
 #include "libpng/pngstruct.h"
 #include "libpng/pnginfo.h"

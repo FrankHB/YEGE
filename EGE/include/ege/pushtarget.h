@@ -1,5 +1,7 @@
-﻿#ifndef Inc_ege_e_pushtarget_h_
-#define Inc_ege_e_pushtarget_h_
+﻿#ifndef Inc_ege_pushtarget_h_
+#define Inc_ege_pushtarget_h_
+
+#include "ege/def.h"
 
 namespace ege
 {

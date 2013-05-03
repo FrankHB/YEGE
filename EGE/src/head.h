@@ -1,12 +1,5 @@
-﻿/*
-* EGE (Easy Graphics Engine)
-* filename  ege_head.cpp
-
-公共声明头文件（私有，不对外使用）
-*/
-
-#ifndef Inc_ege_head_h_
-#define Inc_ege_head_h_
+﻿#ifndef Inc_ege_e_head_h_
+#define Inc_ege_e_head_h_
 
 #include "ege.h"
 #include "thread_queue.h"

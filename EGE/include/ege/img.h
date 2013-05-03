@@ -1,7 +1,7 @@
-﻿#ifndef Inc_ege_e_img_h_
-#define Inc_ege_e_img_h_
+﻿#ifndef Inc_ege_img_h_
+#define Inc_ege_img_h_
 
-#include "e_base.h"
+#include "ege/base.h"
 
 namespace ege
 {

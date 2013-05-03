@@ -1,10 +1,10 @@
-﻿#ifndef Inc_ege_e_music_h_
-#define Inc_ege_e_music_h_
+﻿#ifndef Inc_ege_music_h_
+#define Inc_ege_music_h_
 
-#include <wingdi.h>
-#include "e_base.h"
-#include "e_mac.h"
-#include "e_img.h"
+#include "ege/base.h"
+#include "ege/mac.h"
+#include "ege/img.h"
+#include <windows.h>
 
 namespace ege
 {

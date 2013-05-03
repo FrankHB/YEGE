@@ -1,8 +1,8 @@
-﻿#ifndef Inc_ege_e_text_h_
-#define Inc_ege_e_text_h_
+﻿#ifndef Inc_ege_text_h_
+#define Inc_ege_text_h_
 
-#include "e_windows.h"
-#include "e_img.h"
+#include "ege/windows.h"
+#include "ege/img.h"
 
 namespace ege
 {

@@ -1,7 +1,7 @@
-﻿#ifndef Inc_ege_e_v3d_h_
-#define Inc_ege_e_v3d_h_
+﻿#ifndef Inc_ege_v3d_h_
+#define Inc_ege_v3d_h_
 
-#include "e_def.h"
+#include "ege/def.h"
 
 namespace ege
 {
@@ -64,10 +64,16 @@ struct VECTOR3D
 	static float GetAngel(const VECTOR3D& e, const VECTOR3D& s = VECTOR3D(0.0f, 0.0f, 1.0f));
 };
 
+
 // 3d 计算辅助函数
-EGEAPI void rotate_point3d_x(VECTOR3D*   pt, float r); //弧度，右手定则
-EGEAPI void rotate_point3d_y(VECTOR3D*   pt, float r);
-EGEAPI void rotate_point3d_z(VECTOR3D*   pt, float r);
+EGEAPI void
+rotate_point3d_x(VECTOR3D* pt, float r); //弧度，右手定则
+
+EGEAPI void
+rotate_point3d_y(VECTOR3D* pt, float r);
+
+EGEAPI void
+rotate_point3d_z(VECTOR3D* pt, float r);
 
 }
 

@@ -1,21 +1,33 @@
 ﻿#ifndef INC_ege_h_
 #define INC_ege_h_
 
-#include "ege/e_def.h"
-#include "ege/e_color.h"
-#include "ege/e_proc.h"
-#include "ege/e_v3d.h"
-#include "ege/e_env.h"
-#include "ege/e_gdi.h"
-#include "ege/e_time.h"
-#include "ege/e_text.h"
-#include "ege/e_pushtarget.h"
-#include "ege/e_ctl.h"
-#include "ege/e_input.h"
-#include "ege/e_music.h"
-#include "ege/e_compress.h"
+#include "ege/def.h"
+#include "ege/mac.h"
+#include "ege/base.h"
+#include "ege/colorbase.h"
+#include "ege/color.h"
+#include "ege/proc.h"
+#include "ege/v3d.h"
+#include "ege/env.h"
+#include "ege/img.h"
+#include "ege/gdi.h"
+#include "ege/time.h"
+#include "ege/text.h"
+#include "ege/pushtarget.h"
+#include "ege/ctl.h"
+#include "ege/input.h"
+#include "ege/music.h"
+#include "ege/compress.h"
+#include "ege/windows.h"
 #include "ege/random.h"
-#include "ege/e_fps.h"
+#include "ege/fpsbase.h"
+
+#if 0
+#include "ege/button.h"
+#include "ege/fps.h"
+#include "ege/label.h"
+#include "ege/sys_edit.h"
+#endif
 
 namespace ege
 {

@@ -1,7 +1,7 @@
 ﻿#ifndef Inc_ege_random_h_
 #define Inc_ege_random_h_
 
-#include "ege/head.h"
+#include "ege/def.h"
 
 namespace ege
 {
@@ -9,7 +9,6 @@ namespace ege
 void            EGEAPI randomize();
 unsigned int    EGEAPI random(unsigned int n);
 double          EGEAPI randomf();
-
 
 }
 

@@ -1,4 +1,4 @@
-﻿#include "ege/head.h"
+﻿#include "head.h"
 #include <winbase.h>
 
 namespace ege

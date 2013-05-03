@@ -1,5 +1,5 @@
-﻿#ifndef Inc_ege_e_colorbase_h_
-#define Inc_ege_e_colorbase_h_
+﻿#ifndef Inc_ege_colorbase_h_
+#define Inc_ege_colorbase_h_
 
 #include <cstdint>
 

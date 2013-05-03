@@ -1,7 +1,7 @@
 ﻿#ifndef Inc_ege_fps_h_
 #define Inc_ege_fps_h_
 
-#include "ege/e_ctl.h"
+#include "ege/ctl.h"
 
 namespace ege
 {
