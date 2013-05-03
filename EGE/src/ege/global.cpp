@@ -3,6 +3,7 @@
 #include <winbase.h>
 #include <memory> // for std::unique_ptr;
 #include <functional> // for std::bind;
+#include <cassert>
 
 namespace ege
 {
@@ -70,6 +71,31 @@ _graph_setting::_set_activepage(int page)
 		img_page[page] = new IMAGE;
 		img_page[page]->createimage(dc_w, dc_h);
 		dc = img_page[page]->m_hDC;
+	}
+}
+
+void
+_graph_setting::_set_mode(int gdriver, int gmode)
+{
+	if(gdriver == TRUECOLORSIZE)
+	{
+		::RECT rect;
+
+		if(_g_attach_hwnd)
+			::GetClientRect(_g_attach_hwnd, &rect);
+		else
+			::GetWindowRect(GetDesktopWindow(), &rect);
+		dc_w = short(gmode & 0xFFFF);
+		dc_h = short((unsigned int)gmode >> 16);
+		if(dc_w < 0)
+			dc_w = rect.right;
+		if(dc_h < 0)
+			dc_h = rect.bottom;
+	}
+	else
+	{
+		dc_w = 640;
+		dc_h = 480;
 	}
 }
 
@@ -367,6 +393,41 @@ _graph_setting::_getmouse_p()
 }
 #endif
 
+void
+_graph_setting::_init_graph()
+{
+	auto hDC(::GetDC(hwnd));
+
+	dc = hDC;
+	window_dc = hDC;
+	img_timer_update = newimage();
+	msgkey_queue = new thread_queue<EGEMSG>;
+	msgmouse_queue = new thread_queue<EGEMSG>;
+	setactivepage(0);
+	settarget(nullptr);
+	setvisualpage(0);
+	window_setviewport(0, 0, dc_w, dc_h);
+	//::ReleaseDC(hwnd, hDC);
+}
+
+void
+_graph_setting::_init_img_page()
+{
+	for(int page = 0; page < BITMAP_PAGE_SIZE; ++page)
+		if(img_page[page])
+			img_page[page]->createimage(dc_w, dc_h);
+	_init_graph();
+	::ShowWindow(hwnd, SW_SHOW);
+}
+
+void
+_graph_setting::_init_img_page_f()
+{
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, nullptr);
+	_g_has_init = true;
+}
+
 int
 _graph_setting::_kbhit_ex(int flag)
 {
@@ -386,6 +447,93 @@ _graph_setting::_keystate(int key)
 	if(!(::USHORT(::GetKeyState(key)) & 0x8000))
 		keystatemap[key] = 0;
 	return keystatemap[key];
+}
+
+void
+_graph_setting::_on_destroy()
+{
+	exit_window = 1;
+	if(dc)
+		::ReleaseDC(hwnd, window_dc);
+		// release objects, not finish
+	::PostQuitMessage(0);
+	if(close_manually && use_force_exit)
+		::ExitProcess(0);
+}
+
+void
+_graph_setting::_on_ime_control(::HWND hwnd, ::WPARAM wparam, ::LPARAM lparam)
+{
+	if(wparam == IMC_SETSTATUSWINDOWPOS)
+	{
+		::HIMC hImc = ImmGetContext(hwnd);
+
+		COMPOSITIONFORM cpf{0, POINT(), ::RECT()};
+
+		cpf.dwStyle = CFS_POINT;
+		cpf.ptCurrentPos = *(LPPOINT)lparam;
+		::ImmSetCompositionWindow(hImc, &cpf);
+	}
+}
+
+void
+_graph_setting::_on_key(::UINT message, unsigned long keycode, ::LPARAM keyflag)
+{
+	unsigned msg = 0;
+
+	if(message == WM_KEYDOWN && keycode < MAX_KEY_VCODE)
+	{
+		msg = 1;
+		keystatemap[keycode] = 1;
+	}
+	if(message == WM_KEYUP && keycode < MAX_KEY_VCODE)
+		keystatemap[keycode] = 0;
+	if(callback_key)
+	{
+		int ret;
+
+		if(message == WM_CHAR)
+			msg = 2;
+		ret = callback_key(callback_key_param, msg, (int)keycode);
+		if(ret == 0)
+			return;
+	}
+	msgkey_queue->push(EGEMSG{hwnd, message, keycode, keyflag,
+		::GetTickCount(), 0, 0});
+}
+
+void
+_graph_setting::_on_mouse_button_up(::HWND h_wnd, ::UINT msg, ::WPARAM w_param,
+	::LPARAM l_param)
+{
+	auto* l = &mouse_state_l;
+	auto vk = VK_LBUTTON;
+
+	switch(msg)
+	{
+	case WM_LBUTTONUP:
+		break;
+	case WM_MBUTTONUP:
+		l = &mouse_state_m;
+		vk = VK_MBUTTON;
+		break;
+	case WM_RBUTTONUP:
+		l = &mouse_state_r;
+		vk = VK_RBUTTON;
+		break;
+	default:
+		assert(false);
+		return;
+	}
+	mouse_lastup_x = (short int)((::UINT)l_param & 0xFFFF);
+	mouse_lastup_y = (short int)((::UINT)l_param >> 16);
+	*l = 0;
+	keystatemap[vk] = 0;
+	if(mouse_state_l == 0 && mouse_state_m == 0
+		&& mouse_state_r == 0)
+		::ReleaseCapture();
+	if(h_wnd == hwnd)
+		_push_mouse_msg(msg, w_param, l_param);
 }
 
 void
@@ -422,6 +570,44 @@ _graph_setting::_on_repaint(::HWND hwnd, ::HDC dc)
 		base_x - left, base_y - top, SRCCOPY);
 	if(release)
 		::ReleaseDC(hwnd, dc);
+}
+
+void
+_graph_setting::_on_setcursor(::HWND hwnd)
+{
+	if(mouse_show)
+		::SetCursor(::LoadCursor(nullptr, IDC_ARROW));
+	else
+	{
+		::RECT rect;
+		POINT pt;
+
+		GetCursorPos(&pt);
+		::ScreenToClient(hwnd, &pt);
+		::GetClientRect(hwnd, &rect);
+		if(pt.x >= rect.left && pt.x < rect.right && pt.y >= rect.top && pt.y <= rect.bottom)
+			::SetCursor(nullptr);
+		else
+			::SetCursor(::LoadCursor(nullptr, IDC_ARROW));
+	}
+}
+
+void
+_graph_setting::_on_timer(::HWND hwnd, unsigned id)
+{
+	if(!skip_timer_mark && id == RENDER_TIMER_ID)
+	{
+		if(update_mark_count <= 0)
+		{
+			update_mark_count = UPDATE_MAX_CALL;
+			_on_repaint(hwnd, nullptr);
+		}
+		if(timer_stop_mark)
+		{
+			timer_stop_mark = false;
+			skip_timer_mark = true;
+		}
+	}
 }
 
 int
@@ -493,6 +679,55 @@ _graph_setting::_peekmouse()
 	return msg;
 }
 
+void
+_graph_setting::_process_ui_msg(EGEMSG& qmsg)
+{
+	if((qmsg.flag & 1))
+		return;
+	qmsg.flag |= 1;
+	if(qmsg.message >= WM_KEYFIRST && qmsg.message <= WM_KEYLAST)
+	{
+		if(qmsg.message == WM_KEYDOWN)
+			egectrl_root->keymsgdown(unsigned(qmsg.wParam), 0); // 以后补加flag
+		else if(qmsg.message == WM_KEYUP)
+			egectrl_root->keymsgup(unsigned(qmsg.wParam), 0); // 以后补加flag
+		else if(qmsg.message == WM_CHAR)
+			egectrl_root->keymsgchar(unsigned(qmsg.wParam), 0); // 以后补加flag
+	}
+	else if(qmsg.message >= WM_MOUSEFIRST && qmsg.message <= WM_MOUSELAST)
+	{
+		int x = (short int)((::UINT)qmsg.lParam & 0xFFFF),
+			y = (short int)((::UINT)qmsg.lParam >> 16);
+		if(qmsg.message == WM_LBUTTONDOWN)
+			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_left);
+		else if(qmsg.message == WM_LBUTTONUP)
+			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_left);
+		else if(qmsg.message == WM_RBUTTONDOWN)
+			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_right);
+		else if(qmsg.message == WM_RBUTTONUP)
+			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_right);
+		else if(qmsg.message == WM_MOUSEMOVE)
+		{
+			int flag = 0;
+
+			if(keystatemap[VK_LBUTTON])
+				flag |= mouse_flag_left;
+			if(keystatemap[VK_RBUTTON])
+				flag |= mouse_flag_right;
+			egectrl_root->mouse(x, y, mouse_msg_move | flag);
+		}
+	}
+}
+
+void
+_graph_setting::_push_mouse_msg(::UINT message, ::WPARAM wparam,
+	::LPARAM lparam)
+{
+	msgmouse_queue->push(EGEMSG{hwnd, message, wparam, lparam, ::GetTickCount(),
+		::UINT(mouse_state_m << 2 | mouse_state_r << 1 | mouse_state_l << 0),
+		::UINT()});
+}
+
 int
 _graph_setting::_redraw_window(::HDC dc)
 {
@@ -557,46 +792,6 @@ _graph_setting::_update()
 }
 
 void
-_graph_setting::_process_ui_msg(EGEMSG& qmsg)
-{
-	if((qmsg.flag & 1))
-		return;
-	qmsg.flag |= 1;
-	if(qmsg.message >= WM_KEYFIRST && qmsg.message <= WM_KEYLAST)
-	{
-		if(qmsg.message == WM_KEYDOWN)
-			egectrl_root->keymsgdown(unsigned(qmsg.wParam), 0); // 以后补加flag
-		else if(qmsg.message == WM_KEYUP)
-			egectrl_root->keymsgup(unsigned(qmsg.wParam), 0); // 以后补加flag
-		else if(qmsg.message == WM_CHAR)
-			egectrl_root->keymsgchar(unsigned(qmsg.wParam), 0); // 以后补加flag
-	}
-	else if(qmsg.message >= WM_MOUSEFIRST && qmsg.message <= WM_MOUSELAST)
-	{
-		int x = (short int)((::UINT)qmsg.lParam & 0xFFFF),
-			y = (short int)((::UINT)qmsg.lParam >> 16);
-		if(qmsg.message == WM_LBUTTONDOWN)
-			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_left);
-		else if(qmsg.message == WM_LBUTTONUP)
-			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_left);
-		else if(qmsg.message == WM_RBUTTONDOWN)
-			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_right);
-		else if(qmsg.message == WM_RBUTTONUP)
-			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_right);
-		else if(qmsg.message == WM_MOUSEMOVE)
-		{
-			int flag = 0;
-
-			if(keystatemap[VK_LBUTTON])
-				flag |= mouse_flag_left;
-			if(keystatemap[VK_RBUTTON])
-				flag |= mouse_flag_right;
-			egectrl_root->mouse(x, y, mouse_msg_move | flag);
-		}
-	}
-}
-
-void
 _graph_setting::_update_GUI()
 {
 	using namespace std;
@@ -618,6 +813,26 @@ _graph_setting::_waitdealmessage()
 	}
 	ege_sleep(1);
 	return !exit_window;
+}
+
+void
+_graph_setting::_windowmanager(bool create, struct msg_createwindow* msg)
+{
+	if(create)
+	{
+		msg->hwnd = ::CreateWindowExW(msg->exstyle, msg->classname, nullptr,
+			msg->style, 0, 0, 0, 0, getHWnd(), (HMENU)msg->id, getHInstance(),
+			nullptr);
+		if(msg->hEvent)
+			::SetEvent(msg->hEvent);
+	}
+	else
+	{
+		if(msg->hwnd)
+			::DestroyWindow(msg->hwnd);
+		if(msg->hEvent)
+			::SetEvent(msg->hEvent);
+	}
 }
 
 

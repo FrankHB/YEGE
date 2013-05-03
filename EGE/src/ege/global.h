@@ -97,6 +97,11 @@ struct _graph_setting
 	/* 函数用临时缓冲区 */
 	::DWORD g_t_buff[1024 * 8];
 
+	bool _g_has_init = false;
+	::HWND _g_attach_hwnd = nullptr;
+	int _g_windowpos_x = CW_USEDEFAULT, _g_windowpos_y = CW_USEDEFAULT;
+	int _g_initoption = INIT_DEFAULT, _g_initcall = 0;
+
 	bool
 	_is_run() const;
 
@@ -109,6 +114,9 @@ struct _graph_setting
 
 	void
 	_set_activepage(int);
+
+	void
+	_set_mode(int, int);
 
 	void
 	_set_visualpage(int);
@@ -148,6 +156,15 @@ struct _graph_setting
 	_getmouse_p();
 #endif
 
+	void
+	_init_graph();
+
+	void
+	_init_img_page();
+
+	void
+	_init_img_page_f();
+
 	int
 	_kbhit_ex(int);
 
@@ -155,10 +172,28 @@ struct _graph_setting
 	_keystate(int);
 
 	void
+	_on_destroy();
+
+	static void
+	_on_ime_control(::HWND, ::WPARAM, ::LPARAM);
+
+	void
+	_on_key(::UINT, unsigned long, ::LPARAM);
+
+	void
+	_on_mouse_button_up(::HWND, ::UINT, ::WPARAM, ::LPARAM);
+
+	void
 	_on_paint(::HWND);
 
 	void
 	_on_repaint(::HWND, ::HDC);
+
+	void
+	_on_setcursor(::HWND);
+
+	void
+	_on_timer(::HWND, unsigned);
 
 	int
 	_peekkey();
@@ -166,12 +201,14 @@ struct _graph_setting
 	int
 	_peekallkey(int);
 
+	EGEMSG
+	_peekmouse();
 
 	void
 	_process_ui_msg(EGEMSG&);
 
-	EGEMSG
-	_peekmouse();
+	void
+	_push_mouse_msg(::UINT, ::WPARAM, ::LPARAM);
 
 	int
 	_redraw_window(::HDC);
@@ -184,6 +221,9 @@ struct _graph_setting
 
 	int
 	_waitdealmessage();
+
+	static void
+	_windowmanager(bool, struct msg_createwindow*);
 };
 
 
