@@ -4,7 +4,8 @@
 
 #include "msg.h"
 #include "ege/proc.h"
-#include "ege/base.h"
+#include "ege/input.h"
+#include "ege/env.h"
 #include "thread_queue.h"
 #include <windows.h>
 

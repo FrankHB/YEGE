@@ -439,11 +439,9 @@ initgraph(int* gdriver, int* gmode, char*)
 	}
 
 	::UpdateWindow(pg->hwnd);
-	{
-		//初始化鼠标位置数据
-		pg->mouse_last_x = pg->dc_w / 2;
-		pg->mouse_last_y = pg->dc_h / 2;
-	}
+	//初始化鼠标位置数据
+	pg->mouse_last_x = pg->dc_w / 2;
+	pg->mouse_last_y = pg->dc_h / 2;
 
 	static egeControlBase _egeControlBase;
 

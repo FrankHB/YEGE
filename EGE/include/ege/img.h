@@ -2,6 +2,7 @@
 #define Inc_ege_img_h_
 
 #include "ege/base.h"
+#include "ege/color.h"
 
 namespace ege
 {

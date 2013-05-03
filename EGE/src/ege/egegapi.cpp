@@ -1776,7 +1776,8 @@ getfont(::LOGFONTW* font, IMAGE* pimg)
 	CONVERT_IMAGE_END;
 }
 
-void setrendermode(rendermode_e mode)
+void
+setrendermode(rendermode_e mode)
 {
 	if(mode == RENDER_MANUAL)
 	{
@@ -1801,6 +1802,7 @@ void setrendermode(rendermode_e mode)
 	}
 }
 
+#if 0
 void
 swappage()
 {
@@ -1808,6 +1810,7 @@ swappage()
 	setvisualpage(pg->active_page);
 	setactivepage(1 - pg->active_page);
 }
+#endif
 
 void
 window_getviewport(viewporttype* viewport)

@@ -1,10 +1,21 @@
 ﻿#ifndef Inc_ege_color_h_
 #define Inc_ege_color_h_
 
-#include "ege/base.h"
+#include "ege/def.h"
 
 namespace ege
 {
+
+typedef unsigned int color_t;
+
+
+struct ege_colpoint
+{
+	float   x;
+	float   y;
+	color_t color;
+};
+
 
 // 颜色模型转换函数
 color_t     EGEAPI rgb2gray(color_t rgb);
