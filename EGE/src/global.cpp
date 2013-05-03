@@ -220,6 +220,17 @@ _graph_setting::_flushkey()
 }
 
 int
+_graph_setting::_kbhit_ex(int flag)
+{
+	if(exit_window)
+		return grNoInitGraph;
+	if(flag == 0)
+		return _peekkey();
+	else
+		return _peekallkey(flag);
+}
+
+int
 _graph_setting::_keystate(int key)
 {
 	if(key < 0 || key >= MAX_KEY_VCODE)
@@ -263,6 +274,60 @@ _graph_setting::_on_repaint(::HWND hwnd, ::HDC dc)
 		base_x - left, base_y - top, SRCCOPY);
 	if(release)
 		::ReleaseDC(hwnd, dc);
+}
+
+int
+_graph_setting::_peekkey()
+{
+	EGEMSG msg;
+
+	while(msgkey_queue->pop(msg))
+	{
+		if(msg.message == WM_CHAR || msg.message == WM_KEYDOWN)
+		{
+			if(msg.message == WM_KEYDOWN)
+				if(msg.wParam <= key_space || (msg.wParam >= key_0
+					&& msg.wParam < key_f1) || (msg.wParam >= key_semicolon
+					&& msg.wParam <= key_quote))
+					continue;
+			msgkey_queue->unpop();
+			if(msg.message == WM_CHAR)
+				return KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF);
+			if(msg.message == WM_KEYDOWN)
+			{
+				if(msg.wParam >= 0x70 && msg.wParam < 0x80)
+					return (KEYMSG_DOWN | (int(msg.wParam) + 0x100));
+				return (KEYMSG_DOWN | (int(msg.wParam) & 0xFFFF));
+			}
+			else if(msg.message == WM_KEYUP)
+				return KEYMSG_UP | (int(msg.wParam) & 0xFFFF);
+		}
+	}
+	return 0;
+}
+
+int
+_graph_setting::_peekallkey(int flag)
+{
+	EGEMSG msg;
+
+	while(msgkey_queue->pop(msg))
+	{
+		if((msg.message == WM_CHAR && (flag & KEYMSG_CHAR_FLAG)) ||
+			(msg.message == WM_KEYUP && (flag & KEYMSG_UP_FLAG)) ||
+			(msg.message == WM_KEYDOWN && (flag & KEYMSG_DOWN_FLAG)))
+		{
+			msgkey_queue->unpop();
+			if(msg.message == WM_CHAR)
+				return (KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF));
+			else if(msg.message == WM_KEYDOWN)
+				return (KEYMSG_DOWN | (int(msg.wParam) & 0xFFFF)
+					| (msg.lParam & 0x40000000 ? 0 : KEYMSG_FIRSTDOWN));
+			else if(msg.message == WM_KEYUP)
+				return KEYMSG_UP | (int(msg.wParam) & 0xFFFF);
+		}
+	}
+	return 0;
 }
 
 int

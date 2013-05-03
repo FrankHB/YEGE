@@ -101,76 +101,6 @@ guiupdate(_graph_setting* pg, egeControlBase*& root)
 	root->update();
 }
 
-
-namespace
-{
-
-int
-peekkey(_graph_setting* pg)
-{
-	EGEMSG msg;
-
-	while(pg->msgkey_queue->pop(msg))
-	{
-		if(msg.message == WM_CHAR || msg.message == WM_KEYDOWN)
-		{
-			if(msg.message == WM_KEYDOWN)
-			{
-				if(msg.wParam <= key_space || (msg.wParam >= key_0
-					&& msg.wParam < key_f1) || (msg.wParam >= key_semicolon
-					&& msg.wParam <= key_quote))
-					continue;
-			}
-			pg->msgkey_queue->unpop();
-			if(msg.message == WM_CHAR)
-				return (KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF));
-			if(msg.message == WM_KEYDOWN)
-			{
-				if(msg.wParam >= 0x70 && msg.wParam < 0x80)
-					return (KEYMSG_DOWN | (int(msg.wParam) + 0x100));
-				return (KEYMSG_DOWN | (int(msg.wParam) & 0xFFFF));
-			}
-			else if(msg.message == WM_KEYUP)
-				return (KEYMSG_UP | (int(msg.wParam) & 0xFFFF));
-		}
-	}
-	return 0;
-}
-
-int
-peekallkey(_graph_setting* pg, int flag)
-{
-	EGEMSG msg;
-
-	while(pg->msgkey_queue->pop(msg))
-	{
-		if(
-			(msg.message == WM_CHAR && (flag & KEYMSG_CHAR_FLAG)) ||
-			(msg.message == WM_KEYUP && (flag & KEYMSG_UP_FLAG)) ||
-			(msg.message == WM_KEYDOWN && (flag & KEYMSG_DOWN_FLAG)))
-		{
-			pg->msgkey_queue->unpop();
-			if(msg.message == WM_CHAR)
-			{
-				return (KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF));
-			}
-			else if(msg.message == WM_KEYDOWN)
-			{
-				return (KEYMSG_DOWN | (int(msg.wParam) & 0xFFFF)
-					| (msg.lParam & 0x40000000 ? 0 : KEYMSG_FIRSTDOWN));
-			}
-			else if(msg.message == WM_KEYUP)
-			{
-				return (KEYMSG_UP   | (int(msg.wParam) & 0xFFFF));
-			}
-		}
-	}
-	return 0;
-}
-
-}
-
-
 int
 getflush()
 {
@@ -193,23 +123,7 @@ kbmsg()
 	auto pg = &graph_setting;
 	if(pg->exit_window)
 		return grNoInitGraph;
-	return peekallkey(pg, 1);
-}
-
-int
-kbhitEx(int flag)
-{
-	auto pg = &graph_setting;
-	if(pg->exit_window)
-		return grNoInitGraph;
-	if(flag == 0)
-	{
-		return peekkey(pg);
-	}
-	else
-	{
-		return peekallkey(pg, flag);
-	}
+	return pg->_peekallkey(1);
 }
 
 int
@@ -225,7 +139,7 @@ getchEx(int flag)
 		::DWORD dw = GetTickCount();
 		do
 		{
-			key = kbhitEx(flag);
+			key = pg->_kbhit_ex(flag);
 			if(key < 0)
 				break;
 			if(key > 0)
@@ -259,7 +173,7 @@ getchEx(int flag)
 int
 kbhit()
 {
-	return kbhitEx(0);
+	return graph_setting._kbhit_ex(0);
 }
 
 int

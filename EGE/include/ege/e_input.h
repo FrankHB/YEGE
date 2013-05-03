@@ -14,8 +14,6 @@ int EGEAPI kbmsg();
 key_msg EGEAPI getkey();
 EGE_DEPRECATE(getchEx)
 int EGEAPI getchEx(int flag);
-EGE_DEPRECATE(kbhitEx)
-int EGEAPI kbhitEx(int flag);
 int EGEAPI keystate(int key);       // 获得键码为key的键（见key_code_e）是否按下，如果key使用鼠标按键的键码，则获得的是鼠标键状态
 void EGEAPI flushkey();              // 清空键盘消息缓冲区
 
