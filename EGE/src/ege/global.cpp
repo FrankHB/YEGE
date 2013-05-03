@@ -2,6 +2,7 @@
 #include "head.h" // for IMAGE;
 #include <winbase.h>
 #include <memory> // for std::unique_ptr;
+#include <functional> // for std::bind;
 
 namespace ege
 {
@@ -127,7 +128,8 @@ _graph_setting::_delay_ms(long ms)
 		}
 		_dealmessage(FORCE_UPDATE);
 		dw = _get_highfeq_time_ls() * 1000.0;
-		guiupdate(this, root);
+		_update_GUI();
+		root->update();
 		if(delay_ms_dwLast + 200.0 <= dw || delay_ms_dwLast > dw)
 			delay_ms_dwLast = dw;
 		else
@@ -220,6 +222,22 @@ _graph_setting::_getch_ex(int flag)
 		} while(!exit_window && !exit_flag && _waitdealmessage());
 	}
 	return 0;
+}
+
+int
+_graph_setting::_getflush()
+{
+	EGEMSG msg;
+	int lastkey = 0;
+
+	if(msgkey_queue->empty())
+		_dealmessage(NORMAL_UPDATE);
+	if(!msgkey_queue->empty())
+		while(msgkey_queue->pop(msg))
+			if(msg.message == WM_CHAR)
+				if(msg.message == WM_CHAR)
+					lastkey = int(msg.wParam);
+	return lastkey;
 }
 
 key_msg
@@ -538,16 +556,65 @@ _graph_setting::_update()
 	return grOk;
 }
 
+void
+_graph_setting::_process_ui_msg(EGEMSG& qmsg)
+{
+	if((qmsg.flag & 1))
+		return;
+	qmsg.flag |= 1;
+	if(qmsg.message >= WM_KEYFIRST && qmsg.message <= WM_KEYLAST)
+	{
+		if(qmsg.message == WM_KEYDOWN)
+			egectrl_root->keymsgdown(unsigned(qmsg.wParam), 0); // 以后补加flag
+		else if(qmsg.message == WM_KEYUP)
+			egectrl_root->keymsgup(unsigned(qmsg.wParam), 0); // 以后补加flag
+		else if(qmsg.message == WM_CHAR)
+			egectrl_root->keymsgchar(unsigned(qmsg.wParam), 0); // 以后补加flag
+	}
+	else if(qmsg.message >= WM_MOUSEFIRST && qmsg.message <= WM_MOUSELAST)
+	{
+		int x = (short int)((::UINT)qmsg.lParam & 0xFFFF),
+			y = (short int)((::UINT)qmsg.lParam >> 16);
+		if(qmsg.message == WM_LBUTTONDOWN)
+			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_left);
+		else if(qmsg.message == WM_LBUTTONUP)
+			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_left);
+		else if(qmsg.message == WM_RBUTTONDOWN)
+			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_right);
+		else if(qmsg.message == WM_RBUTTONUP)
+			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_right);
+		else if(qmsg.message == WM_MOUSEMOVE)
+		{
+			int flag = 0;
+
+			if(keystatemap[VK_LBUTTON])
+				flag |= mouse_flag_left;
+			if(keystatemap[VK_RBUTTON])
+				flag |= mouse_flag_right;
+			egectrl_root->mouse(x, y, mouse_msg_move | flag);
+		}
+	}
+}
+
+void
+_graph_setting::_update_GUI()
+{
+	using namespace std;
+	using namespace placeholders;
+
+	msgkey_queue->process(bind(&_graph_setting::_process_ui_msg, this, _1));
+	msgmouse_queue->process(bind(&_graph_setting::_process_ui_msg, this, _1));
+}
+
 int
 _graph_setting::_waitdealmessage()
 {
-//	MSG msg;
-
 	if(update_mark_count < UPDATE_MAX_CALL)
 	{
 		egectrl_root->draw(nullptr);
 		_update();
-		guiupdate(this, egectrl_root);
+		_update_GUI();
+		egectrl_root->update();
 	}
 	ege_sleep(1);
 	return !exit_window;

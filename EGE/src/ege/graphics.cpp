@@ -36,46 +36,6 @@ WINAPI ::DWORD messageloopthread(LPVOID lpParameter);
 namespace
 {
 
-void
-ui_msg_process(EGEMSG& qmsg)
-{
-	auto pg = &graph_setting;
-	const auto egectrl_root(pg->egectrl_root);
-
-	if((qmsg.flag & 1))
-		return;
-	qmsg.flag |= 1;
-	if(qmsg.message >= WM_KEYFIRST && qmsg.message <= WM_KEYLAST)
-	{
-		if(qmsg.message == WM_KEYDOWN)
-			egectrl_root->keymsgdown(unsigned(qmsg.wParam), 0); // 以后补加flag
-		else if(qmsg.message == WM_KEYUP)
-			egectrl_root->keymsgup(unsigned(qmsg.wParam), 0); // 以后补加flag
-		else if(qmsg.message == WM_CHAR)
-			egectrl_root->keymsgchar(unsigned(qmsg.wParam), 0); // 以后补加flag
-	}
-	else if(qmsg.message >= WM_MOUSEFIRST && qmsg.message <= WM_MOUSELAST)
-	{
-		int x = (short int)((::UINT)qmsg.lParam & 0xFFFF),
-			y = (short int)((::UINT)qmsg.lParam >> 16);
-		if(qmsg.message == WM_LBUTTONDOWN)
-			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_left);
-		else if(qmsg.message == WM_LBUTTONUP)
-			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_left);
-		else if(qmsg.message == WM_RBUTTONDOWN)
-			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_right);
-		else if(qmsg.message == WM_RBUTTONUP)
-			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_right);
-		else if(qmsg.message == WM_MOUSEMOVE)
-		{
-			int flag = 0;
-			if(pg->keystatemap[VK_LBUTTON]) flag |= mouse_flag_left;
-			if(pg->keystatemap[VK_RBUTTON]) flag |= mouse_flag_right;
-			egectrl_root->mouse(x, y, mouse_msg_move | flag);
-		}
-	}
-}
-
 int
 redraw_window(_graph_setting* pg, ::HDC dc)
 {
@@ -92,36 +52,11 @@ redraw_window(_graph_setting* pg, ::HDC dc)
 
 }
 
-
-void
-guiupdate(_graph_setting* pg, egeControlBase*& root)
-{
-	pg->msgkey_queue->process(ui_msg_process);
-	pg->msgmouse_queue->process(ui_msg_process);
-	root->update();
-}
-
-int
-getflush()
-{
-	auto pg = &graph_setting;
-	EGEMSG msg;
-	int lastkey = 0;
-	if(pg->msgkey_queue->empty())
-		pg->_dealmessage(NORMAL_UPDATE);
-	if(!pg->msgkey_queue->empty())
-		while(pg->msgkey_queue->pop(msg))
-			if(msg.message == WM_CHAR)
-				if(msg.message == WM_CHAR)
-					lastkey = int(msg.wParam);
-	return lastkey;
-}
-
 int
 kbmsg()
 {
-	return graph_setting.exit_window ? grNoInitGraph
-		: graph_setting._peekallkey(1);
+	return graph_setting.exit_window ? int(grNoInitGraph)
+		: int(graph_setting._peekallkey(1));
 }
 
 int

@@ -68,7 +68,8 @@ public:
 	{
 		return _last;
 	}
-	void process(void (*process_func)(T&))
+	template<typename F>
+	void process(F&& process_func)
 	{
 		Lock lock(&_section);
 		int r = _r;

@@ -131,6 +131,9 @@ struct _graph_setting
 	int
 	_getch_ex(int);
 
+	int
+	_getflush();
+
 	key_msg
 	_getkey();
 
@@ -163,6 +166,10 @@ struct _graph_setting
 	int
 	_peekallkey(int);
 
+
+	void
+	_process_ui_msg(EGEMSG&);
+
 	EGEMSG
 	_peekmouse();
 
@@ -172,13 +179,12 @@ struct _graph_setting
 	int
 	_update();
 
+	void
+	_update_GUI();
+
 	int
 	_waitdealmessage();
 };
-
-void guiupdate(_graph_setting* pg, egeControlBase*& root);
-
-int getflush();
 
 
 extern _graph_setting& graph_setting;

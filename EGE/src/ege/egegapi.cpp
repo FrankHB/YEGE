@@ -123,16 +123,13 @@ delay_fps(double fps)
 		}
 		pg->_dealmessage(FORCE_UPDATE);
 		dw = pg->_get_highfeq_time_ls() * 1000.0;
-		guiupdate(pg, root);
+		pg->_update_GUI();
+		root->update();
 		if(pg->delay_fps_dwLast + delay_time + avg_max_time <= dw
 			|| pg->delay_fps_dwLast > dw)
-		{
 			pg->delay_fps_dwLast = dw;
-		}
 		else
-		{
 			pg->delay_fps_dwLast += delay_time;
-		}
 	}
 	pg->skip_timer_mark = false;
 }
@@ -181,7 +178,8 @@ delay_jfps(double fps)
 		else
 			graph_setting._get_FPS(-0x100);
 		dw = pg->_get_highfeq_time_ls() * 1000.0;
-		guiupdate(pg, root);
+		pg->_update_GUI();
+		root->update();
 		if(pg->delay_fps_dwLast + delay_time + avg_max_time <= dw
 			|| pg->delay_fps_dwLast > dw)
 			pg->delay_fps_dwLast = dw;
@@ -2506,26 +2504,24 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int le
 			setfont(18, 0, L"Tahoma", &window);
 			outtextxy(3, 3, title, &window);
 			setcolor(0x0, &window);
-			{
-				::RECT rect{30, 32, w - 30, 128 - 3};
-				DrawTextW(window.m_hDC, text, -1, &rect, DT_NOPREFIX | DT_LEFT | DT_TOP | TA_NOUPDATECP | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
-			}
+
+			::RECT rect{30, 32, w - 30, 128 - 3};
+
+			DrawTextW(window.m_hDC, text, -1, &rect, DT_NOPREFIX | DT_LEFT
+				| DT_TOP | TA_NOUPDATECP | DT_WORDBREAK | DT_EDITCONTROL
+				| DT_EXPANDTABS);
 		}
 		putimage(x, y, &window);
 	}
 	edit.gettext(len, buf);
 	len = ::lstrlenW(buf);
 	while(len > 0 && (buf[len - 1] == '\r' || buf[len - 1] == '\n'))
-	{
 		buf[--len] = 0;
-	}
 	ret = len;
 	putimage(0, 0, &bg);
 	if(!lock_window)
-	{
 		setrendermode(RENDER_AUTO);
-	}
-	getflush();
+	pg->_getflush();
 	return ret;
 }
 
@@ -2539,10 +2535,9 @@ double
 fclock()
 {
 	auto pg = &graph_setting;
+
 	if(pg->fclock_start == 0)
-	{
 		pg->fclock_start = ::GetTickCount();
-	}
 	return (::GetTickCount() - pg->fclock_start) / 1000.0; //pg->_get_highfeq_time_ls();
 }
 
