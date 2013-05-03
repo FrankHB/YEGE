@@ -20,23 +20,6 @@ enum line_styles        /* Line styles for get/setlinestyle */
 	USERBIT_LINE    = PS_USERSTYLE,   /* User defined line style */
 };
 
-#if 0
-// 鼠标消息
-EGE_DEPRECATE(MOUSEMSG)
-struct MOUSEMSG
-{
-	::UINT uMsg;              // 当前鼠标消息
-	bool mkCtrl;            // Ctrl 键是否按下
-	bool mkShift;           // Shift 键是否按下
-	bool mkLButton;         // 鼠标左键是否按下
-	bool mkMButton;         // 鼠标中键是否按下
-	bool mkRButton;         // 鼠标右键是否按下
-	short x;                // 当前鼠标 x 坐标
-	short y;                // 当前鼠标 y 坐标
-	short wheel;            // 鼠标滚轮滚动值(120为基数)
-};
-#endif
-
 struct msg_createwindow
 {
 	HANDLE hEvent;

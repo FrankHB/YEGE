@@ -32,6 +32,7 @@ Code::Blocks 。
 ----
 Windows SDK 类型 WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别用 wchar_t 、char* 、const char* 、wchar_t* 和 const wchar_t* 代替。
 所有同名 typedef 结构体名称或 typedef 匿名结构体调整为非 typedef 结构体类型名。
+移除宏 EGE_DEPRECATED 。
 
 实现方式
 ----

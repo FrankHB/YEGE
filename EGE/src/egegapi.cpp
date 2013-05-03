@@ -1,4 +1,5 @@
 ﻿#include "ege/head.h"
+#include <cstdio>
 #include <cmath>
 #include <cstdarg>
 #include "zlib.h"
@@ -1292,7 +1293,7 @@ xyprintf(int x, int y, const char*  fmt, ...)
 	{
 		auto pg = &graph_setting;
 		char* buff = (char*)pg->g_t_buff;
-		vsprintf(buff, fmt, v);
+		std::vsprintf(buff, fmt, v);
 		outtextxy(x, y, buff);
 	}
 	va_end(v);
