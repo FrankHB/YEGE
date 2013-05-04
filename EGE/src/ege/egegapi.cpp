@@ -536,9 +536,7 @@ setfillcolor(color_t color, IMAGE* pimg)
 	lbr.lbHatch = BS_SOLID;
 	::HBRUSH hbr = ::CreateBrushIndirect(&lbr);
 	if(hbr)
-	{
 		::DeleteObject(::SelectObject(img->m_hDC, hbr));
-	}
 	CONVERT_IMAGE_END;
 }
 

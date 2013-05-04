@@ -20,21 +20,19 @@
 
 #ifndef __int3264
 #if defined(_WIN64)
-typedef __int64 ::LONG_PTR, *PLONG_PTR;
-typedef unsigned __int64 ::ULONG_PTR, *PULONG_PTR;
+typedef __int64 ::LONG_PTR;
+typedef unsigned __int64 ::DWORD_PTR;
 
 #define __int3264   __int64
 
 #else
-typedef _W64 long LONG_PTR, *PLONG_PTR;
-typedef _W64 unsigned long ULONG_PTR, *PULONG_PTR;
+typedef _W64 long LONG_PTR;
+typedef _W64 unsigned long DWORD_PTR;
 
 #define __int3264   __int32
 
 #endif
 #endif
-
-typedef ::ULONG_PTR DWORD_PTR;
 
 #ifndef _MSC_VER
 #define GRADIENT_FILL_RECT_H 0x00000000
