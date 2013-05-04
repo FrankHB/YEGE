@@ -52,6 +52,7 @@ Windows SDK 类型 WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别用 wcha
 移除冗余 typedef 名称 PDWORD_PTR 和 POINTER_SIZE 。
 移除 enum dealmessage_update 类型，使用 bool 代替枚举值。
 移除 _DEBUG 宏。
+移除 ERROR_SUCCESS 宏，使用字面量 0 代替。
 
 实现质量(QoI)
 ----
