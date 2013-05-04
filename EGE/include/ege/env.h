@@ -14,7 +14,7 @@ enum initmode_flag
 	INIT_RENDERMANUAL   = 0x8,
 	INIT_NOFORCEEXIT    = 0x10,
 	INIT_WITHLOGO       = 0x100,
-#if 1 || defined(_DEBUG) || defined(DEBUG)
+#if 1 || !defined(NDEBUG)
 	INIT_DEFAULT    = 0x0,
 #else
 	INIT_DEFAULT    = INIT_WITHLOGO,

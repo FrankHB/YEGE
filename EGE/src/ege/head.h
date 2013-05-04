@@ -3,18 +3,11 @@
 
 #include "ege.h"
 #include "thread_queue.h"
+#include <cassert>
+#define ASSERT_TRUE(e) assert((e) != MUSIC_ERROR)
 
 #ifndef ERROR_SUCCESS
 #define ERROR_SUCCESS 0
-#endif
-
-#ifndef ASSERT_TRUE
-#ifdef _DEBUG
-#include <cassert>
-#define ASSERT_TRUE(e) assert((e) != MUSIC_ERROR)
-#else
-#define ASSERT_TRUE(e) (void(0))
-#endif
 #endif
 
 #define RENDER_TIMER_ID     916
