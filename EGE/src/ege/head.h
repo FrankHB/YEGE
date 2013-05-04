@@ -19,7 +19,6 @@
 
 #define QUEUE_LEN           1024
 #define RENDER_TIMER_ID     916
-#define IMAGE_INIT_FLAG     0x20100916
 
 #define IFATODOB(A, B)  ( (A) && (B, 0) )
 #define IFNATODOB(A, B) ( (A) || (B, 0) )
@@ -53,7 +52,6 @@ typedef _W64 unsigned long ULONG_PTR, *PULONG_PTR;
 #endif
 
 typedef ::ULONG_PTR DWORD_PTR, *PDWORD_PTR;
-typedef unsigned int uint32;
 typedef intptr_t POINTER_SIZE;
 
 #ifndef _MSC_VER

@@ -1,15 +1,20 @@
-﻿#include "head.h"
-#include "image.h"
-#include "global.h"
-#include "../libpng/png.h"
-#include "../libpng/pngstruct.h"
-#include "../libpng/pnginfo.h"
-#include <ocidl.h>
-#include <olectl.h>
+﻿#include "image.h"
 #include <cmath>
 #include <cstring>
 #include <cfloat> // for FLT_EPSILON;
 #include <utility> // for std::swap;
+#include <ocidl.h>
+#include <olectl.h>
+#include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
+#include <gdiplus.h>
+#include "../libpng/png.h"
+#include "../libpng/pngstruct.h"
+#include "../libpng/pnginfo.h"
+#include "ege/gdi.h"
+#include "ege/text.h"
+#include "global.h"
+
+#define IMAGE_INIT_FLAG     0x20100916
 
 namespace ege
 {
@@ -483,11 +488,11 @@ IMAGE::getpngimg(FILE * fp)
 {
 	::png_structp pic_ptr;
 	::png_infop info_ptr;
-	uint32 width, height, depth;
+	std::uint32_t width, height, depth;
 
 	{
 		char header[16];
-		uint32 number = 8;
+		std::uint32_t number = 8;
 		fread(header, 1, number, fp);
 		int isn_png = ::png_sig_cmp((::png_const_bytep)header, 0, number);
 
@@ -515,18 +520,18 @@ IMAGE::getpngimg(FILE * fp)
 	depth = info_ptr->pixel_depth;
 
 	::png_bytepp row_pointers = ::png_get_rows(pic_ptr, info_ptr);
-	for(uint32 i = 0; i < height; ++i)
+	for(std::uint32_t i = 0; i < height; ++i)
 	{
 		if(depth == 24)
 		{
-			for(uint32 j = 0; j < width; ++j)
+			for(std::uint32_t j = 0; j < width; ++j)
 			{
 				m_pBuffer[i * width + j] = 0xFFFFFF & (::DWORD&)row_pointers[i][j * 3];
 			}
 		}
 		else if(depth == 32)
 		{
-			for(uint32 j = 0; j < width; ++j)
+			for(std::uint32_t j = 0; j < width; ++j)
 			{
 				m_pBuffer[i * width + j] = ((::DWORD*)(row_pointers[i]))[j];
 				if((m_pBuffer[i * width + j] & 0xFF000000) == 0)
@@ -550,8 +555,8 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 	::png_byte* image;
 	::png_bytep* row_pointers;
 	pic_ptr = ::png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-	uint32 pixelsize = bAlpha ? 4 : 3;
-	uint32 width = m_width, height = m_height;
+	std::uint32_t pixelsize = bAlpha ? 4 : 3;
+	std::uint32_t width = m_width, height = m_height;
 	if(!pic_ptr)
 	{
 		return -1;

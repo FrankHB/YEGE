@@ -3,6 +3,7 @@
 
 #include "ege/img.h"
 #include "ege/viewport.h"
+#include <windows.h>
 
 #define CONVERT_IMAGE(pimg) ( ((size_t)(pimg)<0x20 ?\
 							   ((pimg) ?\
