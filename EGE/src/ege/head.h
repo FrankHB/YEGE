@@ -21,7 +21,6 @@
 #include <gdiplus.h>
 
 #define QUEUE_LEN           1024
-#define UPDATE_MAX_CALL     0xFF
 #define RENDER_TIMER_ID     916
 #define IMAGE_INIT_FLAG     0x20100916
 #define FLOAT_EPS           1e-3f

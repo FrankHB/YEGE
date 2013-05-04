@@ -1,5 +1,6 @@
 ﻿#include "head.h"
 #include "global.h"
+#include "image.h"
 #include <algorithm>
 #include <set>
 #include <vector>
@@ -400,14 +401,10 @@ void egeControlBase::draw(IMAGE* pimg)
 	if(!m_bDirectDraw && m_bVisable)
 	{
 		if(m_AlphablendMode == SOLIDCOPY)
-		{
 			//putimage(pimg, m_x, m_y, &m_mainbuf, m_rop);
 			m_mainbuf->putimage(pimg, m_x, m_y, m_rop);
-		}
 		else if(m_AlphablendMode == ALPHABLEND)
-		{
 			m_mainbuf->putimage_alphafilter(pimg, m_x, m_y, m_mainFilter);
-		}
 	}
 }
 

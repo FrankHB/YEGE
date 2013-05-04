@@ -1,5 +1,6 @@
 ﻿#include "head.h"
 #include "global.h"
+#include "image.h"
 #include <cstdio>
 #include <cmath>
 #include <cstdarg>
@@ -94,44 +95,7 @@ delay_fps(long fps)
 void
 delay_fps(double fps)
 {
-	auto pg = &graph_setting;
-	egeControlBase*& root = pg->egectrl_root;
-	pg->skip_timer_mark = true;
-	double delay_time = 1000.0 / fps;
-	double avg_max_time = delay_time * 10.0; // 误差时间在这个数值以内做平衡
-	double dw = pg->_get_highfeq_time_ls() * 1000.0;
-	int nloop = 0;
-
-	if(pg->delay_fps_dwLast == 0)
-	{
-		pg->delay_fps_dwLast = pg->_get_highfeq_time_ls() * 1000.0;
-	}
-	if(pg->delay_fps_dwLast + delay_time + avg_max_time > dw)
-	{
-		dw = pg->delay_fps_dwLast;
-	}
-	root->draw(nullptr);
-	for(; nloop >= 0; --nloop)
-	{
-		if((dw + delay_time + (100.0) >= pg->_get_highfeq_time_ls() * 1000.0))
-		{
-			do
-			{
-				ege_sleep((int)(dw + delay_time - pg->_get_highfeq_time_ls()
-					* 1000.0));
-			} while(dw + delay_time >= pg->_get_highfeq_time_ls() * 1000.0);
-		}
-		pg->_dealmessage(FORCE_UPDATE);
-		dw = pg->_get_highfeq_time_ls() * 1000.0;
-		pg->_update_GUI();
-		root->update();
-		if(pg->delay_fps_dwLast + delay_time + avg_max_time <= dw
-			|| pg->delay_fps_dwLast > dw)
-			pg->delay_fps_dwLast = dw;
-		else
-			pg->delay_fps_dwLast += delay_time;
-	}
-	pg->skip_timer_mark = false;
+	graph_setting._delay_fps(fps);
 }
 
 /*
@@ -150,43 +114,7 @@ delay_jfps(long fps)
 void
 delay_jfps(double fps)
 {
-	auto pg = &graph_setting;
-	egeControlBase*& root = pg->egectrl_root;
-	pg->skip_timer_mark = true;
-	double delay_time = 1000.0 / fps;
-	double avg_max_time = delay_time * 10.0;
-	double dw = pg->_get_highfeq_time_ls() * 1000.0;
-	int nloop = 0;
-
-	if(pg->delay_fps_dwLast == 0)
-		pg->delay_fps_dwLast = pg->_get_highfeq_time_ls() * 1000.0;
-	if(pg->delay_fps_dwLast + delay_time + avg_max_time > dw)
-		dw = pg->delay_fps_dwLast;
-	root->draw(nullptr);
-	for(; nloop >= 0; --nloop)
-	{
-		int bSleep = 0;
-
-		while(dw + delay_time >= pg->_get_highfeq_time_ls() * 1000.0)
-		{
-			ege_sleep((int)(dw + delay_time - pg->_get_highfeq_time_ls()
-				* 1000.0));
-			bSleep = 1;
-		}
-		if(bSleep)
-			pg->_dealmessage(FORCE_UPDATE);
-		else
-			graph_setting._get_FPS(-0x100);
-		dw = pg->_get_highfeq_time_ls() * 1000.0;
-		pg->_update_GUI();
-		root->update();
-		if(pg->delay_fps_dwLast + delay_time + avg_max_time <= dw
-			|| pg->delay_fps_dwLast > dw)
-			pg->delay_fps_dwLast = dw;
-		else
-			pg->delay_fps_dwLast += delay_time;
-	}
-	pg->skip_timer_mark = false;
+	graph_setting._delay_jfps(fps);
 }
 
 int showmouse(int bShow)

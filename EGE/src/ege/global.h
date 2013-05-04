@@ -129,6 +129,12 @@ struct _graph_setting
 	_delay_ms(long);
 
 	void
+	_delay_fps(double);
+
+	void
+	_delay_jfps(double);
+
+	void
 	_delay_update();
 
 	void

@@ -10,25 +10,6 @@
 namespace ege
 {
 
-namespace
-{
-
-int
-redraw_window(_graph_setting* pg, ::HDC dc)
-{
-	int page = pg->visual_page;
-	::HDC hDC = pg->img_page[page]->m_hDC;
-	int left = pg->img_page[page]->m_vpt.left,
-		top = pg->img_page[page]->m_vpt.top;
-	//::HRGN rgn = pg->img_page[page]->m_rgn;
-	::BitBlt(dc, 0, 0, pg->base_w, pg->base_h, hDC, pg->base_x - left,
-		pg->base_y - top, SRCCOPY);
-	pg->update_mark_count = UPDATE_MAX_CALL;
-	return 0;
-}
-
-}
-
 int
 kbmsg()
 {

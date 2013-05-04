@@ -20,6 +20,9 @@
 
 #define EGE_TITLE TEXT("yEGE13.04 ") TEXT("GCC") GCC_VER TEXT(ARCH)
 
+#define UPDATE_MAX_CALL     0xFF
+
+
 namespace ege
 {
 
@@ -137,7 +140,6 @@ _graph_setting::_dealmessage(bool force_update)
 void
 _graph_setting::_delay_ms(long ms)
 {
-	auto& root = egectrl_root;
 	skip_timer_mark = true;
 	if(ms == 0)
 		_delay_update();
@@ -170,11 +172,89 @@ _graph_setting::_delay_ms(long ms)
 		_dealmessage(FORCE_UPDATE);
 		dw = _get_highfeq_time_ls() * 1000.0;
 		_update_GUI();
-		root->update();
+		egectrl_root->update();
 		if(delay_ms_dwLast + 200.0 <= dw || delay_ms_dwLast > dw)
 			delay_ms_dwLast = dw;
 		else
 			delay_ms_dwLast += delay_time;
+	}
+	skip_timer_mark = false;
+}
+
+void
+_graph_setting::_delay_fps(double fps)
+{
+	skip_timer_mark = true;
+
+	double delay_time = 1000.0 / fps;
+	double avg_max_time = delay_time * 10.0; // 误差时间在这个数值以内做平衡
+	double dw = _get_highfeq_time_ls() * 1000.0;
+	int nloop = 0;
+
+	if(delay_fps_dwLast == 0)
+		delay_fps_dwLast = _get_highfeq_time_ls() * 1000.0;
+	if(delay_fps_dwLast + delay_time + avg_max_time > dw)
+		dw = delay_fps_dwLast;
+	egectrl_root->draw(nullptr);
+	for(; nloop >= 0; --nloop)
+	{
+		if((dw + delay_time + (100.0) >= _get_highfeq_time_ls() * 1000.0))
+		{
+			do
+			{
+				ege_sleep((int)(dw + delay_time - _get_highfeq_time_ls()
+					* 1000.0));
+			} while(dw + delay_time >= _get_highfeq_time_ls() * 1000.0);
+		}
+		_dealmessage(FORCE_UPDATE);
+		dw = _get_highfeq_time_ls() * 1000.0;
+		_update_GUI();
+		egectrl_root->update();
+		if(delay_fps_dwLast + delay_time + avg_max_time <= dw
+			|| delay_fps_dwLast > dw)
+			delay_fps_dwLast = dw;
+		else
+			delay_fps_dwLast += delay_time;
+	}
+	skip_timer_mark = false;
+}
+
+void
+_graph_setting::_delay_jfps(double fps)
+{
+	skip_timer_mark = true;
+	double delay_time = 1000.0 / fps;
+	double avg_max_time = delay_time * 10.0;
+	double dw = _get_highfeq_time_ls() * 1000.0;
+	int nloop = 0;
+
+	if(delay_fps_dwLast == 0)
+		delay_fps_dwLast = _get_highfeq_time_ls() * 1000.0;
+	if(delay_fps_dwLast + delay_time + avg_max_time > dw)
+		dw = delay_fps_dwLast;
+	egectrl_root->draw(nullptr);
+	for(; nloop >= 0; --nloop)
+	{
+		int bSleep = 0;
+
+		while(dw + delay_time >= _get_highfeq_time_ls() * 1000.0)
+		{
+			ege_sleep((int)(dw + delay_time - _get_highfeq_time_ls()
+				* 1000.0));
+			bSleep = 1;
+		}
+		if(bSleep)
+			_dealmessage(FORCE_UPDATE);
+		else
+			graph_setting._get_FPS(-0x100);
+		dw = _get_highfeq_time_ls() * 1000.0;
+		_update_GUI();
+		egectrl_root->update();
+		if(delay_fps_dwLast + delay_time + avg_max_time <= dw
+			|| delay_fps_dwLast > dw)
+			delay_fps_dwLast = dw;
+		else
+			delay_fps_dwLast += delay_time;
 	}
 	skip_timer_mark = false;
 }
@@ -1007,6 +1087,7 @@ _graph_setting::_redraw_window(::HDC dc)
 	int left = img_page[page]->m_vpt.left,
 		top = img_page[page]->m_vpt.top;
 	//::HRGN rgn = img_page[page]->m_rgn;
+
 	::BitBlt(dc, 0, 0, base_w, base_h, hDC, base_x - left, base_y - top,
 		SRCCOPY);
 	update_mark_count = UPDATE_MAX_CALL;
