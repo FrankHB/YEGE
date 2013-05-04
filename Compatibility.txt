@@ -48,6 +48,8 @@ Windows SDK 类型 WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别用 wcha
 移除宏 _GRAPH_LIB_BUILD_ 。
 移除宏 FLOAT_EPS ，使用更精确的标准库 <cfloat> 中的宏 FLT_EPSILON 代替。
 移除 typedef 名称 unint32 ，使用 <cstdint> 的 std::uint32_t 代替。
+移除冗余宏 IFATODOB 和 IFNATODOB 。
+移除冗余 typedef 名称 PDWORD_PTR 和 POINTER_SIZE 。
 
 实现质量(QoI)
 ----

@@ -17,11 +17,7 @@
 #endif
 #endif
 
-#define QUEUE_LEN           1024
 #define RENDER_TIMER_ID     916
-
-#define IFATODOB(A, B)  ( (A) && (B, 0) )
-#define IFNATODOB(A, B) ( (A) || (B, 0) )
 
 #ifndef DEFAULT_CHARSET
 #define DEFAULT_CHARSET ANSI_CHARSET
@@ -51,8 +47,7 @@ typedef _W64 unsigned long ULONG_PTR, *PULONG_PTR;
 #endif
 #endif
 
-typedef ::ULONG_PTR DWORD_PTR, *PDWORD_PTR;
-typedef intptr_t POINTER_SIZE;
+typedef ::ULONG_PTR DWORD_PTR;
 
 #ifndef _MSC_VER
 #define GRADIENT_FILL_RECT_H 0x00000000
