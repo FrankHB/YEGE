@@ -23,7 +23,7 @@
 #define EGE_TITLE TEXT("yEGE13.04 ") TEXT("GCC") GCC_VER TEXT(ARCH)
 
 #define UPDATE_MAX_CALL     0xFF
-
+#define RENDER_TIMER_ID     916
 
 namespace ege
 {
@@ -1094,6 +1094,29 @@ _graph_setting::_redraw_window(::HDC dc)
 		SRCCOPY);
 	update_mark_count = UPDATE_MAX_CALL;
 	return 0;
+}
+
+void
+_graph_setting::_render_normal()
+{
+	delay_ms(0);
+	::SetTimer(hwnd, RENDER_TIMER_ID, 0, nullptr);
+	skip_timer_mark = false;
+	lock_window = false;
+}
+
+void
+_graph_setting::_render_manual()
+{
+	if(!lock_window)
+	{
+		::KillTimer(hwnd, RENDER_TIMER_ID);
+		timer_stop_mark = true;
+		::PostMessageW(hwnd, WM_TIMER, RENDER_TIMER_ID, 0);
+		lock_window = true;
+		while(timer_stop_mark)
+			::Sleep(1);
+	}
 }
 
 int

@@ -19,8 +19,10 @@ int main()
 {
 	initgraph(640, 480);
 	setrendermode(RENDER_MANUAL);
+
 	double r = 0;
 	fps f;
+
 	for(; is_run(); delay_fps(100000))
 	{
 		r += 0.02;

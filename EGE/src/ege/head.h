@@ -6,8 +6,6 @@
 #include <cassert>
 #define ASSERT_TRUE(e) assert((e) != MUSIC_ERROR)
 
-#define RENDER_TIMER_ID     916
-
 #ifndef DEFAULT_CHARSET
 #define DEFAULT_CHARSET ANSI_CHARSET
 #endif

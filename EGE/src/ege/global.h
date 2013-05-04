@@ -223,6 +223,12 @@ struct _graph_setting
 	int
 	_redraw_window(::HDC);
 
+	void
+	_render_normal();
+
+	void
+	_render_manual();
+
 	int
 	_update();
 
