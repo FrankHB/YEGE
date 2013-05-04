@@ -6,6 +6,7 @@
 #include <cstdarg>
 #include "zlib.h"
 #include "ege/sys_edit.h"
+#include <cfloat> // for FLT_EPSILON;
 #include <utility> // for std::swap;
 
 namespace ege
@@ -264,7 +265,7 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 		return;
 	if(x1 < img->m_vpt.left)
 	{
-		if(x2 - x1 < FLOAT_EPS) return;
+		if(x2 - x1 < FLT_EPSILON) return;
 		float d = (x2 - img->m_vpt.left) / (x2 - x1);
 		y1 = (y1 - y2) * d + y2;
 		x1 = (float)img->m_vpt.left;
@@ -273,7 +274,7 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 	}
 	if(x2 > img->m_vpt.right)
 	{
-		if(x2 - x1 < FLOAT_EPS) return;
+		if(x2 - x1 < FLT_EPSILON) return;
 		float d = (img->m_vpt.right - x1) / (x2 - x1);
 		y2 = (y2 - y1) * d + y1;
 		x2 = (float)img->m_vpt.right;
@@ -293,7 +294,7 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 		return;
 	if(y1 < img->m_vpt.top)
 	{
-		if(y2 - y1 < FLOAT_EPS)
+		if(y2 - y1 < FLT_EPSILON)
 			return;
 
 		float d = (y2 - img->m_vpt.top) / (y2 - y1);
@@ -305,7 +306,7 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 	}
 	if(y2 > img->m_vpt.bottom)
 	{
-		if(y2 - y1 < FLOAT_EPS)
+		if(y2 - y1 < FLT_EPSILON)
 			return;
 
 		float d = (img->m_vpt.bottom - y1) / (y2 - y1);

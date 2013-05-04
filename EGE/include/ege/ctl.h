@@ -3,7 +3,8 @@
 
 #include "ege/base.h"
 #include "ege/mac.h"
-#include <wingdi.h>
+#include "ege/pushtarget.h"
+#include "ege/windows.h"
 
 namespace ege
 {

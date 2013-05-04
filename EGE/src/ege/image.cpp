@@ -8,6 +8,7 @@
 #include <olectl.h>
 #include <cmath>
 #include <cstring>
+#include <cfloat> // for FLT_EPSILON;
 #include <utility> // for std::swap;
 
 namespace ege
@@ -2666,9 +2667,9 @@ putimage_rotate(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 				dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
 				dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
 				_dt[j].p[i].x = float(float2int(float((dx + nXOriginDest)
-					+ FLOAT_EPS)));
+					+ FLT_EPSILON)));
 				_dt[j].p[i].y = float(float2int(float((dy + nYOriginDest)
-					+ FLOAT_EPS)));
+					+ FLT_EPSILON)));
 			}
 		putimage_trangle(dc_dest, imgtexture, &_dt[0], &_tt[0], btransparent,
 			alpha, smooth);
@@ -2713,8 +2714,8 @@ putimage_rotatezoom(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 				_dt[j].p[i].y = (_dt[j].p[i].y - centery) * (dc_src->getheight());
 				dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
 				dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
-				_dt[j].p[i].x = float(float2int(float((dx * zoom + nXOriginDest) + FLOAT_EPS)));
-				_dt[j].p[i].y = float(float2int(float((dy * zoom + nYOriginDest) + FLOAT_EPS)));
+				_dt[j].p[i].x = float(float2int(float((dx * zoom + nXOriginDest) + FLT_EPSILON)));
+				_dt[j].p[i].y = float(float2int(float((dy * zoom + nYOriginDest) + FLT_EPSILON)));
 			}
 		putimage_trangle(dc_dest, imgtexture, &_dt[0], &_tt[0], btransparent,
 			alpha, smooth);
