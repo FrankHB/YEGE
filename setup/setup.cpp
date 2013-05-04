@@ -1,16 +1,15 @@
 #include "graphics.h"
 #include <stdio.h>
-#include "ege/head.h"
 
 char installpath[8][MAX_PATH];
 char g_output[1024 * 16];
 char strbasepath[] = "SOFTWARE\\";
-char ver[8][64]{ "Microsoft\\VisualStudio\\6.0\\Setup\\Microsoft Viaual C++",
-					"Microsoft\\VisualStudio\\8.0\\Setup\\VC",
-					"Microsoft\\VisualStudio\\9.0\\Setup\\VC",
-					"Microsoft\\VisualStudio\\10.0\\Setup\\VC",
-					"C-Free\\5",
-				  };
+char ver[8][64]{"Microsoft\\VisualStudio\\6.0\\Setup\\Microsoft Viaual C++",
+	"Microsoft\\VisualStudio\\8.0\\Setup\\VC",
+	"Microsoft\\VisualStudio\\9.0\\Setup\\VC",
+	"Microsoft\\VisualStudio\\10.0\\Setup\\VC",
+	"C-Free\\5"
+};
 
 #define SC_W 640
 #define SC_H 240
@@ -27,13 +26,13 @@ public:
 		m_cr = 0.0;
 		m_tt = random(10000) / 10000.0 * 16.0 + 4;
 		m_zoom = 0.7 / m_tt;
-		pmira = new IMAGE(w, h);
+		pmira = newimage(w, h);
 		m_w = w;
 		m_h = h;
 	}
 	~Mira()
 	{
-		delete pmira;
+		delimage(pmira);
 	}
 	void drawpixel(double _x, double _y, int color)
 	{
@@ -106,25 +105,26 @@ int info_scene()
 	cleardevice();
 	setcolor(0xFFFFFF);
 	Mira mira(640, 300);
-	IMAGE imgtext(440, 130);
+	auto p_imagetext(newimage(440, 130));
 	char infostr[] = "欢迎使用Easy Graphics Enginge (EGE) V0.3.8 ，本库是一个面向新手，或者面向快速图形程序开发的图形库，使用方便快捷，容易上手，特别适合于新手学习图形程序设计。本程序为安装程序，如果你要继续安装，请按'y'键继续";
-	setcolor(0xFFFF, &imgtext);
-	setfont(18, 0, "宋体", &imgtext);
-	setbkmode(TRANSPARENT, &imgtext);
+	setcolor(0xFFFF, p_imagetext);
+	setfont(18, 0, "宋体", p_imagetext);
+	setbkmode(TRANSPARENT, p_imagetext);
 	for(int i = 0; i < 8; ++i)
 	{
-		outtextrect(5, 5, 440, 280, infostr, &imgtext);
-		imagefilter_blurring(&imgtext, 0xF0, 0x100);
+		outtextrect(5, 5, 440, 280, infostr, p_imagetext);
+		imagefilter_blurring(p_imagetext, 0xF0, 0x100);
 	}
-	setcolor(0xFF, &imgtext);
-	outtextrect(5, 5, 440, 280, infostr, &imgtext);
+	setcolor(0xFF, p_imagetext);
+	outtextrect(5, 5, 440, 280, infostr, p_imagetext);
 
 	for(; kbhit() == 0; delay_fps(60))
 	{
 		mira.update();
 		mira.render(0, 480 - 300);
-		putimage(100, 50, &imgtext);
+		putimage(100, 50, p_imagetext);
 	}
+	delimage(p_imagetext);
 	return getch();
 }
 
@@ -168,21 +168,14 @@ copyfile(const char* path1, char* pathnew,
 	char strpath1[MAX_PATH];
 	char strpath2[MAX_PATH];
 	if(path1[strlen(path1) - 1] == '\\')
-	{
 		sprintf(strpath1, "%s%s\\%s", path1, dir, file);
-	}
 	else
-	{
 		sprintf(strpath1, "%s\\%s\\%s", path1, dir, file);
-	}
 	if(pathnew[strlen(pathnew) - 1] == '\\')
-	{
 		sprintf(strpath2, "%s%s\\%s", pathnew, dir, file);
-	}
 	else
-	{
 		sprintf(strpath2, "%s\\%s\\%s", pathnew, dir, file);
-	}
+
 	int ret = ::CopyFile(strpath1, strpath2, FALSE);
 	if(ret == 0)
 	{
