@@ -1,5 +1,8 @@
 ﻿#include "global.h"
-#include "head.h" // for IMAGE;
+#include "image.h" // for IMAGE;
+#include "ege/time.h" // for delay_ms;
+#include "ege/ctl.h"
+#include "head.h"
 #include <windows.h>
 #include <memory> // for std::unique_ptr;
 #include <functional> // for std::bind;

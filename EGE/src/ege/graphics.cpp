@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include "head.h"
 #include "global.h"
+#include "image.h"
 
 
 namespace ege
