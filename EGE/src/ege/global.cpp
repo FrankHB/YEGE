@@ -163,7 +163,7 @@ _graph_setting::_delay_ms(long ms)
 		{
 			if(f <= 0 || update_mark_count < UPDATE_MAX_CALL)
 			{
-				_dealmessage(FORCE_UPDATE);
+				_dealmessage(true);
 				f = 256;
 			}
 			else
@@ -171,7 +171,7 @@ _graph_setting::_delay_ms(long ms)
 					* 1000.0));
 			--f;
 		}
-		_dealmessage(FORCE_UPDATE);
+		_dealmessage(true);
 		dw = _get_highfeq_time_ls() * 1000.0;
 		_update_GUI();
 		egectrl_root->update();
@@ -208,7 +208,7 @@ _graph_setting::_delay_fps(double fps)
 					* 1000.0));
 			} while(dw + delay_time >= _get_highfeq_time_ls() * 1000.0);
 		}
-		_dealmessage(FORCE_UPDATE);
+		_dealmessage(true);
 		dw = _get_highfeq_time_ls() * 1000.0;
 		_update_GUI();
 		egectrl_root->update();
@@ -246,7 +246,7 @@ _graph_setting::_delay_jfps(double fps)
 			bSleep = 1;
 		}
 		if(bSleep)
-			_dealmessage(FORCE_UPDATE);
+			_dealmessage(true);
 		else
 			graph_setting._get_FPS(-0x100);
 		dw = _get_highfeq_time_ls() * 1000.0;
@@ -268,7 +268,7 @@ _graph_setting::_delay_update()
 	{
 		ege_sleep(1);
 		egectrl_root->draw(nullptr);
-		_dealmessage(FORCE_UPDATE);
+		_dealmessage(true);
 		egectrl_root->update();
 
 		int l, t, r, b, c;
@@ -286,7 +286,7 @@ _graph_setting::_flushkey()
 	EGEMSG msg;
 
 	if(msgkey_queue->empty())
-		_dealmessage(NORMAL_UPDATE);
+		_dealmessage(false);
 	if(!msgkey_queue->empty())
 		while(msgkey_queue->pop(msg))
 			;
@@ -298,7 +298,7 @@ _graph_setting::_flushmouse()
 	EGEMSG msg;
 
 	if(msgmouse_queue->empty())
-		_dealmessage(NORMAL_UPDATE);
+		_dealmessage(false);
 	if(!msgmouse_queue->empty())
 		while(msgmouse_queue->pop(msg))
 			;
@@ -354,7 +354,7 @@ _graph_setting::_getflush()
 	int lastkey = 0;
 
 	if(msgkey_queue->empty())
-		_dealmessage(NORMAL_UPDATE);
+		_dealmessage(false);
 	if(!msgkey_queue->empty())
 		while(msgkey_queue->pop(msg))
 			if(msg.message == WM_CHAR)
@@ -1023,7 +1023,7 @@ _graph_setting::_peekmouse()
 	auto msg = EGEMSG();
 
 	if(msgmouse_queue->empty())
-		_dealmessage(NORMAL_UPDATE);
+		_dealmessage(false);
 	while(msgmouse_queue->pop(msg))
 	{
 		msgmouse_queue->unpop();

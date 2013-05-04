@@ -40,7 +40,7 @@ Windows SDK 类型 WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别用 wcha
 移除宏 EGE_DEPRECATED 。
 宏 EGEAPI 调整至返回值前；移除函数形参中不必要的 const 。
 
-实现方式
+实现注记
 ----
 随机数改用 C++11 标准库 <random> 实现。
 移除的 Array 和 Set 模版改用 std::vector 和 std::set 代替。
@@ -50,6 +50,7 @@ Windows SDK 类型 WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别用 wcha
 移除 typedef 名称 unint32 ，使用 <cstdint> 的 std::uint32_t 代替。
 移除冗余宏 IFATODOB 和 IFNATODOB 。
 移除冗余 typedef 名称 PDWORD_PTR 和 POINTER_SIZE 。
+移除类型 enum dealmessage_update ，使用 bool 代替枚举值。
 
 实现质量(QoI)
 ----

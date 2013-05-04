@@ -66,13 +66,6 @@ extern "C"
 namespace ege
 {
 
-enum dealmessage_update
-{
-	NORMAL_UPDATE = false,
-	FORCE_UPDATE = true,
-};
-
-
 template<typename T>
 struct count_ptr
 {
