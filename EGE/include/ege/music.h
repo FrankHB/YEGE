@@ -1,9 +1,7 @@
 ﻿#ifndef Inc_ege_music_h_
 #define Inc_ege_music_h_
 
-#include "ege/base.h"
-#include "ege/mac.h"
-#include "ege/img.h"
+#include "ege/def.h"
 #include <windows.h>
 
 namespace ege

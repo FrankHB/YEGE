@@ -1147,7 +1147,7 @@ fix_rect_0size(IMAGE* pdest,
 			   int* nHeightDest      // height of destination rectangle
 			  )
 {
-	struct viewporttype _vpt
+	viewporttype _vpt
 	{
 		0, 0, pdest->m_width, pdest->m_height, 0
 	};

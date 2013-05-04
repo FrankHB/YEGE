@@ -1,7 +1,7 @@
 ﻿#ifndef Inc_ege_time_h_
 #define Inc_ege_time_h_
 
-#include "ege/base.h"
+#include "ege/def.h"
 
 namespace ege
 {

@@ -2,8 +2,6 @@
 #define Inc_ege_input_h_
 
 #include "ege/def.h"
-#include "ege/mac.h"
-#include "ege/img.h"
 #include <windows.h>
 
 namespace ege

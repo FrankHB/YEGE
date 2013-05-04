@@ -117,6 +117,7 @@
 		<Unit filename="include/ege/text.h" />
 		<Unit filename="include/ege/time.h" />
 		<Unit filename="include/ege/v3d.h" />
+		<Unit filename="include/ege/viewport.h" />
 		<Unit filename="include/ege/windows.h" />
 		<Unit filename="include/graphics.h" />
 		<Unit filename="include/thread_queue.h" />

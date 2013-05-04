@@ -1,8 +1,8 @@
 ﻿#ifndef Inc_ege_ctl_h_
 #define Inc_ege_ctl_h_
 
+#include "ege/base.h"
 #include "ege/mac.h"
-#include "ege/img.h"
 #include <wingdi.h>
 
 namespace ege

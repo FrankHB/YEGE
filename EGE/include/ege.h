@@ -9,6 +9,7 @@
 #include "ege/proc.h"
 #include "ege/v3d.h"
 #include "ege/env.h"
+#include "ege/viewport.h"
 #include "ege/img.h"
 #include "ege/gdi.h"
 #include "ege/time.h"

@@ -186,16 +186,6 @@ enum pattern_type_e
 };
 
 
-struct viewporttype
-{
-	int left;
-	int top;
-	int right;
-	int bottom;
-	int clipflag;
-};
-
-
 struct textsettingstype
 {
 	int font;
@@ -230,11 +220,10 @@ struct ege_rect
 };
 
 
-EGEAPI void setrendermode(rendermode_e mode);
+class IMAGE;
 
-EGEAPI void window_getviewport(struct viewporttype* viewport);
-EGEAPI void window_getviewport(int* left, int* top, int* right, int* bottom);
-EGEAPI void window_setviewport(int  left, int  top, int  right, int  bottom);
+
+EGEAPI void setrendermode(rendermode_e mode);
 
 }
 
