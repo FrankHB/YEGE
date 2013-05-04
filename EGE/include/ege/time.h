@@ -17,19 +17,7 @@ EGEAPI void
 delay_ms(long ms);      // 平均延迟ms毫秒
 
 EGEAPI void
-delay_fps(int fps);    // 平均延迟1000/fps毫秒，用于稳定帧率控制
-
-EGEAPI void
-delay_fps(long fps);    // 平均延迟1000/fps毫秒，用于稳定帧率控制
-
-EGEAPI void
 delay_fps(double fps);  // 平均延迟1000/fps毫秒，用于稳定帧率控制
-
-EGEAPI void
-delay_jfps(int fps);   // 平均延迟1000/fps毫秒，用于稳定逻辑帧率控制，绘图带跳帧
-
-EGEAPI void
-delay_jfps(long fps);   // 平均延迟1000/fps毫秒，用于稳定逻辑帧率控制，绘图带跳帧
 
 EGEAPI void
 delay_jfps(double fps); // 平均延迟1000/fps毫秒，用于稳定逻辑帧率控制，绘图带跳帧

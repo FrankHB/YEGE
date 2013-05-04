@@ -83,16 +83,6 @@ delay_ms(long ms)
 延迟1/fps的时间，调用间隔不大于200ms时能保证每秒能返回fps次
 */
 void
-delay_fps(int fps)
-{
-	delay_fps((double)fps);
-}
-void
-delay_fps(long fps)
-{
-	delay_fps((double)fps);
-}
-void
 delay_fps(double fps)
 {
 	graph_setting._delay_fps(fps);
@@ -101,16 +91,6 @@ delay_fps(double fps)
 /*
 延迟1/fps的时间，调用间隔不大于200ms时能保证每秒能返回fps次
 */
-void
-delay_jfps(int fps)
-{
-	delay_jfps((double)fps);
-}
-void
-delay_jfps(long fps)
-{
-	delay_jfps((double)fps);
-}
 void
 delay_jfps(double fps)
 {

@@ -31,7 +31,7 @@ Code::Blocks 。
 
 向后兼容但不保证向前兼容原始实现的接口
 ----
-暂无。
+delay_fps 和 delay_jfps 仅保留 double 重载版本。
 
 兼容接口和实现调整
 ----
