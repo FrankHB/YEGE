@@ -11,3 +11,4 @@
 EGE.dll
 
 libEGE.def
+*.cscope_file_list
