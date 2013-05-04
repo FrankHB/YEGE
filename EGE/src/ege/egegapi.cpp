@@ -1,13 +1,16 @@
-﻿#include "head.h"
-#include "global.h"
-#include "image.h"
+﻿#include "global.h"
 #include <cstdio>
 #include <cmath>
 #include <cstdarg>
-#include "zlib.h"
-#include "ege/sys_edit.h"
 #include <cfloat> // for FLT_EPSILON;
 #include <utility> // for std::swap;
+#include "../zlib/zlib.h"
+#include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
+#include <gdiplus.h>
+#include "ege/gdi.h"
+#include "ege/sys_edit.h"
+#include "ege/text.h"
+#include "image.h"
 
 namespace ege
 {
@@ -1030,9 +1033,7 @@ private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz, int
 	if(textstring)
 	{
 		if(img->m_texttype.vert == CENTER_TEXT)
-		{
 			y -= textheight(textstring, img) / 2;
-		}
 		TextOutA(img->m_hDC, x, y, textstring, (int)strlen(textstring));
 	}
 }
@@ -1683,32 +1684,6 @@ getfont(::LOGFONTW* font, IMAGE* pimg)
 		::GetObjectW((::HFONT)::GetCurrentObject(img->m_hDC, OBJ_FONT),
 			sizeof(::LOGFONTA), font);
 	CONVERT_IMAGE_END;
-}
-
-void
-setrendermode(rendermode_e mode)
-{
-	if(mode == RENDER_MANUAL)
-	{
-		auto pg = &graph_setting;
-		if(!pg->lock_window)
-		{
-			::KillTimer(pg->hwnd, RENDER_TIMER_ID);
-			pg->timer_stop_mark = true;
-			::PostMessageW(pg->hwnd, WM_TIMER, RENDER_TIMER_ID, 0);
-			pg->lock_window = true;
-			while(pg->timer_stop_mark)
-				::Sleep(1);
-		}
-	}
-	else
-	{
-		auto pg = &graph_setting;
-		delay_ms(0);
-		::SetTimer(pg->hwnd, RENDER_TIMER_ID, 0, nullptr);
-		pg->skip_timer_mark = false;
-		pg->lock_window = false;
-	}
 }
 
 #if 0

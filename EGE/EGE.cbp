@@ -121,6 +121,7 @@
 		<Unit filename="include/ege/windows.h" />
 		<Unit filename="include/graphics.h" />
 		<Unit filename="include/thread_queue.h" />
+		<Unit filename="src/ege/base.cpp" />
 		<Unit filename="src/ege/color.cpp" />
 		<Unit filename="src/ege/egecontrolbase.cpp" />
 		<Unit filename="src/ege/egegapi.cpp" />

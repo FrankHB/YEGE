@@ -17,9 +17,6 @@
 #endif
 #endif
 
-#include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
-#include <gdiplus.h>
-
 #define QUEUE_LEN           1024
 #define RENDER_TIMER_ID     916
 #define IMAGE_INIT_FLAG     0x20100916
@@ -158,4 +155,5 @@ private:
 
 } // namespace ege
 
-#endif /*Inc_ege_head_h_*/
+#endif
+
