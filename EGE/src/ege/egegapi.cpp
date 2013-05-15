@@ -101,12 +101,10 @@ delay_jfps(double fps)
 	graph_setting._delay_jfps(fps);
 }
 
-int showmouse(int bShow)
+int
+showmouse(int bShow)
 {
-	auto pg = &graph_setting;
-	int ret = pg->mouse_show;
-	pg->mouse_show = bShow;
-	return ret;
+	return graph_setting._show_mouse(bShow);
 }
 
 int

@@ -230,6 +230,9 @@ struct _graph_setting
 	_render_manual();
 
 	int
+	_show_mouse(int);
+
+	int
 	_update();
 
 	void

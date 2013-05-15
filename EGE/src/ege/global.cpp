@@ -1120,6 +1120,15 @@ _graph_setting::_render_manual()
 }
 
 int
+_graph_setting::_show_mouse(int bShow)
+{
+	int ret = mouse_show;
+
+	mouse_show = bShow;
+	return ret;
+}
+
+int
 _graph_setting::_update()
 {
 	if(exit_window)
