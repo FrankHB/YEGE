@@ -126,6 +126,7 @@
 		<Unit filename="src/ege/compress.cpp" />
 		<Unit filename="src/ege/egecontrolbase.cpp" />
 		<Unit filename="src/ege/egegapi.cpp" />
+		<Unit filename="src/ege/env.cpp" />
 		<Unit filename="src/ege/global.cpp" />
 		<Unit filename="src/ege/global.h" />
 		<Unit filename="src/ege/graphics.cpp" />

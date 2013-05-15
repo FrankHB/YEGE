@@ -150,36 +150,6 @@ getProcfunc()
 }
 
 
-void
-initgraph(int* gdriver, int* gmode, char*)
-{
-	graph_setting._init_graph_x(gdriver, gmode);
-}
-
-void
-initgraph(int Width, int Height, int Flag)
-{
-	int g = TRUECOLORSIZE, m = (Width) | (Height << 16);
-
-	if(graph_setting._g_initcall == 0)
-		setinitmode(Flag);
-	initgraph(&g, &m, (char*)"");
-	//using flag;
-}
-
-void
-detectgraph(int* gdriver, int* gmode)
-{
-	*gdriver = VGA;
-	*gmode = VGAHI;
-}
-
-void
-closegraph()
-{
-	::ShowWindow(graph_setting.hwnd, SW_HIDE);
-}
-
 int
 attachHWND(::HWND hWnd)
 {
