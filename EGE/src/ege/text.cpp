@@ -158,9 +158,9 @@ outtext(const wchar_t* textstring, IMAGE* pimg)
 }
 
 void
-outtext(CHAR c, IMAGE* pimg)
+outtext(char c, IMAGE* pimg)
 {
-	CHAR str[10]{c};
+	char str[10]{c};
 	outtext(str, pimg);
 }
 
@@ -196,9 +196,9 @@ outtextxy(int x, int y, const wchar_t* textstring, IMAGE* pimg)
 }
 
 void
-outtextxy(int x, int y, CHAR c, IMAGE* pimg)
+outtextxy(int x, int y, char c, IMAGE* pimg)
 {
-	CHAR str[10]{c};
+	char str[10]{c};
 	outtextxy(x, y, str, pimg);
 }
 
@@ -326,9 +326,9 @@ textwidth(const wchar_t* textstring, IMAGE* pimg)
 }
 
 int
-textwidth(CHAR c, IMAGE* pimg)
+textwidth(char c, IMAGE* pimg)
 {
-	CHAR str[2]{c};
+	char str[2]{c};
 	return textwidth(str, pimg);
 }
 
@@ -370,9 +370,9 @@ textheight(const wchar_t* textstring, IMAGE* pimg)
 }
 
 int
-textheight(CHAR c, IMAGE* pimg)
+textheight(char c, IMAGE* pimg)
 {
-	CHAR str[2]{c};
+	char str[2]{c};
 	return textheight(str, pimg);
 }
 

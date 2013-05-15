@@ -15,7 +15,7 @@ outtext(const char* textstring, IMAGE* pimg = nullptr);                   // 在
 EGEAPI void
 outtext(const wchar_t* textstring, IMAGE* pimg = nullptr);                   // 在当前位置输出文字
 EGEAPI void
-outtext(CHAR c, IMAGE* pimg = nullptr);                              // 在当前位置输出字符
+outtext(char c, IMAGE* pimg = nullptr);                              // 在当前位置输出字符
 EGEAPI void
 outtext(wchar_t c, IMAGE* pimg = nullptr);                              // 在当前位置输出字符
 
@@ -24,7 +24,7 @@ outtextxy(int x, int y, const char*  textstring, IMAGE* pimg = nullptr);   // �
 EGEAPI void
 outtextxy(int x, int y, const wchar_t* textstring, IMAGE* pimg = nullptr);   // 在指定位置输出文字
 EGEAPI void
-outtextxy(int x, int y, CHAR c, IMAGE* pimg = nullptr);               // 在指定位置输出字符
+outtextxy(int x, int y, char c, IMAGE* pimg = nullptr);               // 在指定位置输出字符
 EGEAPI void
 outtextxy(int x, int y, wchar_t c, IMAGE* pimg = nullptr);              // 在指定位置输出字符
 
@@ -46,7 +46,7 @@ textwidth(const char*  textstring, IMAGE* pimg = nullptr); // 获取字符串占
 EGEAPI int
 textwidth(const wchar_t* textstring, IMAGE* pimg = nullptr); // 获取字符串占用的像素宽
 EGEAPI int
-textwidth(CHAR c, IMAGE* pimg = nullptr);
+textwidth(char c, IMAGE* pimg = nullptr);
 EGEAPI int
 textwidth(wchar_t c, IMAGE* pimg = nullptr);
 
@@ -55,7 +55,7 @@ textheight(const char*  textstring, IMAGE* pimg = nullptr); // 获取字符串�
 EGEAPI int
 textheight(const wchar_t* textstring, IMAGE* pimg = nullptr); // 获取字符串占用的像素高
 EGEAPI int
-textheight(CHAR  c, IMAGE* pimg = nullptr);
+textheight(char  c, IMAGE* pimg = nullptr);
 EGEAPI int
 textheight(wchar_t c, IMAGE* pimg = nullptr);
 
