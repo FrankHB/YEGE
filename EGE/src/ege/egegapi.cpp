@@ -402,11 +402,11 @@ line_f(float x1, float y1, float x2, float y2, IMAGE* pimg)
 }
 
 /*private function*/
-static
-int
+static int
 saveBrush(IMAGE* img, int save)   //此函数调用前，已经有Lock
 {
 	auto pg = &graph_setting;
+
 	if(save)
 	{
 		::LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
@@ -530,6 +530,7 @@ setfillcolor(color_t color, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE_CONST(pimg);
 	LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
+
 	img->m_fillcolor = color;
 	color = RGBTOBGR(color);
 	lbr.lbColor = color;
@@ -561,9 +562,7 @@ getbkcolor(IMAGE* pimg)
 
 	CONVERT_IMAGE_END;
 	if(img)
-	{
 		return img->m_bk_color;
-	}
 	return 0xFFFFFFFF;
 }
 
@@ -577,15 +576,12 @@ setbkcolor(color_t color, IMAGE* pimg)
 		PDWORD p = img->m_pBuffer;
 		int size = img->m_width * img->m_height;
 		color_t col = img->m_bk_color;
+
 		img->m_bk_color = color;
 		::SetBkColor(img->m_hDC, RGBTOBGR(color));
 		for(int n = 0; n < size; n++, p++)
-		{
 			if(*p == col)
-			{
 				*p = color;
-			}
-		}
 	}
 	CONVERT_IMAGE_END;
 }
@@ -607,9 +603,7 @@ void setfontbkcolor(color_t color, IMAGE* pimg)
 	const auto img = CONVERT_IMAGE(pimg);
 
 	if(img && img->m_hDC)
-	{
 		::SetBkColor(img->m_hDC, RGBTOBGR(color));
-	}
 	CONVERT_IMAGE_END;
 }
 
@@ -617,16 +611,16 @@ void
 setbkmode(int iBkMode, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE_CONST(pimg);
+
 	if(img && img->m_hDC)
-	{
 		::SetBkMode(img->m_hDC, iBkMode);
-	}
 	CONVERT_IMAGE_END;
 }
 
 IMAGE* gettarget()
 {
 	auto pg = &graph_setting;
+
 	return pg->imgtarget_set;
 }
 int settarget(IMAGE* pbuf)
@@ -634,13 +628,9 @@ int settarget(IMAGE* pbuf)
 	auto pg = &graph_setting;
 	pg->imgtarget_set = pbuf;
 	if(!pbuf)
-	{
 		pg->imgtarget = pg->img_page[graph_setting.active_page];
-	}
 	else
-	{
 		pg->imgtarget = pbuf;
-	}
 	return 0;
 }
 
@@ -652,13 +642,11 @@ cleardevice(IMAGE* pimg)
 	if(img && img->m_hDC)
 	{
 		color_t c = getbkcolor(img);
+
 		for(color_t* p = (color_t*)img->getbuffer(),
 				*e = (color_t*)&img->getbuffer()[img->m_width * img->m_height];
-				p != e;
-				++p)
-		{
+				p != e; ++p)
 			*p = c;
-		}
 	}
 	CONVERT_IMAGE_END;
 }
@@ -691,20 +679,12 @@ void
 ellipse(int x, int y, int stangle, int endangle, int xradius, int yradius, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
-
 	double sr = stangle / 180.0 * PI, er = endangle / 180.0 * PI;
 
 	if(img)
-	{
-		Arc(img->m_hDC,
-			x - xradius, y - yradius,
-			x + xradius, y + yradius,
-			(int)(x + xradius * cos(sr)),
-			(int)(y - yradius * sin(sr)),
-			(int)(x + xradius * cos(er)),
-			(int)(y - yradius * sin(er))
-		   );
-	}
+		Arc(img->m_hDC, x - xradius, y - yradius, x + xradius, y + yradius,
+			(int)(x + xradius * cos(sr)), (int)(y - yradius * sin(sr)),
+			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er)));
 	CONVERT_IMAGE_END;
 }
 
@@ -712,20 +692,13 @@ void
 ellipsef(float x, float y, float stangle, float endangle, float xradius, float yradius, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
-
 	double sr = stangle / 180.0 * PI, er = endangle / 180.0 * PI;
 
 	if(img)
-	{
-		Arc(img->m_hDC,
-			(int)(x - xradius), (int)(y - yradius),
+		Arc(img->m_hDC, (int)(x - xradius), (int)(y - yradius),
 			(int)(x + xradius), (int)(y + yradius),
-			(int)(x + xradius * cos(sr)),
-			(int)(y - yradius * sin(sr)),
-			(int)(x + xradius * cos(er)),
-			(int)(y - yradius * sin(er))
-		   );
-	}
+			(int)(x + xradius * cos(sr)), (int)(y - yradius * sin(sr)),
+			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er)));
 	CONVERT_IMAGE_END;
 }
 
@@ -746,15 +719,11 @@ sector(int x, int y, int stangle, int endangle, int xradius, int yradius, IMAGE*
 {
 	const auto img = CONVERT_IMAGE(pimg);
 	double sr = stangle / 180.0 * PI, er = endangle / 180.0 * PI;
+
 	if(img)
-	{
-		Pie(img->m_hDC,
-			x - xradius, y - yradius,
-			x + xradius, y + yradius,
+		Pie(img->m_hDC, x - xradius, y - yradius, x + xradius, y + yradius,
 			(int)(x + xradius * cos(sr)), (int)(y - yradius * sin(sr)),
-			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er))
-		   );
-	}
+			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er)));
 	CONVERT_IMAGE_END;
 }
 
@@ -764,14 +733,10 @@ sectorf(float x, float y, float stangle, float endangle, float xradius, float yr
 	const auto img = CONVERT_IMAGE(pimg);
 	double sr = stangle / 180.0 * PI, er = endangle / 180.0 * PI;
 	if(img)
-	{
-		Pie(img->m_hDC,
-			(int)(x - xradius), (int)(y - yradius),
+		Pie(img->m_hDC, (int)(x - xradius), (int)(y - yradius),
 			(int)(x + xradius), (int)(y + yradius),
 			(int)(x + xradius * cos(sr)), (int)(y - yradius * sin(sr)),
-			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er))
-		   );
-	}
+			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er)));
 	CONVERT_IMAGE_END;
 }
 
@@ -779,14 +744,9 @@ void
 fillellipse(int x, int y, int xradius, int yradius, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
+
 	if(img)
-	{
-		Ellipse(
-			img->m_hDC,
-			x - xradius, y - yradius,
-			x + xradius, y + yradius
-		);
-	}
+		Ellipse(img->m_hDC, x - xradius, y - yradius, x + xradius, y + yradius);
 	CONVERT_IMAGE_END;
 }
 
@@ -795,13 +755,8 @@ fillellipsef(float x, float y, float xradius, float yradius, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
 	if(img)
-	{
-		Ellipse(
-			img->m_hDC,
-			(int)(x - xradius), (int)(y - yradius),
-			(int)(x + xradius), (int)(y + yradius)
-		);
-	}
+		Ellipse(img->m_hDC, (int)(x - xradius), (int)(y - yradius),
+			(int)(x + xradius), (int)(y + yradius));
 	CONVERT_IMAGE_END;
 }
 
@@ -813,9 +768,7 @@ bar(int left, int top, int right, int bottom, IMAGE* pimg)
 	::HBRUSH hbr_last = (::HBRUSH)::GetCurrentObject(img->m_hDC, OBJ_BRUSH); //(::HBRUSH)::SelectObject(pg->g_hdc, hbr);
 
 	if(img)
-	{
 		FillRect(img->m_hDC, &rect, hbr_last);
-	}
 	CONVERT_IMAGE_END;
 }
 
@@ -824,31 +777,27 @@ bar3d(int x1, int y1, int x2, int y2, int depth, int topflag, IMAGE* pimg)
 {
 	--x2;
 	--y2;
-	{
-		int pt[20] =
-		{
-			x2, y2,
-			x2, y1,
-			x1, y1,
-			x1, y2,
-			x2, y2,
-			x2 + depth, y2 - depth,
-			x2 + depth, y1 - depth,
-			x1 + depth, y1 - depth,
-			x1, y1,
-		};
 
-		bar(x1, y1, x2, y2, pimg);
-		if(topflag)
-		{
-			drawpoly(9, pt, pimg);
-			line(x2, y1, x2 + depth, y1 - depth, pimg);
-		}
-		else
-		{
-			drawpoly(7, pt, pimg);
-		}
+	int pt[20]{
+		x2, y2,
+		x2, y1,
+		x1, y1,
+		x1, y2,
+		x2, y2,
+		x2 + depth, y2 - depth,
+		x2 + depth, y1 - depth,
+		x1 + depth, y1 - depth,
+		x1, y1,
+	};
+
+	bar(x1, y1, x2, y2, pimg);
+	if(topflag)
+	{
+		drawpoly(9, pt, pimg);
+		line(x2, y1, x2 + depth, y1 - depth, pimg);
 	}
+	else
+		drawpoly(7, pt, pimg);
 }
 
 void
@@ -856,9 +805,7 @@ drawpoly(int numpoints, const int* polypoints, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
 	if(img)
-	{
 		Polyline(img->m_hDC, (POINT*)polypoints, numpoints);
-	}
 	CONVERT_IMAGE_END;
 }
 
@@ -897,9 +844,7 @@ fillpoly(int numpoints, const int* polypoints, IMAGE* pimg)
 	const auto img = CONVERT_IMAGE(pimg);
 
 	if(img)
-	{
 		Polygon(img->m_hDC, (POINT*)polypoints, numpoints);
-	}
 	CONVERT_IMAGE_END;
 }
 

@@ -5,8 +5,6 @@
 namespace ege
 {
 
-#define ASSERT_TRUE(e) assert((e) != MUSIC_ERROR)
-
 // Class MUSIC Construction
 MUSIC::MUSIC()
 {
@@ -97,7 +95,8 @@ MUSIC::OpenFile(const wchar_t* _szStr)
 ::DWORD
 MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 {
-	ASSERT_TRUE(m_DID);
+	assert(m_DID != MUSIC_ERROR);
+
 	MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_PLAY_PARMS();
 	::DWORD dwFlag = MCI_NOTIFY;
@@ -119,7 +118,8 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 // pause the music stream.
 ::DWORD MUSIC::Pause()
 {
-	ASSERT_TRUE(m_DID);
+	assert(m_DID != MUSIC_ERROR);
+
 	MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_GENERIC_PARMS();
 
@@ -134,7 +134,8 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 
 ::DWORD MUSIC::Stop()
 {
-	ASSERT_TRUE(m_DID);
+	assert(m_DID != MUSIC_ERROR);
+
 	MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_GENERIC_PARMS();
 
@@ -145,7 +146,8 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 
 ::DWORD MUSIC::SetVolume(float value)
 {
-	ASSERT_TRUE(m_DID);
+	assert(m_DID != MUSIC_ERROR);
+
 	MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_DGV_SETAUDIO_PARMSW();
 
@@ -160,7 +162,8 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 // seek the music stream playposition to `dwTo`
 ::DWORD MUSIC::Seek(::DWORD dwTo)
 {
-	ASSERT_TRUE(m_DID);
+	assert(m_DID != MUSIC_ERROR);
+
 	MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_SEEK_PARMS();
 
@@ -195,7 +198,8 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 // get the playing position. return by milliseconds
 ::DWORD MUSIC::GetPosition()
 {
-	ASSERT_TRUE(m_DID);
+	assert(m_DID != MUSIC_ERROR);
+
 	auto mci_p = ::MCI_STATUS_PARMS();
 
 	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
@@ -209,7 +213,8 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 // get the length of the music stream. return by milliseconds
 ::DWORD MUSIC::GetLength()
 {
-	ASSERT_TRUE(m_DID);
+	assert(m_DID != MUSIC_ERROR);
+
 	auto mci_p = ::MCI_STATUS_PARMS();
 
 	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
@@ -221,7 +226,8 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 
 ::DWORD MUSIC::GetPlayStatus()
 {
-	ASSERT_TRUE(m_DID);
+	assert(m_DID != MUSIC_ERROR);
+
 	auto mci_p = ::MCI_STATUS_PARMS();
 
 	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
