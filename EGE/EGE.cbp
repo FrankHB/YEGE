@@ -123,6 +123,7 @@
 		<Unit filename="include/thread_queue.h" />
 		<Unit filename="src/ege/base.cpp" />
 		<Unit filename="src/ege/color.cpp" />
+		<Unit filename="src/ege/compress.cpp" />
 		<Unit filename="src/ege/egecontrolbase.cpp" />
 		<Unit filename="src/ege/egegapi.cpp" />
 		<Unit filename="src/ege/global.cpp" />
