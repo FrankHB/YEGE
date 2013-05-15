@@ -42,5 +42,5 @@ randomf()
 	return d(*p_mt);
 }
 
-} // namespace ege
+} // namespace ege;
 

@@ -166,4 +166,4 @@ VECTOR3D::GetAngel(const VECTOR3D& _e, const VECTOR3D& _s)
 	return float(std::asin(sr));
 }
 
-} // namespace ege
+} // namespace ege;

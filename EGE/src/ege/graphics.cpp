@@ -248,5 +248,5 @@ attachHWND(::HWND hWnd)
 	return 0;
 }
 
-} // namespace ege
+} // namespace ege;
 

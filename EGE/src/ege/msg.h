@@ -17,7 +17,7 @@ struct EGEMSG
 	::UINT        flag;
 };
 
-} // namespace ege
+} // namespace ege;
 
 #endif
 

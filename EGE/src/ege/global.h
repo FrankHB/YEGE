@@ -261,7 +261,7 @@ struct _graph_setting
 
 extern _graph_setting& graph_setting;
 
-} // namespace ege
+} // namespace ege;
 
 #endif
 

@@ -204,7 +204,7 @@ protected:
 	::LONG_PTR    m_callback;
 };
 
-} // namespace ege
+} // namespace ege;
 
 #endif
 

@@ -12,7 +12,7 @@
 namespace ege
 {
 
-} // namespace ege
+} // namespace ege;
 
 #endif
 

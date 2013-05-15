@@ -709,4 +709,4 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int le
 	return ret;
 }
 
-} // namespace ege
+} // namespace ege;

@@ -378,4 +378,4 @@ hsv2rgb(float H, float S, float V)
 	return EGERGB(crgb.r, crgb.g, crgb.b);
 }
 
-} // namespace ege
+} // namespace ege;

@@ -237,4 +237,4 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 	return (::DWORD)mci_p.dwReturn;
 }
 
-} // namespace ege
+} // namespace ege;

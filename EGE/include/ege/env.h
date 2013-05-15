@@ -36,7 +36,7 @@ closegraph(); // 关闭图形环境
 EGEAPI bool
 is_run();   // 判断UI是否退出
 
-} // namespace ege
+} // namespace ege;
 
 #endif
 

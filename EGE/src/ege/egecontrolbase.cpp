@@ -408,4 +408,4 @@ void egeControlBase::draw(IMAGE* pimg)
 	}
 }
 
-} // namespace ege
+} // namespace ege;
