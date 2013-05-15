@@ -292,10 +292,8 @@ ege_gentexture(bool gen, IMAGE* pimg = nullptr);
 EGEAPI void
 ege_puttexture(IMAGE* srcimg, float x, float y, float w, float h,
 	IMAGE* pimg = nullptr);
-
 EGEAPI void
 ege_puttexture(IMAGE* srcimg, ege_rect dest, IMAGE* pimg = nullptr);
-
 EGEAPI void
 ege_puttexture(IMAGE* srcimg, ege_rect dest, ege_rect src,
 	IMAGE* pimg = nullptr);

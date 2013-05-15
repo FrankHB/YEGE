@@ -392,12 +392,8 @@ void egeControlBase::draw(IMAGE* pimg)
 	egectlmap*& cmap = (egectlmap*&)m_childmap;
 	egectlvec*& cvec = (egectlvec*&)m_childzorder;
 	if(cmap)
-	{
 		for(egectlvec::iterator it = cvec->begin() ; it != cvec->end(); it++)
-		{
 			(*it)->draw(pmain);
-		}
-	}
 	if(!m_bDirectDraw && m_bVisable)
 	{
 		if(m_AlphablendMode == SOLIDCOPY)

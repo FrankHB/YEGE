@@ -132,6 +132,7 @@
 		<Unit filename="src/ege/head.h" />
 		<Unit filename="src/ege/image.cpp" />
 		<Unit filename="src/ege/image.h" />
+		<Unit filename="src/ege/input.cpp" />
 		<Unit filename="src/ege/math.cpp" />
 		<Unit filename="src/ege/msg.h" />
 		<Unit filename="src/ege/music.cpp" />

@@ -50,25 +50,15 @@ private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz, int
 		img->m_texttype.horiz = horiz;
 		img->m_texttype.vert = vert;
 		if(img->m_texttype.horiz == RIGHT_TEXT)
-		{
 			fMode |= TA_RIGHT;
-		}
 		else if(img->m_texttype.horiz == CENTER_TEXT)
-		{
 			fMode |= TA_CENTER;
-		}
 		else
-		{
 			fMode |= TA_LEFT;
-		}
 		if(img->m_texttype.vert == BOTTOM_TEXT)
-		{
 			fMode |= TA_BOTTOM;
-		}
 		else
-		{
 			fMode |= TA_TOP;
-		}
 		::SetTextAlign(img->m_hDC, fMode);
 	}
 	else
