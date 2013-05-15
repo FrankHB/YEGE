@@ -2842,74 +2842,6 @@ getimage(IMAGE* pDstImg, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth,
 	pDstImg->getimage(pSrcImg, srcX, srcY, srcWidth, srcHeight);
 }
 
-void
-putimage(int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
-{
-	pSrcImg->putimage(dstX, dstY, dwRop);
-}
-
-void
-putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
-	int srcX, int srcY, ::DWORD dwRop)
-{
-	pSrcImg->putimage(dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
-}
-
-void
-putimage(IMAGE* pDstImg, int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
-{
-	pSrcImg->putimage(pDstImg, dstX, dstY, dwRop);
-}
-
-void
-putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
-	IMAGE* pSrcImg, int srcX, int srcY, ::DWORD dwRop)
-{
-	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
-		dwRop);
-}
-
-int
-getimage(IMAGE* pDstImg, const char* pImgFile, int zoomWidth, int zoomHeight)
-{
-	return pDstImg->getimage(pImgFile, zoomWidth, zoomHeight);
-}
-
-int
-getimage(IMAGE* pDstImg, const wchar_t* pImgFile, int zoomWidth, int zoomHeight)
-{
-	return pDstImg->getimage(pImgFile, zoomWidth, zoomHeight);
-}
-
-int
-getimage(IMAGE* pDstImg, const char* pResType, const char* pResName,
-	int zoomWidth, int zoomHeight)
-{
-	return pDstImg->getimage(pResType, pResName, zoomWidth, zoomHeight);
-}
-
-int
-getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName,
-	int zoomWidth, int zoomHeight)
-{
-	return pDstImg->getimage(pResType, pResName, zoomWidth, zoomHeight);
-}
-
-void
-putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
-	IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
-{
-	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
-		srcWidth, srcHeight, dwRop);
-}
-
-void
-putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
-	int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
-{
-	pSrcImg->putimage(nullptr, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
-		srcWidth, srcHeight, dwRop);
-}
 
 int
 putimage_transparent(
@@ -2996,61 +2928,9 @@ imagefilter_blurring(
 	return ret;
 }
 
-int
-saveimage(IMAGE* pimg, const char*  filename)
-{
-	const auto img = CONVERT_IMAGE(pimg);
-
-	int ret = 0;
-
-	if(img)
-		ret = img->saveimage(filename);
-	CONVERT_IMAGE_END;
-	return ret;
-}
 
 int
-saveimage(IMAGE* pimg, const wchar_t* filename)
-{
-	const auto img = CONVERT_IMAGE(pimg);
-	int ret = 0;
-
-	if(img)
-		ret = img->saveimage(filename);
-	CONVERT_IMAGE_END;
-	return ret;
-}
-
-
-int
-getimage_pngfile(IMAGE* pimg, const char*  filename)
-{
-	FILE* fp = fopen(filename, "rb");
-
-	if(!fp)
-		return grFileNotFound;
-
-	int ret = pimg->getpngimg(fp);
-
-	fclose(fp);
-	return ret;
-}
-
-int
-getimage_pngfile(IMAGE* pimg, const wchar_t* filename)
-{
-	FILE* fp = _wfopen(filename, L"rb");
-	if(!fp)
-		return grFileNotFound;
-
-	int ret = pimg->getpngimg(fp);
-
-	fclose(fp);
-	return ret;
-}
-
-int
-savepng(IMAGE* pimg, const char*  filename, int bAlpha)
+savepng(IMAGE* pimg, const char* filename, int bAlpha)
 {
 	FILE* fp = fopen(filename, "wb");
 
