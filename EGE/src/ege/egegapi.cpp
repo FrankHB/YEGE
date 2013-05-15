@@ -1621,12 +1621,6 @@ SetCloseHandler(LPCALLBACK_PROC func)
 }
 
 
-float
-getfps()
-{
-	return graph_setting._get_FPS(0);
-}
-
 double
 fclock()
 {
