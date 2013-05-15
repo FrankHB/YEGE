@@ -43,7 +43,7 @@ Windows SDK 类型 WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别用 wcha
 实现注记
 ----
 随机数改用 C++11 标准库 <random> 实现。
-移除的 Array 和 Set 模版改用 std::vector 和 std::set 代替。
+移除的 Array 和 Set 模板改用 std::vector 和 std::set 代替。
 移除 SWAP 宏，使用 C++ 标准库 std::swap 代替。
 移除 _GRAPH_LIB_BUILD_ 宏。
 移除 FLOAT_EPS 宏，使用更精确的标准库 <cfloat> 中的宏 FLT_EPSILON 代替。
@@ -55,6 +55,7 @@ Windows SDK 类型 WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别用 wcha
 移除 ERROR_SUCCESS 宏，使用字面量 0 代替。
 移除内部头文件的 GRADIENT_* 和 __int3264 宏 、typedef 名称 LONG_PTR 和 DWORD_PTR 、函数 GradientFill 的声明，使用 MinGW 头文件。
  ASSERT_TRUE 宏仅用于 music.cpp 。
+移除 count_ptr 模板（当前未使用，必要时可用 std::shared_ptr<void> 代替）。
 
 实现质量(QoI)
 ----
