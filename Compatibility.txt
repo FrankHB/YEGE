@@ -53,6 +53,8 @@ Windows SDK 类型 WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别用 wcha
 移除 enum dealmessage_update 类型，使用 bool 代替枚举值。
 移除 _DEBUG 宏。
 移除 ERROR_SUCCESS 宏，使用字面量 0 代替。
+移除内部头文件的 GRADIENT_* 和 __int3264 宏 、typedef 名称 LONG_PTR 和 DWORD_PTR 、函数 GradientFill 的声明，使用 MinGW 头文件。
+ ASSERT_TRUE 宏仅用于 music.cpp 。
 
 实现质量(QoI)
 ----

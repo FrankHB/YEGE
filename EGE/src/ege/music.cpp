@@ -5,6 +5,8 @@
 namespace ege
 {
 
+#define ASSERT_TRUE(e) assert((e) != MUSIC_ERROR)
+
 // Class MUSIC Construction
 MUSIC::MUSIC()
 {
