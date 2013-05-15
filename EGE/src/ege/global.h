@@ -113,11 +113,20 @@ struct _graph_setting
 	double
 	_get_highfeq_time_ls();
 
+	IMAGE*
+	_get_target()
+	{
+		return imgtarget_set;
+	}
+
 	void
 	_set_activepage(int);
 
 	void
 	_set_mode(int, int);
+
+	int
+	_set_target(IMAGE*);
 
 	void
 	_set_visualpage(int);
@@ -228,6 +237,10 @@ struct _graph_setting
 
 	void
 	_render_manual();
+
+	//此函数调用前，已经有Lock
+	int
+	_save_brush(IMAGE*, int);
 
 	int
 	_show_mouse(int);

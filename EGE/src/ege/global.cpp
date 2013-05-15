@@ -119,6 +119,14 @@ _graph_setting::_set_mode(int gdriver, int gmode)
 	}
 }
 
+int
+_graph_setting::_set_target(IMAGE* pbuf)
+{
+	imgtarget_set = pbuf;
+	imgtarget = pbuf ? pbuf : img_page[active_page];
+	return 0;
+}
+
 void
 _graph_setting::_set_visualpage(int page)
 {
@@ -1117,6 +1125,32 @@ _graph_setting::_render_manual()
 		while(timer_stop_mark)
 			::Sleep(1);
 	}
+}
+
+int
+_graph_setting::_save_brush(IMAGE* img, int save)
+{
+	if(save)
+	{
+		::LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
+
+		lbr.lbColor = 0;
+		lbr.lbStyle = BS_NULL;
+		savebrush_hbr = ::CreateBrushIndirect(&lbr);
+		if(savebrush_hbr)
+		{
+			savebrush_hbr = ::HBRUSH(::SelectObject(img->m_hDC,
+				savebrush_hbr));
+			return 1;
+		}
+	}
+	else if(savebrush_hbr)
+	{
+		savebrush_hbr = (::HBRUSH)::SelectObject(img->m_hDC, savebrush_hbr);
+		::DeleteObject(savebrush_hbr);
+		savebrush_hbr = nullptr;
+	}
+	return 0;
 }
 
 int

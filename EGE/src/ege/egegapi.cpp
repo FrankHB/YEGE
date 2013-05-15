@@ -399,42 +399,14 @@ line_f(float x1, float y1, float x2, float y2, IMAGE* pimg)
 	CONVERT_IMAGE_END;
 }
 
-/*private function*/
-static int
-saveBrush(IMAGE* img, int save)   //此函数调用前，已经有Lock
-{
-	auto pg = &graph_setting;
-
-	if(save)
-	{
-		::LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
-
-		lbr.lbColor = 0;
-		lbr.lbStyle = BS_NULL;
-		pg->savebrush_hbr = ::CreateBrushIndirect(&lbr);
-		if(pg->savebrush_hbr)
-		{
-			pg->savebrush_hbr = ::HBRUSH(::SelectObject(img->m_hDC,
-				pg->savebrush_hbr));
-			return 1;
-		}
-	}
-	else if(pg->savebrush_hbr)
-	{
-		pg->savebrush_hbr = (::HBRUSH)::SelectObject(img->m_hDC, pg->savebrush_hbr);
-		::DeleteObject(pg->savebrush_hbr);
-		pg->savebrush_hbr = nullptr;
-	}
-	return 0;
-}
-
 void rectangle(int left, int top, int right, int bottom, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
-	if(saveBrush(img, 1))
+
+	if(graph_setting._save_brush(img, 1))
 	{
 		Rectangle(img->m_hDC, left, top, right, bottom);
-		saveBrush(img, 0);
+		graph_setting._save_brush(img, 0);
 	}
 	CONVERT_IMAGE_END;
 }
@@ -472,10 +444,9 @@ setcolor(color_t color, IMAGE* pimg)
 
 		img->m_color = color;
 		color = RGBTOBGR(color);
-		lPen.lopnColor   = color;
-		lPen.lopnStyle   = img->m_linestyle.linestyle;
+		lPen.lopnColor = color;
+		lPen.lopnStyle = img->m_linestyle.linestyle;
 		lPen.lopnWidth.x = img->m_linestyle.thickness;
-
 		::SetTextColor(img->m_hDC, color);
 		if(lPen.lopnStyle == PS_USERSTYLE)
 		{
@@ -483,12 +454,12 @@ setcolor(color_t color, IMAGE* pimg)
 			LOGBRUSH lbr;
 			unsigned short upattern = img->m_linestyle.upattern;
 			int n, bn = 0, len = 1, st = 0;
+
 			lbr.lbColor = lPen.lopnColor;
 			lbr.lbStyle = BS_SOLID;
 			lbr.lbHatch = 0;
 			st = upattern & 1;
 			for(n = 1; n < 16; n++)
-			{
 				if(upattern & (1 << n))
 				{
 					if(st == 0)
@@ -511,7 +482,6 @@ setcolor(color_t color, IMAGE* pimg)
 						len = 1;
 					}
 				}
-			}
 			hpen = ::ExtCreatePen(PS_GEOMETRIC, img->m_linestyle.thickness,
 				&lbr, bn, style);
 		}
@@ -615,21 +585,16 @@ setbkmode(int iBkMode, IMAGE* pimg)
 	CONVERT_IMAGE_END;
 }
 
-IMAGE* gettarget()
+IMAGE*
+gettarget()
 {
-	auto pg = &graph_setting;
-
-	return pg->imgtarget_set;
+	return graph_setting._get_target();
 }
-int settarget(IMAGE* pbuf)
+
+int
+settarget(IMAGE* pbuf)
 {
-	auto pg = &graph_setting;
-	pg->imgtarget_set = pbuf;
-	if(!pbuf)
-		pg->imgtarget = pg->img_page[graph_setting.active_page];
-	else
-		pg->imgtarget = pbuf;
-	return 0;
+	return graph_setting._set_target(pbuf);
 }
 
 void
