@@ -93,6 +93,34 @@ saveimage(IMAGE* pimg, const wchar_t* filename)
 	return ret;
 }
 
+
+int
+savepng(IMAGE* pimg, const char* filename, int bAlpha)
+{
+	FILE* fp = fopen(filename, "wb");
+
+	if(!fp)
+		return grFileNotFound;
+
+	int ret = pimg->savepngimg(fp, bAlpha);
+
+	fclose(fp);
+	return ret;
+}
+int
+savepng(IMAGE* pimg, const wchar_t* filename, int bAlpha)
+{
+	FILE* fp = _wfopen(filename, L"wb");
+
+	if(!fp)
+		return grFileNotFound;
+
+	int ret = pimg->savepngimg(fp, bAlpha);
+
+	fclose(fp);
+	return ret;
+}
+
 int
 getimage_pngfile(IMAGE* pimg, const char* filename)
 {

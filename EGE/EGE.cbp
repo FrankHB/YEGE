@@ -104,6 +104,8 @@
 		<Unit filename="include/ege/env.h" />
 		<Unit filename="include/ege/fps.h" />
 		<Unit filename="include/ege/fpsbase.h" />
+		<Unit filename="include/ege/gapi.h" />
+		<Unit filename="include/ege/gapi_aa.h" />
 		<Unit filename="include/ege/gdi.h" />
 		<Unit filename="include/ege/img.h" />
 		<Unit filename="include/ege/input.h" />
@@ -124,10 +126,11 @@
 		<Unit filename="src/ege/base.cpp" />
 		<Unit filename="src/ege/color.cpp" />
 		<Unit filename="src/ege/compress.cpp" />
-		<Unit filename="src/ege/egecontrolbase.cpp" />
-		<Unit filename="src/ege/egegapi.cpp" />
+		<Unit filename="src/ege/ctl.cpp" />
 		<Unit filename="src/ege/env.cpp" />
 		<Unit filename="src/ege/fpsbase.cpp" />
+		<Unit filename="src/ege/gapi.cpp" />
+		<Unit filename="src/ege/gapi_aa.cpp" />
 		<Unit filename="src/ege/gdi.cpp" />
 		<Unit filename="src/ege/global.cpp" />
 		<Unit filename="src/ege/global.h" />
@@ -135,6 +138,7 @@
 		<Unit filename="src/ege/head.h" />
 		<Unit filename="src/ege/image.cpp" />
 		<Unit filename="src/ege/image.h" />
+		<Unit filename="src/ege/img.cpp" />
 		<Unit filename="src/ege/input.cpp" />
 		<Unit filename="src/ege/math.cpp" />
 		<Unit filename="src/ege/msg.h" />

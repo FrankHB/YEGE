@@ -1,7 +1,7 @@
 ﻿#ifndef Inc_ege_image_h_
 #define Inc_ege_image_h_
 
-#include "ege/img.h"
+#include "ege/gapi.h"
 #include "ege/viewport.h"
 #include <windows.h>
 

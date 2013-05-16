@@ -5,6 +5,7 @@
 #include "ege/mac.h"
 #include "ege/pushtarget.h"
 #include "ege/windows.h"
+#include "ege/img.h"
 
 namespace ege
 {

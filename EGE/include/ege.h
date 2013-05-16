@@ -10,6 +10,8 @@
 #include "ege/v3d.h"
 #include "ege/env.h"
 #include "ege/viewport.h"
+#include "ege/gapi.h"
+#include "ege/gapi_aa.h"
 #include "ege/img.h"
 #include "ege/gdi.h"
 #include "ege/time.h"

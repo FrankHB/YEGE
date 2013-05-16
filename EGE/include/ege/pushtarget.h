@@ -1,7 +1,7 @@
 ﻿#ifndef Inc_ege_pushtarget_h_
 #define Inc_ege_pushtarget_h_
 
-#include "ege/img.h"
+#include "ege/gapi.h"
 
 namespace ege
 {
