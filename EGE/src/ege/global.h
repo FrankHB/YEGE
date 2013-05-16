@@ -102,6 +102,8 @@ struct _graph_setting
 	::HWND _g_attach_hwnd = nullptr;
 	int _g_windowpos_x = CW_USEDEFAULT, _g_windowpos_y = CW_USEDEFAULT;
 	int _g_initoption = INIT_DEFAULT, _g_initcall = 0;
+	static ::DWORD g_windowstyle;
+	static ::DWORD g_windowexstyle;
 
 	bool
 	_is_run() const;
@@ -121,6 +123,9 @@ struct _graph_setting
 
 	void
 	_set_activepage(int);
+
+	void
+	_set_initmode(int, int, int);
 
 	void
 	_set_mode(int, int);

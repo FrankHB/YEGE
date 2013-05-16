@@ -25,17 +25,6 @@ setvisualpage(int page)
 }
 
 void
-setcaption(const char*  caption)
-{
-	::SetWindowTextA(getHWnd(), caption);
-}
-void
-setcaption(const wchar_t* caption)
-{
-	::SetWindowTextW(getHWnd(), caption);
-}
-
-void
 api_sleep(long dwMilliseconds)
 {
 	if(dwMilliseconds >= 0)
@@ -1583,18 +1572,6 @@ ege_puttexture(IMAGE* srcimg, ege_rect dest, ege_rect src, IMAGE* pimg)
 		}
 	}
 	CONVERT_IMAGE_END;
-}
-
-::HWND
-getHWnd()
-{
-	return graph_setting.hwnd;
-}
-
-::HINSTANCE
-getHInstance()
-{
-	return graph_setting.instance;
 }
 
 int

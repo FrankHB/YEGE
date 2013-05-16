@@ -141,6 +141,7 @@
 		<Unit filename="src/ege/music.cpp" />
 		<Unit filename="src/ege/random.cpp" />
 		<Unit filename="src/ege/text.cpp" />
+		<Unit filename="src/ege/windows.cpp" />
 		<Unit filename="src/libpng/png.h" />
 		<Unit filename="src/libpng/pngconf.h" />
 		<Unit filename="src/libpng/pngdebug.h" />

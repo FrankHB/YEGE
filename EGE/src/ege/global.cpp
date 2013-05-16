@@ -28,6 +28,10 @@
 namespace ege
 {
 
+::DWORD _graph_setting::g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
+	| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
+::DWORD _graph_setting::g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
+
 bool
 _graph_setting::_is_run() const
 {
@@ -92,6 +96,29 @@ _graph_setting::_set_activepage(int page)
 		img_page[page]->createimage(dc_w, dc_h);
 		dc = img_page[page]->m_hDC;
 	}
+}
+
+void
+_graph_setting::_set_initmode(int mode, int x, int y)
+{
+	_g_initcall = 1;
+	_g_initoption = mode;
+	if(mode & INIT_NOBORDER)
+	{
+		g_windowstyle = mode & INIT_CHILD ? WS_CHILDWINDOW | WS_CLIPCHILDREN
+			| WS_VISIBLE : WS_POPUP | WS_CLIPCHILDREN | WS_VISIBLE;
+		g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
+	}
+	else
+	{
+		g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
+			| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
+		g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
+	}
+	if(mode & INIT_TOPMOST)
+		g_windowexstyle |= WS_EX_TOPMOST;
+	_g_windowpos_x = x;
+	_g_windowpos_y = y;
 }
 
 void
@@ -519,11 +546,6 @@ _graph_setting::_init_graph()
 namespace
 {
 
-::DWORD g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
-	| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
-::DWORD g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
-
-
 BOOL
 init_instance(::HINSTANCE hInstance, int nCmdShow)
 {
@@ -544,8 +566,8 @@ init_instance(::HINSTANCE hInstance, int nCmdShow)
 		::SetWindowLongPtrW(pg->_g_attach_hwnd, GWL_STYLE, style);
 	}
 
-	pg->hwnd = ::CreateWindowEx(g_windowexstyle, pg->window_class_name,
-		pg->window_caption, g_windowstyle & ~WS_VISIBLE, pg->_g_windowpos_x,
+	pg->hwnd = ::CreateWindowEx(pg->g_windowexstyle, pg->window_class_name,
+		pg->window_caption, pg->g_windowstyle & ~WS_VISIBLE, pg->_g_windowpos_x,
 		pg->_g_windowpos_y, pg->dc_w + dw, pg->dc_h + dh, pg->_g_attach_hwnd, nullptr,
 		hInstance, nullptr);
 	if(!pg->hwnd)
@@ -587,7 +609,7 @@ init_instance(::HINSTANCE hInstance, int nCmdShow)
 
 	pg->exit_window = 0;
 	::ShowWindow(pg->hwnd, nCmdShow);
-	if(g_windowexstyle & WS_EX_TOPMOST)
+	if(pg->g_windowexstyle & WS_EX_TOPMOST)
 		::SetWindowPos(pg->hwnd, HWND_TOPMOST, 0, 0, 0, 0,
 			SWP_NOSIZE | SWP_NOMOVE);
 	return TRUE;
@@ -699,30 +721,6 @@ messageloopthread(LPVOID lpParameter)
 	return 0;
 }
 
-}
-
-
-void
-setinitmode(int mode, int x, int y)
-{
-	graph_setting._g_initcall = 1;
-	graph_setting._g_initoption = mode;
-	if(mode & INIT_NOBORDER)
-	{
-		g_windowstyle = mode & INIT_CHILD ? WS_CHILDWINDOW | WS_CLIPCHILDREN
-			| WS_VISIBLE : WS_POPUP | WS_CLIPCHILDREN | WS_VISIBLE;
-		g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
-	}
-	else
-	{
-		g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
-			| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
-		g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
-	}
-	if(mode & INIT_TOPMOST)
-		g_windowexstyle |= WS_EX_TOPMOST;
-	graph_setting._g_windowpos_x = x;
-	graph_setting._g_windowpos_y = y;
 }
 
 void

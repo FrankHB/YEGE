@@ -149,13 +149,5 @@ getProcfunc()
 	return wndproc;
 }
 
-
-int
-attachHWND(::HWND hWnd)
-{
-	graph_setting._g_attach_hwnd = hWnd;
-	return 0;
-}
-
 } // namespace ege;
 

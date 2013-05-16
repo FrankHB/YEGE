@@ -1,7 +1,7 @@
 ﻿#ifndef Inc_ege_windows_h_
 #define Inc_ege_windows_h_
 
-#include "ege/def.h"
+#include "ege/env.h"
 #include <windows.h>
 
 #ifndef WM_MOUSEWHEEL
@@ -11,7 +11,7 @@
 namespace ege
 {
 
-enum line_styles        /* Line styles for get/setlinestyle */
+enum line_styles /* Line styles for get/setlinestyle */
 {
 	SOLID_LINE      = PS_SOLID,
 	CENTER_LINE     = PS_DASH,
