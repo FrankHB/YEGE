@@ -1368,21 +1368,5 @@ ege_puttexture(IMAGE* srcimg, ege_rect dest, ege_rect src, IMAGE* pimg)
 	CONVERT_IMAGE_END;
 }
 
-int
-message_addkeyhandler(void* param, LPMSG_KEY_PROC func)
-{
-	graph_setting.callback_key = func;
-	graph_setting.callback_key_param = param;
-	return grOk;
-}
-
-int
-message_addmousehandler(void* param, LPMSG_MOUSE_PROC func)
-{
-	graph_setting.callback_mouse = func;
-	graph_setting.callback_mouse_param = param;
-	return grOk;
-}
-
 } // namespace ege;
 

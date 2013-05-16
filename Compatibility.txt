@@ -56,7 +56,7 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别
 移除 GRADIENT_* 、__int3264 宏 、typedef 名称（ LONG_PTR 和 DWORD_PTR ）、函数 GradientFill 的声明，使用 MinGW 头文件。
 移除 count_ptr 模板（当前未使用，必要时可用 std::shared_ptr<void> 代替）。
 移除 ASSERT_TRUE 宏。
-移除非接口函数 detectgraph 的孤立实现。
+移除非接口函数 detectgraph 、message_addkeyhandler 和 message_addmousehandler 的孤立实现。
 
 实现质量(QoI)
 ----
