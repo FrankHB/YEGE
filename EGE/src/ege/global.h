@@ -11,12 +11,22 @@
 
 #define BITMAP_PAGE_SIZE 4
 #define MAX_KEY_VCODE 256
+#define UPDATE_MAX_CALL     0xFF
 
 namespace ege
 {
 
 class IMAGE;
 class egeControlBase;
+
+
+extern int update_mark_count; //更新标记
+extern bool timer_stop_mark;
+extern bool skip_timer_mark;
+/* egeControlBase */
+extern egeControlBase* egectrl_root;
+extern egeControlBase* egectrl_focus;
+
 
 // 定义ege全局状态对象
 struct _graph_setting
@@ -30,8 +40,6 @@ struct _graph_setting
 	{
 		float xasp, yasp;
 	} aspectratio;
-
-	int writemode;
 
 	::HDC dc;
 	::HDC window_dc;
@@ -51,13 +59,9 @@ struct _graph_setting
 	TCHAR   window_caption[128];
 	int     exit_flag;
 	int     exit_window;
-	int     update_mark_count; //更新标记
 	bool    close_manually;
 	bool    use_force_exit; //强制关闭进程标记
 	bool    lock_window;
-	bool    init_finish;
-	bool    timer_stop_mark;
-	bool    skip_timer_mark;
 
 	thread_queue<EGEMSG>* msgkey_queue, *msgmouse_queue;
 
@@ -80,40 +84,17 @@ struct _graph_setting
 	/* 键盘状态记录 */
 	int keystatemap[MAX_KEY_VCODE];
 
-	/* egeControlBase */
-	egeControlBase* egectrl_root;
-	egeControlBase* egectrl_focus;
-
-	/* 私用全局变量 */
-	::ULONG_PTR g_gdiplusToken;
-	::LARGE_INTEGER get_highfeq_time_start;
-	::DWORD         fclock_start;
-	//double delay_dwLast;
-	double delay_ms_dwLast;
-	double delay_fps_dwLast;
-	int getch_last_key;
-
-	::HBRUSH savebrush_hbr;
-
 	/* 函数用临时缓冲区 */
 	::DWORD g_t_buff[1024 * 8];
-
-	bool _g_has_init = false;
 	::HWND _g_attach_hwnd = nullptr;
 	int _g_windowpos_x = CW_USEDEFAULT, _g_windowpos_y = CW_USEDEFAULT;
-	int _g_initoption = INIT_DEFAULT, _g_initcall = 0;
+	int _g_initoption = INIT_DEFAULT;
+	bool _g_initcall = false;
 	static ::DWORD g_windowstyle;
 	static ::DWORD g_windowexstyle;
 
 	bool
 	_is_run() const;
-
-	//获取帧数
-	float
-	_get_FPS(int);
-
-	double
-	_get_highfeq_time_ls();
 
 	IMAGE*
 	_get_target()
@@ -138,18 +119,6 @@ struct _graph_setting
 
 	int
 	_dealmessage(bool);
-
-	void
-	_delay_ms(long);
-
-	void
-	_delay_fps(double);
-
-	void
-	_delay_jfps(double);
-
-	void
-	_delay_update();
 
 	void
 	_flushkey();
@@ -181,13 +150,10 @@ struct _graph_setting
 	_init_graph();
 
 	void
+	_init_graph_p();
+
+	void
 	_init_graph_x(int*, int*);
-
-	void
-	_init_img_page();
-
-	void
-	_init_img_page_f();
 
 	int
 	_kbhit_ex(int);
@@ -242,10 +208,6 @@ struct _graph_setting
 
 	void
 	_render_manual();
-
-	//此函数调用前，已经有Lock
-	int
-	_save_brush(IMAGE*, int);
 
 	int
 	_show_mouse(int);

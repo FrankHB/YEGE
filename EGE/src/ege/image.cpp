@@ -77,6 +77,7 @@ void IMAGE::inittest(const wchar_t * strCallFunction) const
 	if(m_initflag != IMAGE_INIT_FLAG)
 	{
 		wchar_t str[60];
+
 		wsprintfW(str, L"Fatal error: read/write at 0x%p. At function '%s'", this, strCallFunction);
 		::MessageBoxW(graph_setting.hwnd, str, L"EGE ERROR message", MB_ICONSTOP);
 		::ExitProcess((::UINT)grError);

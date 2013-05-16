@@ -13,14 +13,13 @@ initgraph(int* gdriver, int* gmode, char*)
 	graph_setting._init_graph_x(gdriver, gmode);
 }
 void
-initgraph(int Width, int Height, int Flag)
+initgraph(int width, int height, int flag)
 {
-	int g = TRUECOLORSIZE, m = (Width) | (Height << 16);
+	int g(TRUECOLORSIZE), m((width) | (height << 16));
 
 	if(graph_setting._g_initcall == 0)
-		setinitmode(Flag);
-	initgraph(&g, &m, (char*)"");
-	//using flag;
+			setinitmode(flag);
+	initgraph(&g, &m, nullptr);
 }
 
 void

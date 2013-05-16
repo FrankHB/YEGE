@@ -7,6 +7,41 @@
 namespace ege
 {
 
+namespace
+{
+
+//此函数调用前，已经有Lock
+int
+_save_brush(IMAGE* img, int save)
+{
+	static ::HBRUSH savebrush_hbr;
+
+	if(save)
+	{
+		::LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
+
+		lbr.lbColor = 0;
+		lbr.lbStyle = BS_NULL;
+		savebrush_hbr = ::CreateBrushIndirect(&lbr);
+		if(savebrush_hbr)
+		{
+			savebrush_hbr = ::HBRUSH(::SelectObject(img->m_hDC,
+				savebrush_hbr));
+			return 1;
+		}
+	}
+	else if(savebrush_hbr)
+	{
+		savebrush_hbr = (::HBRUSH)::SelectObject(img->m_hDC, savebrush_hbr);
+		::DeleteObject(savebrush_hbr);
+		savebrush_hbr = nullptr;
+	}
+	return 0;
+}
+
+} // unnamed namespace;
+
+
 IMAGE*
 gettarget()
 {
@@ -676,10 +711,10 @@ void rectangle(int left, int top, int right, int bottom, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
 
-	if(graph_setting._save_brush(img, 1))
+	if(_save_brush(img, 1))
 	{
 		Rectangle(img->m_hDC, left, top, right, bottom);
-		graph_setting._save_brush(img, 0);
+		_save_brush(img, 0);
 	}
 	CONVERT_IMAGE_END;
 }

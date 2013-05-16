@@ -8,7 +8,7 @@
 #define CONVERT_IMAGE(pimg) ( ((size_t)(pimg)<0x20 ?\
 							   ((pimg) ?\
 								(graph_setting.img_page[(size_t)(pimg) & 0xF])\
-								: (--graph_setting.update_mark_count, graph_setting.imgtarget))\
+								: (--ege::update_mark_count, graph_setting.imgtarget))\
 								   : pimg) )
 
 #define CONVERT_IMAGE_CONST(pimg) ( (size_t)(pimg)<0x20 ?\

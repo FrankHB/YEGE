@@ -9,6 +9,7 @@
 #include <memory> // for std::unique_ptr;
 #include <functional> // for std::bind;
 #include <cassert>
+#include <mutex> // for std::once_flag, std::call_once;
 
 #ifdef _WIN64
 #define ARCH "x64"
@@ -22,11 +23,46 @@
 
 #define EGE_TITLE TEXT("yEGE13.04 ") TEXT("GCC") GCC_VER TEXT(ARCH)
 
-#define UPDATE_MAX_CALL     0xFF
 #define RENDER_TIMER_ID     916
 
 namespace ege
 {
+
+namespace
+{
+
+_graph_setting&
+get_global_state()
+{
+	static std::unique_ptr<_graph_setting> p(new _graph_setting());
+
+	return *p;
+}
+
+
+void
+init_graph_once()
+{
+	static 	::ULONG_PTR g_gdiplusToken;
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+
+	Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, nullptr);
+	get_global_state()._init_graph_p();
+}
+
+
+bool init_finish;
+
+}
+
+int update_mark_count; //更新标记
+bool timer_stop_mark;
+bool skip_timer_mark;
+egeControlBase* egectrl_root;
+egeControlBase* egectrl_focus;
+
+float
+_get_FPS(int);
 
 ::DWORD _graph_setting::g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
 	| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
@@ -36,54 +72,6 @@ bool
 _graph_setting::_is_run() const
 {
 	return !(exit_window || exit_flag);
-}
-
-float
-_graph_setting::_get_FPS(int add)
-{
-	static int fps = 0;
-	static int fps_inv = 0;
-	static double time = 0;
-	static float flret = 0;
-	static float fret = 0;
-	static float fret_inv = 0;
-
-	double cur = _get_highfeq_time_ls();
-	if(add == 0x100)
-		++fps;
-	else if(add == -0x100)
-		++fps, ++fps_inv;
-	if(cur - time >= 0.5)
-	{
-		flret = fret;
-		fret = (float)(fps / (cur - time));
-		fret_inv = (float)((fps - fps_inv) / (cur - time));
-		fps = 0;
-		fps_inv = 0;
-		time = cur;
-	}
-	return add > 0 ? (fret + flret) / 2 : fret_inv;
-}
-
-double
-_graph_setting::_get_highfeq_time_ls()
-{
-	static ::LARGE_INTEGER llFeq; /* 此实为常数 */
-	::LARGE_INTEGER llNow;
-
-	if(get_highfeq_time_start.QuadPart == 0)
-	{
-		::SetThreadAffinityMask(::GetCurrentThread(), 0);
-		::QueryPerformanceCounter(&get_highfeq_time_start);
-		::QueryPerformanceFrequency(&llFeq);
-		return 0;
-	}
-	else
-	{
-		::QueryPerformanceCounter(&llNow);
-		llNow.QuadPart -= get_highfeq_time_start.QuadPart;
-		return (double)llNow.QuadPart / llFeq.QuadPart;
-	}
 }
 
 void
@@ -101,7 +89,7 @@ _graph_setting::_set_activepage(int page)
 void
 _graph_setting::_set_initmode(int mode, int x, int y)
 {
-	_g_initcall = 1;
+	_g_initcall = true;
 	_g_initoption = mode;
 	if(mode & INIT_NOBORDER)
 	{
@@ -133,7 +121,7 @@ _graph_setting::_set_mode(int gdriver, int gmode)
 		else
 			::GetWindowRect(GetDesktopWindow(), &rect);
 		dc_w = short(gmode & 0xFFFF);
-		dc_h = short((unsigned int)gmode >> 16);
+		dc_h = short(unsigned(gmode >> 16));
 		if(dc_w < 0)
 			dc_w = rect.right;
 		if(dc_h < 0)
@@ -172,147 +160,6 @@ _graph_setting::_dealmessage(bool force_update)
 	if(force_update || update_mark_count <= 0)
 		_update();
 	return !exit_window;
-}
-
-void
-_graph_setting::_delay_ms(long ms)
-{
-	skip_timer_mark = true;
-	if(ms == 0)
-		_delay_update();
-	else
-	{
-		double delay_time(ms);
-		double dw(_get_highfeq_time_ls() * 1000.0);
-		int f(ms >= 50 ? 0 : 100);
-
-		delay_ms_dwLast = 0;
-		if(delay_ms_dwLast == 0)
-			delay_ms_dwLast = _get_highfeq_time_ls() * 1000.0;
-		if(delay_ms_dwLast + 200.0 > dw)
-			dw = delay_ms_dwLast;
-
-		//ege_sleep(1);
-		egectrl_root->draw(nullptr);
-		while(dw + delay_time >= _get_highfeq_time_ls() * 1000.0)
-		{
-			if(f <= 0 || update_mark_count < UPDATE_MAX_CALL)
-			{
-				_dealmessage(true);
-				f = 256;
-			}
-			else
-				ege_sleep((int)(dw + delay_time - _get_highfeq_time_ls()
-					* 1000.0));
-			--f;
-		}
-		_dealmessage(true);
-		dw = _get_highfeq_time_ls() * 1000.0;
-		_update_GUI();
-		egectrl_root->update();
-		if(delay_ms_dwLast + 200.0 <= dw || delay_ms_dwLast > dw)
-			delay_ms_dwLast = dw;
-		else
-			delay_ms_dwLast += delay_time;
-	}
-	skip_timer_mark = false;
-}
-
-void
-_graph_setting::_delay_fps(double fps)
-{
-	skip_timer_mark = true;
-
-	double delay_time = 1000.0 / fps;
-	double avg_max_time = delay_time * 10.0; // 误差时间在这个数值以内做平衡
-	double dw = _get_highfeq_time_ls() * 1000.0;
-	int nloop = 0;
-
-	if(delay_fps_dwLast == 0)
-		delay_fps_dwLast = _get_highfeq_time_ls() * 1000.0;
-	if(delay_fps_dwLast + delay_time + avg_max_time > dw)
-		dw = delay_fps_dwLast;
-	egectrl_root->draw(nullptr);
-	for(; nloop >= 0; --nloop)
-	{
-		if((dw + delay_time + (100.0) >= _get_highfeq_time_ls() * 1000.0))
-		{
-			do
-			{
-				ege_sleep((int)(dw + delay_time - _get_highfeq_time_ls()
-					* 1000.0));
-			} while(dw + delay_time >= _get_highfeq_time_ls() * 1000.0);
-		}
-		_dealmessage(true);
-		dw = _get_highfeq_time_ls() * 1000.0;
-		_update_GUI();
-		egectrl_root->update();
-		if(delay_fps_dwLast + delay_time + avg_max_time <= dw
-			|| delay_fps_dwLast > dw)
-			delay_fps_dwLast = dw;
-		else
-			delay_fps_dwLast += delay_time;
-	}
-	skip_timer_mark = false;
-}
-
-void
-_graph_setting::_delay_jfps(double fps)
-{
-	skip_timer_mark = true;
-	double delay_time = 1000.0 / fps;
-	double avg_max_time = delay_time * 10.0;
-	double dw = _get_highfeq_time_ls() * 1000.0;
-	int nloop = 0;
-
-	if(delay_fps_dwLast == 0)
-		delay_fps_dwLast = _get_highfeq_time_ls() * 1000.0;
-	if(delay_fps_dwLast + delay_time + avg_max_time > dw)
-		dw = delay_fps_dwLast;
-	egectrl_root->draw(nullptr);
-	for(; nloop >= 0; --nloop)
-	{
-		int bSleep = 0;
-
-		while(dw + delay_time >= _get_highfeq_time_ls() * 1000.0)
-		{
-			ege_sleep((int)(dw + delay_time - _get_highfeq_time_ls()
-				* 1000.0));
-			bSleep = 1;
-		}
-		if(bSleep)
-			_dealmessage(true);
-		else
-			graph_setting._get_FPS(-0x100);
-		dw = _get_highfeq_time_ls() * 1000.0;
-		_update_GUI();
-		egectrl_root->update();
-		if(delay_fps_dwLast + delay_time + avg_max_time <= dw
-			|| delay_fps_dwLast > dw)
-			delay_fps_dwLast = dw;
-		else
-			delay_fps_dwLast += delay_time;
-	}
-	skip_timer_mark = false;
-}
-
-void
-_graph_setting::_delay_update()
-{
-	if(update_mark_count < UPDATE_MAX_CALL)
-	{
-		ege_sleep(1);
-		egectrl_root->draw(nullptr);
-		_dealmessage(true);
-		egectrl_root->update();
-
-		int l, t, r, b, c;
-
-		getviewport(&l, &t, &r, &b, &c);
-		setviewport(l, t, r, b, c);
-	}
-	delay_ms_dwLast = _get_highfeq_time_ls() * 1000.0;
-	skip_timer_mark = false;
 }
 
 void
@@ -551,12 +398,7 @@ init_instance(::HINSTANCE hInstance, int nCmdShow)
 {
 	auto pg = &graph_setting;
 	int dw = 0, dh = 0;
-	//wchar_t Title[256]{0};
-	//wchar_t Title2[256]{0};
 
-	//WideCharToMultiByte(CP_UTF8, 0, pg->window_caption,
-	//	::lstrlenW(pg->window_caption), (char*)Title, 256, 0, 0);
-	//MultiByteToWideChar(CP_UTF8, 0, (char*)Title, -1, Title2, 256);
 	dw = GetSystemMetrics(SM_CXFRAME) * 2;
 	dh = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) * 2;
 	if(pg->_g_attach_hwnd)
@@ -574,7 +416,6 @@ init_instance(::HINSTANCE hInstance, int nCmdShow)
 		return FALSE;
 	if(pg->_g_attach_hwnd)
 	{
-		//SetParent(pg->hwnd, pg->_g_attach_hwnd);
 		wchar_t name[64];
 
 		std::swprintf(name, L"ege_%X",
@@ -583,30 +424,7 @@ init_instance(::HINSTANCE hInstance, int nCmdShow)
 			if(::GetLastError() == ERROR_ALREADY_EXISTS)
 				::PostMessage(pg->hwnd, WM_CLOSE, 0, 0);
 	}
-	//::SetWindowTextA(pg->hwnd, (const char*)Title);
 	::SetWindowLongPtrW(pg->hwnd, GWLP_USERDATA, (::LONG_PTR)pg);
-
-	/*{
-		::LOGFONTW lf{0};
-		lf.lfHeight         = 12;
-		lf.lfWidth          = 6;
-		lf.lfEscapement     = 0;
-		lf.lfOrientation    = 0;
-		lf.lfWeight         = FW_DONTCARE;
-		lf.lfItalic         = 0;
-		lf.lfUnderline      = 0;
-		lf.lfStrikeOut      = 0;
-		lf.lfCharSet        = DEFAULT_CHARSET;
-		lf.lfOutPrecision   = OUT_DEFAULT_PRECIS;
-		lf.lfClipPrecision  = CLIP_DEFAULT_PRECIS;
-		lf.lfQuality        = DEFAULT_QUALITY;
-		lf.lfPitchAndFamily = DEFAULT_PITCH;
-		::lstrcpyW(lf.lfFaceName, L"宋体");
-		::HFONT hfont = ::CreateFontIndirectW(&lf);
-		::SendMessage(pg->hwnd, WM_SETFONT, (::WPARAM)hfont, nullptr);
-		//::DeleteObject(hfont);
-	} //*/
-
 	pg->exit_window = 0;
 	::ShowWindow(pg->hwnd, nCmdShow);
 	if(pg->g_windowexstyle & WS_EX_TOPMOST)
@@ -700,16 +518,14 @@ messageloopthread(LPVOID lpParameter)
 		//图形初始化
 		pg->_init_graph();
 		pg->mouse_show = 0;
-		pg->exit_flag = 0;
 		pg->use_force_exit = (pg->_g_initoption & INIT_NOFORCEEXIT ? false : true);
 		if(pg->_g_initoption & INIT_NOFORCEEXIT)
 			SetCloseHandler([]{graph_setting.exit_flag = 1;});
 		pg->close_manually = true;
-		pg->skip_timer_mark = false;
+		skip_timer_mark = false;
 		::SetTimer(pg->hwnd, RENDER_TIMER_ID, 50, nullptr);
 	}
-	pg->init_finish = true;
-
+	init_finish = true;
 	while(!pg->exit_window)
 		if(GetMessage(&msg, nullptr, 0, 0))
 		{
@@ -724,30 +540,14 @@ messageloopthread(LPVOID lpParameter)
 }
 
 void
-_graph_setting::_init_graph_x(int* gdriver, int* gmode)
+_graph_setting::_init_graph_p()
 {
-	_g_initcall = 0;
-	if(_g_has_init)
-	{
-		exit_flag = 0;
-		exit_window = 0;
-		_set_mode(*gdriver, *gmode);
-		_init_img_page();
-		return;
-	}
-	else
-	{
-		memset(this, 0, sizeof(_graph_setting));
-		exit_flag = 0;
-		exit_window = 0;
-		_init_img_page_f();
-	}
-	_set_mode(*gdriver, *gmode);
+	_g_initcall = false;
 	instance = GetModuleHandle(nullptr);
 	::lstrcpy(window_class_name, TEXT("Easy Graphics Engine"));
 	::lstrcpy(window_caption, EGE_TITLE);
 	{
-	//	::SECURITY_ATTRIBUTES sa{0};
+	//	::SECURITY_ATTRIBUTES sa{};
 		::DWORD pid;
 
 		init_finish = false;
@@ -770,21 +570,19 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 }
 
 void
-_graph_setting::_init_img_page()
+_graph_setting::_init_graph_x(int* gdriver, int* gmode)
 {
+	static std::once_flag init_flag;
+
+	_set_mode(*gdriver, *gmode);
+	std::call_once(init_flag, init_graph_once);
+	exit_flag = 0;
+	exit_window = 0;
 	for(int page = 0; page < BITMAP_PAGE_SIZE; ++page)
 		if(img_page[page])
 			img_page[page]->createimage(dc_w, dc_h);
 	_init_graph();
 	::ShowWindow(hwnd, SW_SHOW);
-}
-
-void
-_graph_setting::_init_img_page_f()
-{
-	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-	Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, nullptr);
-	_g_has_init = true;
 }
 
 int
@@ -1126,32 +924,6 @@ _graph_setting::_render_manual()
 }
 
 int
-_graph_setting::_save_brush(IMAGE* img, int save)
-{
-	if(save)
-	{
-		::LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
-
-		lbr.lbColor = 0;
-		lbr.lbStyle = BS_NULL;
-		savebrush_hbr = ::CreateBrushIndirect(&lbr);
-		if(savebrush_hbr)
-		{
-			savebrush_hbr = ::HBRUSH(::SelectObject(img->m_hDC,
-				savebrush_hbr));
-			return 1;
-		}
-	}
-	else if(savebrush_hbr)
-	{
-		savebrush_hbr = (::HBRUSH)::SelectObject(img->m_hDC, savebrush_hbr);
-		::DeleteObject(savebrush_hbr);
-		savebrush_hbr = nullptr;
-	}
-	return 0;
-}
-
-int
 _graph_setting::_show_mouse(int bShow)
 {
 	int ret = mouse_show;
@@ -1251,20 +1023,6 @@ _graph_setting::_windowmanager(bool create, struct msg_createwindow* msg)
 		if(msg->hEvent)
 			::SetEvent(msg->hEvent);
 	}
-}
-
-
-namespace
-{
-
-_graph_setting&
-get_global_state()
-{
-	static std::unique_ptr<_graph_setting> p(new _graph_setting());
-
-	return *p;
-}
-
 }
 
 _graph_setting& graph_setting(get_global_state());

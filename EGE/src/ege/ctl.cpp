@@ -60,8 +60,7 @@ egeControlBase::~egeControlBase()
 void
 egeControlBase::init(egeControlBase* parent)
 {
-	auto pg = &graph_setting;
-	egeControlBase*& root = pg->egectrl_root;
+	egeControlBase*& root = egectrl_root;
 	m_parent = nullptr;
 	m_mainbuf = newimage();
 	m_mainFilter = newimage();
@@ -195,27 +194,30 @@ void egeControlBase::fixzorder()
 	}
 }
 
-void egeControlBase::zorderup()
+void
+egeControlBase::zorderup()
 {
 	m_zOrder = m_parent->allocZorder();
 	parent()->sortzorder();
 }
 
-void egeControlBase::zorderdown()
+void
+egeControlBase::zorderdown()
 {
 	m_zOrder = -m_parent->allocZorder();
 	parent()->sortzorder();
 }
 
-void egeControlBase::zorderset(int z)
+void
+egeControlBase::zorderset(int z)
 {
 	m_zOrder = z;
 	parent()->sortzorder();
 }
 
-void egeControlBase::mouse(int x, int y, int flag)
+void
+egeControlBase::mouse(int x, int y, int flag)
 {
-	auto pg = &graph_setting;
 	int ret = 0;
 
 	x -= m_x, y -= m_y;
@@ -259,10 +261,10 @@ void egeControlBase::mouse(int x, int y, int flag)
 								pc->capture(true);
 								pc->m_zOrder = allocZorder();
 								sortzorder();
-								if(pg->egectrl_focus && pg->egectrl_focus != pc
-									&& pg->egectrl_focus != pc->parent())
+								if(egectrl_focus && egectrl_focus != pc
+									&& egectrl_focus != pc->parent())
 								{
-									for(egeControlBase* pcb = pg->egectrl_focus;
+									for(egeControlBase* pcb = egectrl_focus;
 										pcb != pc && pcb->parent();
 										pcb = pcb->parent())
 									{
@@ -270,7 +272,7 @@ void egeControlBase::mouse(int x, int y, int flag)
 										pcb->capture(false);
 									}
 								}
-								pg->egectrl_focus = pc;
+								egectrl_focus = pc;
 							}
 						}
 						pc->mouse(x, y, flag);
