@@ -13,28 +13,10 @@ kbmsg()
 		: int(graph_setting._peekallkey(1));
 }
 
-int
-kbhit()
-{
-	return graph_setting._kbhit_ex(0);
-}
-
-int
-getch()
-{
-	return graph_setting._getch_ex(0);
-}
-
 key_msg
 getkey()
 {
 	return graph_setting._getkey();
-}
-
-void
-flushkey()
-{
-	graph_setting._flushkey();
 }
 
 int
@@ -44,10 +26,23 @@ keystate(int key)
 }
 
 void
-flushmouse()
+flushkey()
 {
-	graph_setting._flushmouse();
+	graph_setting._flushkey();
 }
+
+int
+getch()
+{
+	return graph_setting._getch_ex(0);
+}
+
+int
+kbhit()
+{
+	return graph_setting._kbhit_ex(0);
+}
+
 
 int
 mousemsg()
@@ -64,6 +59,27 @@ mouse_msg
 getmouse()
 {
 	return graph_setting._getmouse();
+}
+
+void
+flushmouse()
+{
+	graph_setting._flushmouse();
+}
+
+int
+showmouse(int bShow)
+{
+	return graph_setting._show_mouse(bShow);
+}
+
+
+int
+mousepos(int* x, int* y)
+{
+	*x = graph_setting.mouse_last_x;
+	*y = graph_setting.mouse_last_y;
+	return 0;
 }
 
 } // namespace ege;

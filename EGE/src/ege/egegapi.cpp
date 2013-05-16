@@ -24,20 +24,6 @@ setvisualpage(int page)
 	graph_setting._set_visualpage(page);
 }
 
-int
-showmouse(int bShow)
-{
-	return graph_setting._show_mouse(bShow);
-}
-
-int
-mousepos(int* x, int* y)
-{
-	*x = graph_setting.mouse_last_x;
-	*y = graph_setting.mouse_last_y;
-	return 0;
-}
-
 void
 setwritemode(int mode, IMAGE* pimg)
 {
@@ -489,7 +475,8 @@ setbkcolor_f(color_t color, IMAGE* pimg)
 	CONVERT_IMAGE_END;
 }
 
-void setfontbkcolor(color_t color, IMAGE* pimg)
+void
+setfontbkcolor(color_t color, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
 
