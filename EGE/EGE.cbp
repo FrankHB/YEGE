@@ -139,6 +139,7 @@
 		<Unit filename="src/ege/math.cpp" />
 		<Unit filename="src/ege/msg.h" />
 		<Unit filename="src/ege/music.cpp" />
+		<Unit filename="src/ege/proc.cpp" />
 		<Unit filename="src/ege/random.cpp" />
 		<Unit filename="src/ege/text.cpp" />
 		<Unit filename="src/ege/windows.cpp" />

@@ -1590,13 +1590,6 @@ message_addmousehandler(void* param, LPMSG_MOUSE_PROC func)
 	return grOk;
 }
 
-int
-SetCloseHandler(LPCALLBACK_PROC func)
-{
-	graph_setting.callback_close = func;
-	return grOk;
-}
-
 
 double
 fclock()
