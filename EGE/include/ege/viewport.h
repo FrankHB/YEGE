@@ -29,6 +29,7 @@ setviewport(int left, int top, int right, int bottom, int clip = 1,
 EGEAPI void
 clearviewport(IMAGE* pimg = nullptr); //清空视图
 
+
 EGEAPI void
 window_getviewport(viewporttype* viewport);
 

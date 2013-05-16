@@ -143,6 +143,7 @@
 		<Unit filename="src/ege/random.cpp" />
 		<Unit filename="src/ege/text.cpp" />
 		<Unit filename="src/ege/time.cpp" />
+		<Unit filename="src/ege/viewport.cpp" />
 		<Unit filename="src/ege/windows.cpp" />
 		<Unit filename="src/libpng/png.h" />
 		<Unit filename="src/libpng/pngconf.h" />
