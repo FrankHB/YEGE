@@ -366,7 +366,7 @@ void init_net(struct net* pnet, int w, int h, int sw, int sh)
 void draw_net(struct net* pnet)
 {
 	int x, y, l = pnet->layer;
-	POINT pt[NET_W + NET_H];
+	::POINT pt[NET_W + NET_H];
 
 	for(y = 0; y <= pnet->h; ++y)
 	{
@@ -456,7 +456,7 @@ void init()
 
 void getmouse(int* x, int* y, int* key)
 {
-	GetMousePos(x, y);
+	::GetMousePos(x, y);
 	*key = keystate(VK_LBUTTON);
 }
 

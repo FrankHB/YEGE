@@ -118,7 +118,7 @@ void
 setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE_CONST(pimg);
-	LOGPEN lpen{0, POINT(), COLORREF()};
+	::LOGPEN lpen{0, ::POINT(), COLORREF()};
 	lpen.lopnColor = RGBTOBGR(getcolor(pimg));
 	img->m_linestyle.thickness = thickness;
 	img->m_linewidth = (float)thickness;
@@ -128,11 +128,11 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 	lpen.lopnWidth.x = thickness;
 	lpen.lopnStyle   = linestyle;
 
-	HPEN hpen;
+	::HPEN hpen;
 	if(linestyle == PS_USERSTYLE)
 	{
 		::DWORD style[20]{0};
-		LOGBRUSH lbr;
+		::LOGBRUSH lbr;
 		int n, bn = 0, len = 1, st = 0;
 		lbr.lbColor = lpen.lopnColor;
 		lbr.lbStyle = BS_SOLID;
@@ -193,7 +193,7 @@ void
 setfillstyle(int pattern, color_t color, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE_CONST(pimg);
-	LOGBRUSH lbr{0, COLORREF(), ::UINT_PTR()};
+	::LOGBRUSH lbr{0, COLORREF(), ::UINT_PTR()};
 	img->m_fillcolor = color;
 	lbr.lbColor = RGBTOBGR(color);
 	//::SetBkColor(img->m_hDC, color);
@@ -255,8 +255,8 @@ getcolor(IMAGE* pimg)
 		CONVERT_IMAGE_END;
 		return img->m_color;
 		/*
-		HPEN hpen_c = (HPEN)::GetCurrentObject(img->m_hDC, OBJ_PEN);
-		LOGPEN logPen;
+		::HPEN hpen_c = (::HPEN)::GetCurrentObject(img->m_hDC, OBJ_PEN);
+		::LOGPEN logPen;
 		GetObject(hpen_c, sizeof(logPen), &logPen);
 		CONVERT_IMAGE_END;
 		return logPen.lopnColor;
@@ -299,8 +299,8 @@ setcolor(color_t color, IMAGE* pimg)
 
 	if(img && img->m_hDC)
 	{
-		LOGPEN lPen;
-		HPEN hpen;
+		::LOGPEN lPen;
+		::HPEN hpen;
 
 		img->m_color = color;
 		color = RGBTOBGR(color);
@@ -311,7 +311,7 @@ setcolor(color_t color, IMAGE* pimg)
 		if(lPen.lopnStyle == PS_USERSTYLE)
 		{
 			::DWORD style[20]{};
-			LOGBRUSH lbr;
+			::LOGBRUSH lbr;
 			unsigned short upattern = img->m_linestyle.upattern;
 			int n, bn = 0, len = 1, st = 0;
 
@@ -357,7 +357,7 @@ void
 setfillcolor(color_t color, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE_CONST(pimg);
-	LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
+	::LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
 
 	img->m_fillcolor = color;
 	color = RGBTOBGR(color);
@@ -509,8 +509,8 @@ void
 moverel(int dx, int dy, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
-	POINT pt;
-	GetCurrentPositionEx(img->m_hDC, &pt);
+	::POINT pt;
+	::GetCurrentPositionEx(img->m_hDC, &pt);
 	dx += pt.x;
 	dy += pt.y;
 	MoveToEx(img->m_hDC, dx, dy, nullptr);
@@ -531,8 +531,8 @@ void
 linerel(int dx, int dy, IMAGE* pimg)
 {
 	const auto img(CONVERT_IMAGE(pimg));
-	POINT pt;
-	GetCurrentPositionEx(img->m_hDC, &pt);
+	::POINT pt;
+	::GetCurrentPositionEx(img->m_hDC, &pt);
 	dx += pt.x;
 	dy += pt.y;
 	LineTo(img->m_hDC, dx, dy);
@@ -687,7 +687,7 @@ void
 linerel_f(float dx, float dy, IMAGE* pimg)
 {
 	const auto img(CONVERT_IMAGE(pimg));
-	POINT pt;
+	::POINT pt;
 
 	::GetCurrentPositionEx(img->m_hDC, &pt);
 	line_base(float(pt.x), float(pt.y), float(pt.x) + dx, float(pt.y) + dy,
@@ -699,7 +699,7 @@ void
 lineto_f(float x, float y, IMAGE* pimg)
 {
 	const auto img(CONVERT_IMAGE(pimg));
-	POINT pt;
+	::POINT pt;
 
 	::GetCurrentPositionEx(img->m_hDC, &pt);
 	line_base(float(pt.x), float(pt.y), x, y, img);
@@ -746,7 +746,7 @@ ellipse(int x, int y, int stangle, int endangle, int xradius, int yradius,
 	double sr = stangle / 180.0 * PI, er = endangle / 180.0 * PI;
 
 	if(img)
-		Arc(img->m_hDC, x - xradius, y - yradius, x + xradius, y + yradius,
+		::Arc(img->m_hDC, x - xradius, y - yradius, x + xradius, y + yradius,
 			(int)(x + xradius * cos(sr)), (int)(y - yradius * sin(sr)),
 			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er)));
 	CONVERT_IMAGE_END;
@@ -758,7 +758,7 @@ fillellipse(int x, int y, int xradius, int yradius, IMAGE* pimg)
 	const auto img = CONVERT_IMAGE(pimg);
 
 	if(img)
-		Ellipse(img->m_hDC, x - xradius, y - yradius, x + xradius, y + yradius);
+		::Ellipse(img->m_hDC, x - xradius, y - yradius, x + xradius, y + yradius);
 	CONVERT_IMAGE_END;
 }
 
@@ -770,7 +770,7 @@ sector(int x, int y, int stangle, int endangle, int xradius, int yradius,
 	double sr = stangle / 180.0 * PI, er = endangle / 180.0 * PI;
 
 	if(img)
-		Pie(img->m_hDC, x - xradius, y - yradius, x + xradius, y + yradius,
+		::Pie(img->m_hDC, x - xradius, y - yradius, x + xradius, y + yradius,
 			(int)(x + xradius * cos(sr)), (int)(y - yradius * sin(sr)),
 			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er)));
 	CONVERT_IMAGE_END;
@@ -804,7 +804,7 @@ ellipsef(float x, float y, float stangle, float endangle, float xradius,
 	double sr = stangle / 180.0 * PI, er = endangle / 180.0 * PI;
 
 	if(img)
-		Arc(img->m_hDC, (int)(x - xradius), (int)(y - yradius),
+		::Arc(img->m_hDC, (int)(x - xradius), (int)(y - yradius),
 			(int)(x + xradius), (int)(y + yradius),
 			(int)(x + xradius * cos(sr)), (int)(y - yradius * sin(sr)),
 			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er)));
@@ -816,7 +816,7 @@ fillellipsef(float x, float y, float xradius, float yradius, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
 	if(img)
-		Ellipse(img->m_hDC, (int)(x - xradius), (int)(y - yradius),
+		::Ellipse(img->m_hDC, (int)(x - xradius), (int)(y - yradius),
 			(int)(x + xradius), (int)(y + yradius));
 	CONVERT_IMAGE_END;
 }
@@ -827,7 +827,7 @@ sectorf(float x, float y, float stangle, float endangle, float xradius, float yr
 	const auto img = CONVERT_IMAGE(pimg);
 	double sr = stangle / 180.0 * PI, er = endangle / 180.0 * PI;
 	if(img)
-		Pie(img->m_hDC, (int)(x - xradius), (int)(y - yradius),
+		::Pie(img->m_hDC, (int)(x - xradius), (int)(y - yradius),
 			(int)(x + xradius), (int)(y + yradius),
 			(int)(x + xradius * cos(sr)), (int)(y - yradius * sin(sr)),
 			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er)));
@@ -843,7 +843,7 @@ bar(int left, int top, int right, int bottom, IMAGE* pimg)
 	::HBRUSH hbr_last = (::HBRUSH)::GetCurrentObject(img->m_hDC, OBJ_BRUSH);
 
 	if(img)
-		FillRect(img->m_hDC, &rect, hbr_last);
+		::FillRect(img->m_hDC, &rect, hbr_last);
 	CONVERT_IMAGE_END;
 }
 
@@ -881,7 +881,7 @@ drawpoly(int numpoints, const int* polypoints, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
 	if(img)
-		Polyline(img->m_hDC, (POINT*)polypoints, numpoints);
+		::Polyline(img->m_hDC, (::POINT*)polypoints, numpoints);
 	CONVERT_IMAGE_END;
 }
 
@@ -893,7 +893,7 @@ drawlines(int numlines, const int* polypoints, IMAGE* pimg)
 	{
 		::DWORD* pl = (::DWORD*) malloc(sizeof(::DWORD) * numlines);
 		for(int i = 0; i < numlines; ++i) pl[i] = 2;
-		PolyPolyline(img->m_hDC, (POINT*)polypoints, pl, numlines);
+		::PolyPolyline(img->m_hDC, (::POINT*)polypoints, pl, numlines);
 		free(pl);
 	}
 	CONVERT_IMAGE_END;
@@ -909,7 +909,7 @@ drawbezier(int numpoints, const int* polypoints, IMAGE* pimg)
 		{
 			numpoints = numpoints - (numpoints + 2) % 3;
 		}
-		PolyBezier(img->m_hDC, (POINT*)polypoints, numpoints);
+		::PolyBezier(img->m_hDC, (::POINT*)polypoints, numpoints);
 	}
 	CONVERT_IMAGE_END;
 }
@@ -920,7 +920,7 @@ fillpoly(int numpoints, const int* polypoints, IMAGE* pimg)
 	const auto img = CONVERT_IMAGE(pimg);
 
 	if(img)
-		Polygon(img->m_hDC, (POINT*)polypoints, numpoints);
+		::Polygon(img->m_hDC, (::POINT*)polypoints, numpoints);
 	CONVERT_IMAGE_END;
 }
 

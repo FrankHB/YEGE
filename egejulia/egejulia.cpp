@@ -109,8 +109,8 @@ state(*pMap)[BF_W] = new state[BF_H][BF_W];
 
 struct updatelist
 {
-	POINT* p, *pn;
-	POINT m_list[2][1920 * 1920];
+	::POINT* p, *pn;
+	::POINT m_list[2][1920 * 1920];
 	int nBeg, nLen;
 	int nLen_n;
 	updatelist()
@@ -142,7 +142,7 @@ struct updatelist
 		nBeg = 0;
 		nLen = nLen_n;
 		nLen_n = 0;
-		POINT* _p = p;
+		::POINT* _p = p;
 		p = pn;
 		pn = _p;
 	}

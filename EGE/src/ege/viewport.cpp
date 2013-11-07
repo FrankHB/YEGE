@@ -131,7 +131,7 @@ window_setviewport(int left, int top, int right, int bottom)
 			::HWND hwnd = GetParent(pg->hwnd);
 			if(hwnd)
 			{
-				POINT pt{0, 0};
+				::POINT pt{0, 0};
 				::ClientToScreen(hwnd, &pt);
 				rect.left   -= pt.x;
 				rect.top    -= pt.y;

@@ -32,8 +32,8 @@ getx(IMAGE* pimg)
 
 	if(img)
 	{
-		POINT pt;
-		GetCurrentPositionEx(img->m_hDC, &pt);
+		::POINT pt;
+		::GetCurrentPositionEx(img->m_hDC, &pt);
 		CONVERT_IMAGE_END;
 		return pt.x;
 	}
@@ -48,8 +48,8 @@ gety(IMAGE* pimg)
 
 	if(img)
 	{
-		POINT pt;
-		GetCurrentPositionEx(img->m_hDC, &pt);
+		::POINT pt;
+		::GetCurrentPositionEx(img->m_hDC, &pt);
 		CONVERT_IMAGE_END;
 		return pt.y;
 	}

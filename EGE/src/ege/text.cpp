@@ -126,8 +126,8 @@ outtext(const char* textstring, IMAGE* pimg)
 
 	if(img)
 	{
-		POINT pt;
-		GetCurrentPositionEx(img->m_hDC, &pt);
+		::POINT pt;
+		::GetCurrentPositionEx(img->m_hDC, &pt);
 		private_textout(img, textstring, pt.x, pt.y, -1, -1);
 	}
 	CONVERT_IMAGE_END;
@@ -140,8 +140,8 @@ outtext(const wchar_t* textstring, IMAGE* pimg)
 
 	if(img)
 	{
-		POINT pt;
-		GetCurrentPositionEx(img->m_hDC, &pt);
+		::POINT pt;
+		::GetCurrentPositionEx(img->m_hDC, &pt);
 		private_textout(img, textstring, pt.x, pt.y, -1, -1);
 	}
 	CONVERT_IMAGE_END;
@@ -208,7 +208,7 @@ outtextrect(int x, int y, int w, int h, const char*  textstring, IMAGE* pimg)
 	{
 		unsigned int fmode = private_gettextmode(img);
 		::RECT rect{x, y, x + w, y + h};
-		DrawTextA(img->m_hDC, textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
+		::DrawTextA(img->m_hDC, textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
 	}
 
 	CONVERT_IMAGE_END;
@@ -223,7 +223,7 @@ outtextrect(int x, int y, int w, int h, const wchar_t* textstring, IMAGE* pimg)
 	{
 		unsigned int fmode = private_gettextmode(img);
 		::RECT rect{x, y, x + w, y + h};
-		DrawTextW(img->m_hDC, textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
+		::DrawTextW(img->m_hDC, textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
 	}
 
 	CONVERT_IMAGE_END;
@@ -681,7 +681,7 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int le
 
 			::RECT rect{30, 32, w - 30, 128 - 3};
 
-			DrawTextW(window.m_hDC, text, -1, &rect, DT_NOPREFIX | DT_LEFT
+			::DrawTextW(window.m_hDC, text, -1, &rect, DT_NOPREFIX | DT_LEFT
 				| DT_TOP | TA_NOUPDATECP | DT_WORDBREAK | DT_EDITCONTROL
 				| DT_EXPANDTABS);
 		}

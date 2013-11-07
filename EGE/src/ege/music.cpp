@@ -24,7 +24,7 @@ MUSIC::~MUSIC()
 ::DWORD
 MUSIC::OpenFile(const char* _szStr)
 {
-	MCIERROR mciERR = 0;
+	::MCIERROR mciERR = 0;
 	auto mci_p = MCI_OPEN_PARMSA();
 
 	mci_p.lpstrElementName = _szStr;
@@ -97,7 +97,7 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 {
 	assert(m_DID != MUSIC_ERROR);
 
-	MCIERROR mciERR = 0;
+	::MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_PLAY_PARMS();
 	::DWORD dwFlag = MCI_NOTIFY;
 
@@ -120,7 +120,7 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 {
 	assert(m_DID != MUSIC_ERROR);
 
-	MCIERROR mciERR = 0;
+	::MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_GENERIC_PARMS();
 
 	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
@@ -136,7 +136,7 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 {
 	assert(m_DID != MUSIC_ERROR);
 
-	MCIERROR mciERR = 0;
+	::MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_GENERIC_PARMS();
 
 	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
@@ -148,7 +148,7 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 {
 	assert(m_DID != MUSIC_ERROR);
 
-	MCIERROR mciERR = 0;
+	::MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_DGV_SETAUDIO_PARMSW();
 
 	mci_p.dwItem = MCI_DGV_SETAUDIO_VOLUME;
@@ -164,7 +164,7 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 {
 	assert(m_DID != MUSIC_ERROR);
 
-	MCIERROR mciERR = 0;
+	::MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_SEEK_PARMS();
 
 	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
@@ -181,7 +181,7 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 {
 	if(m_DID != MUSIC_ERROR)
 	{
-		MCIERROR mciERR = 0;
+		::MCIERROR mciERR = 0;
 		auto mci_p = ::MCI_GENERIC_PARMS();
 
 		mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;

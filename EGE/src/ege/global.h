@@ -55,8 +55,8 @@ struct _graph_setting
 
 	::HINSTANCE instance;
 	::HWND    hwnd;
-	TCHAR   window_class_name[32];
-	TCHAR   window_caption[128];
+	::TCHAR   window_class_name[32];
+	::TCHAR   window_caption[128];
 	int     exit_flag;
 	int     exit_window;
 	bool    close_manually;
@@ -65,7 +65,7 @@ struct _graph_setting
 
 	thread_queue<EGEMSG>* msgkey_queue, *msgmouse_queue;
 
-	HANDLE threadui_handle;
+	::HANDLE threadui_handle;
 
 
 	/*鼠标状态记录*/

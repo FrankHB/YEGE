@@ -23,7 +23,7 @@ enum line_styles /* Line styles for get/setlinestyle */
 
 struct msg_createwindow
 {
-	HANDLE hEvent;
+	::HANDLE hEvent;
 	::HWND hwnd;
 	const wchar_t* classname;
 	::DWORD style;

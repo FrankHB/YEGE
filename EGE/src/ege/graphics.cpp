@@ -60,7 +60,7 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		pg->mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
 		pg->mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
 		pg->keystatemap[VK_LBUTTON] = 1;
-		SetCapture(hWnd);
+		::SetCapture(hWnd);
 		pg->mouse_state_l = 1;
 		if(hWnd == pg->hwnd)
 			pg->_push_mouse_msg( message, wParam, lParam);
@@ -80,7 +80,7 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		pg->mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
 		pg->mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
 		pg->keystatemap[VK_RBUTTON] = 1;
-		SetCapture(hWnd);
+		::SetCapture(hWnd);
 		pg->mouse_state_r = 1;
 		if(hWnd == pg->hwnd) pg->_push_mouse_msg( message, wParam, lParam);
 		break;
@@ -98,7 +98,7 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		break;
 	case WM_MOUSEWHEEL:
 		{
-			POINT pt{(short int)((::UINT)lParam & 0xFFFF),
+			::POINT pt{(short int)((::UINT)lParam & 0xFFFF),
 				(short int)((::UINT)lParam >> 16)};
 
 			::ScreenToClient(pg->hwnd, &pt);

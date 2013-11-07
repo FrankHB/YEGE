@@ -62,7 +62,7 @@ IMAGE::IMAGE(IMAGE & img)
 	m_pattern_obj = nullptr;
 	m_texture = nullptr;
 	newimage(img.m_hDC, img.m_width, img.m_height);
-	BitBlt(m_hDC, 0, 0, img.m_width, img.m_height, img.m_hDC, 0, 0, SRCCOPY);
+	::BitBlt(m_hDC, 0, 0, img.m_width, img.m_height, img.m_hDC, 0, 0, SRCCOPY);
 }
 
 IMAGE::~IMAGE()
@@ -192,7 +192,7 @@ IMAGE::newimage(::HDC hdc, int width, int height)
 			{
 				g_hbmp_def = hbmp_def;
 				g_hbr_def  = (::HBRUSH)::GetCurrentObject(dc, OBJ_BRUSH);
-				g_pen_def  = (HPEN)::GetCurrentObject(dc, OBJ_PEN);
+				g_pen_def  = (::HPEN)::GetCurrentObject(dc, OBJ_PEN);
 				g_font_def = (::HFONT)::GetCurrentObject(dc, OBJ_FONT);
 			}
 			if(m_hDC)
@@ -304,7 +304,7 @@ IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 	int ret = newimage(nullptr, srcWidth, srcHeight);
 
 	if(ret == 0)
-		BitBlt(m_hDC, 0, 0, srcWidth, srcHeight, img->m_hDC, srcX, srcY, SRCCOPY);
+		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight, img->m_hDC, srcX, srcY, SRCCOPY);
 	CONVERT_IMAGE_END;
 }
 
@@ -321,7 +321,7 @@ IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 {
 	inittest(L"IMAGE::putimage");
 	const auto img = CONVERT_IMAGE(pDstImg);
-	BitBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC, srcX, srcY, dwRop);
+	::BitBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC, srcX, srcY, dwRop);
 	CONVERT_IMAGE_END;
 }
 
@@ -387,7 +387,7 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 	}
 	else
 	{
-		GetCurrentDirectoryW(MAX_PATH * 2, szPath);
+		::GetCurrentDirectoryW(MAX_PATH * 2, szPath);
 		::lstrcatW(szPath, L"\\");
 		::lstrcatW(szPath, filename);
 	}
@@ -401,9 +401,11 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 	const auto img = CONVERT_IMAGE_CONST(nullptr);
 
 	pPicture->get_Width(&lWidth);
-	lWidthPixels  = MulDiv(lWidth,  GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
+	lWidthPixels
+		= ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 	pPicture->get_Height(&lHeight);
-	lHeightPixels = MulDiv(lHeight, GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
+	lHeightPixels
+		= ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
 	CONVERT_IMAGE_END;
 
 	createimage(lWidthPixels, lHeightPixels);
@@ -656,10 +658,10 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 		IMAGE* img(CONVERT_IMAGE_CONST(nullptr));
 
 		pPicture->get_Width(&lWidth);
-		lWidthPixels = MulDiv(lWidth, GetDeviceCaps(img->m_hDC, LOGPIXELSX),
+		lWidthPixels = ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX),
 							  2540);
 		pPicture->get_Height(&lHeight);
-		lHeightPixels = MulDiv(lHeight, GetDeviceCaps(img->m_hDC, LOGPIXELSY),
+		lHeightPixels = ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY),
 							   2540);
 		CONVERT_IMAGE_END;
 
@@ -711,9 +713,9 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 
 		const auto img = CONVERT_IMAGE_CONST(nullptr);
 		pPicture->get_Width(&lWidth);
-		lWidthPixels = MulDiv(lWidth, GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
+		lWidthPixels = ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
-		lHeightPixels = MulDiv(lHeight, GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
+		lHeightPixels = ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
 		CONVERT_IMAGE_END;
 
 		createimage(lWidthPixels, lHeightPixels);
@@ -772,9 +774,11 @@ IMAGE::getimage(void * pMem, long size)
 
 		const auto img = CONVERT_IMAGE_CONST(nullptr);
 		pPicture->get_Width(&lWidth);
-		lWidthPixels = MulDiv(lWidth, GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
+		lWidthPixels = ::MulDiv(lWidth,
+			::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
-		lHeightPixels = MulDiv(lHeight, GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
+		lHeightPixels = ::MulDiv(lHeight,
+			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
 		CONVERT_IMAGE_END;
 
 		createimage(lWidthPixels, lHeightPixels);
@@ -1017,8 +1021,10 @@ IMAGE::putimage_alphatransparent(
 				if(*psp != cr)
 				{
 					::DWORD d = *pdp, s = *psp;
-					d = ((d & 0xFF00FF) * da & 0xFF00FF00) | ((d & 0xFF00) * da >> 16 << 16);
-					s = ((s & 0xFF00FF) * sa & 0xFF00FF00) | ((s & 0xFF00) * sa >> 16 << 16);
+					d = ((d & 0xFF00FF) * da & 0xFF00FF00)
+						| ((d & 0xFF00) * da >> 16 << 16);
+					s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
+						| ((s & 0xFF00) * sa >> 16 << 16);
 					*pdp = (d + s) >> 8;
 				}
 			}
@@ -1074,8 +1080,10 @@ IMAGE::putimage_withalpha(
 				{
 					::DWORD sa = alpha + 1, da = 0xFF - alpha;
 					::DWORD d = *pdp, s = *psp;
-					d = ((d & 0xFF00FF) * da & 0xFF00FF00) | ((d & 0xFF00) * da >> 16 << 16);
-					s = ((s & 0xFF00FF) * sa & 0xFF00FF00) | ((s & 0xFF00) * sa >> 16 << 16);
+					d = ((d & 0xFF00FF) * da & 0xFF00FF00)
+						| ((d & 0xFF00) * da >> 16 << 16);
+					s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
+						| ((s & 0xFF00) * sa >> 16 << 16);
 					*pdp = (d + s) >> 8;
 				}
 			}

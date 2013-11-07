@@ -393,14 +393,14 @@ _graph_setting::_init_graph()
 namespace
 {
 
-BOOL
+::BOOL
 init_instance(::HINSTANCE hInstance, int nCmdShow)
 {
 	auto pg = &graph_setting;
 	int dw = 0, dh = 0;
 
-	dw = GetSystemMetrics(SM_CXFRAME) * 2;
-	dh = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) * 2;
+	dw = ::GetSystemMetrics(SM_CXFRAME) * 2;
+	dh = ::GetSystemMetrics(SM_CYFRAME) + ::GetSystemMetrics(SM_CYCAPTION) * 2;
 	if(pg->_g_attach_hwnd)
 	{
 		::LONG_PTR style = ::GetWindowLongPtrW(pg->_g_attach_hwnd, GWL_STYLE);
@@ -434,7 +434,7 @@ init_instance(::HINSTANCE hInstance, int nCmdShow)
 }
 
 #if !defined(UNICODE)
-CALLBACK BOOL
+CALLBACK ::BOOL
 EnumResNameProc(::HMODULE hModule, const char*, char* lpszName,
 	::LONG_PTR lParam)
 {
@@ -447,7 +447,7 @@ EnumResNameProc(::HMODULE hModule, const char*, char* lpszName,
 	return TRUE;
 }
 #else
-CALLBACK BOOL
+CALLBACK ::BOOL
 EnumResNameProc(::HMODULE hModule, const wchar_t* lpszType, wchar_t* lpszName,
 	::LONG_PTR lParam)
 {
@@ -527,10 +527,10 @@ messageloopthread(LPVOID lpParameter)
 	}
 	init_finish = true;
 	while(!pg->exit_window)
-		if(GetMessage(&msg, nullptr, 0, 0))
+		if(::GetMessage(&msg, nullptr, 0, 0))
 		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			::TranslateMessage(&msg);
+			::DispatchMessage(&msg);
 		}
 		else
 			::Sleep(1);
@@ -543,7 +543,7 @@ void
 _graph_setting::_init_graph_p()
 {
 	_g_initcall = false;
-	instance = GetModuleHandle(nullptr);
+	instance = ::GetModuleHandle(nullptr);
 	::lstrcpy(window_class_name, TEXT("Easy Graphics Engine"));
 	::lstrcpy(window_caption, EGE_TITLE);
 	{
@@ -553,7 +553,7 @@ _graph_setting::_init_graph_p()
 		init_finish = false;
 		threadui_handle = ::CreateThread(nullptr, 0, messageloopthread,
 			this, CREATE_SUSPENDED, &pid);
-		ResumeThread(threadui_handle);
+		::ResumeThread(threadui_handle);
 		while(!init_finish)
 			::Sleep(1);
 	}
@@ -625,7 +625,7 @@ _graph_setting::_on_ime_control(::HWND hwnd, ::WPARAM wparam, ::LPARAM lparam)
 	{
 		::HIMC hImc = ImmGetContext(hwnd);
 
-		COMPOSITIONFORM cpf{0, POINT(), ::RECT()};
+		COMPOSITIONFORM cpf{0, ::POINT(), ::RECT()};
 
 		cpf.dwStyle = CFS_POINT;
 		cpf.ptCurrentPos = *(LPPOINT)lparam;
@@ -737,9 +737,9 @@ _graph_setting::_on_setcursor(::HWND hwnd)
 	else
 	{
 		::RECT rect;
-		POINT pt;
+		::POINT pt;
 
-		GetCursorPos(&pt);
+		::GetCursorPos(&pt);
 		::ScreenToClient(hwnd, &pt);
 		::GetClientRect(hwnd, &rect);
 		if(pt.x >= rect.left && pt.x < rect.right && pt.y >= rect.top && pt.y <= rect.bottom)

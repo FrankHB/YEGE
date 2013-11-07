@@ -436,7 +436,7 @@ ege_puttexture(IMAGE* srcimg, ege_rect dest, ege_rect src, IMAGE* pimg)
 			};
 			ia.SetColorMatrix(&mx);
 			// */
-			//graphics.::SetTransform();
+			//graphics.SetTransform();
 			graphics.DrawImage((Gdiplus::Image*)srcimg->m_texture,
 				Gdiplus::RectF(dest.x, dest.y, dest.w, dest.h),
 				src.x,
