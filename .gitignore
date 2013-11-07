@@ -12,3 +12,6 @@ EGE.dll
 
 libEGE.def
 *.cscope_file_list
+
+/MandelbrotSet/log.txt
+/MandelbrotSetAni/snap*.bmp
