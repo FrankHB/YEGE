@@ -97,6 +97,10 @@
 			<Add option="-Wall" />
 			<Add directory="../EGE/include" />
 		</Compiler>
+		<Linker>
+			<Add library="gmpxx" />
+			<Add library="gmp" />
+		</Linker>
 		<Unit filename="MandelbrotSetAniLarge.cpp" />
 		<Extensions>
 			<code_completion />

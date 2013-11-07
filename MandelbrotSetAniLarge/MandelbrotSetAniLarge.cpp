@@ -1,7 +1,10 @@
 #include "graphics.h"
 //#include <complex>
-#include <time.h>
+#include <ctime>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #include <gmpxx.h>
+#pragma GCC diagnostic pop
 
 //using namespace std;
 
@@ -168,8 +171,8 @@ struct PIXEL
 	COMPLEX* last;
 	COMPLEX* last2;
 	COMPLEX* c;
-	int nIter;
-	int nMinIter;
+	unsigned nIter;
+	unsigned nMinIter;
 	int nLastIter;
 	int ed;
 	int calc;
@@ -223,8 +226,8 @@ PIXEL(*pMap)[SC_W] = new PIXEL[SC_H][SC_W];
 
 struct updatelist
 {
-	POINT* p, *pn;
-	POINT m_list[2][SC_H* SC_W];
+	::POINT* p, *pn;
+	::POINT m_list[2][SC_H* SC_W];
 	int nBeg, nLen;
 	int nLen_n;
 	updatelist()
@@ -256,7 +259,7 @@ struct updatelist
 		nBeg = 0;
 		nLen = nLen_n;
 		nLen_n = 0;
-		POINT* _p = p;
+		::POINT* _p = p;
 		p = pn;
 		pn = _p;
 	}
@@ -394,9 +397,9 @@ int g_base_iters = BASEITERATIONS;
 int g_iters = ITERATIONS;
 
 int g_b_update_mark;
-unsigned int g_min_iter_last;
-unsigned int g_max_iter;
-unsigned int g_max_iter_last;
+unsigned g_min_iter_last;
+unsigned g_max_iter;
+unsigned g_max_iter_last;
 
 int g_dx_iters;
 
@@ -408,14 +411,14 @@ int MandelbrotEx(PIXEL& z)
 	//*
 	if(z.nIter < z.nMinIter)
 	{
-		int ed = std::min(z.nMinIter, 8), last = z.nMinIter - ed;
+		auto ed = std::min(z.nMinIter, 8U),
+			last = z.nMinIter - ed;
+
 		*z.last2 = *z.last;
-		for(; ed > 2; ed = std::min(last >> 1, 8), last = last - ed)
+		for(; ed > 2; ed = std::min(last >> 1, 8U), last = last - ed)
 		{
-			for(int k = 0; k < ed; ++k)
-			{
+			for(unsigned k = 0; k < ed; ++k)
 				func(*z.last, *z.c);
-			}
 			if(abs4(*z.last))
 			{
 				*z.last = *z.last2;
@@ -431,8 +434,10 @@ int MandelbrotEx(PIXEL& z)
 	}
 	// */
 	int k = g_iters;
-	if(z.nIter > (g_max_iter << 1)) return z.nIter;
-	if(z.nIter + k < g_max_iter) k = g_max_iter - z.nIter;
+	if(z.nIter > (g_max_iter << 1))
+		return z.nIter;
+	if(z.nIter + k < g_max_iter)
+		k = g_max_iter - z.nIter;
 	int b = k;
 	while(k > 0)
 	{
@@ -441,10 +446,13 @@ int MandelbrotEx(PIXEL& z)
 		func(*z.last, *z.c);
 		if(abs4(*z.last))
 		{
+			auto t = z.nIter + (b - k);
+
 			z.ed = 1;
-			int t = z.nIter + (b - k);
-			if(t > g_max_iter_last) g_max_iter_last = t;
-			if(t < g_min_iter_last) g_min_iter_last = t;
+			if(t > g_max_iter_last)
+				g_max_iter_last = t;
+			if(t < g_min_iter_last)
+				g_min_iter_last = t;
 			delete_cp(&z.last);
 			delete_cp(&z.last2);
 			delete_cp(&z.c);
@@ -569,14 +577,15 @@ void addpoint(int x, int y, int it = -1)
 }
 
 
-//int travel(int x, int y, )
-
-int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int mode = 0)
+int
+DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int = 0)
 {
-	int t = clock();
+	int t = std::clock();
+
 	//if(mode == 0)
 	{
-		int x, y;
+		int x(0), y(0);
+
 		while(g_udlist.pop(&x, &y))
 		{
 			PIXEL& p = pMap[y][x];
@@ -597,16 +606,14 @@ int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int mode = 0)
 			}
 			if(p.ed == 0)
 			{
-				int k;
-				k = MandelbrotEx(p);
+				unsigned k = MandelbrotEx(p);
+
 				if(p.ed)
 				{
 					if(1)
 					{
 						if(x == 0)
-						{
-							//addpoint(x+1, y, k);
-						}
+							;//addpoint(x+1, y, k);
 						else if(pMap[y][x - 1].ed && pMap[y][x - 1].nIter != k)
 						{
 							addpoint(x  , y - 1, k);
@@ -626,9 +633,7 @@ int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int mode = 0)
 							addpoint(x + 1, y + 1, k);
 						}
 						if(y == 0)
-						{
-							//addpoint(x, y+1, k);
-						}
+							;//addpoint(x, y+1, k);
 						else if(pMap[y - 1][x].ed && pMap[y - 1][x].nIter != k)
 						{
 							addpoint(x - 1, y - 1, k);
@@ -637,18 +642,13 @@ int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int mode = 0)
 							addpoint(x + 1, y  , k);
 						}
 						if(y + 1 == SC_H)
-						{
-							//addpoint(x, y-1, k);
-						}
+							;//addpoint(x, y-1, k);
 						else if(pMap[y + 1][x].ed && pMap[y + 1][x].nIter != k)
 						{
 							addpoint(x - 1, y + 1, k);
 							addpoint(x - 1, y  , k);
 							addpoint(x + 1, y + 1, k);
 							addpoint(x + 1, y  , k);
-						}
-						{
-							//
 						}
 					}
 					else
@@ -662,9 +662,7 @@ int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int mode = 0)
 					putpixel_f(x, y, Color[k & COLORMASK]);
 				}
 				else
-				{
 					addpoint(x, y);
-				}
 				if(clock() - t > 5000)
 				{
 					if(keystate('J') && keystate('N')) return 1;
@@ -707,9 +705,7 @@ int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int mode = 0)
 					putpixel_f(x, y, Color[k & COLORMASK]);
 				}
 				else
-				{
 					addpoint(x, y);
-				}
 				if(clock() - t > 5000)
 				{
 					if(keystate('J') && keystate('N')) return 1;
@@ -723,23 +719,18 @@ int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int mode = 0)
 	return 0;
 }
 
-int fill_map()
+void
+fill_map()
 {
 	for(int y = 1; y < SC_H - 1; y++)
-	{
 		for(int x = 1; x < SC_W - 1; x++)
-		{
-			if(pMap[y][x].nIter == 0)
+			if(pMap[y][x].nIter == 0 && (pMap[y - 1][x].ed && pMap[y][x - 1].ed
+				&& pMap[y][x - 1].nIter == pMap[y - 1][x].nIter))
 			{
-				if(pMap[y - 1][x].ed && pMap[y][x - 1].ed && pMap[y][x - 1].nIter == pMap[y - 1][x].nIter)
-				{
-					pMap[y][x].nIter = pMap[y - 1][x].nIter;
-					pMap[y][x].ed = 1;
-					putpixel_f(x, y, Color[pMap[y][x].nIter & COLORMASK]);
-				}
+				pMap[y][x].nIter = pMap[y - 1][x].nIter;
+				pMap[y][x].ed = 1;
+				putpixel_f(x, y, Color[pMap[y][x].nIter & COLORMASK]);
 			}
-		}
-	}
 }
 
 void setgprec(Float f)
@@ -762,7 +753,8 @@ void setgprec(Float f)
 
 // 主函数
 
-int WinMain()
+int
+main()
 {
 	// 初始化绘图窗口及颜色
 	int w = SC_W, h = SC_H, dh = 48;
@@ -770,21 +762,17 @@ int WinMain()
 	initgraph(w, h + dh);
 	randomize();
 	InitColor();
-	setfillstyle(0x0);
+//	setfillstyle(0x0);
 	setfont(12, 0, "宋体");
-	::SetWindowTextA(GetHWnd(), "Mandelbrot Set");
+	::SetWindowTextA(getHWnd(), "Mandelbrot Set");
 	//::SetWindowTextA(GetHWnd(), "Mandelbrot Set by 御坂美琴 -- PowerEasyX V0.3.4 Release (20110129)");
 	//mpf_set_prec(100);
 
 
 	// 初始化 Mandelbrot Set(曼德布洛特集)坐标系
-	IMAGE mimage;
-	COMPLEX center, delta, mindelta;
-	COMPLEX from, to;
-	COMPLEX js_c;
-	int mode = 0;
-	int ncnt = 0;
-	int nbeg = -1;
+	const auto mimage = newimage();
+	COMPLEX center, delta, mindelta, from, to, js_c;
+	int mode = 0, ncnt = 0, nbeg = -1;
 	double delta_mul = 0.5; //0.707;
 	g_prec = 2048;
 	center.setprec();
@@ -811,9 +799,8 @@ int WinMain()
 	//mindelta.re = "0.000000000000001";
 	delta.re = "2.0";
 
-	SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
-	::SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_LOWEST);
-	BeginBatchDraw();
+	SetPriorityClass(::GetCurrentProcess(), IDLE_PRIORITY_CLASS);
+	::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_LOWEST);
 	for(; delta.re > mindelta.re; delta.re *= delta_mul, ++ncnt)
 	{
 		setgprec(delta.re);
@@ -879,10 +866,12 @@ int WinMain()
 
 			initqueue(g_prec <= 64);
 			g_max_iter = 2048;
-			if(g_prec <= 64) g_max_iter = 16;
+			if(g_prec <= 64)
+				g_max_iter = 16;
 			//g_iters = ITERATIONS;
 
-			int last_min = 0;
+			unsigned last_min = 0;
+
 			for(int m = 0, t = clock(); g_udlist.nLen > 0 && m < mend; ++m)
 			{
 				g_b_update_mark = 0;
@@ -898,12 +887,12 @@ int WinMain()
 					{
 						::RECT rect, crect;
 						int _dw, _dh;
-						::GetClientRect(GetHWnd(), &crect);
-						::GetWindowRect(GetHWnd(), &rect);
+						::GetClientRect(getHWnd(), &crect);
+						::GetWindowRect(getHWnd(), &rect);
 						_dw = w - crect.right;
 						_dh = h + dh - crect.bottom;
-						MoveWindow(
-							GetHWnd(),
+						::MoveWindow(
+							getHWnd(),
 							rect.left,
 							rect.top,
 							rect.right  + _dw - rect.left,
@@ -926,9 +915,12 @@ int WinMain()
 					//    mend = (m + 1) * 2;
 					m = -1;
 					addmark = 0;
-					if(g_min_iter_last < last_min) g_min_iter_last = last_min;
-					if(g_max_iter_last >= g_max_iter) g_max_iter = (g_max_iter_last << 1);
-					if(g_max_iter > (g_min_iter_last << 1)) g_max_iter = (g_min_iter_last << 1);
+					if(g_min_iter_last < last_min)
+						g_min_iter_last = last_min;
+					if(g_max_iter_last >= g_max_iter)
+						g_max_iter = (g_max_iter_last << 1);
+					if(g_max_iter > (g_min_iter_last << 1))
+						g_max_iter = (g_min_iter_last << 1);
 					last_min = g_min_iter_last;
 				}
 				else
@@ -951,16 +943,14 @@ int WinMain()
 			fill_map();
 			{
 				char str[30];
-				getimage(&mimage, 0, 0, SC_W, SC_H);
+
+				getimage(mimage, 0, 0, SC_W, SC_H);
 				sprintf(str, "snap%06d.bmp", ncnt);
-				mimage.saveimage(str);
+				saveimage(mimage, str);
 			}
 		}
 		delay(0);
 	}
-	EndBatchDraw();
-
-	//getch();
 	closegraph();
 	return 0;
 }

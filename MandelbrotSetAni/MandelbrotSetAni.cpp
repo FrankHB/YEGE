@@ -1,10 +1,9 @@
 #include "graphics.h"
 //#include <complex>
-#include <time.h>
+#include <ctime>
 //#include <gmpxx.h>
-#include <stdio.h>
+#include <cstdio>
 #include <algorithm>
-#include <ege/head.h>
 
 //using namespace std;
 
@@ -261,8 +260,8 @@ PIXEL(*pMap)[SC_W] = new PIXEL[SC_H][SC_W];
 
 struct updatelist
 {
-	POINT* p, *pn;
-	POINT m_list[2][SC_H* SC_W];
+	::POINT* p, *pn;
+	::POINT m_list[2][SC_H* SC_W];
 	int nBeg, nLen;
 	int nLen_n;
 	updatelist()
@@ -294,7 +293,7 @@ struct updatelist
 		nBeg = 0;
 		nLen = nLen_n;
 		nLen_n = 0;
-		POINT* _p = p;
+		::POINT* _p = p;
 		p = pn;
 		pn = _p;
 	}
@@ -736,12 +735,12 @@ main()
 //	setfillstyle(0x0);
 	setfont(12, 0, "宋体");
 	::SetWindowTextA(getHWnd(),
-		"Mandelbrot Set by 御坂美琴 -- PowerEasyX V0.3.4 Release (20110129)");
+		"Mandelbrot Set -- YEGE");
 	//mpf_set_prec(100);
 
 	// 初始化 Mandelbrot Set(曼德布洛特集)坐标系
-	IMAGE mimage;
-	IMAGE img_logo(228, 64);
+	IMAGE* mimage = newimage();
+	IMAGE* img_logo = newimage(228, 64);
 	COMPLEX center, delta, mindelta;
 	COMPLEX from, to;
 	COMPLEX js_c;
@@ -756,8 +755,8 @@ main()
 	center.re = -0.768331231741422458314381560804;
 	center.im = -0.107632864930921566605138748951;
 	mindelta.re = 0.00000000000002;
-	setfont(24, 0, "黑体", &img_logo);
-	outtextxy(0, 0, "http://misakamm.org", &img_logo);
+	setfont(24, 0, "黑体", img_logo);
+	outtextxy(0, 0, "http://misakamm.org", img_logo);
 	/*
 	{
 		FILE* fp = fopen("MandelbrotSetAni.ini", "r");
@@ -781,8 +780,8 @@ main()
 	//delta.re = "2.0";
 	str2float(delta.re, "8.0");
 
-	SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
-	::SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_LOWEST);
+	SetPriorityClass(::GetCurrentProcess(), IDLE_PRIORITY_CLASS);
+	::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_LOWEST);
 	for(; delta.re > mindelta.re; delta.re *= delta_mul, ++ncnt)
 	{
 		setgprec(delta.re);
@@ -882,7 +881,7 @@ main()
 						::GetWindowRect(getHWnd(), &rect);
 						_dw = w - crect.right;
 						_dh = h + dh - crect.bottom;
-						MoveWindow(
+						::MoveWindow(
 							getHWnd(),
 							rect.left,
 							rect.top,
@@ -934,10 +933,10 @@ main()
 			{
 				char str[30];
 
-				getimage(&mimage, 0, 0, SC_W, SC_H);
+				getimage(mimage, 0, 0, SC_W, SC_H);
 				sprintf(str, "snap%06d.bmp", ncnt);
-				putimage_alphatransparent(&mimage, &img_logo, 2, SC_H - 26, 0, 0x80);
-				mimage.saveimage(str);
+				putimage_alphatransparent(mimage, img_logo, 2, SC_H - 26, 0, 0x80);
+				saveimage(mimage, str);
 			}
 		}
 		delay(0);

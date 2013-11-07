@@ -1,7 +1,10 @@
 #include "graphics.h"
 //#include <complex>
-#include <time.h>
+#include <ctime>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #include <gmpxx.h>
+#pragma GCC diagnostic pop
 #include <algorithm>
 
 //using namespace std;
@@ -167,8 +170,8 @@ PIXEL(*pMap)[WIDTH] = new PIXEL[SC_H][WIDTH];
 
 struct updatelist
 {
-	POINT* p, *pn;
-	POINT m_list[2][SC_H* SC_W];
+	::POINT* p, *pn;
+	::POINT m_list[2][SC_H* SC_W];
 	int nBeg, nLen;
 	int nLen_n;
 	updatelist()
@@ -200,7 +203,7 @@ struct updatelist
 		nBeg = 0;
 		nLen = nLen_n;
 		nLen_n = 0;
-		POINT* _p = p;
+		::POINT* _p = p;
 		p = pn;
 		pn = _p;
 	}
@@ -308,7 +311,7 @@ void fixcolor(int* color)
 	*color = RGB(r, g, b);
 }
 
-void setinitcolor(int* color, int len, int h1, int h2)
+void setinitcolor(int* color, int len, int h1, int)
 {
 	int i;
 	for(i = 0; i < len / 2; i++)
@@ -423,7 +426,9 @@ int MandelbrotEx(PIXEL& z, COMPLEX& c)
 
 // 绘制 Mandelbrot Set (曼德布洛特集)
 
-void Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0, COMPLEX _c = COMPLEX())
+void
+Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
+	COMPLEX _c = COMPLEX())
 {
 	unsigned t = clock();
 	COMPLEX z, c;
@@ -527,7 +532,8 @@ void Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0, COMPLEX 
 	g_udlist.swap();
 }
 
-void addpoint(int x, int y)
+void
+addpoint(int x, int y)
 {
 	if(x < 0 || x >= SC_W || y < 0 || y >= SC_H) return;
 	if(pMap[y][x].ed == 0)
@@ -537,12 +543,14 @@ void addpoint(int x, int y)
 	}
 }
 
-void DrawEx(Float fromx, Float fromy, Float tox, Float toy, int mode = 0, COMPLEX _c = COMPLEX())
+void
+DrawEx(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
+	COMPLEX _c = COMPLEX())
 {
 	COMPLEX z, c;
 	if(mode == 0)
 	{
-		int x, y;
+		int x(0), y(0);
 		while(g_udlist.pop(&x, &y))
 		{
 			PIXEL& p = pMap[y][x];
@@ -561,9 +569,7 @@ void DrawEx(Float fromx, Float fromy, Float tox, Float toy, int mode = 0, COMPLE
 					putpixel_f(x, y, Color[k & COLORMASK]);
 				}
 				else
-				{
 					addpoint(x, y);
-				}
 			}
 		}
 	}
@@ -614,7 +620,8 @@ void setgprec(Float f)
 
 // 主函数
 
-int WinMain()
+int
+main()
 {
 	// 初始化绘图窗口及颜色
 	int w = SC_W, h = SC_H, th = 12, tel = 4, tl = tel * 3 + 1;
@@ -625,7 +632,7 @@ int WinMain()
 	randomize();
 	InitColor();
 	setfont(12, 0, "宋体");
-	::SetWindowTextA(GetHWnd(), "Mandelbrot Set by 御坂美琴 -- PowerEasyX V0.3.4 Release (20110129)");
+	::SetWindowTextA(getHWnd(), "Mandelbrot Set -- YEGE");
 	//mpf_set_prec(100);
 
 
@@ -687,7 +694,7 @@ int WinMain()
 
 
 	// 捕获鼠标操作，实现放大鼠标选中区域
-	MOUSEMSG m;
+	mouse_msg m;
 	bool isLDown = false;
 	COMPLEXI self, selt;    // 定义选区
 	COMPLEXI self_b, selt_b;    // 定义选区
@@ -697,8 +704,7 @@ int WinMain()
 	//IMAGE img_def, img_ms;
 	//img_def.getimage(0, 0, w, h);
 
-	BeginBatchDraw();
-	for(; ;)
+	for(;;)
 	{
 		int bmsg = 0;
 		if(kbhit())
@@ -719,9 +725,9 @@ int WinMain()
 			}
 			if(k == 's' || k == 'S')
 			{
-				IMAGE img;
-				getimage(&img, 0, 0, w, h);
-				img.saveimage("m.bmp");
+				IMAGE* img = newimage();
+				getimage(img, 0, 0, w, h);
+				saveimage(img, "m.bmp");
 			}
 			//*
 			if(k == 'r' || k == 'R')
@@ -743,15 +749,15 @@ int WinMain()
 				}
 			}//*/
 		}
-		if(MouseHit())
+		while(mousemsg())
 		{
 			bmsg = 1;
-			m = GetMouseMsg();    // 获取一条鼠标消息
+			m = getmouse();    // 获取一条鼠标消息
 
-			switch(m.uMsg)
+			switch(int(m.msg))
 			{
 				// 按鼠标右键恢复原图形坐标系
-			case WM_RBUTTONUP:
+			case mouse_flag_right | mouse_msg_up:
 				if(mode == 0)
 				{
 					from.re = -2.2;
@@ -771,7 +777,7 @@ int WinMain()
 				}
 				break;
 
-			case WM_MBUTTONUP:
+			case mouse_flag_mid | mouse_msg_up:
 				mode = 1 - mode;
 				if(mode == 0)
 				{
@@ -815,10 +821,9 @@ int WinMain()
 					//img_ms.getimage(0, 0, w, h);
 					Draw(from.re, from.im, to.re, to.im, mode, js_c);
 				}
-				FlushMouseMsgBuffer();
 				break;
 				// 按鼠标左键并拖动，选择区域
-			case WM_MOUSEMOVE:
+			case mouse_msg_move:
 				if(isLDown)
 				{
 					rectangle(self.re, self.im, selt.re, selt.im);
@@ -845,7 +850,7 @@ int WinMain()
 				break;
 
 				// 按鼠标左键并拖动，选择区域
-			case WM_LBUTTONDOWN:
+			case mouse_flag_left | mouse_msg_down:
 				setcolor(WHITE);
 				setwritemode(R2_XORPEN);
 				isLDown = true;
@@ -856,7 +861,7 @@ int WinMain()
 				break;
 
 				// 按鼠标左键并拖动，选择区域
-			case WM_LBUTTONUP:
+			case mouse_flag_left | mouse_msg_up:
 				if(isLDown == true)
 				{
 					rectangle(self.re, self.im, selt.re, selt.im);
@@ -905,7 +910,6 @@ int WinMain()
 					from.im = f;
 					to.im = t;
 					{
-						mp_bitcnt_t t = 0;
 						f = to.re - from.re;
 						setgprec(f);
 						mpf_set_default_prec(g_prec);
@@ -915,7 +919,6 @@ int WinMain()
 
 					// 画图形
 					Draw(from.re, from.im, to.re, to.im, mode, js_c);
-					FlushMouseMsgBuffer();
 				}
 				break;
 			}
@@ -936,8 +939,6 @@ int WinMain()
 			delay_fps(1000);
 		}
 	}
-	EndBatchDraw();
-
 	getch();
 	closegraph();
 	return 0;
