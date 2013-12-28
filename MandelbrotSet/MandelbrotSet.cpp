@@ -1,5 +1,5 @@
 #include "graphics.h"
-//#include <complex>
+#include <complex>
 #include <ctime>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
@@ -17,116 +17,29 @@
 #define SC_W 160
 #define SC_H 120
 
+#define USE_MPF 1
+
+#if USE_MPF
 using Float = mpf_class;
-struct COMPLEXI
-{
-	int re;
-	int im;
+#else
+using Float = double;
+#endif
 
-	COMPLEXI()
-		: re(), im()
-	{}
-};
 mp_bitcnt_t g_prec = 64;
+using COMPLEX = std::complex<Float>;
+using COMPLEXI = std::complex<int>;
 
-//using COMPLEX = std::complex<double>;
-
-struct COMPLEX
+void
+setprec(COMPLEX& c)
 {
-	Float re;
-	Float im;
-	COMPLEX()
-	{
-		re = im = 0.0;
-		re.set_prec(g_prec);
-		im.set_prec(g_prec);
-	}
-	void setprec()
-	{
-		re.set_prec(g_prec);
-		im.set_prec(g_prec);
-	}
-	Float& real()
-	{
-		return re;
-	}
-	Float& imag()
-	{
-		return im;
-	}
-};
-
-
-// 定义复数“乘”运算
-COMPLEX operator * (const COMPLEX& a, const double& b)
-{
-	COMPLEX c;
-	c.re = a.re * b;
-	c.im = a.im * b;
-	return c;
+	c.real().set_prec(g_prec);
+	c.imag().set_prec(g_prec);
 }
 
-// 定义复数“乘”运算
-inline
-COMPLEX operator * (const COMPLEX& a, const COMPLEX& b)
+inline double
+abs(const COMPLEX& c)
 {
-	COMPLEX c;
-	c.re = a.re * b.re - a.im * b.im;
-	c.im = a.im * b.re + a.re * b.im;
-	return c;
-}
-
-// 定义复数“乘”运算
-inline
-COMPLEX& operator *= (COMPLEX& a, const COMPLEX& b)
-{
-	Float c = a.im * b.re + a.re * b.im;
-	a.re = a.re * b.re - a.im * b.im;
-	a.im = c;
-	return a;
-}
-
-// 定义复数“加”运算
-inline
-COMPLEX& operator += (COMPLEX& a, const COMPLEX& b)
-{
-	a.re += b.re;
-	a.im += b.im;
-	return a;
-}
-
-// 定义复数“除”运算
-COMPLEX operator / (const COMPLEX& a, const double& b)
-{
-	COMPLEX c = a;
-	c.re /= b;
-	c.im /= b;
-	return c;
-}
-
-// 定义复数“加”运算
-COMPLEX operator + (const COMPLEX& a, const double& b)
-{
-	COMPLEX c;
-	c.re = a.re + b;
-	c.im = a.im;
-	return c;
-}
-
-// 定义复数“加”运算
-inline
-COMPLEX operator + (const COMPLEX& a, const COMPLEX& b)
-{
-	COMPLEX c;
-	c.re = a.re + b.re;
-	c.im = a.im + b.im;
-	return c;
-}
-
-inline
-double abs(const COMPLEX& c)
-{
-	double d1 = mpf_get_d(c.re.get_mpf_t()), d2 = mpf_get_d(c.im.get_mpf_t());
+	double d1 = mpf_get_d(c.real().get_mpf_t()), d2 = mpf_get_d(c.imag().get_mpf_t());
 	return d1 * d1 + d2 * d2;
 }
 
@@ -342,7 +255,7 @@ void InitColor()
 
 /*
 #define func(z, c, ed) \
-{z*=z; if(z.re > 4) \
+{z*=z; if(z.real() > 4) \
 {ed = 1; break;} z+=c;} //(z * z * z * z * z * z + c)
 */
 #define func(z, c) z *= z, z += c;
@@ -363,7 +276,7 @@ int Mandelbrot(COMPLEX z, COMPLEX c, int x, int y)
 			break;
 		}
 	}
-	pMap[y][x].last.setprec();
+	setprec(pMap[y][x].last);
 	pMap[y][x].last = z;
 	pMap[y][x].nIter = BASEITERATIONS - k;
 	pMap[y][x].calc = 0;
@@ -382,7 +295,7 @@ int MandelbrotEx(PIXEL& z, COMPLEX& c)
 		//func(z.last, c, z.ed);
 		--k;
 		func(z.last, c);
-		//if(z.last.re > r || z.last.re < mr || z.last.im > r || z.last.im < mr)
+		//if(z.last.real() > r || z.last.real() < mr || z.last.imag() > r || z.last.imag() < mr)
 		{
 			if(abs(z.last) > 4.0)
 			{
@@ -414,12 +327,12 @@ Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 	{
 		for(int y = 0; y < SC_H; y++)
 		{
-			c.im = fromy + (toy - fromy) * (y / (double)SC_H);
+			c.imag(fromy + (toy - fromy) * (y / (double)SC_H));
 			for(int x = 0; x < SC_W; x++)
 			{
 				int k;
-				c.re = fromx + (tox - fromx) * (x / (double)SC_W);
-				z.re = z.im = 0.0;
+				c.real(fromx + (tox - fromx) * (x / (double)SC_W));
+				z = COMPLEX();
 				k = Mandelbrot(z, c, x, y);
 				if(pMap[y][x].ed == 0)
 					putpixel_f(x, y, BLACK);
@@ -440,14 +353,10 @@ Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 		{
 			for(int x = 0; x < SC_W; x++)
 			{
-				int k;
-				z.im = fromy + (toy - fromy) * (y / (double)SC_H);
-				z.re = fromx + (tox - fromx) * (x / (double)SC_W);
-				k = Mandelbrot(z, c, x, y);
-				if(pMap[y][x].ed == 0)
-					putpixel_f(x, y, BLACK);
-				else
-					putpixel_f(x, y, Color[k & COLORMASK]);
+				z = {fromx + (tox - fromx) * (x / (double)SC_W),
+					fromy + (toy - fromy) * (y / (double)SC_H)};
+				int k = Mandelbrot(z, c, x, y);
+				putpixel_f(x, y, pMap[y][x].ed == 0 ? BLACK : Color[k & COLORMASK]);
 			}
 			if(clock() - t > 100)
 			{
@@ -467,7 +376,6 @@ Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 		if(pMap[SC_H - 1][x].ed == 0) pMap[SC_H - 1][x].calc = 1;
 	}
 	for(int y = 1; y < SC_H - 1; y++)
-	{
 		for(int x = 1; x < SC_W - 1; x++)
 		{
 			PIXEL& p = pMap[y][x];
@@ -479,10 +387,8 @@ Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 				pMap[y][x + 1].calc = 1;
 			}
 		}
-	}
 	g_udlist.clear();
 	for(int y = 0; y < SC_H; y++)
-	{
 		for(int x = 0; x < SC_W; x++)
 		{
 			PIXEL& p = pMap[y][x];
@@ -496,15 +402,12 @@ Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 				p.calc = 1;
 			}
 		}
-	}
+	int x = SC_W / 2, y = SC_H / 2;
+	PIXEL& p = pMap[y][x];
+	if(p.ed == 0)
 	{
-		int x = SC_W / 2, y = SC_H / 2;
-		PIXEL& p = pMap[y][x];
-		if(p.ed == 0)
-		{
-			g_udlist.push(x, y);
-			p.calc = 1;
-		}
+		g_udlist.push(x, y);
+		p.calc = 1;
 	}
 	g_udlist.swap();
 }
@@ -533,10 +436,9 @@ DrawEx(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 			PIXEL& p = pMap[y][x];
 			if(p.ed == 0)
 			{
-				int k;
-				c.re = fromx + (tox - fromx) * (x / (double)SC_W);
-				c.im = fromy + (toy - fromy) * (y / (double)SC_H);
-				k = MandelbrotEx(p, c);
+				c = {fromx + (tox - fromx) * (x / (double)SC_W),
+					fromy + (toy - fromy) * (y / (double)SC_H)};
+				int k = MandelbrotEx(p, c);
 				if(p.ed)
 				{
 					addpoint(x, y - 1);
@@ -614,60 +516,52 @@ main()
 
 
 	// 初始化 Mandelbrot Set(曼德布洛特集)坐标系
-	COMPLEX from, to;
-	COMPLEX from_b, to_b;
-	from.re = -2.2;
-	to.re = 2.2;
-	from.im = -1.65;
-	to.im = 1.65;
-	//*
+	COMPLEX from{-2.2, -1.65}, to{2.2, 1.65}, from_b, to_b;
+	/*
 	do
 	{
 		FILE* fp = fopen("MandelbrotSet.ini", "r");
 		char str[1024]{0};
 		COMPLEX center, delta;
-		center.re = "0";
 		if(fp)
 		{
 			g_prec = 32 * 80;
-			center.setprec();
-			delta.setprec();
-			from.setprec();
-			to.setprec();
+			setprec(center);
+			setprec(delta);
+			setprec(from);
+			setprec(to);
 
 			fgets(str, 1000, fp);
 			str[strlen(str) - 1] = 0;
 			printf("%s\n", str);
-			center.re = str;
+			center.real(stoi(str));
 			fgets(str, 1000, fp);
 			str[strlen(str) - 1] = 0;
 			printf("%s\n", str);
-			center.im = str;
+			center.imag(stoi(str));
 			fgets(str, 1000, fp);
 			str[strlen(str) - 1] = 0;
 			printf("%s\n", str);
-			delta.re = str;
+			delta.real() = str;
 			fclose(fp);
 
-			delta.re /= 2;
-			delta.im = delta.re * 0.75;
-			from.re = center.re - delta.re;
-			to.re = center.re + delta.re;
-			from.im = center.im - delta.im;
-			to.im = center.im + delta.im;
-			setgprec(delta.re);
-			from.setprec();
-			to.setprec();
+			delta.real() /= 2;
+			delta.imag() = delta.real() * 0.75;
+			from.real() = center.real() - delta.real();
+			to.real() = center.real() + delta.real();
+			from.imag() = center.imag() - delta.imag();
+			to.imag() = center.imag() + delta.imag();
+			setgprec(delta.real());
+			setprec(from);
+			setprec(to);
 		}
 		else
-		{
 			g_prec = 64;
-		}
 	}
 	while(0);
-	//*/
+	*/
 
-	Draw(from.re, from.im, to.re, to.im);
+	Draw(from.real(), from.imag(), to.real(), to.imag());
 
 
 	// 捕获鼠标操作，实现放大鼠标选中区域
@@ -689,15 +583,13 @@ main()
 			bmsg = 1;
 			if(k == 'b' || k == 'B')
 			{
-				Float x1 = from.re + (from.re - to.re) / 2;
-				Float x2 = to.re - (from.re - to.re) / 2;
-				Float y1 = from.im + (from.im - to.im) / 2;
-				Float y2 = to.im - (from.im - to.im) / 2;
-				from.re = x1;
-				to.re = x2;
-				from.im = y1;
-				to.im = y2;
-				Draw(from.re, from.im, to.re, to.im, mode, js_c);
+				Float x1 = from.real() + (from.real() - to.real()) / 2;
+				Float x2 = to.real() - (from.real() - to.real()) / 2;
+				Float y1 = from.imag() + (from.imag() - to.imag()) / 2;
+				Float y2 = to.imag() - (from.imag() - to.imag()) / 2;
+				from = {x1, y1};
+				to = {x2, y2};
+				Draw(from.real(), from.imag(), to.real(), to.imag(), mode, js_c);
 			}
 			if(k == 's' || k == 'S')
 			{
@@ -712,9 +604,9 @@ main()
 				if(fp)
 				{
 					char str[1000];
-					Float x = (from.re + to.re) * 0.5,
-						  y = (from.im + to.im) * 0.5,
-						  d = to.re - from.re;
+					Float x = (from.real() + to.real()) * 0.5,
+						  y = (from.imag() + to.imag()) * 0.5,
+						  d = to.real() - from.real();
 					gmp_sprintf(str, "%.500Ff", x.get_mpf_t());
 					fprintf(fp, "%s\n", str);
 					gmp_sprintf(str, "%.500Ff", y.get_mpf_t());
@@ -736,20 +628,16 @@ main()
 			case mouse_flag_right | mouse_msg_up:
 				if(mode == 0)
 				{
-					from.re = -2.2;
-					to.re = 2.2;
-					from.im = -1.65;
-					to.im = 1.65;
-					Draw(from.re, from.im, to.re, to.im);
+					from = COMPLEX{-2.2, -1.65};
+					to = COMPLEX{2.2, 1.65};
+					Draw(from.real(), from.imag(), to.real(), to.imag());
 					//img_def.putimage(0, 0);
 				}
 				else
 				{
-					from.re = -2.0;
-					to.re = 2.0;
-					from.im = -1.5;
-					to.im = 1.5;
-					Draw(from.re, from.im, to.re, to.im, mode, js_c);
+					from = COMPLEX{-2.0, -1.5};
+					to = COMPLEX{2.0, 1.5};
+					Draw(from.real(), from.imag(), to.real(), to.imag(), mode, js_c);
 				}
 				break;
 
@@ -758,60 +646,49 @@ main()
 				if(mode == 0)
 				{
 					g_prec = prec_b;
-					from.setprec();
-					to.setprec();
-					self.re = self_b.re;
-					self.im = self_b.im;
-					selt.re = selt_b.re;
-					selt.im = selt_b.im;
-					from.re = from_b.re;
-					from.im = from_b.im;
-					to.re = to_b.re;
-					to.im = to_b.im;
-					Draw(from.re, from.im, to.re, to.im, mode, js_c);
+					setprec(from);
+					setprec(to);
+					self = self_b;
+					selt = selt_b;
+					from = from_b;
+					to = to_b;
+					Draw(from.real(), from.imag(), to.real(), to.imag(), mode, js_c);
 					//putimage(0, 0, &img_ms);
 				}
 				else
 				{
-					from_b.setprec();
-					to_b.setprec();
-					js_c.setprec();
+					setprec(from_b);
+					setprec(to_b);
+					setprec(js_c);
 					prec_b = g_prec;
 					g_prec = 64;
-					self_b.re = self.re;
-					self_b.im = self.im;
-					selt_b.re = selt.re;
-					selt_b.im = selt.im;
-					js_c.re = from.re + (to.re - from.re) * self.re / w;
-					js_c.im = from.im + (to.im - from.im) * self.im / h;
-					from_b.re = from.re;
-					from_b.im = from.im;
-					to_b.re = to.re;
-					to_b.im = to.im;
-					from.re = -2.2;
-					to.re = 2.2;
-					from.im = -1.65;
-					to.im = 1.65;
-					from.setprec();
-					to.setprec();
+					self_b = self;
+					selt_b = selt;
+					js_c = {from.real() + (to.real() - from.real()) * self.real() / w,
+						from.imag() + (to.imag() - from.imag()) * self.imag() / h};
+					from_b = from;
+					to_b = to;
+					from = COMPLEX{-2.2, -1.65};
+					to = COMPLEX{2.2, 1.65};
+					setprec(from);
+					setprec(to);
 					//img_ms.getimage(0, 0, w, h);
-					Draw(from.re, from.im, to.re, to.im, mode, js_c);
+					Draw(from.real(), from.imag(), to.real(), to.imag(), mode, js_c);
 				}
 				break;
 				// 按鼠标左键并拖动，选择区域
 			case mouse_msg_move:
 				if(isLDown)
 				{
-					rectangle(self.re, self.im, selt.re, selt.im);
-					selt.re = m.x;
-					selt.im = m.y;
-					rectangle(self.re, self.im, selt.re, selt.im);
+					rectangle(self.real(), self.imag(), selt.real(), selt.imag());
+					selt = {m.x, m.y};
+					rectangle(self.real(), self.imag(), selt.real(), selt.imag());
 				}
 				{
 					char str[200];
-					Float x = from.re + (to.re - from.re) * m.x / w,
-						  y = from.im + (to.im - from.im) * m.y / h,
-						  d = to.re - from.re;
+					Float x = from.real() + (to.real() - from.real()) * m.x / w,
+						  y = from.imag() + (to.imag() - from.imag()) * m.y / h,
+						  d = to.real() - from.real();
 					setcolor(0xFFFFFF);
 					gmp_sprintf(str, "%+.420Ff", x.get_mpf_t());
 					outtextrect(0, rh + th * 0, 640, th * tel, str);
@@ -830,71 +707,64 @@ main()
 				setcolor(WHITE);
 				setwritemode(R2_XORPEN);
 				isLDown = true;
-				self.re = selt.re = m.x;
-				self.im = selt.im = m.y;
-				rectangle(self.re, self.im, selt.re, selt.im);
-
+				selt = {m.x, m.y};
+				self = selt;
+				rectangle(self.real(), self.imag(), selt.real(), selt.imag());
 				break;
 
 				// 按鼠标左键并拖动，选择区域
 			case mouse_flag_left | mouse_msg_up:
 				if(isLDown == true)
 				{
-					rectangle(self.re, self.im, selt.re, selt.im);
+					rectangle(self.real(), self.imag(), selt.real(), selt.imag());
 					setwritemode(R2_COPYPEN);
 					isLDown = false;
-					selt.re = m.x;
-					selt.im = m.y;
-
-					if(self.re == selt.re || self.im == selt.im) break;
-
+					selt = {m.x, m.y};
+					if(self.real() == selt.real() || self.imag() == selt.imag())
+						break;
 					// 修正选区为 4:3
-					int tmp;
-					if(self.re > selt.re)
+					if(self.real() > selt.real())
 					{
-						tmp = self.re;
-						self.re = selt.re;
-						selt.re = tmp;
+						int tmp = self.real();
+						self.real(selt.real());
+						selt.real(tmp);
 					}
-					if(self.im > selt.im)
+					if(self.imag() > selt.imag())
 					{
-						tmp = self.im;
-						self.im = selt.im;
-						selt.im = tmp;
+						int tmp = self.imag();
+						self.imag(selt.imag());
+						selt.imag(tmp);
 					}
-
-					if((selt.re - self.re) * 0.75 < (selt.im - self.im))
+					if((selt.real() - self.real()) * 0.75 < (selt.imag() - self.imag()))
 					{
-						selt.im += (3 - (selt.im - self.im) % 3);
-						self.re -= (selt.im - self.im) / 3 * 4 / 2 - (selt.re - self.re) / 2;
-						selt.re = self.re + (selt.im - self.im) / 3 * 4;
+						selt.imag(selt.imag() + (3 - (selt.imag() - self.imag()) % 3));
+						self.real(self.real() - ((selt.imag() - self.imag()) / 3 * 4 / 2 - (selt.real() - self.real()) / 2));
+						selt.real(self.real() + (selt.imag() - self.imag()) / 3 * 4);
 					}
 					else
 					{
-						selt.re += (4 - (selt.re - self.re) % 4);
-						self.im -= (selt.re - self.re) * 3 / 4 / 2 - (selt.im - self.im) / 2;
-						selt.im = self.im + (selt.re - self.re) * 3 / 4;
+						selt.real(selt.real() + (4 - (selt.real() - self.real()) % 4));
+						self.imag(self.imag() - ((selt.real() - self.real()) * 3 / 4 / 2 - (selt.imag() - self.imag()) / 2));
+						selt.imag(self.imag() + (selt.real() - self.real()) * 3 / 4);
 					}
 
 					// 更新坐标系
-					Float f = from.re + (to.re - from.re) * self.re / w,
-						  t = from.re + (to.re - from.re) * selt.re / w;
-					from.re = f;
-					to.re = t;
-					f = from.im + (to.im - from.im) * self.im / h;
-					t = from.im + (to.im - from.im) * selt.im / h;
-					from.im = f;
-					to.im = t;
+					from.real(from.real() + (to.real() - from.real()) * self.real() / w);
+					to.real(from.real() + (to.real() - from.real()) * selt.real() / w);
+					Float f = from.imag() + (to.imag() - from.imag()) * self.imag() / h,
+						t = from.imag() + (to.imag() - from.imag()) * selt.imag() / h;
+					from.imag(f);
+					to.imag(t);
 					{
-						f = to.re - from.re;
+						f = to.real() - from.real();
 						setgprec(f);
 						mpf_set_default_prec(g_prec);
-						from.setprec();
-						to.setprec();
+						setprec(from);
+						setprec(to);
 					}
 
 					// 画图形
-					Draw(from.re, from.im, to.re, to.im, mode, js_c);
+					Draw(from.real(), from.imag(), to.real(), to.imag(), mode, js_c);
 				}
 				break;
 			}
@@ -908,7 +778,7 @@ main()
 			//*
 			for(int n = 0, t = clock(); g_udlist.nLen > 0 && n < 1024; ++n)
 			{
-				DrawEx(from.re, from.im, to.re, to.im, mode, js_c);
+				DrawEx(from.real(), from.imag(), to.real(), to.imag(), mode, js_c);
 				if(clock() - t > 100) break;
 			}
 			//*/
