@@ -1,11 +1,17 @@
 #include "graphics.h"
 #include <complex>
 #include <ctime>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#include <gmpxx.h>
-#pragma GCC diagnostic pop
-#include <algorithm>
+
+#define USE_MPF 1
+
+#if USE_MPF
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#	include <gmpxx.h>
+#	pragma GCC diagnostic pop
+#endif
+
+//#include <algorithm>
 
 //using namespace std;
 
@@ -17,7 +23,6 @@
 #define SC_W 160
 #define SC_H 120
 
-#define USE_MPF 1
 
 #if USE_MPF
 using Float = mpf_class;
@@ -25,9 +30,18 @@ using Float = mpf_class;
 using Float = double;
 #endif
 
-mp_bitcnt_t g_prec = 64;
 using COMPLEX = std::complex<Float>;
 using COMPLEXI = std::complex<int>;
+
+#if USE_MPF
+inline double
+abs(const COMPLEX& c)
+{
+	double d1 = mpf_get_d(c.real().get_mpf_t()), d2 = mpf_get_d(c.imag().get_mpf_t());
+	return d1 * d1 + d2 * d2;
+}
+
+mp_bitcnt_t g_prec = 64;
 
 void
 setprec(COMPLEX& c)
@@ -36,12 +50,22 @@ setprec(COMPLEX& c)
 	c.imag().set_prec(g_prec);
 }
 
-inline double
-abs(const COMPLEX& c)
+void
+setgprec(Float f)
 {
-	double d1 = mpf_get_d(c.real().get_mpf_t()), d2 = mpf_get_d(c.imag().get_mpf_t());
-	return d1 * d1 + d2 * d2;
+	mp_bitcnt_t t = 0;
+	while(f < 1)
+	{
+		f *= 2;
+		t += 1;
+	}
+	t /= 32;
+	t += 1;
+	t = t + t / 16 + 1;
+	t *= 32;
+	g_prec = t;
 }
+#endif
 
 //typedef complex<double> COMPLEX;
 
@@ -100,7 +124,7 @@ struct updatelist
 }* g_pudlist = new updatelist;
 updatelist& g_udlist = *g_pudlist;
 
-/*
+#if 0
 struct calclist
 {
 	int m_len;
@@ -174,11 +198,8 @@ struct calclist
 		update(x, y);
 		return 0;
 	}
-};//*/
-
-
-// 定义颜色及初始化颜色
-
+};
+#endif
 
 // 定义颜色
 int Color[COLORMASK + 1];
@@ -201,6 +222,7 @@ void fixcolor(int* color)
 	*color = RGB(r, g, b);
 }
 
+// 初始化颜色
 void setinitcolor(int* color, int len, int h1, int)
 {
 	int i;
@@ -233,7 +255,7 @@ void InitColor()
 	setinitcolor(Color + MAXCOLOR * 6, MAXCOLOR, h1, h2);
 	h1 = 150;
 	setinitcolor(Color + MAXCOLOR * 7, MAXCOLOR, h1, h2);
-	/*
+#if 0
 	h1 = 240, h2 = 60;
 	setinitcolor(Color, MAXCOLOR, h1, h2);
 	h1 = 270, h2 = 90;
@@ -250,14 +272,14 @@ void InitColor()
 	setinitcolor(Color+MAXCOLOR*6, MAXCOLOR, h1, h2);
 	h1 = 90, h2 = 270;
 	setinitcolor(Color+MAXCOLOR*7, MAXCOLOR, h1, h2);
-	*/
+#endif
 }
 
-/*
+#if 0
 #define func(z, c, ed) \
 {z*=z; if(z.real() > 4) \
 {ed = 1; break;} z+=c;} //(z * z * z * z * z * z + c)
-*/
+#endif
 #define func(z, c) z *= z, z += c;
 
 inline
@@ -276,7 +298,9 @@ int Mandelbrot(COMPLEX z, COMPLEX c, int x, int y)
 			break;
 		}
 	}
+#if USE_MPF
 	setprec(pMap[y][x].last);
+#endif
 	pMap[y][x].last = z;
 	pMap[y][x].nIter = BASEITERATIONS - k;
 	pMap[y][x].calc = 0;
@@ -462,6 +486,7 @@ DrawEx(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 			if(p.ed == 0)
 			{
 				int k = MandelbrotEx(p, c);
+
 				if(p.ed)
 				{
 					addpoint(x, y - 1);
@@ -471,28 +496,11 @@ DrawEx(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 					putpixel_f(x, y, Color[k & COLORMASK]);
 				}
 				else
-				{
 					addpoint(x, y);
-				}
 			}
 		}
 	}
 	g_udlist.swap();
-}
-
-void setgprec(Float f)
-{
-	mp_bitcnt_t t = 0;
-	while(f < 1)
-	{
-		f *= 2;
-		t += 1;
-	}
-	t /= 32;
-	t += 1;
-	t = t + t / 16 + 1;
-	t *= 32;
-	g_prec = t;
 }
 
 #include <stdio.h>
@@ -517,7 +525,7 @@ main()
 
 	// 初始化 Mandelbrot Set(曼德布洛特集)坐标系
 	COMPLEX from{-2.2, -1.65}, to{2.2, 1.65}, from_b, to_b;
-	/*
+#if 0
 	do
 	{
 		FILE* fp = fopen("MandelbrotSet.ini", "r");
@@ -559,7 +567,7 @@ main()
 			g_prec = 64;
 	}
 	while(0);
-	*/
+#endif
 
 	Draw(from.real(), from.imag(), to.real(), to.imag());
 
@@ -570,7 +578,9 @@ main()
 	COMPLEXI self, selt, self_b, selt_b;    // 定义选区
 	COMPLEX js_c;
 	int mode = 0;
+#if USE_MPF
 	mp_bitcnt_t prec_b = 32;
+#endif
 	//IMAGE img_def, img_ms;
 	//img_def.getimage(0, 0, w, h);
 
@@ -607,12 +617,19 @@ main()
 					Float x = (from.real() + to.real()) * 0.5,
 						  y = (from.imag() + to.imag()) * 0.5,
 						  d = to.real() - from.real();
+#if USE_MPF
 					gmp_sprintf(str, "%.500Ff", x.get_mpf_t());
 					fprintf(fp, "%s\n", str);
 					gmp_sprintf(str, "%.500Ff", y.get_mpf_t());
 					fprintf(fp, "%s\n", str);
 					gmp_sprintf(str, "%.500Ff", d.get_mpf_t());
+#else
+					std::sprintf(str, "%.15lf", x);
 					fprintf(fp, "%s\n", str);
+					std::sprintf(str, "%.15lf", y);
+					fprintf(fp, "%s\n", str);
+					std::sprintf(str, "%.15lf", d);
+#endif
 					fclose(fp);
 				}
 			}//*/
@@ -645,9 +662,11 @@ main()
 				mode = 1 - mode;
 				if(mode == 0)
 				{
+#if USE_MPF
 					g_prec = prec_b;
 					setprec(from);
 					setprec(to);
+#endif
 					self = self_b;
 					selt = selt_b;
 					from = from_b;
@@ -657,11 +676,13 @@ main()
 				}
 				else
 				{
+#if USE_MPF
 					setprec(from_b);
 					setprec(to_b);
 					setprec(js_c);
 					prec_b = g_prec;
 					g_prec = 64;
+#endif
 					self_b = self;
 					selt_b = selt;
 					js_c = {from.real() + (to.real() - from.real()) * self.real() / w,
@@ -670,8 +691,10 @@ main()
 					to_b = to;
 					from = COMPLEX{-2.2, -1.65};
 					to = COMPLEX{2.2, 1.65};
+#if USE_MPF
 					setprec(from);
 					setprec(to);
+#endif
 					//img_ms.getimage(0, 0, w, h);
 					Draw(from.real(), from.imag(), to.real(), to.imag(), mode, js_c);
 				}
@@ -690,6 +713,7 @@ main()
 						  y = from.imag() + (to.imag() - from.imag()) * m.y / h,
 						  d = to.real() - from.real();
 					setcolor(0xFFFFFF);
+#if USE_MPF
 					gmp_sprintf(str, "%+.420Ff", x.get_mpf_t());
 					outtextrect(0, rh + th * 0, 640, th * tel, str);
 					gmp_sprintf(str, "%+.420Ff", y.get_mpf_t());
@@ -698,6 +722,14 @@ main()
 					outtextrect(0, rh + th * tel * 2, 640, th * tel, str);
 					gmp_sprintf(str, "%-6d %9d", mpf_get_prec(y.get_mpf_t()), g_miniter);;
 					outtextxy(0, rh + th * tel * 3, str);
+#else
+					std::sprintf(str, "%+.15lf", x);
+					outtextrect(0, rh + th * 0, 640, th * tel, str);
+					std::sprintf(str, "%+.15lf", y);
+					outtextrect(0, rh + th * tel, 640, th * tel, str);
+					std::sprintf(str, "%+.15lf", d);
+					outtextrect(0, rh + th * tel * 2, 640, th * tel, str);
+#endif
 					//::SetWindowTextA(GetHWnd(), str);
 				}
 				break;
@@ -749,19 +781,18 @@ main()
 					}
 
 					// 更新坐标系
-					from.real(from.real() + (to.real() - from.real()) * self.real() / w);
-					to.real(from.real() + (to.real() - from.real()) * selt.real() / w);
-					Float f = from.imag() + (to.imag() - from.imag()) * self.imag() / h,
-						t = from.imag() + (to.imag() - from.imag()) * selt.imag() / h;
-					from.imag(f);
-					to.imag(t);
-					{
-						f = to.real() - from.real();
-						setgprec(f);
-						mpf_set_default_prec(g_prec);
-						setprec(from);
-						setprec(to);
-					}
+
+					// 更新坐标系
+					COMPLEX nf(from.real() + (to.real() - from.real()) * self.real() / w, from.imag() + (to.imag() - from.imag()) * self.imag() / h);
+					COMPLEX nt(from.real() + (to.real() - from.real()) * selt.real() / w, from.imag() + (to.imag() - from.imag()) * selt.imag() / h);
+					from = nf, to = nt;
+#if USE_MPF
+					Float f = to.real() - from.real();
+					setgprec(f);
+					mpf_set_default_prec(g_prec);
+					setprec(from);
+					setprec(to);
+#endif
 
 					// 画图形
 					Draw(from.real(), from.imag(), to.real(), to.imag(), mode, js_c);
@@ -769,19 +800,15 @@ main()
 				break;
 			}
 		}
-		if(bmsg)
+		if(!bmsg)
 		{
-			//
-		}
-		else
-		{
-			//*
+#if 1
 			for(int n = 0, t = clock(); g_udlist.nLen > 0 && n < 1024; ++n)
 			{
 				DrawEx(from.real(), from.imag(), to.real(), to.imag(), mode, js_c);
 				if(clock() - t > 100) break;
 			}
-			//*/
+#endif
 			delay_fps(1000);
 		}
 	}
