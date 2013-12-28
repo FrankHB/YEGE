@@ -17,43 +17,19 @@
 #define SC_W 160
 #define SC_H 120
 
-//#define for if(1) for
-
-
-// 定义复数及乘、加运算
-
-
-/*
-// 定义复数
-template <class TFLOAT>
-struct complex
-{
-	TFLOAT re;
-	TFLOAT im;
-	complex()
-	{
-		re = im = 0.0;
-	}
-	TFLOAT& real()
-	{
-		return re;
-	}
-	TFLOAT& imag()
-	{
-		return im;
-	}
-};
-
-typedef complex<double> COMPLEX;
-//*/
-
-typedef mpf_class Float;
+using Float = mpf_class;
 struct COMPLEXI
 {
 	int re;
 	int im;
+
+	COMPLEXI()
+		: re(), im()
+	{}
 };
 mp_bitcnt_t g_prec = 64;
+
+//using COMPLEX = std::complex<double>;
 
 struct COMPLEX
 {
@@ -78,7 +54,8 @@ struct COMPLEX
 	{
 		return im;
 	}
-};//*/
+};
+
 
 // 定义复数“乘”运算
 COMPLEX operator * (const COMPLEX& a, const double& b)
@@ -696,8 +673,7 @@ main()
 	// 捕获鼠标操作，实现放大鼠标选中区域
 	mouse_msg m;
 	bool isLDown = false;
-	COMPLEXI self, selt;    // 定义选区
-	COMPLEXI self_b, selt_b;    // 定义选区
+	COMPLEXI self, selt, self_b, selt_b;    // 定义选区
 	COMPLEX js_c;
 	int mode = 0;
 	mp_bitcnt_t prec_b = 32;
