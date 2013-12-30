@@ -15,7 +15,7 @@ Code::Blocks 。
 ----
 计划依赖 YBase 的 ydef.h（当前临时移除）。
 移除 GDI+ 源代码，需要显式依赖 GDI+（默认 MinGW 已提供）；移除 EGE_GDIPLUS 宏。
-移除 zlib 和 libpng 源代码，需要显式依赖 zlib1.dll 和 libpng16.dll 。
+移除 zlib 和 libpng 源代码，需要显式依赖库 z 和 png16 。
 
 非向后兼容接口
 ----
@@ -51,7 +51,7 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别
 移除 typedef 名称 unint32 ，使用 <cstdint> 的 std::uint32_t 代替。
 移除冗余 IFATODOB 和 IFNATODOB 宏。
 移除冗余 typedef 名称 PLONG_PTR 、PULONG_PTR 、ULONG_PTR 、PDWORD_PTR 和 POINTER_SIZE（部分已在 Windows SDK 头文件中定义）。
-移除 enum dealmessage_update 类型，使用 bool 代替枚举值。
+移除 enum dealmessage_update 类型，使用 bool 代替。
 移除 _DEBUG 宏。
 移除 ERROR_SUCCESS 宏，使用字面量 0 代替。
 移除 GRADIENT_* 、__int3264 宏 、typedef 名称（ LONG_PTR 和 DWORD_PTR ）、函数 GradientFill 的声明，使用 MinGW 头文件。
