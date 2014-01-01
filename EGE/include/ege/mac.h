@@ -1,12 +1,6 @@
 ﻿#ifndef Inc_ege_mac_h_
 #define Inc_ege_mac_h_
 
-// 绘图环境初始化参数
-#define INITGRAPH(x, y) struct _initgraph_{_initgraph_(){initgraph(x, y);}\
-		~_initgraph_(){closegraph();}}_g_initgraph_
-#define INITGRAPH3(x, y, f) struct _initgraph_{_initgraph_(){initgraph(x, y, f);}\
-		~_initgraph_(){closegraph();}}_g_initgraph_
-
 #define CTL_PREINIT(classname, parent) struct preinit_obj \
 	{ \
 		preinit_obj(classname* This, int inheritlevel) \
@@ -30,8 +24,6 @@
 #define CTL_INITBASE(parent)    parent(inherit, (ege::egeControlBase*)pParent), _preinit_obj(this, inherit_level_e)
 #define CTL_INIT        InitObject iobj(this, inherit_level_e);\
 	ege::PushTarget _pushtarget(buf());
-
-#define EGECTRL_INITEND()     }
 
 #endif
 

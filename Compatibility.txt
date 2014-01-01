@@ -29,6 +29,7 @@ Code::Blocks 。
 移除 Array 和 Set 模版。
 移除 _Cdecl 宏。
 移除 PIMAGE 类型，用 IMAGE* 替代。
+移除宏 INITGRAPH(x, y) 、INITGRAPH3(x, y, f) 和 EGECTRL_INITEND() 。
 
 向后兼容但不保证向前兼容原始实现的接口
 ----
