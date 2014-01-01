@@ -121,8 +121,18 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		_graph_setting::_on_ime_control(hWnd, wParam, lParam);
 		break;
 	case WM_USER + 1:
-		_graph_setting::_windowmanager(wParam != 0,
-			(struct msg_createwindow*)lParam);
+		{
+			const auto p(reinterpret_cast<msg_createwindow*>(lParam));
+
+			assert(p);
+
+			auto& msg(*p);
+
+			if(wParam != 0)
+				_graph_setting::_window_create(msg);
+			else
+				_graph_setting::_window_destroy(msg);
+		}
 		break;
 	case WM_USER + 2:
 		::SetFocus((::HWND)lParam);

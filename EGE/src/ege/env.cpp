@@ -18,7 +18,7 @@ initgraph(int width, int height, int flag)
 	int g(TRUECOLORSIZE), m((width) | (height << 16));
 
 	if(graph_setting._g_initcall == 0)
-			setinitmode(flag);
+		setinitmode(flag);
 	initgraph(&g, &m, nullptr);
 }
 

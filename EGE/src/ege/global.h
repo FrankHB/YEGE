@@ -18,6 +18,7 @@ namespace ege
 
 class IMAGE;
 class egeControlBase;
+struct msg_createwindow;
 
 
 extern int update_mark_count; //更新标记
@@ -31,6 +32,9 @@ extern egeControlBase* egectrl_focus;
 // 定义ege全局状态对象
 struct _graph_setting
 {
+	static const ::TCHAR window_class_name[32];
+	static const ::TCHAR window_caption[128];
+
 	struct _graph
 	{
 		int width;
@@ -55,8 +59,7 @@ struct _graph_setting
 
 	::HINSTANCE instance;
 	::HWND    hwnd;
-	::TCHAR   window_class_name[32];
-	::TCHAR   window_caption[128];
+
 	int     exit_flag;
 	int     exit_window;
 	bool    close_manually;
@@ -150,9 +153,6 @@ struct _graph_setting
 	_init_graph();
 
 	void
-	_init_graph_p();
-
-	void
 	_init_graph_x(int*, int*);
 
 	int
@@ -222,7 +222,10 @@ struct _graph_setting
 	_waitdealmessage();
 
 	static void
-	_windowmanager(bool, struct msg_createwindow*);
+	_window_create(msg_createwindow&);
+
+	static void
+	_window_destroy(msg_createwindow&);
 };
 
 

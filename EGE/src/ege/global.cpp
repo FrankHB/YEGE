@@ -40,17 +40,6 @@ get_global_state()
 }
 
 
-void
-init_graph_once()
-{
-	static 	::ULONG_PTR g_gdiplusToken;
-	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-
-	Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, nullptr);
-	get_global_state()._init_graph_p();
-}
-
-
 bool init_finish;
 
 }
@@ -64,6 +53,9 @@ egeControlBase* egectrl_focus;
 float
 _get_FPS(int);
 
+const ::TCHAR _graph_setting::window_class_name[32]
+	{TEXT("Easy Graphics Engine")};
+const ::TCHAR _graph_setting::window_caption[128]{EGE_TITLE};
 ::DWORD _graph_setting::g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
 	| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
 ::DWORD _graph_setting::g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
@@ -511,14 +503,14 @@ messageloopthread(LPVOID lpParameter)
 		int nCmdShow = SW_SHOW;
 		register_class(pg, pg->instance);
 
-		/* 执行应用程序初始化: */
+		//执行应用程序初始化
 		if(!init_instance(pg->instance, nCmdShow))
 			return 0xFFFFFFFF;
 
 		//图形初始化
 		pg->_init_graph();
 		pg->mouse_show = 0;
-		pg->use_force_exit = (pg->_g_initoption & INIT_NOFORCEEXIT ? false : true);
+		pg->use_force_exit = !(pg->_g_initoption & INIT_NOFORCEEXIT);
 		if(pg->_g_initoption & INIT_NOFORCEEXIT)
 			SetCloseHandler([]{graph_setting.exit_flag = 1;});
 		pg->close_manually = true;
@@ -540,42 +532,40 @@ messageloopthread(LPVOID lpParameter)
 }
 
 void
-_graph_setting::_init_graph_p()
-{
-	_g_initcall = false;
-	instance = ::GetModuleHandle(nullptr);
-	::lstrcpy(window_class_name, TEXT("Easy Graphics Engine"));
-	::lstrcpy(window_caption, EGE_TITLE);
-	{
-	//	::SECURITY_ATTRIBUTES sa{};
-		::DWORD pid;
-
-		init_finish = false;
-		threadui_handle = ::CreateThread(nullptr, 0, messageloopthread,
-			this, CREATE_SUSPENDED, &pid);
-		::ResumeThread(threadui_handle);
-		while(!init_finish)
-			::Sleep(1);
-	}
-	::UpdateWindow(hwnd);
-	//初始化鼠标位置数据
-	mouse_last_x = dc_w / 2;
-	mouse_last_y = dc_h / 2;
-
-	static egeControlBase _egeControlBase;
-
-	if(_g_initoption & INIT_RENDERMANUAL)
-		setrendermode(RENDER_MANUAL);
-	mouse_show = 1;
-}
-
-void
 _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 {
 	static std::once_flag init_flag;
 
 	_set_mode(*gdriver, *gmode);
-	std::call_once(init_flag, init_graph_once);
+	std::call_once(init_flag, [this]{
+		static ::ULONG_PTR g_gdiplusToken;
+		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+
+		Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, nullptr);
+		_g_initcall = false;
+		instance = ::GetModuleHandle(nullptr);
+		{
+		//	::SECURITY_ATTRIBUTES sa{};
+			::DWORD pid;
+
+			init_finish = false;
+			threadui_handle = ::CreateThread(nullptr, 0, messageloopthread,
+				this, CREATE_SUSPENDED, &pid);
+			::ResumeThread(threadui_handle);
+			while(!init_finish)
+				::Sleep(1);
+		}
+		::UpdateWindow(hwnd);
+		//初始化鼠标位置数据
+		mouse_last_x = dc_w / 2;
+		mouse_last_y = dc_h / 2;
+
+		static egeControlBase _egeControlBase;
+
+		if(_g_initoption & INIT_RENDERMANUAL)
+			setrendermode(RENDER_MANUAL);
+		mouse_show = 1;
+	});
 	exit_flag = 0;
 	exit_window = 0;
 	for(int page = 0; page < BITMAP_PAGE_SIZE; ++page)
@@ -1006,23 +996,22 @@ _graph_setting::_waitdealmessage()
 }
 
 void
-_graph_setting::_windowmanager(bool create, struct msg_createwindow* msg)
+_graph_setting::_window_create(msg_createwindow& msg)
 {
-	if(create)
-	{
-		msg->hwnd = ::CreateWindowExW(msg->exstyle, msg->classname, nullptr,
-			msg->style, 0, 0, 0, 0, getHWnd(), (HMENU)msg->id, getHInstance(),
-			nullptr);
-		if(msg->hEvent)
-			::SetEvent(msg->hEvent);
-	}
-	else
-	{
-		if(msg->hwnd)
-			::DestroyWindow(msg->hwnd);
-		if(msg->hEvent)
-			::SetEvent(msg->hEvent);
-	}
+	msg.hwnd = ::CreateWindowExW(msg.exstyle, msg.classname, nullptr,
+		msg.style, 0, 0, 0, 0, getHWnd(), (HMENU)msg.id, getHInstance(),
+		nullptr);
+	if(msg.hEvent)
+		::SetEvent(msg.hEvent);
+}
+
+void
+_graph_setting::_window_destroy(msg_createwindow& msg)
+{
+	if(msg.hwnd)
+		::DestroyWindow(msg.hwnd);
+	if(msg.hEvent)
+		::SetEvent(msg.hEvent);
 }
 
 _graph_setting& graph_setting(get_global_state());
