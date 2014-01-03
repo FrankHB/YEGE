@@ -188,12 +188,26 @@ egeControlBase* egectrl_focus;
 float
 _get_FPS(int);
 
+
 const ::TCHAR _graph_setting::window_class_name[32]
 	{TEXT("Easy Graphics Engine")};
 const ::TCHAR _graph_setting::window_caption[128]{EGE_TITLE};
 ::DWORD _graph_setting::g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
 	| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
 ::DWORD _graph_setting::g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
+
+_graph_setting::_graph_setting()
+	: instance(::GetModuleHandle(nullptr))
+{
+	static std::once_flag init_flag;
+
+	std::call_once(init_flag, []{
+		static ::ULONG_PTR g_gdiplusToken;
+		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+
+		Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, nullptr);
+	});
+}
 
 bool
 _graph_setting::_is_run() const
@@ -520,23 +534,15 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 
 	_set_mode(*gdriver, *gmode);
 	std::call_once(init_flag, [this]{
-		static ::ULONG_PTR g_gdiplusToken;
-		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	//	::SECURITY_ATTRIBUTES sa{};
+		::DWORD pid;
 
-		Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, nullptr);
-		_g_initcall = false;
-		instance = ::GetModuleHandle(nullptr);
-		{
-		//	::SECURITY_ATTRIBUTES sa{};
-			::DWORD pid;
-
-			init_finish = false;
-			threadui_handle = ::CreateThread(nullptr, 0, messageloopthread,
-				this, CREATE_SUSPENDED, &pid);
-			::ResumeThread(threadui_handle);
-			while(!init_finish)
-				::Sleep(1);
-		}
+		init_finish = false;
+		threadui_handle = ::CreateThread(nullptr, 0, messageloopthread,
+			this, CREATE_SUSPENDED, &pid);
+		::ResumeThread(threadui_handle);
+		while(!init_finish)
+			::Sleep(1);
 		::UpdateWindow(hwnd);
 		//初始化鼠标位置数据
 		mouse_last_x = dc_w / 2;

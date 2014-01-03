@@ -98,6 +98,9 @@ public:
 	static ::DWORD g_windowstyle;
 	static ::DWORD g_windowexstyle;
 
+	_graph_setting();
+	_graph_setting(const _graph_setting&) = delete;
+
 	bool
 	_is_run() const;
 
