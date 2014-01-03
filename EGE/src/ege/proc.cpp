@@ -8,7 +8,7 @@ namespace ege
 int
 SetCloseHandler(LPCALLBACK_PROC func)
 {
-	graph_setting.callback_close = func;
+	get_global_state().callback_close = func;
 	return grOk;
 }
 

@@ -8,9 +8,9 @@ void
 setrendermode(rendermode_e mode)
 {
 	if(mode == RENDER_MANUAL)
-		graph_setting._render_manual();
+		get_global_state()._render_manual();
 	else
-		graph_setting._render_normal();
+		get_global_state()._render_normal();
 }
 
 }

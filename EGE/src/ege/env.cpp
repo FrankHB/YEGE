@@ -10,14 +10,14 @@ namespace ege
 void
 initgraph(int* gdriver, int* gmode, char*)
 {
-	graph_setting._init_graph_x(gdriver, gmode);
+	get_global_state()._init_graph_x(gdriver, gmode);
 }
 void
 initgraph(int width, int height, int flag)
 {
 	int g(TRUECOLORSIZE), m((width) | (height << 16));
 
-	if(graph_setting._g_initcall == 0)
+	if(get_global_state()._g_initcall == 0)
 		setinitmode(flag);
 	initgraph(&g, &m, nullptr);
 }
@@ -25,13 +25,13 @@ initgraph(int width, int height, int flag)
 void
 closegraph()
 {
-	::ShowWindow(graph_setting.hwnd, SW_HIDE);
+	::ShowWindow(get_global_state().hwnd, SW_HIDE);
 }
 
 bool
 is_run()
 {
-	return graph_setting._is_run();
+	return get_global_state()._is_run();
 }
 
 } // namespace ege;

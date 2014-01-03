@@ -7,14 +7,14 @@
 
 #define CONVERT_IMAGE(pimg) ( ((size_t)(pimg)<0x20 ?\
 							   ((pimg) ?\
-								(graph_setting.img_page[(size_t)(pimg) & 0xF])\
-								: (--ege::update_mark_count, graph_setting.imgtarget))\
+								(get_global_state().img_page[(size_t)(pimg) & 0xF])\
+								: (--ege::update_mark_count, get_global_state().imgtarget))\
 								   : pimg) )
 
 #define CONVERT_IMAGE_CONST(pimg) ( (size_t)(pimg)<0x20 ?\
 									((pimg) ?\
-									 (graph_setting.img_page[(size_t)(pimg) & 0xF])\
-									 : graph_setting.imgtarget)\
+									 (get_global_state().img_page[(size_t)(pimg) & 0xF])\
+									 : get_global_state().imgtarget)\
 										: pimg)
 
 #define CONVERT_IMAGE_F(pimg) CONVERT_IMAGE(pimg)

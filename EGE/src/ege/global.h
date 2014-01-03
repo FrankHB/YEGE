@@ -231,7 +231,8 @@ public:
 };
 
 
-extern _graph_setting& graph_setting;
+_graph_setting&
+get_global_state();
 
 } // namespace ege;
 

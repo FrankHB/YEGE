@@ -235,7 +235,7 @@ xyprintf(int x, int y, const char*  fmt, ...)
 	va_list v;
 	va_start(v, fmt);
 	{
-		auto pg = &graph_setting;
+		auto pg = &get_global_state();
 		char* buff = (char*)pg->g_t_buff;
 		std::vsprintf(buff, fmt, v);
 		outtextxy(x, y, buff);
@@ -249,7 +249,7 @@ xyprintf(int x, int y, const wchar_t* fmt, ...)
 	va_list v;
 	va_start(v, fmt);
 	{
-		auto pg = &graph_setting;
+		auto pg = &get_global_state();
 		wchar_t* buff = (wchar_t*)pg->g_t_buff;
 		vswprintf(buff, fmt, v);
 		outtextxy(x, y, buff);
@@ -263,7 +263,7 @@ rectprintf(int x, int y, int w, int h, const char*  fmt, ...)
 	va_list v;
 	va_start(v, fmt);
 	{
-		auto pg = &graph_setting;
+		auto pg = &get_global_state();
 		char* buff = (char*)pg->g_t_buff;
 		vsprintf(buff, fmt, v);
 		outtextrect(x, y, w, h, buff);
@@ -277,7 +277,7 @@ rectprintf(int x, int y, int w, int h, const wchar_t* fmt, ...)
 	va_list v;
 	va_start(v, fmt);
 	{
-		auto pg = &graph_setting;
+		auto pg = &get_global_state();
 		wchar_t* buff = (wchar_t*)pg->g_t_buff;
 		vswprintf(buff, fmt, v);
 		outtextrect(x, y, w, h, buff);
@@ -620,7 +620,7 @@ inputbox_getline(const char* title, const char* text, char* buf, int len)
 int
 inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int len)
 {
-	auto pg = &graph_setting;
+	auto pg = &get_global_state();
 	IMAGE bg;
 	IMAGE window;
 	int w = 400, h = 300, x = (getwidth() - w) / 2, y = (getheight() - h) / 2;

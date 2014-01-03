@@ -31,16 +31,151 @@ namespace ege
 namespace
 {
 
-_graph_setting&
-get_global_state()
-{
-	static std::unique_ptr<_graph_setting> p(new _graph_setting());
+bool init_finish;
 
-	return *p;
+::BOOL
+init_instance(::HINSTANCE hInstance, int nCmdShow)
+{
+	auto pg = &get_global_state();
+	int dw = 0, dh = 0;
+
+	dw = ::GetSystemMetrics(SM_CXFRAME) * 2;
+	dh = ::GetSystemMetrics(SM_CYFRAME) + ::GetSystemMetrics(SM_CYCAPTION) * 2;
+	if(pg->_g_attach_hwnd)
+	{
+		::LONG_PTR style = ::GetWindowLongPtrW(pg->_g_attach_hwnd, GWL_STYLE);
+		style |= WS_CHILDWINDOW | WS_CLIPCHILDREN;
+		::SetWindowLongPtrW(pg->_g_attach_hwnd, GWL_STYLE, style);
+	}
+
+	pg->hwnd = ::CreateWindowEx(pg->g_windowexstyle, pg->window_class_name,
+		pg->window_caption, pg->g_windowstyle & ~WS_VISIBLE, pg->_g_windowpos_x,
+		pg->_g_windowpos_y, pg->dc_w + dw, pg->dc_h + dh, pg->_g_attach_hwnd, nullptr,
+		hInstance, nullptr);
+	if(!pg->hwnd)
+		return FALSE;
+	if(pg->_g_attach_hwnd)
+	{
+		wchar_t name[64];
+
+		std::swprintf(name, L"ege_%X",
+			::DWORD(::DWORD_PTR(pg->_g_attach_hwnd)));
+		if(::CreateEventW(nullptr, FALSE, TRUE, name))
+			if(::GetLastError() == ERROR_ALREADY_EXISTS)
+				::PostMessage(pg->hwnd, WM_CLOSE, 0, 0);
+	}
+	::SetWindowLongPtrW(pg->hwnd, GWLP_USERDATA, (::LONG_PTR)pg);
+	pg->exit_window = 0;
+	::ShowWindow(pg->hwnd, nCmdShow);
+	if(pg->g_windowexstyle & WS_EX_TOPMOST)
+		::SetWindowPos(pg->hwnd, HWND_TOPMOST, 0, 0, 0, 0,
+			SWP_NOSIZE | SWP_NOMOVE);
+	return TRUE;
 }
 
+#if !defined(UNICODE)
+CALLBACK ::BOOL
+EnumResNameProc(::HMODULE hModule, const char*, char* lpszName,
+	::LONG_PTR lParam)
+{
+	if(const auto hico = (::HICON)::LoadImage(hModule, lpszName, IMAGE_ICON, 0,
+		0, LR_DEFAULTSIZE))
+	{
+		*((::HICON*)lParam) = hico;
+		return FALSE;
+	}
+	return TRUE;
+}
+#else
+CALLBACK ::BOOL
+EnumResNameProc(::HMODULE hModule, const wchar_t* lpszType, wchar_t* lpszName,
+	::LONG_PTR lParam)
+{
+	if(const auto hico = (::HICON)::LoadImageW(hModule, lpszName, IMAGE_ICON,
+		0, 0, LR_DEFAULTSIZE))
+	{
+		*((::HICON*)lParam) = hico;
+		return FALSE;
+	}
+	return TRUE;
+}
+#endif
 
-bool init_finish;
+ATOM
+register_class(_graph_setting* pg, ::HINSTANCE hInstance)
+{
+	static ::WNDCLASSEX wcex;
+	::HICON hico = nullptr;
+
+	wcex.cbSize = sizeof(wcex);
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = getProcfunc();
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = hInstance;
+	wcex.hIcon = ::LoadIcon(nullptr, IDI_WINLOGO);
+	wcex.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
+	wcex.hbrBackground = (::HBRUSH)(COLOR_WINDOW + 1);
+	wcex.lpszClassName = pg->window_class_name;
+
+	EnumResourceNames(hInstance, RT_ANIICON, EnumResNameProc, (::LONG_PTR)&hico);
+	if(hico)
+	{
+		wcex.hIcon = hico;
+		goto END_LOAD_ICON;
+	}
+	EnumResourceNames(hInstance, RT_GROUP_ICON, EnumResNameProc, (::LONG_PTR)&hico);
+	if(hico)
+	{
+		wcex.hIcon = hico;
+		goto END_LOAD_ICON;
+	}
+	EnumResourceNames(hInstance, RT_ICON, EnumResNameProc, (::LONG_PTR)&hico);
+	if(hico)
+	{
+		wcex.hIcon = hico;
+		goto END_LOAD_ICON;
+	}
+
+END_LOAD_ICON:
+	return ::RegisterClassEx(&wcex);
+}
+
+//private
+::DWORD WINAPI
+messageloopthread(LPVOID lpParameter)
+{
+	_graph_setting* pg = (_graph_setting*)lpParameter;
+	MSG msg;
+	{
+		int nCmdShow = SW_SHOW;
+		register_class(pg, pg->instance);
+
+		//执行应用程序初始化
+		if(!init_instance(pg->instance, nCmdShow))
+			return 0xFFFFFFFF;
+
+		//图形初始化
+		pg->_init_graph();
+		pg->mouse_show = 0;
+		pg->use_force_exit = !(pg->_g_initoption & INIT_NOFORCEEXIT);
+		if(pg->_g_initoption & INIT_NOFORCEEXIT)
+			SetCloseHandler([]{get_global_state().exit_flag = 1;});
+		pg->close_manually = true;
+		skip_timer_mark = false;
+		::SetTimer(pg->hwnd, RENDER_TIMER_ID, 50, nullptr);
+	}
+	init_finish = true;
+	while(!pg->exit_window)
+		if(::GetMessage(&msg, nullptr, 0, 0))
+		{
+			::TranslateMessage(&msg);
+			::DispatchMessage(&msg);
+		}
+		else
+			::Sleep(1);
+	return 0;
+}
 
 }
 
@@ -232,8 +367,7 @@ _graph_setting::_getflush()
 	if(!msgkey_queue.empty())
 		while(msgkey_queue.pop(msg))
 			if(msg.message == WM_CHAR)
-				if(msg.message == WM_CHAR)
-					lastkey = int(msg.wParam);
+				lastkey = int(msg.wParam);
 	return lastkey;
 }
 
@@ -377,156 +511,6 @@ _graph_setting::_init_graph()
 	setvisualpage(0);
 	window_setviewport(0, 0, dc_w, dc_h);
 	//::ReleaseDC(hwnd, hDC);
-}
-
-
-namespace
-{
-
-::BOOL
-init_instance(::HINSTANCE hInstance, int nCmdShow)
-{
-	auto pg = &graph_setting;
-	int dw = 0, dh = 0;
-
-	dw = ::GetSystemMetrics(SM_CXFRAME) * 2;
-	dh = ::GetSystemMetrics(SM_CYFRAME) + ::GetSystemMetrics(SM_CYCAPTION) * 2;
-	if(pg->_g_attach_hwnd)
-	{
-		::LONG_PTR style = ::GetWindowLongPtrW(pg->_g_attach_hwnd, GWL_STYLE);
-		style |= WS_CHILDWINDOW | WS_CLIPCHILDREN;
-		::SetWindowLongPtrW(pg->_g_attach_hwnd, GWL_STYLE, style);
-	}
-
-	pg->hwnd = ::CreateWindowEx(pg->g_windowexstyle, pg->window_class_name,
-		pg->window_caption, pg->g_windowstyle & ~WS_VISIBLE, pg->_g_windowpos_x,
-		pg->_g_windowpos_y, pg->dc_w + dw, pg->dc_h + dh, pg->_g_attach_hwnd, nullptr,
-		hInstance, nullptr);
-	if(!pg->hwnd)
-		return FALSE;
-	if(pg->_g_attach_hwnd)
-	{
-		wchar_t name[64];
-
-		std::swprintf(name, L"ege_%X",
-			::DWORD(::DWORD_PTR(pg->_g_attach_hwnd)));
-		if(::CreateEventW(nullptr, FALSE, TRUE, name))
-			if(::GetLastError() == ERROR_ALREADY_EXISTS)
-				::PostMessage(pg->hwnd, WM_CLOSE, 0, 0);
-	}
-	::SetWindowLongPtrW(pg->hwnd, GWLP_USERDATA, (::LONG_PTR)pg);
-	pg->exit_window = 0;
-	::ShowWindow(pg->hwnd, nCmdShow);
-	if(pg->g_windowexstyle & WS_EX_TOPMOST)
-		::SetWindowPos(pg->hwnd, HWND_TOPMOST, 0, 0, 0, 0,
-			SWP_NOSIZE | SWP_NOMOVE);
-	return TRUE;
-}
-
-#if !defined(UNICODE)
-CALLBACK ::BOOL
-EnumResNameProc(::HMODULE hModule, const char*, char* lpszName,
-	::LONG_PTR lParam)
-{
-	if(const auto hico = (::HICON)::LoadImage(hModule, lpszName, IMAGE_ICON, 0,
-		0, LR_DEFAULTSIZE))
-	{
-		*((::HICON*)lParam) = hico;
-		return FALSE;
-	}
-	return TRUE;
-}
-#else
-CALLBACK ::BOOL
-EnumResNameProc(::HMODULE hModule, const wchar_t* lpszType, wchar_t* lpszName,
-	::LONG_PTR lParam)
-{
-	if(const auto hico = (::HICON)::LoadImageW(hModule, lpszName, IMAGE_ICON,
-		0, 0, LR_DEFAULTSIZE))
-	{
-		*((::HICON*)lParam) = hico;
-		return FALSE;
-	}
-	return TRUE;
-}
-#endif
-
-ATOM
-register_class(_graph_setting* pg, ::HINSTANCE hInstance)
-{
-	static ::WNDCLASSEX wcex;
-	::HICON hico = nullptr;
-
-	wcex.cbSize = sizeof(wcex);
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = getProcfunc();
-	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = 0;
-	wcex.hInstance = hInstance;
-	wcex.hIcon = ::LoadIcon(nullptr, IDI_WINLOGO);
-	wcex.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = (::HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszClassName = pg->window_class_name;
-
-	EnumResourceNames(hInstance, RT_ANIICON, EnumResNameProc, (::LONG_PTR)&hico);
-	if(hico)
-	{
-		wcex.hIcon = hico;
-		goto END_LOAD_ICON;
-	}
-	EnumResourceNames(hInstance, RT_GROUP_ICON, EnumResNameProc, (::LONG_PTR)&hico);
-	if(hico)
-	{
-		wcex.hIcon = hico;
-		goto END_LOAD_ICON;
-	}
-	EnumResourceNames(hInstance, RT_ICON, EnumResNameProc, (::LONG_PTR)&hico);
-	if(hico)
-	{
-		wcex.hIcon = hico;
-		goto END_LOAD_ICON;
-	}
-
-END_LOAD_ICON:
-	return ::RegisterClassEx(&wcex);
-}
-
-//private
-::DWORD WINAPI
-messageloopthread(LPVOID lpParameter)
-{
-	_graph_setting* pg = (_graph_setting*)lpParameter;
-	MSG msg;
-	{
-		int nCmdShow = SW_SHOW;
-		register_class(pg, pg->instance);
-
-		//执行应用程序初始化
-		if(!init_instance(pg->instance, nCmdShow))
-			return 0xFFFFFFFF;
-
-		//图形初始化
-		pg->_init_graph();
-		pg->mouse_show = 0;
-		pg->use_force_exit = !(pg->_g_initoption & INIT_NOFORCEEXIT);
-		if(pg->_g_initoption & INIT_NOFORCEEXIT)
-			SetCloseHandler([]{graph_setting.exit_flag = 1;});
-		pg->close_manually = true;
-		skip_timer_mark = false;
-		::SetTimer(pg->hwnd, RENDER_TIMER_ID, 50, nullptr);
-	}
-	init_finish = true;
-	while(!pg->exit_window)
-		if(::GetMessage(&msg, nullptr, 0, 0))
-		{
-			::TranslateMessage(&msg);
-			::DispatchMessage(&msg);
-		}
-		else
-			::Sleep(1);
-	return 0;
-}
-
 }
 
 void
@@ -1012,7 +996,14 @@ _graph_setting::_window_destroy(msg_createwindow& msg)
 		::SetEvent(msg.hEvent);
 }
 
-_graph_setting& graph_setting(get_global_state());
+
+_graph_setting&
+get_global_state()
+{
+	static std::unique_ptr<_graph_setting> p(new _graph_setting());
+
+	return *p;
+}
 
 } // namespace ege;
 

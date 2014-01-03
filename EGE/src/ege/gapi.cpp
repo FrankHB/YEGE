@@ -45,14 +45,14 @@ _save_brush(IMAGE* img, int save)
 IMAGE*
 gettarget()
 {
-	return graph_setting._get_target();
+	return get_global_state()._get_target();
 }
 
 #if 0
 void
 swappage()
 {
-	auto pg = &graph_setting;
+	auto pg = &get_global_state();
 	setvisualpage(pg->active_page);
 	setactivepage(1 - pg->active_page);
 }
@@ -61,20 +61,20 @@ swappage()
 void
 setactivepage(int page)
 {
-	graph_setting._set_activepage(page);
+	get_global_state()._set_activepage(page);
 }
 
 void
 setvisualpage(int page)
 {
-	graph_setting._set_visualpage(page);
+	get_global_state()._set_visualpage(page);
 }
 
 
 int
 settarget(IMAGE* pbuf)
 {
-	return graph_setting._set_target(pbuf);
+	return get_global_state()._set_target(pbuf);
 }
 
 void

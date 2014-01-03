@@ -26,7 +26,7 @@ getviewport(int* pleft, int* ptop, int* pright, int* pbottom, int* pclip,
 void
 setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 {
-	//_graph_setting * pg = &graph_setting;
+	//_graph_setting * pg = &get_global_state();
 
 	const auto img = CONVERT_IMAGE(pimg);
 
@@ -86,7 +86,7 @@ clearviewport(IMAGE* pimg)
 void
 window_getviewport(viewporttype* viewport)
 {
-	auto pg = &graph_setting;
+	auto pg = &get_global_state();
 	viewport->left   = pg->base_x;
 	viewport->top    = pg->base_y;
 	viewport->right  = pg->base_w + pg->base_x;
@@ -96,7 +96,7 @@ window_getviewport(viewporttype* viewport)
 void
 window_getviewport(int* left, int* top, int* right, int* bottom)
 {
-	auto pg = &graph_setting;
+	auto pg = &get_global_state();
 	if(left)   *left   = pg->base_x;
 	if(top)    *top    = pg->base_y;
 	if(right)  *right  = pg->base_w + pg->base_x;
@@ -106,7 +106,7 @@ window_getviewport(int* left, int* top, int* right, int* bottom)
 void
 window_setviewport(int left, int top, int right, int bottom)
 {
-	auto pg = &graph_setting;
+	auto pg = &get_global_state();
 	int same_xy = 0, same_wh = 0;
 	if(pg->base_x == left && pg->base_y == top)
 		same_xy = 1;

@@ -7,7 +7,7 @@ namespace ege
 void
 setinitmode(int mode, int x, int y)
 {
-	graph_setting._set_initmode(mode, x, y);
+	get_global_state()._set_initmode(mode, x, y);
 }
 
 void
@@ -24,20 +24,20 @@ setcaption(const wchar_t* caption)
 int
 attachHWND(::HWND hWnd)
 {
-	graph_setting._g_attach_hwnd = hWnd;
+	get_global_state()._g_attach_hwnd = hWnd;
 	return 0;
 }
 
 ::HWND
 getHWnd()
 {
-	return graph_setting.hwnd;
+	return get_global_state().hwnd;
 }
 
 ::HINSTANCE
 getHInstance()
 {
-	return graph_setting.instance;
+	return get_global_state().instance;
 }
 
 } // namespace ege;

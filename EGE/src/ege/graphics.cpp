@@ -16,7 +16,7 @@ namespace
 LRESULT CALLBACK
 wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 {
-	auto pg = &graph_setting;
+	auto pg = &get_global_state();
 	//int wmId, wmEvent;
 	auto pg_w = (_graph_setting*)::GetWindowLongPtrW(hWnd, GWLP_USERDATA);
 
