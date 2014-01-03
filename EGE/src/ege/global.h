@@ -66,8 +66,10 @@ struct _graph_setting
 	bool    use_force_exit; //强制关闭进程标记
 	bool    lock_window;
 
-	thread_queue<EGEMSG>* msgkey_queue, *msgmouse_queue;
+private:
+	thread_queue<EGEMSG> msgkey_queue, msgmouse_queue;
 
+public:
 	::HANDLE threadui_handle;
 
 
