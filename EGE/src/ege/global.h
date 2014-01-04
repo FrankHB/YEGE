@@ -21,12 +21,19 @@ class egeControlBase;
 struct msg_createwindow;
 
 
+extern int _g_initoption;
+extern bool _g_initcall;
+
 extern int update_mark_count; //更新标记
 extern bool timer_stop_mark;
 extern bool skip_timer_mark;
 /* egeControlBase */
 extern egeControlBase* egectrl_root;
 extern egeControlBase* egectrl_focus;
+
+
+void
+_set_initmode(int, int, int);
 
 
 // 定义ege全局状态对象
@@ -92,11 +99,6 @@ public:
 	/* 函数用临时缓冲区 */
 	::DWORD g_t_buff[1024 * 8];
 	::HWND _g_attach_hwnd = nullptr;
-	int _g_windowpos_x = CW_USEDEFAULT, _g_windowpos_y = CW_USEDEFAULT;
-	int _g_initoption = INIT_DEFAULT;
-	bool _g_initcall = false;
-	static ::DWORD g_windowstyle;
-	static ::DWORD g_windowexstyle;
 
 	_graph_setting();
 	_graph_setting(const _graph_setting&) = delete;
@@ -112,9 +114,6 @@ public:
 
 	void
 	_set_activepage(int);
-
-	void
-	_set_initmode(int, int, int);
 
 	void
 	_set_mode(int, int);

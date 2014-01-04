@@ -7,7 +7,7 @@ namespace ege
 void
 setinitmode(int mode, int x, int y)
 {
-	get_global_state()._set_initmode(mode, x, y);
+	_set_initmode(mode, x, y);
 }
 
 void

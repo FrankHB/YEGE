@@ -28,9 +28,23 @@
 namespace ege
 {
 
+int _g_initoption(INIT_DEFAULT);
+bool _g_initcall;
+
+int update_mark_count; //更新标记
+bool timer_stop_mark;
+bool skip_timer_mark;
+egeControlBase* egectrl_root;
+egeControlBase* egectrl_focus;
+
+
 namespace
 {
 
+::DWORD g_windowstyle(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
+	| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE);
+::DWORD g_windowexstyle(WS_EX_LEFT | WS_EX_LTRREADING);
+int _g_windowpos_x(CW_USEDEFAULT), _g_windowpos_y(CW_USEDEFAULT);
 bool init_finish;
 
 ::BOOL
@@ -48,9 +62,9 @@ init_instance(::HINSTANCE hInstance, int nCmdShow)
 		::SetWindowLongPtrW(pg->_g_attach_hwnd, GWL_STYLE, style);
 	}
 
-	pg->hwnd = ::CreateWindowEx(pg->g_windowexstyle, pg->window_class_name,
-		pg->window_caption, pg->g_windowstyle & ~WS_VISIBLE, pg->_g_windowpos_x,
-		pg->_g_windowpos_y, pg->dc_w + dw, pg->dc_h + dh, pg->_g_attach_hwnd, nullptr,
+	pg->hwnd = ::CreateWindowEx(g_windowexstyle, pg->window_class_name,
+		pg->window_caption, g_windowstyle & ~WS_VISIBLE, _g_windowpos_x,
+		_g_windowpos_y, pg->dc_w + dw, pg->dc_h + dh, pg->_g_attach_hwnd, nullptr,
 		hInstance, nullptr);
 	if(!pg->hwnd)
 		return FALSE;
@@ -67,7 +81,7 @@ init_instance(::HINSTANCE hInstance, int nCmdShow)
 	::SetWindowLongPtrW(pg->hwnd, GWLP_USERDATA, (::LONG_PTR)pg);
 	pg->exit_window = 0;
 	::ShowWindow(pg->hwnd, nCmdShow);
-	if(pg->g_windowexstyle & WS_EX_TOPMOST)
+	if(g_windowexstyle & WS_EX_TOPMOST)
 		::SetWindowPos(pg->hwnd, HWND_TOPMOST, 0, 0, 0, 0,
 			SWP_NOSIZE | SWP_NOMOVE);
 	return TRUE;
@@ -141,7 +155,6 @@ END_LOAD_ICON:
 	return ::RegisterClassEx(&wcex);
 }
 
-//private
 ::DWORD WINAPI
 messageloopthread(LPVOID lpParameter)
 {
@@ -158,8 +171,8 @@ messageloopthread(LPVOID lpParameter)
 		//图形初始化
 		pg->_init_graph();
 		pg->mouse_show = 0;
-		pg->use_force_exit = !(pg->_g_initoption & INIT_NOFORCEEXIT);
-		if(pg->_g_initoption & INIT_NOFORCEEXIT)
+		pg->use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
+		if(_g_initoption & INIT_NOFORCEEXIT)
 			SetCloseHandler([]{get_global_state().exit_flag = 1;});
 		pg->close_manually = true;
 		skip_timer_mark = false;
@@ -177,24 +190,38 @@ messageloopthread(LPVOID lpParameter)
 	return 0;
 }
 
-}
-
-int update_mark_count; //更新标记
-bool timer_stop_mark;
-bool skip_timer_mark;
-egeControlBase* egectrl_root;
-egeControlBase* egectrl_focus;
+} // unnamed namespace;
 
 float
 _get_FPS(int);
+
+void
+_set_initmode(int mode, int x, int y)
+{
+	_g_initcall = true;
+	_g_initoption = mode;
+	if(mode & INIT_NOBORDER)
+	{
+		g_windowstyle = mode & INIT_CHILD ? WS_CHILDWINDOW | WS_CLIPCHILDREN
+			| WS_VISIBLE : WS_POPUP | WS_CLIPCHILDREN | WS_VISIBLE;
+		g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
+	}
+	else
+	{
+		g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
+			| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
+		g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
+	}
+	if(mode & INIT_TOPMOST)
+		g_windowexstyle |= WS_EX_TOPMOST;
+	_g_windowpos_x = x;
+	_g_windowpos_y = y;
+}
 
 
 const ::TCHAR _graph_setting::window_class_name[32]
 	{TEXT("Easy Graphics Engine")};
 const ::TCHAR _graph_setting::window_caption[128]{EGE_TITLE};
-::DWORD _graph_setting::g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
-	| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
-::DWORD _graph_setting::g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
 
 _graph_setting::_graph_setting()
 	: instance(::GetModuleHandle(nullptr))
@@ -225,29 +252,6 @@ _graph_setting::_set_activepage(int page)
 		img_page[page]->createimage(dc_w, dc_h);
 		dc = img_page[page]->m_hDC;
 	}
-}
-
-void
-_graph_setting::_set_initmode(int mode, int x, int y)
-{
-	_g_initcall = true;
-	_g_initoption = mode;
-	if(mode & INIT_NOBORDER)
-	{
-		g_windowstyle = mode & INIT_CHILD ? WS_CHILDWINDOW | WS_CLIPCHILDREN
-			| WS_VISIBLE : WS_POPUP | WS_CLIPCHILDREN | WS_VISIBLE;
-		g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
-	}
-	else
-	{
-		g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
-			| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
-		g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
-	}
-	if(mode & INIT_TOPMOST)
-		g_windowexstyle |= WS_EX_TOPMOST;
-	_g_windowpos_x = x;
-	_g_windowpos_y = y;
 }
 
 void

@@ -17,7 +17,7 @@ initgraph(int width, int height, int flag)
 {
 	int g(TRUECOLORSIZE), m((width) | (height << 16));
 
-	if(!get_global_state()._g_initcall)
+	if(!_g_initcall)
 		setinitmode(flag);
 	initgraph(&g, &m, nullptr);
 }
