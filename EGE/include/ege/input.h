@@ -205,7 +205,7 @@ kbhit();
 
 
 //鼠标处理函数
-EGEAPI int
+EGEAPI bool
 mousemsg();                  // 检查是否存在鼠标消息
 
 EGEAPI mouse_msg

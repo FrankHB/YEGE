@@ -30,11 +30,11 @@ Code::Blocks 。
 移除 _Cdecl 宏。
 移除 PIMAGE 类型，用 IMAGE* 替代。
 移除宏 INITGRAPH(x, y) 、INITGRAPH3(x, y, f) 和 EGECTRL_INITEND() 。
+showmouse 和 mousemsg 的参数/返回值使用 bool 代替 int 。
 
 向后兼容但不保证向前兼容原始实现的接口
 ----
 delay_fps 和 delay_jfps 仅保留 double 重载版本。
-showmouse 参数和返回值使用 bool 代替 int 。
 
 兼容接口和实现调整
 ----

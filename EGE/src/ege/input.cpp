@@ -44,15 +44,11 @@ kbhit()
 }
 
 
-int
+bool
 mousemsg()
 {
-	if(get_global_state().exit_window)
-		return 0;
-
-	EGEMSG msg(get_global_state()._peekmouse());
-
-	return bool(msg.hwnd);
+	return get_global_state().exit_window ? false
+		: bool(get_global_state()._peekmouse().hwnd);
 }
 
 mouse_msg
