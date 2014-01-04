@@ -67,7 +67,10 @@ struct _graph_setting
 	::HINSTANCE instance;
 	::HWND    hwnd;
 
-	int     exit_flag;
+private:
+	bool exit_flag;
+
+public:
 	int     exit_window;
 	bool    close_manually;
 	bool    use_force_exit; //强制关闭进程标记

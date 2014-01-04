@@ -180,8 +180,6 @@ messageloopthread(LPVOID lpParameter)
 		//::ReleaseDC(hwnd, hDC);
 		pg->mouse_show = {};
 		pg->use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
-		if(_g_initoption & INIT_NOFORCEEXIT)
-			SetCloseHandler([]{get_global_state().exit_flag = 1;});
 		pg->close_manually = true;
 		skip_timer_mark = {};
 		::SetTimer(pg->hwnd, RENDER_TIMER_ID, 50, nullptr);
@@ -535,6 +533,8 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 		::DWORD pid;
 
 		init_finish = false;
+		if(_g_initoption & INIT_NOFORCEEXIT)
+			callback_close = []{get_global_state().exit_flag = true;};
 		threadui_handle = ::CreateThread(nullptr, 0, messageloopthread,
 			this, CREATE_SUSPENDED, &pid);
 		::ResumeThread(threadui_handle);
@@ -551,7 +551,7 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 			setrendermode(RENDER_MANUAL);
 		mouse_show = true;
 	});
-	exit_flag = 0;
+	exit_flag = {};
 	exit_window = 0;
 	for(int page = 0; page < BITMAP_PAGE_SIZE; ++page)
 		if(img_page[page])
