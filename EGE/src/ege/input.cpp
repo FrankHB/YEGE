@@ -2,7 +2,6 @@
 #include "ege/base.h"
 #include "ege/input.h"
 
-
 namespace ege
 {
 
@@ -73,6 +72,9 @@ showmouse(bool bShow)
 int
 mousepos(int* x, int* y)
 {
+	assert(x),
+	assert(y);
+
 	*x = get_global_state().mouse_last_x;
 	*y = get_global_state().mouse_last_y;
 	return 0;

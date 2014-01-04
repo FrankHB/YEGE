@@ -8,7 +8,6 @@
 #include <windows.h>
 #include <memory> // for std::unique_ptr;
 #include <functional> // for std::bind;
-#include <cassert>
 #include <mutex> // for std::once_flag, std::call_once;
 
 #ifdef _WIN64

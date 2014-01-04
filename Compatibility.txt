@@ -35,6 +35,7 @@ showmouse 和 mousemsg 的参数/返回值使用 bool 代替 int 。
 向后兼容但不保证向前兼容原始实现的接口
 ----
 delay_fps 和 delay_jfps 仅保留 double 重载版本。
+部分函数（包括 mousepos 等）加入断言检查参数。
 
 兼容接口和实现调整
 ----
