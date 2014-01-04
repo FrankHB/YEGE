@@ -154,9 +154,6 @@ public:
 #endif
 
 	void
-	_init_graph();
-
-	void
 	_init_graph_x(int*, int*);
 
 	int

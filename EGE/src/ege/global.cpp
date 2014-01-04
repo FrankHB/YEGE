@@ -168,7 +168,16 @@ messageloopthread(LPVOID lpParameter)
 			return 0xFFFFFFFF;
 
 		//图形初始化
-		pg->_init_graph();
+		auto hDC(::GetDC(pg->hwnd));
+
+		pg->dc = hDC;
+		pg->window_dc = hDC;
+		pg->img_timer_update = newimage();
+		setactivepage(0);
+		settarget(nullptr);
+		setvisualpage(0);
+		window_setviewport(0, 0, pg->dc_w, pg->dc_h);
+		//::ReleaseDC(hwnd, hDC);
 		pg->mouse_show = {};
 		pg->use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
 		if(_g_initoption & INIT_NOFORCEEXIT)
@@ -516,21 +525,6 @@ _graph_setting::_getmouse_p()
 #endif
 
 void
-_graph_setting::_init_graph()
-{
-	auto hDC(::GetDC(hwnd));
-
-	dc = hDC;
-	window_dc = hDC;
-	img_timer_update = newimage();
-	setactivepage(0);
-	settarget(nullptr);
-	setvisualpage(0);
-	window_setviewport(0, 0, dc_w, dc_h);
-	//::ReleaseDC(hwnd, hDC);
-}
-
-void
 _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 {
 	static std::once_flag init_flag;
@@ -562,7 +556,6 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 	for(int page = 0; page < BITMAP_PAGE_SIZE; ++page)
 		if(img_page[page])
 			img_page[page]->createimage(dc_w, dc_h);
-	_init_graph();
 	::ShowWindow(hwnd, SW_SHOW);
 }
 
