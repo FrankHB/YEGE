@@ -170,12 +170,12 @@ messageloopthread(LPVOID lpParameter)
 
 		//图形初始化
 		pg->_init_graph();
-		pg->mouse_show = 0;
+		pg->mouse_show = {};
 		pg->use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
 		if(_g_initoption & INIT_NOFORCEEXIT)
 			SetCloseHandler([]{get_global_state().exit_flag = 1;});
 		pg->close_manually = true;
-		skip_timer_mark = false;
+		skip_timer_mark = {};
 		::SetTimer(pg->hwnd, RENDER_TIMER_ID, 50, nullptr);
 	}
 	init_finish = true;
@@ -556,7 +556,7 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 
 		if(_g_initoption & INIT_RENDERMANUAL)
 			setrendermode(RENDER_MANUAL);
-		mouse_show = 1;
+		mouse_show = true;
 	});
 	exit_flag = 0;
 	exit_window = 0;
@@ -906,12 +906,10 @@ _graph_setting::_render_manual()
 }
 
 int
-_graph_setting::_show_mouse(int bShow)
+_graph_setting::_show_mouse(bool bShow)
 {
-	int ret = mouse_show;
-
-	mouse_show = bShow;
-	return ret;
+	std::swap(bShow, mouse_show);
+	return bShow;
 }
 
 int

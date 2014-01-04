@@ -67,8 +67,8 @@ flushmouse()
 	get_global_state()._flushmouse();
 }
 
-int
-showmouse(int bShow)
+bool
+showmouse(bool bShow)
 {
 	return get_global_state()._show_mouse(bShow);
 }

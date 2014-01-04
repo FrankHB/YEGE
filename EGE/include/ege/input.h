@@ -214,8 +214,8 @@ getmouse();                  // 获取一个鼠标消息。如果没有，就等
 EGEAPI void
 flushmouse();                // 清空鼠标消息缓冲区
 
-EGEAPI int
-showmouse(int bShow);        // 设置是否显示鼠标
+EGEAPI bool
+showmouse(bool bShow);        // 设置是否显示鼠标
 
 EGEAPI int
 mousepos(int* x, int* y); // 获取当前鼠标位置

@@ -85,7 +85,7 @@ public:
 	int mouse_last_x, mouse_last_y;
 	int mouse_lastclick_x, mouse_lastclick_y;
 	int mouse_lastup_x, mouse_lastup_y;
-	int mouse_show;
+	bool mouse_show;
 
 	LPMSG_KEY_PROC callback_key;
 	void* callback_key_param;
@@ -214,7 +214,7 @@ public:
 	_render_manual();
 
 	int
-	_show_mouse(int);
+	_show_mouse(bool);
 
 	int
 	_update();
