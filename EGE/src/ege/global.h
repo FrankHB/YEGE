@@ -118,9 +118,6 @@ public:
 	void
 	_set_activepage(int);
 
-	void
-	_set_mode(int, int);
-
 	int
 	_set_target(IMAGE*);
 

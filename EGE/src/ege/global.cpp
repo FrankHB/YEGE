@@ -226,31 +226,6 @@ _graph_setting::_set_activepage(int page)
 	}
 }
 
-void
-_graph_setting::_set_mode(int gdriver, int gmode)
-{
-	if(gdriver == TRUECOLORSIZE)
-	{
-		::RECT rect;
-
-		if(_g_attach_hwnd)
-			::GetClientRect(_g_attach_hwnd, &rect);
-		else
-			::GetWindowRect(GetDesktopWindow(), &rect);
-		dc_w = short(gmode & 0xFFFF);
-		dc_h = short(unsigned(gmode >> 16));
-		if(dc_w < 0)
-			dc_w = rect.right;
-		if(dc_h < 0)
-			dc_h = rect.bottom;
-	}
-	else
-	{
-		dc_w = 640;
-		dc_h = 480;
-	}
-}
-
 int
 _graph_setting::_set_target(IMAGE* pbuf)
 {
@@ -493,15 +468,36 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 {
 	static std::once_flag init_flag;
 
-	_set_mode(*gdriver, *gmode);
+	assert(gdriver);
+
+	if(*gdriver == TRUECOLORSIZE)
+	{
+		assert(gmode);
+		::RECT rect;
+
+		if(_g_attach_hwnd)
+			::GetClientRect(_g_attach_hwnd, &rect);
+		else
+			::GetWindowRect(GetDesktopWindow(), &rect);
+		dc_w = short(*gmode & 0xFFFF);
+		dc_h = short(unsigned(*gmode >> 16));
+		if(dc_w < 0)
+			dc_w = rect.right;
+		if(dc_h < 0)
+			dc_h = rect.bottom;
+	}
+	else
+	{
+		dc_w = 640;
+		dc_h = 480;
+	}
 	std::call_once(init_flag, [this]{
 	//	::SECURITY_ATTRIBUTES sa{};
 		::DWORD pid;
 
 		init_finish = false;
 		threadui_handle = ::CreateThread(nullptr, 0, messageloopthread,
-			this, CREATE_SUSPENDED, &pid);
-		::ResumeThread(threadui_handle);
+			this, 0, &pid);
 		while(!init_finish)
 			::Sleep(1);
 		::UpdateWindow(hwnd);
