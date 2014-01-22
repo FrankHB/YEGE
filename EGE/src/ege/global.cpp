@@ -195,7 +195,7 @@ const ::TCHAR _graph_setting::window_class_name[32]
 	{TEXT("Easy Graphics Engine")};
 const ::TCHAR _graph_setting::window_caption[128]{EGE_TITLE};
 
-_graph_setting::_graph_setting()
+_graph_setting::_graph_setting(int gdriver, int gmode)
 	: instance(::GetModuleHandle(nullptr))
 {
 	static std::once_flag init_flag;
@@ -485,11 +485,6 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 			dc_w = rect.right;
 		if(dc_h < 0)
 			dc_h = rect.bottom;
-	}
-	else
-	{
-		dc_w = 640;
-		dc_h = 480;
 	}
 	std::call_once(init_flag, [this]{
 	//	::SECURITY_ATTRIBUTES sa{};
@@ -958,9 +953,10 @@ _graph_setting::_window_destroy(msg_createwindow& msg)
 
 
 _graph_setting&
-get_global_state()
+get_global_state(int gdriver, int gmode)
 {
-	static std::unique_ptr<_graph_setting> p(new _graph_setting());
+	static std::unique_ptr<_graph_setting>
+		p(new _graph_setting(gdriver, gmode));
 
 	return *p;
 }

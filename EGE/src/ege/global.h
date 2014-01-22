@@ -6,6 +6,7 @@
 #include "ege/proc.h"
 #include "ege/input.h"
 #include "ege/env.h"
+#include "ege/base.h"
 #include "thread_queue.h"
 #include <windows.h>
 
@@ -54,7 +55,7 @@ struct _graph_setting
 
 	::HDC dc;
 	::HDC window_dc;
-	int dc_w, dc_h;
+	int dc_w = 640, dc_h = 480;
 	IMAGE* img_page[BITMAP_PAGE_SIZE];
 	int base_x, base_y, base_w, base_h;
 
@@ -103,7 +104,7 @@ public:
 	::DWORD g_t_buff[1024 * 8];
 	::HWND _g_attach_hwnd = nullptr;
 
-	_graph_setting();
+	_graph_setting(int, int);
 	_graph_setting(const _graph_setting&) = delete;
 
 	bool
@@ -231,7 +232,7 @@ public:
 
 
 _graph_setting&
-get_global_state();
+get_global_state(int = TRUECOLORSIZE, int = 0);
 
 } // namespace ege;
 
