@@ -46,146 +46,112 @@ namespace
 int _g_windowpos_x(CW_USEDEFAULT), _g_windowpos_y(CW_USEDEFAULT);
 bool init_finish;
 
-::BOOL
-init_instance(::HINSTANCE hInstance, int nCmdShow)
-{
-	auto pg = &get_global_state();
-	int dw = 0, dh = 0;
-
-	dw = ::GetSystemMetrics(SM_CXFRAME) * 2;
-	dh = ::GetSystemMetrics(SM_CYFRAME) + ::GetSystemMetrics(SM_CYCAPTION) * 2;
-	if(pg->_g_attach_hwnd)
-	{
-		::LONG_PTR style = ::GetWindowLongPtrW(pg->_g_attach_hwnd, GWL_STYLE);
-		style |= WS_CHILDWINDOW | WS_CLIPCHILDREN;
-		::SetWindowLongPtrW(pg->_g_attach_hwnd, GWL_STYLE, style);
-	}
-
-	pg->hwnd = ::CreateWindowEx(g_windowexstyle, pg->window_class_name,
-		pg->window_caption, g_windowstyle & ~WS_VISIBLE, _g_windowpos_x,
-		_g_windowpos_y, pg->dc_w + dw, pg->dc_h + dh, pg->_g_attach_hwnd, nullptr,
-		hInstance, nullptr);
-	if(!pg->hwnd)
-		return FALSE;
-	if(pg->_g_attach_hwnd)
-	{
-		wchar_t name[64];
-
-		std::swprintf(name, L"ege_%X",
-			::DWORD(::DWORD_PTR(pg->_g_attach_hwnd)));
-		if(::CreateEventW(nullptr, FALSE, TRUE, name))
-			if(::GetLastError() == ERROR_ALREADY_EXISTS)
-				::PostMessage(pg->hwnd, WM_CLOSE, 0, 0);
-	}
-	::SetWindowLongPtrW(pg->hwnd, GWLP_USERDATA, (::LONG_PTR)pg);
-	pg->exit_window = 0;
-	::ShowWindow(pg->hwnd, nCmdShow);
-	if(g_windowexstyle & WS_EX_TOPMOST)
-		::SetWindowPos(pg->hwnd, HWND_TOPMOST, 0, 0, 0, 0,
-			SWP_NOSIZE | SWP_NOMOVE);
-	return TRUE;
-}
-
-#if !defined(UNICODE)
 CALLBACK ::BOOL
-EnumResNameProc(::HMODULE hModule, const char*, char* lpszName,
+EnumResNameProc(::HMODULE hModule, ::LPCTSTR, ::LPTSTR lpszName,
 	::LONG_PTR lParam)
 {
-	if(const auto hico = (::HICON)::LoadImage(hModule, lpszName, IMAGE_ICON, 0,
-		0, LR_DEFAULTSIZE))
+	if(const auto hico = ::HICON(::LoadImage(hModule, lpszName, IMAGE_ICON,
+		0, 0, LR_DEFAULTSIZE)))
 	{
 		*((::HICON*)lParam) = hico;
-		return FALSE;
+		return {};
 	}
-	return TRUE;
+	return true;
 }
-#else
-CALLBACK ::BOOL
-EnumResNameProc(::HMODULE hModule, const wchar_t* lpszType, wchar_t* lpszName,
-	::LONG_PTR lParam)
-{
-	if(const auto hico = (::HICON)::LoadImageW(hModule, lpszName, IMAGE_ICON,
-		0, 0, LR_DEFAULTSIZE))
-	{
-		*((::HICON*)lParam) = hico;
-		return FALSE;
-	}
-	return TRUE;
-}
-#endif
 
-ATOM
-register_class(_graph_setting* pg, ::HINSTANCE hInstance)
+::DWORD WINAPI
+messageloopthread(LPVOID lpParameter)
 {
+	auto& g(*reinterpret_cast<_graph_setting*>(lpParameter));
+	const int nCmdShow(SW_SHOW);
 	static ::WNDCLASSEX wcex;
-	::HICON hico = nullptr;
 
 	wcex.cbSize = sizeof(wcex);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc = getProcfunc();
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
-	wcex.hInstance = hInstance;
+	wcex.hInstance = g.instance;
 	wcex.hIcon = ::LoadIcon(nullptr, IDI_WINLOGO);
 	wcex.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = (::HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszClassName = pg->window_class_name;
+	wcex.lpszClassName = g.window_class_name;
 
-	EnumResourceNames(hInstance, RT_ANIICON, EnumResNameProc, (::LONG_PTR)&hico);
-	if(hico)
+	const auto load([&](::LPCTSTR rt){
+		::HICON hico = nullptr;
+
+		EnumResourceNames(g.instance, rt, EnumResNameProc,
+			::LONG_PTR(&hico));
+		if(hico)
+			wcex.hIcon = hico;
+		return hico;
+	});
+	do
 	{
-		wcex.hIcon = hico;
-		goto END_LOAD_ICON;
-	}
-	EnumResourceNames(hInstance, RT_GROUP_ICON, EnumResNameProc, (::LONG_PTR)&hico);
-	if(hico)
+		if(load(RT_ANIICON))
+			break;
+		if(load(RT_GROUP_ICON))
+			break;
+		if(load(RT_ICON))
+			break;
+	}while(0);
+	::RegisterClassEx(&wcex);
+
+	//执行应用程序初始化
+	const auto dw(::GetSystemMetrics(SM_CXFRAME) * 2),
+		dh(::GetSystemMetrics(SM_CYFRAME)
+		+ ::GetSystemMetrics(SM_CYCAPTION) * 2);
+
+	if(g._g_attach_hwnd)
 	{
-		wcex.hIcon = hico;
-		goto END_LOAD_ICON;
+		::LONG_PTR style = ::GetWindowLongPtrW(g._g_attach_hwnd, GWL_STYLE);
+		style |= WS_CHILDWINDOW | WS_CLIPCHILDREN;
+		::SetWindowLongPtrW(g._g_attach_hwnd, GWL_STYLE, style);
 	}
-	EnumResourceNames(hInstance, RT_ICON, EnumResNameProc, (::LONG_PTR)&hico);
-	if(hico)
+	g.hwnd = ::CreateWindowEx(g_windowexstyle, g.window_class_name,
+		g.window_caption, g_windowstyle & ~WS_VISIBLE, _g_windowpos_x,
+		_g_windowpos_y, g.dc_w + dw, g.dc_h + dh, g._g_attach_hwnd, nullptr,
+		g.instance, nullptr);
+	if(!g.hwnd)
+		return 0xFFFFFFFF;
+	if(g._g_attach_hwnd)
 	{
-		wcex.hIcon = hico;
-		goto END_LOAD_ICON;
+		wchar_t name[64];
+
+		std::swprintf(name, L"ege_%X",
+			::DWORD(::DWORD_PTR(g._g_attach_hwnd)));
+		if(::CreateEventW(nullptr, FALSE, TRUE, name))
+			if(::GetLastError() == ERROR_ALREADY_EXISTS)
+				::PostMessage(g.hwnd, WM_CLOSE, 0, 0);
 	}
+	::SetWindowLongPtrW(g.hwnd, GWLP_USERDATA, ::LONG_PTR(&g));
+	g.exit_window = 0;
+	::ShowWindow(g.hwnd, nCmdShow);
+	if(g_windowexstyle & WS_EX_TOPMOST)
+		::SetWindowPos(g.hwnd, HWND_TOPMOST, 0, 0, 0, 0,
+			SWP_NOSIZE | SWP_NOMOVE);
 
-END_LOAD_ICON:
-	return ::RegisterClassEx(&wcex);
-}
+	//图形初始化
+	auto hDC(::GetDC(g.hwnd));
 
-::DWORD WINAPI
-messageloopthread(LPVOID lpParameter)
-{
-	_graph_setting* pg = (_graph_setting*)lpParameter;
-	MSG msg;
-	{
-		int nCmdShow = SW_SHOW;
-		register_class(pg, pg->instance);
-
-		//执行应用程序初始化
-		if(!init_instance(pg->instance, nCmdShow))
-			return 0xFFFFFFFF;
-
-		//图形初始化
-		auto hDC(::GetDC(pg->hwnd));
-
-		pg->dc = hDC;
-		pg->window_dc = hDC;
-		pg->img_timer_update = newimage();
-		setactivepage(0);
-		settarget(nullptr);
-		setvisualpage(0);
-		window_setviewport(0, 0, pg->dc_w, pg->dc_h);
-		//::ReleaseDC(hwnd, hDC);
-		pg->mouse_show = {};
-		pg->use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
-		pg->close_manually = true;
-		skip_timer_mark = {};
-		::SetTimer(pg->hwnd, RENDER_TIMER_ID, 50, nullptr);
-	}
+	g.dc = hDC;
+	g.window_dc = hDC;
+	g.img_timer_update = newimage();
+	setactivepage(0);
+	settarget(nullptr);
+	setvisualpage(0);
+	window_setviewport(0, 0, g.dc_w, g.dc_h);
+	//::ReleaseDC(hwnd, hDC);
+	g.mouse_show = {};
+	g.use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
+	g.close_manually = true;
+	skip_timer_mark = {};
+	::SetTimer(g.hwnd, RENDER_TIMER_ID, 50, nullptr);
 	init_finish = true;
-	while(!pg->exit_window)
+
+	MSG msg;
+
+	while(!g.exit_window)
 		if(::GetMessage(&msg, nullptr, 0, 0))
 		{
 			::TranslateMessage(&msg);
@@ -533,8 +499,6 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 		::DWORD pid;
 
 		init_finish = false;
-		if(_g_initoption & INIT_NOFORCEEXIT)
-			callback_close = []{get_global_state().exit_flag = true;};
 		threadui_handle = ::CreateThread(nullptr, 0, messageloopthread,
 			this, CREATE_SUSPENDED, &pid);
 		::ResumeThread(threadui_handle);
