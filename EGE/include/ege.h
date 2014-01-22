@@ -2,7 +2,6 @@
 #define INC_ege_h_
 
 #include "ege/def.h"
-#include "ege/mac.h"
 #include "ege/base.h"
 #include "ege/colorbase.h"
 #include "ege/color.h"

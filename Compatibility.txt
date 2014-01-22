@@ -31,6 +31,7 @@ Code::Blocks 。
 移除 PIMAGE 类型，用 IMAGE* 替代。
 移除宏 INITGRAPH(x, y) 、INITGRAPH3(x, y, f) 和 EGECTRL_INITEND() 。
 showmouse 和 mousemsg 的参数/返回值使用 bool 代替 int 。
+宏 CTL_* 的定义不再被默认包含。若需使用，另行包含 <ege/mac.h> 或 <ege/ctl.h> 等。
 
 向后兼容但不保证向前兼容原始实现的接口
 ----
