@@ -24,7 +24,7 @@ setcaption(const wchar_t* caption)
 int
 attachHWND(::HWND hWnd)
 {
-	get_global_state()._g_attach_hwnd = hWnd;
+	_graph_setting::_g_attach_hwnd = hWnd;
 	return 0;
 }
 

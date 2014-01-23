@@ -90,17 +90,57 @@ _set_initmode(int mode, int x, int y)
 const ::TCHAR _graph_setting::window_class_name[32]
 	{TEXT("Easy Graphics Engine")};
 const ::TCHAR _graph_setting::window_caption[128]{EGE_TITLE};
+::HWND _graph_setting::_g_attach_hwnd{};
 
 _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 	: instance(::GetModuleHandle({}))
 {
 	static std::once_flag init_flag;
 
-	std::call_once(init_flag, []{
+	std::call_once(init_flag, [this]{
 		static ::ULONG_PTR g_gdiplusToken;
 		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 
 		Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, {});
+
+		static ::WNDCLASSEX wcex;
+
+		wcex.cbSize = sizeof(wcex);
+		wcex.style = CS_HREDRAW | CS_VREDRAW;
+		wcex.lpfnWndProc = getProcfunc();
+		wcex.cbClsExtra = 0;
+		wcex.cbWndExtra = 0;
+		wcex.hInstance = instance;
+		wcex.hIcon = ::LoadIcon({}, IDI_WINLOGO);
+		wcex.hCursor = ::LoadCursor({}, IDC_ARROW);
+		wcex.hbrBackground = (::HBRUSH)(COLOR_WINDOW + 1);
+		wcex.lpszClassName = window_class_name;
+
+		const auto load([&](::LPCTSTR rt){
+			::HICON hico = {};
+
+			EnumResourceNames(instance, rt, EnumResNameProc,
+				::LONG_PTR(&hico));
+			if(hico)
+				wcex.hIcon = hico;
+			return hico;
+		});
+		do
+		{
+			if(load(RT_ANIICON))
+				break;
+			if(load(RT_GROUP_ICON))
+				break;
+			if(load(RT_ICON))
+				break;
+		}while(0);
+		::RegisterClassEx(&wcex);
+		if(_g_attach_hwnd)
+		{
+			::LONG_PTR style = ::GetWindowLongPtrW(_g_attach_hwnd, GWL_STYLE);
+			style |= WS_CHILDWINDOW | WS_CLIPCHILDREN;
+			::SetWindowLongPtrW(_g_attach_hwnd, GWL_STYLE, style);
+		}
 	});
 
 	assert(gdriver_n);
@@ -390,50 +430,11 @@ _graph_setting::_init_graph_x()
 
 		ui_thread = std::thread([this, &init_finish]{
 			const int nCmdShow(SW_SHOW);
-			static ::WNDCLASSEX wcex;
-
-			wcex.cbSize = sizeof(wcex);
-			wcex.style = CS_HREDRAW | CS_VREDRAW;
-			wcex.lpfnWndProc = getProcfunc();
-			wcex.cbClsExtra = 0;
-			wcex.cbWndExtra = 0;
-			wcex.hInstance = instance;
-			wcex.hIcon = ::LoadIcon({}, IDI_WINLOGO);
-			wcex.hCursor = ::LoadCursor({}, IDC_ARROW);
-			wcex.hbrBackground = (::HBRUSH)(COLOR_WINDOW + 1);
-			wcex.lpszClassName = window_class_name;
-
-			const auto load([&](::LPCTSTR rt){
-				::HICON hico = {};
-
-				EnumResourceNames(instance, rt, EnumResNameProc,
-					::LONG_PTR(&hico));
-				if(hico)
-					wcex.hIcon = hico;
-				return hico;
-			});
-			do
-			{
-				if(load(RT_ANIICON))
-					break;
-				if(load(RT_GROUP_ICON))
-					break;
-				if(load(RT_ICON))
-					break;
-			}while(0);
-			::RegisterClassEx(&wcex);
 
 			//执行应用程序初始化
 			const auto dw(::GetSystemMetrics(SM_CXFRAME) * 2),
 				dh(::GetSystemMetrics(SM_CYFRAME)
 				+ ::GetSystemMetrics(SM_CYCAPTION) * 2);
-
-			if(_g_attach_hwnd)
-			{
-				::LONG_PTR style = ::GetWindowLongPtrW(_g_attach_hwnd, GWL_STYLE);
-				style |= WS_CHILDWINDOW | WS_CLIPCHILDREN;
-				::SetWindowLongPtrW(_g_attach_hwnd, GWL_STYLE, style);
-			}
 			hwnd = ::CreateWindowEx(g_windowexstyle, window_class_name,
 				window_caption, g_windowstyle & ~WS_VISIBLE,
 				_g_windowpos_x, _g_windowpos_y, dc_w + dw, dc_h + dh,
