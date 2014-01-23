@@ -1191,7 +1191,7 @@ IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 {
 	inittest(L"IMAGE::imagefilter_blurring_4");
 
-	::DWORD* buff = get_global_state().g_t_buff;
+	std::unique_ptr< ::DWORD[]> buff(new ::DWORD[8 << 10]);
 	int x2, y2, ix, iy;
 	::DWORD* pdp, lsum, sumRB, sumG;
 	int ddx, dldx;
@@ -1324,9 +1324,9 @@ IMAGE::imagefilter_blurring_8(
 {
 	inittest(L"IMAGE::imagefilter_blurring_4");
 
-	::DWORD* buff = get_global_state().g_t_buff, lbuf;
+	std::unique_ptr< ::DWORD[]> buff(new ::DWORD[8 << 10]);
 	int x2, y2, ix, iy;
-	::DWORD* pdp, lsum, sumRB, sumG;
+	::DWORD* pdp, lsum, sumRB, sumG, lbuf;
 	int ddx, dldx;
 	int centerintensity;
 	int intensity2, intensity3, intensity4;

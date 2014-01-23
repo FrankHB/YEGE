@@ -232,56 +232,56 @@ outtextrect(int x, int y, int w, int h, const wchar_t* textstring, IMAGE* pimg)
 void
 xyprintf(int x, int y, const char*  fmt, ...)
 {
+	const std::unique_ptr<char[]> buf(new char[8 << 12]);
+	const auto buff(&buf[0]);
+
+	get_global_state();
 	va_list v;
 	va_start(v, fmt);
-	{
-		auto pg = &get_global_state();
-		char* buff = (char*)pg->g_t_buff;
-		std::vsprintf(buff, fmt, v);
-		outtextxy(x, y, buff);
-	}
+	std::vsprintf(buff, fmt, v);
+	outtextxy(x, y, buff);
 	va_end(v);
 }
 
 void
 xyprintf(int x, int y, const wchar_t* fmt, ...)
 {
+	const std::unique_ptr<wchar_t[]> buf(new wchar_t[8 << 11]);
+	const auto buff(&buf[0]);
+
+	get_global_state();
 	va_list v;
 	va_start(v, fmt);
-	{
-		auto pg = &get_global_state();
-		wchar_t* buff = (wchar_t*)pg->g_t_buff;
-		vswprintf(buff, fmt, v);
-		outtextxy(x, y, buff);
-	}
+	vswprintf(buff, fmt, v);
+	outtextxy(x, y, buff);
 	va_end(v);
 }
 
 void
 rectprintf(int x, int y, int w, int h, const char*  fmt, ...)
 {
+	const std::unique_ptr<char[]> buf(new char[8 << 12]);
+	const auto buff(&buf[0]);
+
+	get_global_state();
 	va_list v;
 	va_start(v, fmt);
-	{
-		auto pg = &get_global_state();
-		char* buff = (char*)pg->g_t_buff;
-		vsprintf(buff, fmt, v);
-		outtextrect(x, y, w, h, buff);
-	}
+	vsprintf(buff, fmt, v);
+	outtextrect(x, y, w, h, buff);
 	va_end(v);
 }
 
 void
 rectprintf(int x, int y, int w, int h, const wchar_t* fmt, ...)
 {
+	const std::unique_ptr<wchar_t[]> buf(new wchar_t[8 << 11]);
+	const auto buff(&buf[0]);
+
+	get_global_state();
 	va_list v;
 	va_start(v, fmt);
-	{
-		auto pg = &get_global_state();
-		wchar_t* buff = (wchar_t*)pg->g_t_buff;
-		vswprintf(buff, fmt, v);
-		outtextrect(x, y, w, h, buff);
-	}
+	vswprintf(buff, fmt, v);
+	outtextrect(x, y, w, h, buff);
 	va_end(v);
 }
 

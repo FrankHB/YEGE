@@ -101,8 +101,6 @@ public:
 	/* 键盘状态记录 */
 	int keystatemap[MAX_KEY_VCODE];
 
-	/* 函数用临时缓冲区 */
-	::DWORD g_t_buff[1024 * 8];
 	static ::HWND _g_attach_hwnd;
 
 	_graph_setting(int, int*);
