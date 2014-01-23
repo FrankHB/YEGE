@@ -28,7 +28,7 @@ void newFruit(void)
 	game.pool[nf] = 0x20000, drawAt(nf);
 }
 
-int moveSnake(const int dx, const int dy, const bool u = false)
+int moveSnake(const int dx, const int dy, const bool u = {})
 {
 	if(u && dx + (game.dir & 3) == 1 && dy + (game.dir >> 2) == 1) return 1;
 	int nh;

@@ -18,7 +18,7 @@ public:
 	{
 		CTL_INIT; // must be the first line
 		directdraw(true);
-		enable(false);
+		enable({});
 	}
 
 	void onDraw(IMAGE* pimg) const

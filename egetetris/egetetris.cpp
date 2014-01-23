@@ -301,7 +301,7 @@ public:
 						return true;
 				}
 		}
-		return false;
+		return {};
 	}
 	void merge()
 	{

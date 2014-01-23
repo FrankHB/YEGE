@@ -24,14 +24,14 @@ public:
 	{
 		destory();
 	}
-	int create(bool multiline = false, int = 2)
+	int create(bool multiline = {}, int = 2)
 	{
 		if(m_hwnd)
 		{
 			destory();
 		}
 		msg_createwindow msg{nullptr, nullptr, nullptr, 0, 0, 0, nullptr};
-		msg.hEvent = ::CreateEvent({}, TRUE, FALSE, {});
+		msg.hEvent = ::CreateEvent({}, TRUE, {}, {});
 		msg.classname = L"EDIT";
 		msg.id = egeControlBase::allocId();
 		msg.style = WS_CHILD | WS_BORDER | ES_LEFT | ES_WANTRETURN;
@@ -55,7 +55,7 @@ public:
 			char fontname[]{'\xcb', '\xce', '\xcc', '\xe5', 0, 0};
 			setfont(12, 6, fontname);
 		}
-		visable(false);
+		visable({});
 
 		::CloseHandle(msg.hEvent);
 
@@ -67,7 +67,7 @@ public:
 		{
 			msg_createwindow msg{nullptr, nullptr, nullptr, 0, 0, 0, nullptr};
 			msg.hwnd = m_hwnd;
-			msg.hEvent = ::CreateEvent({}, TRUE, FALSE, {});
+			msg.hEvent = ::CreateEvent({}, TRUE, {}, {});
 			::SendMessage(m_hwnd, WM_SETFONT, 0, 0);
 			::DeleteObject(m_hFont);
 			::PostMessageW(getHWnd(), WM_USER + 1, 0, (::LPARAM)&msg);

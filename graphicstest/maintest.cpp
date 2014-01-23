@@ -20,7 +20,7 @@ public:
 		(void)inheritlevel;
 		int w = 40;
 		size(w * 2, w * 2);
-		//enable(false);
+		//enable({});
 	} CTL_PREINITEND;
 	graph(CTL_DEFPARAM) : CTL_INITBASE(egeControlBase)
 	{
@@ -90,7 +90,7 @@ public:
 		}
 		else if((flag & mouse_msg_up))
 		{
-			capmouse(false);
+			capmouse({});
 			if(m_capmouse && (flag & mouse_flag_left))
 			{
 				m_capmouse = 0;

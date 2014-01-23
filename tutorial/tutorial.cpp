@@ -219,7 +219,7 @@ public:
 		}
 		else if(flag & ege::mouse_msg_up)
 		{
-			capmouse(false);
+			capmouse({});
 		}
 		_x = (float)x;
 		_y = (float)y;

@@ -74,7 +74,7 @@ int main()
 
 	Draw(fromx, fromy, tox, toy);
 	{
-		bool isLDown = false;
+		bool isLDown = {};
 		int selfx(0), selfy(0), seltx(0), selty(0); // 定义选区
 
 		while(kbhit() != -1)
@@ -113,7 +113,7 @@ int main()
 			case mouse_flag_left | mouse_msg_up:
 				rectangle(selfx, selfy, seltx, selty);
 				setwritemode(R2_COPYPEN);
-				isLDown = false;
+				isLDown = {};
 				seltx = m.x;
 				selty = m.y;
 				if(selfx == seltx || selfy == selty)

@@ -574,7 +574,7 @@ main()
 
 	// 捕获鼠标操作，实现放大鼠标选中区域
 	mouse_msg m;
-	bool isLDown = false;
+	bool isLDown = {};
 	COMPLEXI self, selt, self_b, selt_b;    // 定义选区
 	COMPLEX js_c;
 	int mode = 0;
@@ -750,7 +750,7 @@ main()
 				{
 					rectangle(self.real(), self.imag(), selt.real(), selt.imag());
 					setwritemode(R2_COPYPEN);
-					isLDown = false;
+					isLDown = {};
 					selt = {m.x, m.y};
 					if(self.real() == selt.real() || self.imag() == selt.imag())
 						break;

@@ -55,7 +55,7 @@ _delay_update()
 		setviewport(l, t, r, b, c);
 	}
 	delay_ms_dwLast = _get_highfeq_time_ls() * 1000.0;
-	skip_timer_mark = false;
+	skip_timer_mark = {};
 }
 
 } // unnamed namespace;
@@ -73,7 +73,7 @@ ege_sleep(long ms)
 	liDueTime.QuadPart = ms * (::LONGLONG) - 10000;
 	if(hTimer)
 	{
-		if(::SetWaitableTimer(hTimer, &liDueTime, 0, {}, {}, FALSE))
+		if(::SetWaitableTimer(hTimer, &liDueTime, 0, {}, {}, {}))
 			::WaitForSingleObject(hTimer, INFINITE); // != WAIT_OBJECT_0;
 		//::CloseHandle(hTimer);
 	}
@@ -128,7 +128,7 @@ delay_ms(long ms)
 		else
 			delay_ms_dwLast += delay_time;
 	}
-	skip_timer_mark = false;
+	skip_timer_mark = {};
 }
 
 /*
@@ -169,7 +169,7 @@ delay_fps(double fps)
 		else
 			delay_fps_dwLast += delay_time;
 	}
-	skip_timer_mark = false;
+	skip_timer_mark = {};
 }
 
 /*
@@ -212,7 +212,7 @@ delay_jfps(double fps)
 		else
 			delay_fps_dwLast += delay_time;
 	}
-	skip_timer_mark = false;
+	skip_timer_mark = {};
 }
 
 void

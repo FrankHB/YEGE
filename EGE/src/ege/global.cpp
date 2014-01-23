@@ -157,7 +157,7 @@ _graph_setting::_flushkey()
 	EGEMSG msg;
 
 	if(msgkey_queue.empty())
-		_dealmessage(false);
+		_dealmessage({});
 	if(!msgkey_queue.empty())
 		while(msgkey_queue.pop(msg))
 			;
@@ -169,7 +169,7 @@ _graph_setting::_flushmouse()
 	EGEMSG msg;
 
 	if(msgmouse_queue.empty())
-		_dealmessage(false);
+		_dealmessage({});
 	if(!msgmouse_queue.empty())
 		while(msgmouse_queue.pop(msg))
 			;
@@ -225,7 +225,7 @@ _graph_setting::_getflush()
 	int lastkey = 0;
 
 	if(msgkey_queue.empty())
-		_dealmessage(false);
+		_dealmessage({});
 	if(!msgkey_queue.empty())
 		while(msgkey_queue.pop(msg))
 			if(msg.message == WM_CHAR)
@@ -387,7 +387,7 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 	//	::SECURITY_ATTRIBUTES sa{};
 	//	::DWORD pid;
 
-		init_finish = false;
+		init_finish = {};
 		ui_thread = std::thread([this]{
 			const int nCmdShow(SW_SHOW);
 			static ::WNDCLASSEX wcex;
@@ -446,7 +446,7 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 
 				std::swprintf(name, L"ege_%X",
 					::DWORD(::DWORD_PTR(_g_attach_hwnd)));
-				if(::CreateEventW({}, FALSE, TRUE, name))
+				if(::CreateEventW({}, {}, TRUE, name))
 					if(::GetLastError() == ERROR_ALREADY_EXISTS)
 						::PostMessage(hwnd, WM_CLOSE, 0, 0);
 			}
@@ -635,7 +635,7 @@ _graph_setting::_on_paint(::HWND hwnd)
 void
 _graph_setting::_on_repaint(::HWND hwnd, ::HDC dc)
 {
-	bool release = false;
+	bool release = {};
 
 	img_timer_update->copyimage(img_page[visual_page]);
 	if(!dc)
@@ -684,7 +684,7 @@ _graph_setting::_on_timer(::HWND hwnd, unsigned id)
 		}
 		if(timer_stop_mark)
 		{
-			timer_stop_mark = false;
+			timer_stop_mark = {};
 			skip_timer_mark = true;
 		}
 	}
@@ -750,7 +750,7 @@ _graph_setting::_peekmouse()
 	auto msg = EGEMSG();
 
 	if(msgmouse_queue.empty())
-		_dealmessage(false);
+		_dealmessage({});
 	while(msgmouse_queue.pop(msg))
 	{
 		msgmouse_queue.unpop();
@@ -828,8 +828,8 @@ _graph_setting::_render_normal()
 {
 	delay_ms(0);
 	::SetTimer(hwnd, RENDER_TIMER_ID, 0, {});
-	skip_timer_mark = false;
-	lock_window = false;
+	skip_timer_mark = {};
+	lock_window = {};
 }
 
 void

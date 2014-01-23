@@ -516,7 +516,7 @@ extern "C" {
  *   PNG_NO_READ_COMPOSITE_NODIV: use the 'division' algorithm.
  *
  * How to handle benign errors if PNG_ALLOW_BENIGN_ERRORS is
- * false?
+ * {}?
  *   PNG_ALLOW_BENIGN_ERRORS: map calls to the benign error
  *      APIs to png_warning.
  * Otherwise the calls are mapped to png_error.
@@ -2466,7 +2466,7 @@ PNG_EXPORT(172, void, png_set_keep_unknown_chunks, (png_structrp png_ptr,
 
 /* The "keep" PNG_HANDLE_CHUNK_ parameter for the specified chunk is returned;
  * the result is therefore true (non-zero) if special handling is required,
- * false for the default handling.
+ * {} for the default handling.
  */
 PNG_EXPORT(173, int, png_handle_as_unknown, (png_const_structrp png_ptr,
     png_const_bytep chunk_name));

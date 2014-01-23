@@ -756,7 +756,7 @@ PNG_INTERNAL_FUNCTION(png_fixed_point,png_fixed,(png_const_structrp png_ptr,
    double fp, png_const_charp text),PNG_EMPTY);
 #endif
 
-/* Check the user version string for compatibility, returns false if the version
+/* Check the user version string for compatibility, returns {} if the version
  * numbers aren't compatible.
  */
 PNG_INTERNAL_FUNCTION(int,png_user_version_check,(png_structrp png_ptr,
@@ -772,7 +772,7 @@ PNG_INTERNAL_FUNCTION(png_voidp,png_malloc_base,(png_const_structrp png_ptr,
 #if defined(PNG_TEXT_SUPPORTED) || defined(PNG_sPLT_SUPPORTED) ||\
    defined(PNG_STORE_UNKNOWN_CHUNKS_SUPPORTED)
 /* Internal array allocator, outputs no error or warning messages on failure,
- * just returns NULL.  
+ * just returns NULL.
  */
 PNG_INTERNAL_FUNCTION(png_voidp,png_malloc_array,(png_const_structrp png_ptr,
    int nelements, size_t element_size),PNG_ALLOCATED);
@@ -1470,7 +1470,7 @@ PNG_INTERNAL_FUNCTION(int,png_colorspace_set_endpoints,
 PNG_INTERNAL_FUNCTION(int,png_colorspace_set_sRGB,(png_const_structrp png_ptr,
    png_colorspacerp colorspace, int intent), PNG_EMPTY);
    /* This does set the colorspace gAMA and cHRM values too, but doesn't set the
-    * flags to write them, if it returns false there was a problem and an error
+    * flags to write them, if it returns {} there was a problem and an error
     * message has already been output (but the colorspace may still need to be
     * synced to record the invalid flag).
     */
@@ -1726,7 +1726,7 @@ PNG_INTERNAL_FUNCTION(void,png_ascii_from_fixed,(png_const_structrp png_ptr,
  */
 #define PNG_FP_INVALID  512  /* Available for callers as a distinct value */
 
-/* Result codes for the parser (boolean - true meants ok, false means
+/* Result codes for the parser (boolean - true meants ok, {} means
  * not ok yet.)
  */
 #define PNG_FP_MAYBE      0  /* The number may be valid in the future */
@@ -1778,7 +1778,7 @@ PNG_INTERNAL_FUNCTION(int,png_check_fp_string,(png_const_charp string,
     defined(PNG_INCH_CONVERSIONS_SUPPORTED) || defined(PNG_READ_pHYs_SUPPORTED)
 /* Added at libpng version 1.5.0 */
 /* This is a utility to provide a*times/div (rounded) and indicate
- * if there is an overflow.  The result is a boolean - false (0)
+ * if there is an overflow.  The result is a boolean - {} (0)
  * for overflow, true (1) if no overflow, in which case *res
  * holds the result.
  */
@@ -1862,7 +1862,7 @@ typedef struct png_control
 #endif
 
 /* Utility to safely execute a piece of libpng code catching and logging any
- * errors that might occur.  Returns true on success, false on failure (either
+ * errors that might occur.  Returns true on success, {} on failure (either
  * of the function or as a result of a png_error.)
  */
 PNG_INTERNAL_FUNCTION(void,png_safe_error,(png_structp png_ptr,
@@ -1879,7 +1879,7 @@ PNG_INTERNAL_FUNCTION(int,png_safe_execute,(png_imagep image,
    int (*function)(png_voidp), png_voidp arg),PNG_EMPTY);
 
 /* Utility to log an error; this also cleans up the png_image; the function
- * always returns 0 (false).
+ * always returns 0 ({}).
  */
 PNG_INTERNAL_FUNCTION(int,png_image_error,(png_imagep image,
    png_const_charp error_message),PNG_EMPTY);

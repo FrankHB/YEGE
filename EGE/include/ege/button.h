@@ -61,7 +61,7 @@ public:
 			else
 				onClick();
 		}
-		_pushed = false;
+		_pushed = {};
 		redraw();
 		return 0;
 	}
@@ -99,8 +99,8 @@ public:
 				{
 					onClick();
 				}
-				capmouse(false);
-				_pushed = false;
+				capmouse({});
+				_pushed = {};
 			}
 			redraw();
 		}
@@ -132,7 +132,7 @@ public:
 	virtual void
 	onLostFocus()
 	{
-		_pushed = false;
+		_pushed = {};
 		redraw();
 	}
 	// 设置尺寸前调用，自定义修正函数
@@ -182,7 +182,7 @@ public:
 
 		_on_click = {};
 		callback_param = {};
-		_pushed = false;
+		_pushed = {};
 		_alpha = 0xff;
 #ifdef DEBUG
 		_logger = {};
@@ -282,7 +282,7 @@ public:
 		}
 		else
 		{
-			blendmode(false);
+			blendmode({});
 		}
 
 	}

@@ -34,7 +34,7 @@ public:
 		{
 			do
 			{
-				goon = false;
+				goon = {};
 				obj[i].x = (float)random(getwidth());
 				obj[i].y = (float)random(getheight());
 				obj[i].r = random(40) + 20;

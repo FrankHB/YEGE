@@ -18,7 +18,7 @@ public:
 		m_bkcolor = BLACK;
 		m_fontheight = 12;
 		m_alpha = 0xFF;
-		m_transparent = false;
+		m_transparent = {};
 		strcpy(m_face, "宋体");
 		redraw();
 	}
@@ -95,7 +95,7 @@ public:
 
 		if(m_alpha < 0xFF || m_transparent)
 			blendmode(true);
-		else blendmode(false);
+		else blendmode({});
 
 		setbkcolor_f(m_bkcolor);
 		setcolor(m_color);

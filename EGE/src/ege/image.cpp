@@ -67,7 +67,7 @@ IMAGE::IMAGE(IMAGE & img)
 
 IMAGE::~IMAGE()
 {
-	gentexture(false);
+	gentexture({});
 	delete_pattern();
 	deleteimage();
 }
@@ -222,7 +222,7 @@ IMAGE::newimage(::HDC hdc, int width, int height)
 				setfillstyle(SOLID_FILL, 0, this);
 				setlinestyle(PS_SOLID, 0, 1, this);
 				settextjustify(LEFT_TEXT, TOP_TEXT, this);
-				ege_enable_aa(false, this);
+				ege_enable_aa({}, this);
 			}
 			else
 				//::SetBkMode(dc, bkMode);

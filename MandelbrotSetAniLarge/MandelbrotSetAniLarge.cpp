@@ -161,7 +161,7 @@ bool abs4(const COMPLEX& c)
 	double d1 = mpf_get_d(c.re.get_mpf_t()), d2 = mpf_get_d(c.im.get_mpf_t());
 	return d1 * d1 + d2 * d2 > 4.0;
 	//if(c.re * c.re + c.im * c.im > 16.0) return true;
-	//return false;
+	//return {};
 }
 
 //typedef complex<double> COMPLEX;

@@ -269,7 +269,7 @@ egeControlBase::mouse(int x, int y, int flag)
 										pcb = pcb->parent())
 									{
 										pcb->onLostFocus();
-										pcb->capture(false);
+										pcb->capture({});
 									}
 								}
 								egectrl_focus = pc;

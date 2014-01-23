@@ -624,7 +624,7 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int le
 	IMAGE bg;
 	IMAGE window;
 	int w = 400, h = 300, x = (getwidth() - w) / 2, y = (getheight() - h) / 2;
-	bool lock_window = false;
+	bool lock_window = {};
 	int ret = 0;
 
 	bg.getimage(0, 0, getwidth(), getheight());
@@ -646,7 +646,7 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int le
 	{
 		if(bInit)
 		{
-			bool exit = false;
+			bool exit = {};
 			do
 			{
 				key_msg msg = getkey();

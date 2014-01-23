@@ -176,7 +176,7 @@ copyfile(const char* path1, char* pathnew,
 	else
 		sprintf(strpath2, "%s\\%s\\%s", pathnew, dir, file);
 
-	int ret = ::CopyFile(strpath1, strpath2, FALSE);
+	int ret = ::CopyFile(strpath1, strpath2, {});
 	if(ret == 0)
 	{
 		sprintf(strpath1, "Copy %s ERROR\n", strpath2);
