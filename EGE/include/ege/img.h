@@ -12,16 +12,16 @@ namespace ege
 #define getmaxy getheight
 
 EGEAPI int
-getwidth(IMAGE* pimg = nullptr);           //获取图片宽度
+getwidth(IMAGE* pimg = {});           //获取图片宽度
 
 EGEAPI int
-getheight(IMAGE* pimg = nullptr);          //获取图片高度
+getheight(IMAGE* pimg = {});          //获取图片高度
 
 EGEAPI int
-getx(IMAGE* pimg = nullptr);               //获取当前 x 坐标
+getx(IMAGE* pimg = {});               //获取当前 x 坐标
 
 EGEAPI int
-gety(IMAGE* pimg = nullptr);               //获取当前 y 坐标
+gety(IMAGE* pimg = {});               //获取当前 y 坐标
 
 
 IMAGE* EGEAPI

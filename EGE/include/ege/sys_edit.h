@@ -18,7 +18,7 @@ public:
 	{
 		CTL_INIT; // must be the first linef
 		directdraw(true);
-		m_hwnd = nullptr;
+		m_hwnd = {};
 	}
 	~sys_edit()
 	{
@@ -31,7 +31,7 @@ public:
 			destory();
 		}
 		msg_createwindow msg{nullptr, nullptr, nullptr, 0, 0, 0, nullptr};
-		msg.hEvent = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
+		msg.hEvent = ::CreateEvent({}, TRUE, FALSE, {});
 		msg.classname = L"EDIT";
 		msg.id = egeControlBase::allocId();
 		msg.style = WS_CHILD | WS_BORDER | ES_LEFT | ES_WANTRETURN;
@@ -43,8 +43,8 @@ public:
 		::WaitForSingleObject(msg.hEvent, INFINITE);
 
 		m_hwnd = msg.hwnd;
-		m_hFont     = nullptr;
-		m_hBrush    = nullptr;
+		m_hFont     = {};
+		m_hBrush    = {};
 		m_color     = 0x0;
 		m_bgcolor   = 0xFFFFFF;
 
@@ -67,14 +67,14 @@ public:
 		{
 			msg_createwindow msg{nullptr, nullptr, nullptr, 0, 0, 0, nullptr};
 			msg.hwnd = m_hwnd;
-			msg.hEvent = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
+			msg.hEvent = ::CreateEvent({}, TRUE, FALSE, {});
 			::SendMessage(m_hwnd, WM_SETFONT, 0, 0);
 			::DeleteObject(m_hFont);
 			::PostMessageW(getHWnd(), WM_USER + 1, 0, (::LPARAM)&msg);
 			::WaitForSingleObject(msg.hEvent, INFINITE);
 			::CloseHandle(msg.hEvent);
 			if(m_hBrush) ::DeleteObject(m_hBrush);
-			m_hwnd = nullptr;
+			m_hwnd = {};
 			return 1;
 		}
 		return 0;
@@ -178,18 +178,18 @@ public:
 	void setcolor(color_t color)
 	{
 		m_color = color;
-		::InvalidateRect(m_hwnd, nullptr, TRUE);
+		::InvalidateRect(m_hwnd, {}, TRUE);
 	}
 	void setbgcolor(color_t bgcolor)
 	{
 		m_bgcolor = bgcolor;
-		//::RedrawWindow(m_hwnd, nullptr, nullptr, RDW_INVALIDATE);
-		::InvalidateRect(m_hwnd, nullptr, TRUE);
+		//::RedrawWindow(m_hwnd, {}, {}, RDW_INVALIDATE);
+		::InvalidateRect(m_hwnd, {}, TRUE);
 	}
 	void setreadonly(bool readonly)
 	{
 		::SendMessageW(m_hwnd, EM_SETREADONLY, (::WPARAM)readonly, 0);
-		::InvalidateRect(m_hwnd, nullptr, TRUE);
+		::InvalidateRect(m_hwnd, {}, TRUE);
 	}
 	void setfocus()
 	{

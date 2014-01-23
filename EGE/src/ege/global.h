@@ -103,7 +103,7 @@ public:
 
 	/* 函数用临时缓冲区 */
 	::DWORD g_t_buff[1024 * 8];
-	::HWND _g_attach_hwnd = nullptr;
+	::HWND _g_attach_hwnd = {};
 
 	_graph_setting(int, int*);
 	_graph_setting(const _graph_setting&) = delete;

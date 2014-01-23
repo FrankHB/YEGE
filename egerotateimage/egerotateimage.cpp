@@ -18,7 +18,7 @@ int main()
 		if(r > PI * 2) r -= PI * 2;
 
 		cleardevice();
-		putimage_rotatezoom(nullptr, img, 320, 240, 0.5f, 0.5f, r, 0.5f, 0, -1, 1);
+		putimage_rotatezoom({}, img, 320, 240, 0.5f, 0.5f, r, 0.5f, 0, -1, 1);
 	}
 	return 0;
 }

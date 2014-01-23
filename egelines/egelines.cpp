@@ -175,7 +175,7 @@ int main()
 		{
 			draw_polys(&(p[i]));
 		}
-		//imagefilter_blurring(nullptr, 0xff, 0x100);
+		//imagefilter_blurring({}, 0xff, 0x100);
 	}
 	closegraph();
 	return 0;

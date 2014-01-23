@@ -56,7 +56,7 @@ public:
 	void*               m_texture;
 
 private:
-	void inittest(const wchar_t* strCallFunction = nullptr) const;
+	void inittest(const wchar_t* strCallFunction = {}) const;
 
 public:
 	IMAGE();

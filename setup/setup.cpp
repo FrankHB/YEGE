@@ -146,9 +146,9 @@ int getpath_scene()
 		{
 			::DWORD dwtype = REG_SZ;
 			::DWORD dwsize = MAX_PATH;
-			if(::RegQueryValueEx(key, "ProductDir", nullptr, &dwtype, (BYTE*)(installpath[it]), &dwsize))
+			if(::RegQueryValueEx(key, "ProductDir", {}, &dwtype, (BYTE*)(installpath[it]), &dwsize))
 			{
-				::RegQueryValueEx(key, "InstallDir", nullptr, &dwtype, (BYTE*)(installpath[it]), &dwsize);
+				::RegQueryValueEx(key, "InstallDir", {}, &dwtype, (BYTE*)(installpath[it]), &dwsize);
 				strcat(installpath[it], "\\mingw");
 			}
 			::RegCloseKey(key);
@@ -226,7 +226,7 @@ void setup()
 
 	for(i = 0; i < 60 * 3; ++i)
 	{
-		imagefilter_blurring(nullptr, 0xF0, 0x100);
+		imagefilter_blurring({}, 0xF0, 0x100);
 		delay_fps(60);
 	}
 	if(ret != 'y' && ret != 'Y') return;
@@ -235,7 +235,7 @@ void setup()
 
 	for(i = 0; i < 60 * 1; ++i)
 	{
-		imagefilter_blurring(nullptr, 0xF0, 0x100);
+		imagefilter_blurring({}, 0xF0, 0x100);
 		delay_fps(60);
 	}
 	if(ret != 'y' && ret != 'Y') return;
@@ -244,7 +244,7 @@ void setup()
 
 	for(i = 0; i < 60 * 1; ++i)
 	{
-		imagefilter_blurring(nullptr, 0xF0, 0x100);
+		imagefilter_blurring({}, 0xF0, 0x100);
 		delay_fps(60);
 	}
 	//for( ; kbhit() != -1; delay_fps(60))

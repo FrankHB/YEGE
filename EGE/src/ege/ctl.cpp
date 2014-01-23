@@ -27,7 +27,7 @@ egeControlBase::InitObject::~InitObject()
 }
 egeControlBase::egeControlBase()
 {
-	init(nullptr);
+	init({});
 }
 
 egeControlBase::egeControlBase(int inherit, egeControlBase* pParent)
@@ -61,13 +61,13 @@ void
 egeControlBase::init(egeControlBase* parent)
 {
 	egeControlBase*& root = egectrl_root;
-	m_parent = nullptr;
+	m_parent = {};
 	m_mainbuf = newimage();
 	m_mainFilter = newimage();
 	if(!root)
 	{
 		root = this;
-		m_parent = nullptr;
+		m_parent = {};
 		m_bVisable = 0;
 		m_bEnable = 0;
 		m_bAutoDraw = 0;
@@ -101,8 +101,8 @@ egeControlBase::init(egeControlBase* parent)
 	m_bCapture = 0;
 	m_bCapMouse = 0;
 	m_bInputFocus = 0;
-	m_childmap = nullptr;
-	m_childzorder = nullptr;
+	m_childmap = {};
+	m_childzorder = {};
 	m_x = m_y = 0;
 	m_rop = SRCCOPY;
 	m_AlphablendMode = 0;
@@ -170,7 +170,7 @@ int egeControlBase::delchild(egeControlBase* pChild)
 			if(*itv == *it) break;
 		onDelChild(*it);
 		cmap->erase(it);
-		pChild->m_parent = nullptr;
+		pChild->m_parent = {};
 		if(itv != cvec->end())
 		{
 			cvec->erase(itv);

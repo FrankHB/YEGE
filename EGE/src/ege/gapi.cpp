@@ -34,7 +34,7 @@ _save_brush(IMAGE* img, int save)
 	{
 		savebrush_hbr = (::HBRUSH)::SelectObject(img->m_hDC, savebrush_hbr);
 		::DeleteObject(savebrush_hbr);
-		savebrush_hbr = nullptr;
+		savebrush_hbr = {};
 	}
 	return 0;
 }
@@ -501,7 +501,7 @@ void
 moveto(int x, int y, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
-	MoveToEx(img->m_hDC, x, y, nullptr);
+	MoveToEx(img->m_hDC, x, y, {});
 	CONVERT_IMAGE_END;
 }
 
@@ -513,7 +513,7 @@ moverel(int dx, int dy, IMAGE* pimg)
 	::GetCurrentPositionEx(img->m_hDC, &pt);
 	dx += pt.x;
 	dy += pt.y;
-	MoveToEx(img->m_hDC, dx, dy, nullptr);
+	MoveToEx(img->m_hDC, dx, dy, {});
 	CONVERT_IMAGE_END;
 }
 
@@ -522,7 +522,7 @@ void
 line(int x1, int y1, int x2, int y2, IMAGE* pimg)
 {
 	const auto img(CONVERT_IMAGE(pimg));
-	::MoveToEx(img->m_hDC, x1, y1, nullptr);
+	::MoveToEx(img->m_hDC, x1, y1, {});
 	::LineTo(img->m_hDC, x2, y2);
 	CONVERT_IMAGE_END;
 }

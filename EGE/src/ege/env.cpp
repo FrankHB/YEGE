@@ -19,7 +19,7 @@ initgraph(int width, int height, int flag)
 
 	if(!_g_initcall)
 		setinitmode(flag);
-	initgraph(&g, &m, nullptr);
+	initgraph(&g, &m, {});
 }
 
 void

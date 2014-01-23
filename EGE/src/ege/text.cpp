@@ -612,7 +612,7 @@ inputbox_getline(const char* title, const char* text, char* buf, int len)
 	int ret = inputbox_getline(_title, _text, _buf, len);
 
 	if(ret)
-		::WideCharToMultiByte(CP_ACP, 0, _buf, -1, buf, len, nullptr, nullptr);
+		::WideCharToMultiByte(CP_ACP, 0, _buf, -1, buf, len, {}, {});
 	operator delete(_buf);
 	return ret;
 }

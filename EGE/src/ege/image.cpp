@@ -30,9 +30,9 @@ static ::HFONT g_font_def;
 IMAGE::IMAGE()
 {
 	m_initflag = IMAGE_INIT_FLAG;
-	m_hDC = nullptr;
-	m_pattern_obj = nullptr;
-	m_texture = nullptr;
+	m_hDC = {};
+	m_pattern_obj = {};
+	m_texture = {};
 	const auto img = CONVERT_IMAGE_CONST(nullptr);
 	if(img)
 		newimage(img->m_hDC, 1, 1);
@@ -44,9 +44,9 @@ IMAGE::IMAGE()
 IMAGE::IMAGE(int width, int height)
 {
 	m_initflag = IMAGE_INIT_FLAG;
-	m_hDC = nullptr;
-	m_pattern_obj = nullptr;
-	m_texture = nullptr;
+	m_hDC = {};
+	m_pattern_obj = {};
+	m_texture = {};
 	const auto img = CONVERT_IMAGE_CONST(nullptr);
 	if(img)
 		newimage(img->m_hDC, width, height);
@@ -58,9 +58,9 @@ IMAGE::IMAGE(int width, int height)
 IMAGE::IMAGE(IMAGE & img)
 {
 	m_initflag = IMAGE_INIT_FLAG;
-	m_hDC = nullptr;
-	m_pattern_obj = nullptr;
-	m_texture = nullptr;
+	m_hDC = {};
+	m_pattern_obj = {};
+	m_texture = {};
 	newimage(img.m_hDC, img.m_width, img.m_height);
 	::BitBlt(m_hDC, 0, 0, img.m_width, img.m_height, img.m_hDC, 0, 0, SRCCOPY);
 }
@@ -105,7 +105,7 @@ IMAGE::delete_pattern()
 		delete (Gdiplus::PathGradientBrush*)m_pattern_obj;
 	else if(m_pattern_type == pattern_texture)
 		delete (Gdiplus::TextureBrush*)m_pattern_obj;
-	m_pattern_obj = nullptr;
+	m_pattern_obj = {};
 }
 
 void
@@ -116,7 +116,7 @@ IMAGE::gentexture(bool gen)
 		if(m_texture)
 		{
 			delete (Gdiplus::Bitmap*)m_texture;
-			m_texture = nullptr;
+			m_texture = {};
 		}
 	}
 	else
@@ -137,7 +137,7 @@ IMAGE::deleteimage()
 	::DeleteObject(::SelectObject(m_hDC, g_pen_def));
 	::DeleteObject(::SelectObject(m_hDC, g_font_def));
 	::DeleteDC(m_hDC);
-	m_hDC = nullptr;
+	m_hDC = {};
 	return 0;
 }
 
@@ -176,11 +176,11 @@ IMAGE::newimage(::HDC hdc, int width, int height)
 	if(dc)
 	{
 		bitmap = ::CreateDIBSection(
-			nullptr,
+			{},
 			&bmi,
 			DIB_RGB_COLORS,
 			(VOID**)&p_bmp_buf,
-			nullptr,
+			{},
 			0
 		);
 
@@ -287,7 +287,7 @@ IMAGE::copyimage(IMAGE* pSrcImg)
 	const auto img = CONVERT_IMAGE_CONST(pSrcImg);
 	int ret = 0;
 	if(m_width != img->m_width || m_height != img->m_height)
-		ret = newimage(nullptr, img->m_width, img->m_height);
+		ret = newimage({}, img->m_width, img->m_height);
 	if(ret == 0)
 	{
 		memcpy(getbuffer(), img->getbuffer(), m_width * m_height * 4); // 4 byte per pixel
@@ -301,7 +301,7 @@ IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 	inittest(L"IMAGE::getimage");
 
 	const auto img = CONVERT_IMAGE_CONST(pSrcImg);
-	int ret = newimage(nullptr, srcWidth, srcHeight);
+	int ret = newimage({}, srcWidth, srcHeight);
 
 	if(ret == 0)
 		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight, img->m_hDC, srcX, srcY, SRCCOPY);
@@ -393,7 +393,7 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 	}
 
 	::lstrcpyW(wszPath, szPath);
-	hr = ::OleLoadPicturePath(wszPath, nullptr, 0, 0, IID_IPicture,
+	hr = ::OleLoadPicturePath(wszPath, {}, 0, 0, IID_IPicture,
 							  (void**)&pPicture);
 	if(FAILED(hr))
 		return grIOerror;
@@ -413,7 +413,7 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 	::HDC dc = m_hDC;
 
 	pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-					 lWidth, -lHeight, nullptr);
+					 lWidth, -lHeight, {});
 	pPicture->Release();
 	return grOk;
 }
@@ -507,20 +507,20 @@ IMAGE::getpngimg(FILE * fp)
 		fseek(fp, 0, SEEK_SET);
 	}
 
-	pic_ptr = ::png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+	pic_ptr = ::png_create_read_struct(PNG_LIBPNG_VER_STRING, {}, {}, {});
 	if(!pic_ptr)
 		return -1;
 	info_ptr = ::png_create_info_struct(pic_ptr);
 	if(!info_ptr)
 	{
-		::png_destroy_write_struct(&pic_ptr, nullptr);
+		::png_destroy_write_struct(&pic_ptr, {});
 		return -1;
 	}
 	::png_init_io(pic_ptr, fp);
-	::png_read_png(pic_ptr, info_ptr, PNG_TRANSFORM_BGR | PNG_TRANSFORM_EXPAND, nullptr);
+	::png_read_png(pic_ptr, info_ptr, PNG_TRANSFORM_BGR | PNG_TRANSFORM_EXPAND, {});
 	::png_set_expand(pic_ptr);
 
-	newimage(nullptr, (int)(info_ptr->width), (int)(info_ptr->height)); //::png_get_IHDR
+	newimage({}, (int)(info_ptr->width), (int)(info_ptr->height)); //::png_get_IHDR
 	width = info_ptr->width;
 	height = info_ptr->height;
 	depth = info_ptr->pixel_depth;
@@ -547,7 +547,7 @@ IMAGE::getpngimg(FILE * fp)
 			}
 		}
 	}
-	::png_destroy_read_struct(&pic_ptr, &info_ptr, nullptr);
+	::png_destroy_read_struct(&pic_ptr, &info_ptr, {});
 	return 0;
 }
 
@@ -560,7 +560,7 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 	::png_colorp palette;
 	::png_byte* image;
 	::png_bytep* row_pointers;
-	pic_ptr = ::png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+	pic_ptr = ::png_create_write_struct(PNG_LIBPNG_VER_STRING, {}, {}, {});
 	std::uint32_t pixelsize = bAlpha ? 4 : 3;
 	std::uint32_t width = m_width, height = m_height;
 	if(!pic_ptr)
@@ -570,7 +570,7 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 	info_ptr = ::png_create_info_struct(pic_ptr);
 	if(!info_ptr)
 	{
-		::png_destroy_write_struct(&pic_ptr, nullptr);
+		::png_destroy_write_struct(&pic_ptr, {});
 		return -1;
 	}
 
@@ -599,7 +599,7 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 	{
 		::png_destroy_write_struct(&pic_ptr, &info_ptr);
 		free(image);
-		image = nullptr;
+		image = {};
 		return -1;
 	}
 
@@ -613,12 +613,12 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 	::png_write_image(pic_ptr, row_pointers);
 	::png_write_end(pic_ptr, info_ptr);
 	::png_free(pic_ptr, palette);
-	palette = nullptr;
+	palette = {};
 	::png_destroy_write_struct(&pic_ptr, &info_ptr);
 	free(row_pointers);
-	row_pointers = nullptr;
+	row_pointers = {};
 	free(image);
-	image = nullptr;
+	image = {};
 	return 0;
 }
 
@@ -631,8 +631,8 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 
 	if(hrsrc)
 	{
-		auto hg(::LoadResource(nullptr, hrsrc));
-		auto dwSize(::SizeofResource(nullptr, hrsrc));
+		auto hg(::LoadResource({}, hrsrc));
+		auto dwSize(::SizeofResource({}, hrsrc));
 		auto hGlobal(::GlobalAlloc(GMEM_MOVEABLE, dwSize));
 		auto pvRes(::LockResource(hg));
 		LPVOID pvData;
@@ -670,7 +670,7 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 			auto dc(m_hDC);
 
 			pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-							 lWidth, -lHeight, nullptr);
+							 lWidth, -lHeight, {});
 		}
 		pPicture->Release();
 		return grOk;
@@ -687,8 +687,8 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 
 	if(hrsrc)
 	{
-		auto hg = ::LoadResource(nullptr, hrsrc);
-		auto dwSize = ::SizeofResource(nullptr, hrsrc);
+		auto hg = ::LoadResource({}, hrsrc);
+		auto dwSize = ::SizeofResource({}, hrsrc);
 		auto hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, dwSize);
 		auto pvRes = ::LockResource(hg);
 		LPVOID pvData;
@@ -723,7 +723,7 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 		::HDC dc = m_hDC;
 
 		pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-						 lWidth, -lHeight, nullptr);
+						 lWidth, -lHeight, {});
 		pPicture->Release();
 		return grOk;
 	}
@@ -786,7 +786,7 @@ IMAGE::getimage(void * pMem, long size)
 		auto dc = m_hDC;
 
 		pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-						 lWidth, -lHeight, nullptr);
+						 lWidth, -lHeight, {});
 		pPicture->Release();
 		return grOk;
 	}

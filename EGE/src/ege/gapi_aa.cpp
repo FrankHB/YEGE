@@ -444,7 +444,7 @@ ege_puttexture(IMAGE* srcimg, ege_rect dest, ege_rect src, IMAGE* pimg)
 				src.w,
 				src.h,
 				Gdiplus::UnitPixel,
-				nullptr
+				{}
 			);
 		}
 	}

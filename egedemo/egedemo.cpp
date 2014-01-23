@@ -8,7 +8,7 @@ class SceneBase
 public:
 	virtual SceneBase* Update()
 	{
-		return nullptr;
+		return {};
 	}
 	virtual ~SceneBase()
 	{};
@@ -1043,12 +1043,12 @@ public:
 			outtextrect(100, 100, 440, 480, str);
 		}
 		getch();
-		IMAGE* img = nullptr;
+		IMAGE* img = {};
 		getimage(img, 0, 0, 640, 480);
 		for(len = 255 ; len >= 0; delay_fps(60))
 		{
 			cleardevice();
-			putimage_alphablend(nullptr, img, 0, 0, len);
+			putimage_alphablend({}, img, 0, 0, len);
 			len -= 3;
 		}
 		return new SceneMenu;

@@ -45,7 +45,7 @@ _delay_update()
 	if(update_mark_count < UPDATE_MAX_CALL)
 	{
 		ege_sleep(1);
-		egectrl_root->draw(nullptr);
+		egectrl_root->draw({});
 		get_global_state()._dealmessage(true);
 		egectrl_root->update();
 
@@ -67,13 +67,13 @@ ege_sleep(long ms)
 	if(ms <= 0)
 		return;
 
-	static ::HANDLE hTimer = ::CreateWaitableTimer(nullptr, TRUE, nullptr);
+	static ::HANDLE hTimer = ::CreateWaitableTimer({}, TRUE, {});
 	::LARGE_INTEGER liDueTime;
 
 	liDueTime.QuadPart = ms * (::LONGLONG) - 10000;
 	if(hTimer)
 	{
-		if(::SetWaitableTimer(hTimer, &liDueTime, 0, nullptr, nullptr, FALSE))
+		if(::SetWaitableTimer(hTimer, &liDueTime, 0, {}, {}, FALSE))
 			::WaitForSingleObject(hTimer, INFINITE); // != WAIT_OBJECT_0;
 		//::CloseHandle(hTimer);
 	}
@@ -106,7 +106,7 @@ delay_ms(long ms)
 			dw = delay_ms_dwLast;
 
 		//ege_sleep(1);
-		egectrl_root->draw(nullptr);
+		egectrl_root->draw({});
 		while(dw + delay_time >= _get_highfeq_time_ls() * 1000.0)
 		{
 			if(f <= 0 || update_mark_count < UPDATE_MAX_CALL)
@@ -148,7 +148,7 @@ delay_fps(double fps)
 		delay_fps_dwLast = _get_highfeq_time_ls() * 1000.0;
 	if(delay_fps_dwLast + delay_time + avg_max_time > dw)
 		dw = delay_fps_dwLast;
-	egectrl_root->draw(nullptr);
+	egectrl_root->draw({});
 	for(; nloop >= 0; --nloop)
 	{
 		if((dw + delay_time + (100.0) >= _get_highfeq_time_ls() * 1000.0))
@@ -188,7 +188,7 @@ delay_jfps(double fps)
 		delay_fps_dwLast = _get_highfeq_time_ls() * 1000.0;
 	if(delay_fps_dwLast + delay_time + avg_max_time > dw)
 		dw = delay_fps_dwLast;
-	egectrl_root->draw(nullptr);
+	egectrl_root->draw({});
 	for(; nloop >= 0; --nloop)
 	{
 		int bSleep = 0;

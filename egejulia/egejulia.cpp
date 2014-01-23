@@ -148,7 +148,7 @@ struct updatelist
 	}
 }* g_pudlist = new updatelist;
 updatelist& g_udlist = *g_pudlist;
-state* g_st = nullptr;
+state* g_st = {};
 
 
 void addpoint(int x, int y, int = -1)
@@ -392,8 +392,8 @@ int main()
 		getch();
 	//InitColor();
 	InitLog();
-	g_w = getwidth(nullptr);
-	g_h = getheight(nullptr);
+	g_w = getwidth({});
+	g_h = getheight({});
 	g_st = (state*)malloc(g_w * g_h * sizeof(state));
 	COMPLEX c{0.262, 0.002}, z{0, 0};
 	double r = 1.5, d = g_w / (double)g_h, rotate = 0, sr = sin(rotate), cr = cos(rotate);

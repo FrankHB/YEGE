@@ -11,27 +11,27 @@ class IMAGE;
 
 // 文字相关函数
 EGEAPI void
-outtext(const char* textstring, IMAGE* pimg = nullptr);                   // 在当前位置输出文字
+outtext(const char* textstring, IMAGE* pimg = {});                   // 在当前位置输出文字
 EGEAPI void
-outtext(const wchar_t* textstring, IMAGE* pimg = nullptr);                   // 在当前位置输出文字
+outtext(const wchar_t* textstring, IMAGE* pimg = {});                   // 在当前位置输出文字
 EGEAPI void
-outtext(char c, IMAGE* pimg = nullptr);                              // 在当前位置输出字符
+outtext(char c, IMAGE* pimg = {});                              // 在当前位置输出字符
 EGEAPI void
-outtext(wchar_t c, IMAGE* pimg = nullptr);                              // 在当前位置输出字符
+outtext(wchar_t c, IMAGE* pimg = {});                              // 在当前位置输出字符
 
 EGEAPI void
-outtextxy(int x, int y, const char*  textstring, IMAGE* pimg = nullptr);   // 在指定位置输出文字
+outtextxy(int x, int y, const char*  textstring, IMAGE* pimg = {});   // 在指定位置输出文字
 EGEAPI void
-outtextxy(int x, int y, const wchar_t* textstring, IMAGE* pimg = nullptr);   // 在指定位置输出文字
+outtextxy(int x, int y, const wchar_t* textstring, IMAGE* pimg = {});   // 在指定位置输出文字
 EGEAPI void
-outtextxy(int x, int y, char c, IMAGE* pimg = nullptr);               // 在指定位置输出字符
+outtextxy(int x, int y, char c, IMAGE* pimg = {});               // 在指定位置输出字符
 EGEAPI void
-outtextxy(int x, int y, wchar_t c, IMAGE* pimg = nullptr);              // 在指定位置输出字符
+outtextxy(int x, int y, wchar_t c, IMAGE* pimg = {});              // 在指定位置输出字符
 
 EGEAPI void
-outtextrect(int x, int y, int w, int h, const char*  textstring, IMAGE* pimg = nullptr); // 在指定矩形范围输出文字
+outtextrect(int x, int y, int w, int h, const char*  textstring, IMAGE* pimg = {}); // 在指定矩形范围输出文字
 EGEAPI void
-outtextrect(int x, int y, int w, int h, const wchar_t* textstring, IMAGE* pimg = nullptr); // 在指定矩形范围输出文字
+outtextrect(int x, int y, int w, int h, const wchar_t* textstring, IMAGE* pimg = {}); // 在指定矩形范围输出文字
 
 EGEAPI void
 xyprintf(int x, int y, const char*  fmt, ...); // 在指定位置输出格式化字符串，指定绘图目标调用settarget
@@ -42,25 +42,25 @@ EGEAPI void rectprintf(int x, int y, int w, int h, const char*  fmt, ...); // �
 EGEAPI void rectprintf(int x, int y, int w, int h, const wchar_t* fmt, ...); // 在指定矩形输出格式化字符串，指定绘图目标调用settarget
 
 EGEAPI int
-textwidth(const char*  textstring, IMAGE* pimg = nullptr); // 获取字符串占用的像素宽
+textwidth(const char*  textstring, IMAGE* pimg = {}); // 获取字符串占用的像素宽
 EGEAPI int
-textwidth(const wchar_t* textstring, IMAGE* pimg = nullptr); // 获取字符串占用的像素宽
+textwidth(const wchar_t* textstring, IMAGE* pimg = {}); // 获取字符串占用的像素宽
 EGEAPI int
-textwidth(char c, IMAGE* pimg = nullptr);
+textwidth(char c, IMAGE* pimg = {});
 EGEAPI int
-textwidth(wchar_t c, IMAGE* pimg = nullptr);
+textwidth(wchar_t c, IMAGE* pimg = {});
 
 EGEAPI int
-textheight(const char*  textstring, IMAGE* pimg = nullptr); // 获取字符串占用的像素高
+textheight(const char*  textstring, IMAGE* pimg = {}); // 获取字符串占用的像素高
 EGEAPI int
-textheight(const wchar_t* textstring, IMAGE* pimg = nullptr); // 获取字符串占用的像素高
+textheight(const wchar_t* textstring, IMAGE* pimg = {}); // 获取字符串占用的像素高
 EGEAPI int
-textheight(char  c, IMAGE* pimg = nullptr);
+textheight(char  c, IMAGE* pimg = {});
 EGEAPI int
-textheight(wchar_t c, IMAGE* pimg = nullptr);
+textheight(wchar_t c, IMAGE* pimg = {});
 
 EGEAPI void
-settextjustify(int horiz, int vert, IMAGE* pimg = nullptr);
+settextjustify(int horiz, int vert, IMAGE* pimg = {});
 
 
 // 设置当前字体样式(详见帮助)
@@ -79,31 +79,31 @@ settextjustify(int horiz, int vert, IMAGE* pimg = nullptr);
 //      fbQuality: 指定文字的输出质量；
 //      fbPitchAndFamily: 指定以常规方式描述字体的字体系列。
 EGEAPI void
-setfont(int nHeight, int nWidth, const char* lpszFace,  IMAGE* pimg = nullptr);
+setfont(int nHeight, int nWidth, const char* lpszFace,  IMAGE* pimg = {});
 EGEAPI void
-setfont(int nHeight, int nWidth, const wchar_t* lpszFace, IMAGE* pimg = nullptr);
+setfont(int nHeight, int nWidth, const wchar_t* lpszFace, IMAGE* pimg = {});
 EGEAPI void
 setfont(int nHeight, int nWidth, const char* lpszFace,  int nEscapement, int nOrientation,
-	int nWeight, int bItalic, int bUnderline, int bStrikeOut, IMAGE* pimg = nullptr);
+	int nWeight, int bItalic, int bUnderline, int bStrikeOut, IMAGE* pimg = {});
 EGEAPI void
 setfont(int nHeight, int nWidth, const wchar_t* lpszFace, int nEscapement, int nOrientation,
-	int nWeight, int bItalic, int bUnderline, int bStrikeOut, IMAGE* pimg = nullptr);
+	int nWeight, int bItalic, int bUnderline, int bStrikeOut, IMAGE* pimg = {});
 EGEAPI void setfont(int nHeight, int nWidth, const char* lpszFace,  int nEscapement, int nOrientation,
 	int nWeight, int bItalic, int bUnderline, int bStrikeOut, BYTE fbCharSet,
-	BYTE fbOutPrecision, BYTE fbClipPrecision, BYTE fbQuality, BYTE fbPitchAndFamily, IMAGE* pimg = nullptr);
+	BYTE fbOutPrecision, BYTE fbClipPrecision, BYTE fbQuality, BYTE fbPitchAndFamily, IMAGE* pimg = {});
 EGEAPI void setfont(int nHeight, int nWidth, const wchar_t* lpszFace, int nEscapement, int nOrientation,
 	int nWeight, int bItalic, int bUnderline, int bStrikeOut, BYTE fbCharSet,
-	BYTE fbOutPrecision, BYTE fbClipPrecision, BYTE fbQuality, BYTE fbPitchAndFamily, IMAGE* pimg = nullptr);
+	BYTE fbOutPrecision, BYTE fbClipPrecision, BYTE fbQuality, BYTE fbPitchAndFamily, IMAGE* pimg = {});
 
 EGEAPI void
-setfont(const ::LOGFONTA* font, IMAGE* pimg = nullptr); // 设置当前字体样式
+setfont(const ::LOGFONTA* font, IMAGE* pimg = {}); // 设置当前字体样式
 EGEAPI void
-setfont(const ::LOGFONTW* font, IMAGE* pimg = nullptr); // 设置当前字体样式
+setfont(const ::LOGFONTW* font, IMAGE* pimg = {}); // 设置当前字体样式
 
 EGEAPI void
-getfont(::LOGFONTA* font, IMAGE* pimg = nullptr);       // 获取当前字体样式
+getfont(::LOGFONTA* font, IMAGE* pimg = {});       // 获取当前字体样式
 EGEAPI void
-getfont(::LOGFONTW* font, IMAGE* pimg = nullptr);       // 获取当前字体样式
+getfont(::LOGFONTW* font, IMAGE* pimg = {});       // 获取当前字体样式
 
 
 //高级输入函数

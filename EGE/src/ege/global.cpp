@@ -93,7 +93,7 @@ const ::TCHAR _graph_setting::window_class_name[32]
 const ::TCHAR _graph_setting::window_caption[128]{EGE_TITLE};
 
 _graph_setting::_graph_setting(int gdriver_n, int* gmode)
-	: instance(::GetModuleHandle(nullptr))
+	: instance(::GetModuleHandle({}))
 {
 	static std::once_flag init_flag;
 
@@ -101,7 +101,7 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 		static ::ULONG_PTR g_gdiplusToken;
 		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 
-		Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, nullptr);
+		Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, {});
 	});
 }
 
@@ -398,13 +398,13 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 			wcex.cbClsExtra = 0;
 			wcex.cbWndExtra = 0;
 			wcex.hInstance = instance;
-			wcex.hIcon = ::LoadIcon(nullptr, IDI_WINLOGO);
-			wcex.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
+			wcex.hIcon = ::LoadIcon({}, IDI_WINLOGO);
+			wcex.hCursor = ::LoadCursor({}, IDC_ARROW);
 			wcex.hbrBackground = (::HBRUSH)(COLOR_WINDOW + 1);
 			wcex.lpszClassName = window_class_name;
 
 			const auto load([&](::LPCTSTR rt){
-				::HICON hico = nullptr;
+				::HICON hico = {};
 
 				EnumResourceNames(instance, rt, EnumResNameProc,
 					::LONG_PTR(&hico));
@@ -437,7 +437,7 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 			hwnd = ::CreateWindowEx(g_windowexstyle, window_class_name,
 				window_caption, g_windowstyle & ~WS_VISIBLE,
 				_g_windowpos_x, _g_windowpos_y, dc_w + dw, dc_h + dh,
-				_g_attach_hwnd, nullptr, instance, nullptr);
+				_g_attach_hwnd, {}, instance, {});
 			if(!hwnd)
 				return ::DWORD(0xFFFFFFFF);
 			if(_g_attach_hwnd)
@@ -446,7 +446,7 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 
 				std::swprintf(name, L"ege_%X",
 					::DWORD(::DWORD_PTR(_g_attach_hwnd)));
-				if(::CreateEventW(nullptr, FALSE, TRUE, name))
+				if(::CreateEventW({}, FALSE, TRUE, name))
 					if(::GetLastError() == ERROR_ALREADY_EXISTS)
 						::PostMessage(hwnd, WM_CLOSE, 0, 0);
 			}
@@ -464,7 +464,7 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 			window_dc = hDC;
 			img_timer_update = newimage();
 			setactivepage(0);
-			settarget(nullptr);
+			settarget({});
 			setvisualpage(0);
 			window_setviewport(0, 0, dc_w, dc_h);
 			//::ReleaseDC(hwnd, hDC);
@@ -472,13 +472,13 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
 			close_manually = true;
 			skip_timer_mark = {};
-			::SetTimer(hwnd, RENDER_TIMER_ID, 50, nullptr);
+			::SetTimer(hwnd, RENDER_TIMER_ID, 50, {});
 			init_finish = true;
 
 			MSG msg;
 
 			while(!exit_window)
-				if(::GetMessage(&msg, nullptr, 0, 0))
+				if(::GetMessage(&msg, {}, 0, 0))
 				{
 					::TranslateMessage(&msg);
 					::DispatchMessage(&msg);
@@ -627,7 +627,7 @@ _graph_setting::_on_paint(::HWND hwnd)
 	}
 	else
 	{
-		::ValidateRect(hwnd, nullptr);
+		::ValidateRect(hwnd, {});
 		--update_mark_count;
 	}
 }
@@ -656,7 +656,7 @@ void
 _graph_setting::_on_setcursor(::HWND hwnd)
 {
 	if(mouse_show)
-		::SetCursor(::LoadCursor(nullptr, IDC_ARROW));
+		::SetCursor(::LoadCursor({}, IDC_ARROW));
 	else
 	{
 		::RECT rect;
@@ -666,9 +666,9 @@ _graph_setting::_on_setcursor(::HWND hwnd)
 		::ScreenToClient(hwnd, &pt);
 		::GetClientRect(hwnd, &rect);
 		if(pt.x >= rect.left && pt.x < rect.right && pt.y >= rect.top && pt.y <= rect.bottom)
-			::SetCursor(nullptr);
+			::SetCursor({});
 		else
-			::SetCursor(::LoadCursor(nullptr, IDC_ARROW));
+			::SetCursor(::LoadCursor({}, IDC_ARROW));
 	}
 }
 
@@ -680,7 +680,7 @@ _graph_setting::_on_timer(::HWND hwnd, unsigned id)
 		if(update_mark_count <= 0)
 		{
 			update_mark_count = UPDATE_MAX_CALL;
-			_on_repaint(hwnd, nullptr);
+			_on_repaint(hwnd, {});
 		}
 		if(timer_stop_mark)
 		{
@@ -827,7 +827,7 @@ void
 _graph_setting::_render_normal()
 {
 	delay_ms(0);
-	::SetTimer(hwnd, RENDER_TIMER_ID, 0, nullptr);
+	::SetTimer(hwnd, RENDER_TIMER_ID, 0, {});
 	skip_timer_mark = false;
 	lock_window = false;
 }
@@ -895,7 +895,7 @@ _graph_setting::_update()
 			rect.right -= pt.x;
 			rect.bottom -= pt.y;
 		}
-		::SetWindowPos(hwnd, nullptr, 0, 0, rect.right  + _dw - rect.left,
+		::SetWindowPos(hwnd, {}, 0, 0, rect.right  + _dw - rect.left,
 			rect.bottom + _dh - rect.top,
 			SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 	}
@@ -917,7 +917,7 @@ _graph_setting::_waitdealmessage()
 {
 	if(update_mark_count < UPDATE_MAX_CALL)
 	{
-		egectrl_root->draw(nullptr);
+		egectrl_root->draw({});
 		_update();
 		_update_GUI();
 		egectrl_root->update();
@@ -929,9 +929,9 @@ _graph_setting::_waitdealmessage()
 void
 _graph_setting::_window_create(msg_createwindow& msg)
 {
-	msg.hwnd = ::CreateWindowExW(msg.exstyle, msg.classname, nullptr,
+	msg.hwnd = ::CreateWindowExW(msg.exstyle, msg.classname, {},
 		msg.style, 0, 0, 0, 0, getHWnd(), (HMENU)msg.id, getHInstance(),
-		nullptr);
+		{});
 	if(msg.hEvent)
 		::SetEvent(msg.hEvent);
 }

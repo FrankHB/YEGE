@@ -71,7 +71,7 @@ int main()
 		}
 		movechars(&nobj, ct, bnew);
 		//cleardevice();
-		imagefilter_blurring(nullptr, 0x40, 0xD0);
+		imagefilter_blurring({}, 0x40, 0xD0);
 		for(i = 0; i < nobj; ++i)
 		{
 			drawchar(ct + i);

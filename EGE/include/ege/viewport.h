@@ -20,14 +20,14 @@ struct viewporttype
 
 EGEAPI void
 getviewport(int* pleft, int* ptop, int* pright, int* pbottom,
-	int* pclip = nullptr, IMAGE* pimg = nullptr); //获取视图信息
+	int* pclip = {}, IMAGE* pimg = {}); //获取视图信息
 
 EGEAPI void
 setviewport(int left, int top, int right, int bottom, int clip = 1,
-	IMAGE* pimg = nullptr);           //设置视图
+	IMAGE* pimg = {});           //设置视图
 
 EGEAPI void
-clearviewport(IMAGE* pimg = nullptr); //清空视图
+clearviewport(IMAGE* pimg = {}); //清空视图
 
 
 EGEAPI void

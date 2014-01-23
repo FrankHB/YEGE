@@ -63,7 +63,7 @@ void
 putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
 	int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
 {
-	pSrcImg->putimage(nullptr, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
+	pSrcImg->putimage({}, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
 		srcWidth, srcHeight, dwRop);
 }
 
