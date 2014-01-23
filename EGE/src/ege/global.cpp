@@ -92,7 +92,7 @@ const ::TCHAR _graph_setting::window_class_name[32]
 	{TEXT("Easy Graphics Engine")};
 const ::TCHAR _graph_setting::window_caption[128]{EGE_TITLE};
 
-_graph_setting::_graph_setting(int gdriver_n, int* gmode)
+_graph_setting::_graph_setting(int /*gdriver_n*/, int* /*gmode*/)
 	: instance(::GetModuleHandle({}))
 {
 	static std::once_flag init_flag;
