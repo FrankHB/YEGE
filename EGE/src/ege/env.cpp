@@ -10,7 +10,9 @@ namespace ege
 void
 initgraph(int* gdriver, int* gmode, char*)
 {
-	get_global_state()._init_graph_x(gdriver, gmode);
+	assert(gdriver);
+
+	get_global_state(*gdriver, gmode)._init_graph_x();
 }
 void
 initgraph(int width, int height, int flag)

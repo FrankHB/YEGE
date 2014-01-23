@@ -92,7 +92,7 @@ const ::TCHAR _graph_setting::window_class_name[32]
 	{TEXT("Easy Graphics Engine")};
 const ::TCHAR _graph_setting::window_caption[128]{EGE_TITLE};
 
-_graph_setting::_graph_setting(int /*gdriver_n*/, int* /*gmode*/)
+_graph_setting::_graph_setting(int gdriver_n, int* gmode)
 	: instance(::GetModuleHandle({}))
 {
 	static std::once_flag init_flag;
@@ -103,6 +103,25 @@ _graph_setting::_graph_setting(int /*gdriver_n*/, int* /*gmode*/)
 
 		Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, {});
 	});
+
+	assert(gdriver_n);
+
+	if(gdriver_n == TRUECOLORSIZE)
+	{
+		assert(gmode);
+		::RECT rect;
+
+		if(_g_attach_hwnd)
+			::GetClientRect(_g_attach_hwnd, &rect);
+		else
+			::GetWindowRect(GetDesktopWindow(), &rect);
+		dc_w = short(*gmode & 0xFFFF);
+		dc_h = short(unsigned(*gmode >> 16));
+		if(dc_w < 0)
+			dc_w = rect.right;
+		if(dc_h < 0)
+			dc_h = rect.bottom;
+	}
 }
 
 bool
@@ -361,28 +380,10 @@ _graph_setting::_getmouse_p()
 #endif
 
 void
-_graph_setting::_init_graph_x(int* gdriver, int* gmode)
+_graph_setting::_init_graph_x()
 {
 	static std::once_flag init_flag;
 
-	assert(gdriver);
-
-	if(*gdriver == TRUECOLORSIZE)
-	{
-		assert(gmode);
-		::RECT rect;
-
-		if(_g_attach_hwnd)
-			::GetClientRect(_g_attach_hwnd, &rect);
-		else
-			::GetWindowRect(GetDesktopWindow(), &rect);
-		dc_w = short(*gmode & 0xFFFF);
-		dc_h = short(unsigned(*gmode >> 16));
-		if(dc_w < 0)
-			dc_w = rect.right;
-		if(dc_h < 0)
-			dc_h = rect.bottom;
-	}
 	std::call_once(init_flag, [this]{
 	//	::SECURITY_ATTRIBUTES sa{};
 	//	::DWORD pid;

@@ -156,7 +156,7 @@ public:
 #endif
 
 	void
-	_init_graph_x(int*, int*);
+	_init_graph_x();
 
 	int
 	_kbhit_ex(int);
