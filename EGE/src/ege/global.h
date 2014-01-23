@@ -7,6 +7,7 @@
 #include "ege/input.h"
 #include "ege/env.h"
 #include "ege/base.h"
+#include <thread>
 #include "thread_queue.h"
 #include <windows.h>
 
@@ -81,7 +82,7 @@ private:
 	thread_queue<EGEMSG> msgkey_queue, msgmouse_queue;
 
 public:
-	::HANDLE threadui_handle;
+	std::thread ui_thread;
 
 
 	/*鼠标状态记录*/
@@ -104,7 +105,7 @@ public:
 	::DWORD g_t_buff[1024 * 8];
 	::HWND _g_attach_hwnd = nullptr;
 
-	_graph_setting(int, int);
+	_graph_setting(int, int*);
 	_graph_setting(const _graph_setting&) = delete;
 
 	bool
@@ -232,7 +233,7 @@ public:
 
 
 _graph_setting&
-get_global_state(int = TRUECOLORSIZE, int = 0);
+get_global_state(int = VGA, int* = {});
 
 } // namespace ege;
 

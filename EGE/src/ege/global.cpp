@@ -59,109 +59,6 @@ EnumResNameProc(::HMODULE hModule, ::LPCTSTR, ::LPTSTR lpszName,
 	return true;
 }
 
-::DWORD WINAPI
-messageloopthread(LPVOID lpParameter)
-{
-	auto& g(*reinterpret_cast<_graph_setting*>(lpParameter));
-	const int nCmdShow(SW_SHOW);
-	static ::WNDCLASSEX wcex;
-
-	wcex.cbSize = sizeof(wcex);
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = getProcfunc();
-	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = 0;
-	wcex.hInstance = g.instance;
-	wcex.hIcon = ::LoadIcon(nullptr, IDI_WINLOGO);
-	wcex.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = (::HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszClassName = g.window_class_name;
-
-	const auto load([&](::LPCTSTR rt){
-		::HICON hico = nullptr;
-
-		EnumResourceNames(g.instance, rt, EnumResNameProc,
-			::LONG_PTR(&hico));
-		if(hico)
-			wcex.hIcon = hico;
-		return hico;
-	});
-	do
-	{
-		if(load(RT_ANIICON))
-			break;
-		if(load(RT_GROUP_ICON))
-			break;
-		if(load(RT_ICON))
-			break;
-	}while(0);
-	::RegisterClassEx(&wcex);
-
-	//执行应用程序初始化
-	const auto dw(::GetSystemMetrics(SM_CXFRAME) * 2),
-		dh(::GetSystemMetrics(SM_CYFRAME)
-		+ ::GetSystemMetrics(SM_CYCAPTION) * 2);
-
-	if(g._g_attach_hwnd)
-	{
-		::LONG_PTR style = ::GetWindowLongPtrW(g._g_attach_hwnd, GWL_STYLE);
-		style |= WS_CHILDWINDOW | WS_CLIPCHILDREN;
-		::SetWindowLongPtrW(g._g_attach_hwnd, GWL_STYLE, style);
-	}
-	g.hwnd = ::CreateWindowEx(g_windowexstyle, g.window_class_name,
-		g.window_caption, g_windowstyle & ~WS_VISIBLE, _g_windowpos_x,
-		_g_windowpos_y, g.dc_w + dw, g.dc_h + dh, g._g_attach_hwnd, nullptr,
-		g.instance, nullptr);
-	if(!g.hwnd)
-		return 0xFFFFFFFF;
-	if(g._g_attach_hwnd)
-	{
-		wchar_t name[64];
-
-		std::swprintf(name, L"ege_%X",
-			::DWORD(::DWORD_PTR(g._g_attach_hwnd)));
-		if(::CreateEventW(nullptr, FALSE, TRUE, name))
-			if(::GetLastError() == ERROR_ALREADY_EXISTS)
-				::PostMessage(g.hwnd, WM_CLOSE, 0, 0);
-	}
-	::SetWindowLongPtrW(g.hwnd, GWLP_USERDATA, ::LONG_PTR(&g));
-	g.exit_window = 0;
-	::ShowWindow(g.hwnd, nCmdShow);
-	if(g_windowexstyle & WS_EX_TOPMOST)
-		::SetWindowPos(g.hwnd, HWND_TOPMOST, 0, 0, 0, 0,
-			SWP_NOSIZE | SWP_NOMOVE);
-
-	//图形初始化
-	auto hDC(::GetDC(g.hwnd));
-
-	g.dc = hDC;
-	g.window_dc = hDC;
-	g.img_timer_update = newimage();
-	setactivepage(0);
-	settarget(nullptr);
-	setvisualpage(0);
-	window_setviewport(0, 0, g.dc_w, g.dc_h);
-	//::ReleaseDC(hwnd, hDC);
-	g.mouse_show = {};
-	g.use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
-	g.close_manually = true;
-	skip_timer_mark = {};
-	::SetTimer(g.hwnd, RENDER_TIMER_ID, 50, nullptr);
-	init_finish = true;
-
-	MSG msg;
-
-	while(!g.exit_window)
-		if(::GetMessage(&msg, nullptr, 0, 0))
-		{
-			::TranslateMessage(&msg);
-			::DispatchMessage(&msg);
-		}
-		else
-			::Sleep(1);
-	return 0;
-}
-
 } // unnamed namespace;
 
 float
@@ -195,7 +92,7 @@ const ::TCHAR _graph_setting::window_class_name[32]
 	{TEXT("Easy Graphics Engine")};
 const ::TCHAR _graph_setting::window_caption[128]{EGE_TITLE};
 
-_graph_setting::_graph_setting(int gdriver, int gmode)
+_graph_setting::_graph_setting(int gdriver_n, int* gmode)
 	: instance(::GetModuleHandle(nullptr))
 {
 	static std::once_flag init_flag;
@@ -488,11 +385,108 @@ _graph_setting::_init_graph_x(int* gdriver, int* gmode)
 	}
 	std::call_once(init_flag, [this]{
 	//	::SECURITY_ATTRIBUTES sa{};
-		::DWORD pid;
+	//	::DWORD pid;
 
 		init_finish = false;
-		threadui_handle = ::CreateThread(nullptr, 0, messageloopthread,
-			this, 0, &pid);
+		ui_thread = std::thread([this]{
+			const int nCmdShow(SW_SHOW);
+			static ::WNDCLASSEX wcex;
+
+			wcex.cbSize = sizeof(wcex);
+			wcex.style = CS_HREDRAW | CS_VREDRAW;
+			wcex.lpfnWndProc = getProcfunc();
+			wcex.cbClsExtra = 0;
+			wcex.cbWndExtra = 0;
+			wcex.hInstance = instance;
+			wcex.hIcon = ::LoadIcon(nullptr, IDI_WINLOGO);
+			wcex.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
+			wcex.hbrBackground = (::HBRUSH)(COLOR_WINDOW + 1);
+			wcex.lpszClassName = window_class_name;
+
+			const auto load([&](::LPCTSTR rt){
+				::HICON hico = nullptr;
+
+				EnumResourceNames(instance, rt, EnumResNameProc,
+					::LONG_PTR(&hico));
+				if(hico)
+					wcex.hIcon = hico;
+				return hico;
+			});
+			do
+			{
+				if(load(RT_ANIICON))
+					break;
+				if(load(RT_GROUP_ICON))
+					break;
+				if(load(RT_ICON))
+					break;
+			}while(0);
+			::RegisterClassEx(&wcex);
+
+			//执行应用程序初始化
+			const auto dw(::GetSystemMetrics(SM_CXFRAME) * 2),
+				dh(::GetSystemMetrics(SM_CYFRAME)
+				+ ::GetSystemMetrics(SM_CYCAPTION) * 2);
+
+			if(_g_attach_hwnd)
+			{
+				::LONG_PTR style = ::GetWindowLongPtrW(_g_attach_hwnd, GWL_STYLE);
+				style |= WS_CHILDWINDOW | WS_CLIPCHILDREN;
+				::SetWindowLongPtrW(_g_attach_hwnd, GWL_STYLE, style);
+			}
+			hwnd = ::CreateWindowEx(g_windowexstyle, window_class_name,
+				window_caption, g_windowstyle & ~WS_VISIBLE,
+				_g_windowpos_x, _g_windowpos_y, dc_w + dw, dc_h + dh,
+				_g_attach_hwnd, nullptr, instance, nullptr);
+			if(!hwnd)
+				return ::DWORD(0xFFFFFFFF);
+			if(_g_attach_hwnd)
+			{
+				wchar_t name[64];
+
+				std::swprintf(name, L"ege_%X",
+					::DWORD(::DWORD_PTR(_g_attach_hwnd)));
+				if(::CreateEventW(nullptr, FALSE, TRUE, name))
+					if(::GetLastError() == ERROR_ALREADY_EXISTS)
+						::PostMessage(hwnd, WM_CLOSE, 0, 0);
+			}
+			::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
+			exit_window = 0;
+			::ShowWindow(hwnd, nCmdShow);
+			if(g_windowexstyle & WS_EX_TOPMOST)
+				::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
+					SWP_NOSIZE | SWP_NOMOVE);
+
+			//图形初始化
+			auto hDC(::GetDC(hwnd));
+
+			dc = hDC;
+			window_dc = hDC;
+			img_timer_update = newimage();
+			setactivepage(0);
+			settarget(nullptr);
+			setvisualpage(0);
+			window_setviewport(0, 0, dc_w, dc_h);
+			//::ReleaseDC(hwnd, hDC);
+			mouse_show = {};
+			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
+			close_manually = true;
+			skip_timer_mark = {};
+			::SetTimer(hwnd, RENDER_TIMER_ID, 50, nullptr);
+			init_finish = true;
+
+			MSG msg;
+
+			while(!exit_window)
+				if(::GetMessage(&msg, nullptr, 0, 0))
+				{
+					::TranslateMessage(&msg);
+					::DispatchMessage(&msg);
+				}
+				else
+					::Sleep(1);
+			return ::DWORD(0);
+		});
 		while(!init_finish)
 			::Sleep(1);
 		::UpdateWindow(hwnd);
@@ -953,10 +947,10 @@ _graph_setting::_window_destroy(msg_createwindow& msg)
 
 
 _graph_setting&
-get_global_state(int gdriver, int gmode)
+get_global_state(int gdriver_n, int* gmode)
 {
 	static std::unique_ptr<_graph_setting>
-		p(new _graph_setting(gdriver, gmode));
+		p(new _graph_setting(gdriver_n, gmode));
 
 	return *p;
 }
