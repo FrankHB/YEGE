@@ -44,7 +44,6 @@ namespace
 	| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE);
 ::DWORD g_windowexstyle(WS_EX_LEFT | WS_EX_LTRREADING);
 int _g_windowpos_x(CW_USEDEFAULT), _g_windowpos_y(CW_USEDEFAULT);
-bool init_finish;
 
 CALLBACK ::BOOL
 EnumResNameProc(::HMODULE hModule, ::LPCTSTR, ::LPTSTR lpszName,
@@ -387,9 +386,9 @@ _graph_setting::_init_graph_x()
 	std::call_once(init_flag, [this]{
 	//	::SECURITY_ATTRIBUTES sa{};
 	//	::DWORD pid;
+		bool init_finish{};
 
-		init_finish = {};
-		ui_thread = std::thread([this]{
+		ui_thread = std::thread([this, &init_finish]{
 			const int nCmdShow(SW_SHOW);
 			static ::WNDCLASSEX wcex;
 
