@@ -196,9 +196,6 @@ public:
 	void
 	_push_mouse_msg(::UINT, ::WPARAM, ::LPARAM);
 
-	int
-	_redraw_window(::HDC);
-
 	void
 	_render_normal();
 

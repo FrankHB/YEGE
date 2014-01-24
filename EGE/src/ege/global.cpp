@@ -808,21 +808,6 @@ _graph_setting::_push_mouse_msg(::UINT message, ::WPARAM wparam,
 		::UINT()});
 }
 
-int
-_graph_setting::_redraw_window(::HDC dc)
-{
-	int page = visual_page;
-	::HDC hDC = img_page[page]->m_hDC;
-	int left = img_page[page]->m_vpt.left,
-		top = img_page[page]->m_vpt.top;
-	//::HRGN rgn = img_page[page]->m_rgn;
-
-	::BitBlt(dc, 0, 0, base_w, base_h, hDC, base_x - left, base_y - top,
-		SRCCOPY);
-	update_mark_count = UPDATE_MAX_CALL;
-	return 0;
-}
-
 void
 _graph_setting::_render_normal()
 {
@@ -863,10 +848,17 @@ _graph_setting::_update()
 	if(IsWindowVisible(hwnd))
 	{
 		hdc = window_dc;
-
 		if(!hdc)
 			return grNullPointer;
-		_redraw_window(hdc);
+		int page = visual_page;
+		::HDC hDC = img_page[page]->m_hDC;
+		int left = img_page[page]->m_vpt.left,
+			top = img_page[page]->m_vpt.top;
+		//::HRGN rgn = img_page[page]->m_rgn;
+
+		::BitBlt(hdc, 0, 0, base_w, base_h, hDC, base_x - left, base_y - top,
+			SRCCOPY);
+		update_mark_count = UPDATE_MAX_CALL;
 	}
 	else
 		update_mark_count = UPDATE_MAX_CALL;
