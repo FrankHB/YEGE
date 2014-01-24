@@ -39,7 +39,6 @@ IMAGE::IMAGE(int width, int height)
 		newimage(img->m_hDC, width, height);
 	else
 		newimage(get_global_state().dc, width, height);
-	CONVERT_IMAGE_END;
 }
 
 IMAGE::IMAGE(IMAGE & img)
@@ -237,7 +236,6 @@ IMAGE::createimage(int width, int height)
 
 	int ret = newimage(img->m_hDC, width, height);
 
-	CONVERT_IMAGE_END;
 
 	return ret;
 }
@@ -248,7 +246,6 @@ IMAGE::resize(int width, int height)
 	inittest(L"IMAGE::createimage");
 	const auto img = CONVERT_IMAGE_CONST(nullptr);
 	int ret = newimage(img->m_hDC, width, height);
-	CONVERT_IMAGE_END;
 	if(ret)
 	{
 		return ret;
@@ -276,7 +273,6 @@ IMAGE::copyimage(IMAGE* pSrcImg)
 	{
 		memcpy(getbuffer(), img->getbuffer(), m_width * m_height * 4); // 4 byte per pixel
 	}
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -289,7 +285,6 @@ IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 
 	if(ret == 0)
 		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight, img->m_hDC, srcX, srcY, SRCCOPY);
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -297,7 +292,6 @@ IMAGE::getimage(int srcX, int srcY, int srcWidth, int srcHeight)
 {
 	const auto img = CONVERT_IMAGE_CONST(nullptr);
 	getimage(img, srcX, srcY, srcWidth, srcHeight);
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -306,7 +300,6 @@ IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	inittest(L"IMAGE::putimage");
 	const auto img = CONVERT_IMAGE(pDstImg);
 	::BitBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC, srcX, srcY, dwRop);
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -320,7 +313,6 @@ IMAGE::putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int s
 {
 	const auto img = CONVERT_IMAGE(nullptr);
 	putimage(img, dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -328,7 +320,6 @@ IMAGE::putimage(int dstX, int dstY, ::DWORD dwRop) const
 {
 	const auto img = CONVERT_IMAGE(nullptr);
 	putimage(img, dstX, dstY, dwRop);
-	CONVERT_IMAGE_END;
 }
 
 int
@@ -390,7 +381,6 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 	pPicture->get_Height(&lHeight);
 	lHeightPixels
 		= ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-	CONVERT_IMAGE_END;
 
 	createimage(lWidthPixels, lHeightPixels);
 
@@ -647,7 +637,6 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 		pPicture->get_Height(&lHeight);
 		lHeightPixels = ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY),
 							   2540);
-		CONVERT_IMAGE_END;
 
 		createimage(lWidthPixels, lHeightPixels);
 		{
@@ -700,7 +689,6 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 		lWidthPixels = ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
 		lHeightPixels = ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-		CONVERT_IMAGE_END;
 
 		createimage(lWidthPixels, lHeightPixels);
 
@@ -763,7 +751,6 @@ IMAGE::getimage(void * pMem, long size)
 		pPicture->get_Height(&lHeight);
 		lHeightPixels = ::MulDiv(lHeight,
 			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-		CONVERT_IMAGE_END;
 
 		createimage(lWidthPixels, lHeightPixels);
 
@@ -789,7 +776,6 @@ IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 		StretchBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC,
 			srcX, srcY, srcWidth, srcHeight, dwRop);
 	}
-	CONVERT_IMAGE_END;
 }
 
 /* private function */
@@ -901,7 +887,6 @@ IMAGE::putimage_transparent(
 			psp += dsx;
 		}
 	}
-	CONVERT_IMAGE_END;
 	return grOk;
 }
 
@@ -955,7 +940,6 @@ IMAGE::putimage_alphablend(
 			psp += dsx;
 		}
 	}
-	CONVERT_IMAGE_END;
 	return grOk;
 }
 
@@ -1016,7 +1000,6 @@ IMAGE::putimage_alphatransparent(
 			psp += dsx;
 		}
 	}
-	CONVERT_IMAGE_END;
 	return grOk;
 }
 
@@ -1075,7 +1058,6 @@ IMAGE::putimage_withalpha(
 			psp += dsx;
 		}
 	}
-	CONVERT_IMAGE_END;
 	return grOk;
 }
 
@@ -1135,7 +1117,6 @@ IMAGE::putimage_alphafilter(
 			pap += dsx;
 		}
 	}
-	CONVERT_IMAGE_END;
 	return grOk;
 }
 
@@ -2677,7 +2658,6 @@ putimage_rotate(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 		putimage_trangle(dc_dest, imgtexture, &_dt[1], &_tt[1], btransparent,
 			alpha, smooth);
 	}
-	CONVERT_IMAGE_END;
 	return grOk;
 }
 
@@ -2730,7 +2710,6 @@ putimage_rotatezoom(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 			smooth
 		);
 	}
-	CONVERT_IMAGE_END;
 	return grOk;
 }
 

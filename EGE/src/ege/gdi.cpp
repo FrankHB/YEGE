@@ -77,7 +77,6 @@ saveimage(IMAGE* pimg, const char* filename)
 
 	if(img)
 		ret = img->saveimage(filename);
-	CONVERT_IMAGE_END;
 	return ret;
 }
 
@@ -89,7 +88,6 @@ saveimage(IMAGE* pimg, const wchar_t* filename)
 
 	if(img)
 		ret = img->saveimage(filename);
-	CONVERT_IMAGE_END;
 	return ret;
 }
 

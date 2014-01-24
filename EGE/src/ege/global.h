@@ -67,16 +67,12 @@ struct _graph_setting
 
 private:
 	bool exit_flag;
-
-public:
-	int     exit_window;
-	bool    use_force_exit; //强制关闭进程标记
-	bool    lock_window;
-
-private:
+	int exit_window;
+	bool use_force_exit; //强制关闭进程标记
 	thread_queue<EGEMSG> msgkey_queue, msgmouse_queue;
 
 public:
+	bool lock_window;
 	std::thread ui_thread;
 
 
@@ -105,7 +101,7 @@ public:
 	_is_run() const;
 
 	IMAGE*
-	_get_target()
+	_get_target() const
 	{
 		return imgtarget_set;
 	}

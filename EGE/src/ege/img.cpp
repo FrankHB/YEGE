@@ -9,20 +9,16 @@ int
 getwidth(IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE_CONST(pimg);
-	CONVERT_IMAGE_END;
-	if(img)
-		return img->m_width;
-	return 0;
+
+	return img ? img->m_width : 0;
 }
 
 int
 getheight(IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE_CONST(pimg);
-	CONVERT_IMAGE_END;
-	if(img)
-		return img->m_height;
-	return 0;
+
+	return img ? img->m_height : 0;
 }
 
 int
@@ -34,10 +30,8 @@ getx(IMAGE* pimg)
 	{
 		::POINT pt;
 		::GetCurrentPositionEx(img->m_hDC, &pt);
-		CONVERT_IMAGE_END;
 		return pt.x;
 	}
-	CONVERT_IMAGE_END;
 	return -1;
 }
 
@@ -50,10 +44,8 @@ gety(IMAGE* pimg)
 	{
 		::POINT pt;
 		::GetCurrentPositionEx(img->m_hDC, &pt);
-		CONVERT_IMAGE_END;
 		return pt.y;
 	}
-	CONVERT_IMAGE_END;
 	return -1;
 }
 
@@ -80,7 +72,6 @@ void*
 getbuffer(IMAGE* pImg)
 {
 	const auto img = CONVERT_IMAGE_CONST(pImg);
-	CONVERT_IMAGE_END;
 
 	return img->getbuffer();
 }
@@ -187,7 +178,6 @@ imagefilter_blurring(
 	{
 		ret = img->imagefilter_blurring(intensity, alpha, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest);
 	}
-	CONVERT_IMAGE_END;
 	return ret;
 }
 

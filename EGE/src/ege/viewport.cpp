@@ -20,7 +20,6 @@ getviewport(int* pleft, int* ptop, int* pright, int* pbottom, int* pclip,
 		*pbottom = img->m_vpt.bottom;
 	if(pclip)
 		*pclip = img->m_vpt.clipflag;
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -59,8 +58,6 @@ setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 
 	//OffsetViewportOrgEx(img->m_hDC, img->m_vpt.left, img->m_vpt.top, {});
 	::SetViewportOrgEx(img->m_hDC, img->m_vpt.left, img->m_vpt.top, {});
-
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -80,7 +77,6 @@ clearviewport(IMAGE* pimg)
 		::FillRect(img->m_hDC, &rect, hbr);
 		::DeleteObject(hbr);
 	}
-	CONVERT_IMAGE_END;
 }
 
 void

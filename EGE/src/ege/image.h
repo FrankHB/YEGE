@@ -21,8 +21,6 @@
 
 #define CONVERT_IMAGE_F_CONST(pimg) CONVERT_IMAGE_CONST(pimg)
 
-#define CONVERT_IMAGE_END
-
 namespace ege
 {
 

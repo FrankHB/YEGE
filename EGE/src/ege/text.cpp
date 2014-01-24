@@ -130,7 +130,6 @@ outtext(const char* textstring, IMAGE* pimg)
 		::GetCurrentPositionEx(img->m_hDC, &pt);
 		private_textout(img, textstring, pt.x, pt.y, -1, -1);
 	}
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -144,7 +143,6 @@ outtext(const wchar_t* textstring, IMAGE* pimg)
 		::GetCurrentPositionEx(img->m_hDC, &pt);
 		private_textout(img, textstring, pt.x, pt.y, -1, -1);
 	}
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -170,7 +168,6 @@ outtextxy(int x, int y, const char* textstring, IMAGE* pimg)
 	{
 		private_textout(img, textstring, x, y, -1, -1);
 	}
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -182,7 +179,6 @@ outtextxy(int x, int y, const wchar_t* textstring, IMAGE* pimg)
 	{
 		private_textout(img, textstring, x, y, -1, -1);
 	}
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -211,7 +207,6 @@ outtextrect(int x, int y, int w, int h, const char*  textstring, IMAGE* pimg)
 		::DrawTextA(img->m_hDC, textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
 	}
 
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -226,7 +221,6 @@ outtextrect(int x, int y, int w, int h, const wchar_t* textstring, IMAGE* pimg)
 		::DrawTextW(img->m_hDC, textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
 	}
 
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -293,10 +287,8 @@ textwidth(const char* textstring, IMAGE* pimg)
 	{
 		SIZE sz;
 		GetTextExtentPoint32A(img->m_hDC, textstring, (int)strlen(textstring), &sz);
-		CONVERT_IMAGE_END;
 		return sz.cx;
 	}
-	CONVERT_IMAGE_END;
 	return 0;
 }
 
@@ -308,10 +300,8 @@ textwidth(const wchar_t* textstring, IMAGE* pimg)
 	{
 		SIZE sz;
 		GetTextExtentPoint32W(img->m_hDC, textstring, (int)::lstrlenW(textstring), &sz);
-		CONVERT_IMAGE_END;
 		return sz.cx;
 	}
-	CONVERT_IMAGE_END;
 	return 0;
 }
 
@@ -337,10 +327,8 @@ textheight(const char* textstring, IMAGE* pimg)
 	{
 		SIZE sz;
 		GetTextExtentPoint32A(img->m_hDC, textstring, (int)strlen(textstring), &sz);
-		CONVERT_IMAGE_END;
 		return sz.cy;
 	}
-	CONVERT_IMAGE_END;
 	return 0;
 }
 
@@ -352,10 +340,8 @@ textheight(const wchar_t* textstring, IMAGE* pimg)
 	{
 		SIZE sz;
 		GetTextExtentPoint32W(img->m_hDC, textstring, (int)::lstrlenW(textstring), &sz);
-		CONVERT_IMAGE_END;
 		return sz.cy;
 	}
-	CONVERT_IMAGE_END;
 	return 0;
 }
 
@@ -382,7 +368,6 @@ settextjustify(int horiz, int vert, IMAGE* pimg)
 		img->m_texttype.horiz = horiz;
 		img->m_texttype.vert = vert;
 	}
-	CONVERT_IMAGE_END;
 }
 
 
@@ -415,7 +400,6 @@ setfont(
 		::HFONT hfont = ::CreateFontIndirectA(&lf);
 		::DeleteObject(::SelectObject(img->m_hDC, hfont));
 	}
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -447,7 +431,6 @@ setfont(
 		::HFONT hfont = ::CreateFontIndirectW(&lf);
 		::DeleteObject(::SelectObject(img->m_hDC, hfont));
 	}
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -475,7 +458,6 @@ setfont(
 		::HFONT hfont = ::CreateFontIndirectA(&lf);
 		::DeleteObject(::SelectObject(img->m_hDC, hfont));
 	}
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -503,7 +485,6 @@ setfont(
 		::HFONT hfont = ::CreateFontIndirectW(&lf);
 		::DeleteObject(::SelectObject(img->m_hDC, hfont));
 	}
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -520,7 +501,6 @@ setfont(int nHeight, int nWidth, const char* lpszFace, IMAGE* pimg)
 		::HFONT hfont = ::CreateFontIndirectA(&lf);
 		::DeleteObject(::SelectObject(img->m_hDC, hfont));
 	}
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -537,7 +517,6 @@ setfont(int nHeight, int nWidth, const wchar_t* lpszFace, IMAGE* pimg)
 		::HFONT hfont = ::CreateFontIndirectW(&lf);
 		::DeleteObject(::SelectObject(img->m_hDC, hfont));
 	}
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -547,7 +526,6 @@ setfont(const ::LOGFONTA* font, IMAGE* pimg)
 
 	if(img)
 		::DeleteObject(::SelectObject(img->m_hDC, ::CreateFontIndirectA(font)));
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -557,7 +535,6 @@ setfont(const ::LOGFONTW* font, IMAGE* pimg)
 
 	if(img)
 		::DeleteObject(::SelectObject(img->m_hDC, ::CreateFontIndirectW(font)));
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -568,7 +545,6 @@ getfont(::LOGFONTA* font, IMAGE* pimg)
 	if(img)
 		::GetObjectA((::HFONT)::GetCurrentObject(img->m_hDC, OBJ_FONT),
 			sizeof(::LOGFONTA), font);
-	CONVERT_IMAGE_END;
 }
 
 void
@@ -579,7 +555,6 @@ getfont(::LOGFONTW* font, IMAGE* pimg)
 	if(img)
 		::GetObjectW((::HFONT)::GetCurrentObject(img->m_hDC, OBJ_FONT),
 			sizeof(::LOGFONTA), font);
-	CONVERT_IMAGE_END;
 }
 
 
