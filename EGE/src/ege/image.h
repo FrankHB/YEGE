@@ -29,10 +29,10 @@ namespace ege
 // 定义图像对象
 class IMAGE
 {
-	int     m_initflag;
+	int m_initflag;
 
 public:
-	::HDC         m_hDC;
+	::HDC m_hDC = {};
 	::HBITMAP     m_hBmp;
 	int         m_width;
 	int         m_height;
@@ -51,9 +51,9 @@ public:
 	linestyletype       m_linestyle;
 	float               m_linewidth;
 	color_t             m_bk_color;
-	void*               m_pattern_obj;
+	void* m_pattern_obj = {};
 	int                 m_pattern_type;
-	void*               m_texture;
+	void* m_texture = {};
 
 private:
 	void inittest(const wchar_t* strCallFunction = {}) const;

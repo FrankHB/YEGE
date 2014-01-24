@@ -28,25 +28,12 @@ static ::HPEN g_pen_def;
 static ::HFONT g_font_def;
 
 IMAGE::IMAGE()
-{
-	m_initflag = IMAGE_INIT_FLAG;
-	m_hDC = {};
-	m_pattern_obj = {};
-	m_texture = {};
-	const auto img = CONVERT_IMAGE_CONST(nullptr);
-	if(img)
-		newimage(img->m_hDC, 1, 1);
-	else
-		newimage(get_global_state().dc, 1, 1);
-	CONVERT_IMAGE_END;
-}
+	: IMAGE(1, 1)
+{}
 
 IMAGE::IMAGE(int width, int height)
+	: m_initflag(IMAGE_INIT_FLAG)
 {
-	m_initflag = IMAGE_INIT_FLAG;
-	m_hDC = {};
-	m_pattern_obj = {};
-	m_texture = {};
 	const auto img = CONVERT_IMAGE_CONST(nullptr);
 	if(img)
 		newimage(img->m_hDC, width, height);
@@ -56,11 +43,8 @@ IMAGE::IMAGE(int width, int height)
 }
 
 IMAGE::IMAGE(IMAGE & img)
+	: m_initflag(IMAGE_INIT_FLAG)
 {
-	m_initflag = IMAGE_INIT_FLAG;
-	m_hDC = {};
-	m_pattern_obj = {};
-	m_texture = {};
 	newimage(img.m_hDC, img.m_width, img.m_height);
 	::BitBlt(m_hDC, 0, 0, img.m_width, img.m_height, img.m_hDC, 0, 0, SRCCOPY);
 }
