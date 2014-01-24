@@ -432,7 +432,7 @@ putpixel(int x, int y, color_t color, IMAGE* pimg)
 color_t
 getpixel_f(int x, int y, IMAGE* pimg)
 {
-	IMAGE* img = CONVERT_IMAGE_F_CONST(pimg);
+	IMAGE* img = CONVERT_IMAGE_CONST(pimg);
 	color_t col = img->m_pBuffer[y * img->m_width + x];
 	return col;
 }
@@ -440,7 +440,7 @@ getpixel_f(int x, int y, IMAGE* pimg)
 void
 putpixel_f(int x, int y, color_t color, IMAGE* pimg)
 {
-	IMAGE* img = CONVERT_IMAGE_F(pimg);
+	IMAGE* img = CONVERT_IMAGE(pimg);
 	img->m_pBuffer[y * img->m_width + x] = color;
 }
 

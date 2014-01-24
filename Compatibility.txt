@@ -63,7 +63,7 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别
 移除 ASSERT_TRUE 宏。
 移除非接口函数 detectgraph 、message_addkeyhandler 和 message_addmousehandler 的孤立实现。
 使用 std::thread 代替 WinAPI 操作线程。
-移除 CONVERT_IMAGE_END 宏。
+移除 CONVERT_IMAGE_END 、CONVERT_IMAGE_F 和 CONVERT_IMAGE_F_CONST 宏。
 
 实现质量(QoI)
 ----

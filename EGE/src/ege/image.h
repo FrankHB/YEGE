@@ -17,10 +17,6 @@
 									 : get_global_state().imgtarget)\
 										: pimg)
 
-#define CONVERT_IMAGE_F(pimg) CONVERT_IMAGE(pimg)
-
-#define CONVERT_IMAGE_F_CONST(pimg) CONVERT_IMAGE_CONST(pimg)
-
 namespace ege
 {
 
