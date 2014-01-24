@@ -49,10 +49,6 @@ struct _graph_setting
 		int width;
 		int height;
 	} graph;
-	struct _aspectratio
-	{
-		float xasp, yasp;
-	} aspectratio;
 
 	::HDC dc;
 	::HDC window_dc;
