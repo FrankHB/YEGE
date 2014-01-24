@@ -74,7 +74,6 @@ private:
 
 public:
 	int     exit_window;
-	bool    close_manually;
 	bool    use_force_exit; //强制关闭进程标记
 	bool    lock_window;
 

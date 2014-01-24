@@ -471,7 +471,6 @@ _graph_setting::_init_graph_x()
 			//::ReleaseDC(hwnd, hDC);
 			mouse_show = {};
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
-			close_manually = true;
 			skip_timer_mark = {};
 			::SetTimer(hwnd, RENDER_TIMER_ID, 50, {});
 			init_finish = true;
@@ -538,7 +537,7 @@ _graph_setting::_on_destroy()
 		::ReleaseDC(hwnd, window_dc);
 		// release objects, not finish
 	::PostQuitMessage(0);
-	if(close_manually && use_force_exit)
+	if(use_force_exit)
 		::ExitProcess(0);
 }
 
