@@ -46,7 +46,11 @@ IMAGE::IMAGE(IMAGE & img)
 
 IMAGE::~IMAGE()
 {
-	deleteimage();
+	::DeleteObject(::SelectObject(m_hDC, g_hbmp_def));
+	::DeleteObject(::SelectObject(m_hDC, g_hbr_def));
+	::DeleteObject(::SelectObject(m_hDC, g_pen_def));
+	::DeleteObject(::SelectObject(m_hDC, g_font_def));
+	::DeleteDC(m_hDC);
 }
 
 void IMAGE::inittest(const wchar_t * strCallFunction) const
@@ -66,18 +70,6 @@ IMAGE::gentexture(bool gen)
 {
 	m_texture.reset(gen ? new Gdiplus::Bitmap(getwidth(), getheight(),
 		getwidth() * 4, PixelFormat32bppARGB, (BYTE*)getbuffer()) : nullptr);
-}
-
-int
-IMAGE::deleteimage()
-{
-	::DeleteObject(::SelectObject(m_hDC, g_hbmp_def));
-	::DeleteObject(::SelectObject(m_hDC, g_hbr_def));
-	::DeleteObject(::SelectObject(m_hDC, g_pen_def));
-	::DeleteObject(::SelectObject(m_hDC, g_font_def));
-	::DeleteDC(m_hDC);
-	m_hDC = {};
-	return 0;
 }
 
 int

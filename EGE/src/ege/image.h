@@ -35,8 +35,7 @@ public:
 	bool m_aa;
 
 private:
-	int  newimage(::HDC hdc, int width, int height);
-	int  deleteimage();
+	int newimage(::HDC hdc, int width, int height);
 
 public:
 	viewporttype m_vpt;
