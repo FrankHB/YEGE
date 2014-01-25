@@ -63,9 +63,8 @@ struct _graph_setting
 	::HINSTANCE instance;
 	::HWND    hwnd;
 
-	int exit_window;
-
 private:
+	bool exit_window;
 	bool exit_flag;
 	bool use_force_exit; //强制关闭进程标记
 	thread_queue<EGEMSG> msgkey_queue, msgmouse_queue;
@@ -146,7 +145,13 @@ public:
 	_kbhit_ex(int);
 
 	int
+	_kbmsg();
+
+	int
 	_keystate(int);
+
+	bool
+	_mousemsg();
 
 	void
 	_on_destroy();

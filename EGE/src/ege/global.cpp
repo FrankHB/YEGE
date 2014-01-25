@@ -497,6 +497,12 @@ _graph_setting::_kbhit_ex(int flag)
 }
 
 int
+_graph_setting::_kbmsg()
+{
+	return exit_window ? int(grNoInitGraph) : int(_peekallkey(1));
+}
+
+int
 _graph_setting::_keystate(int key)
 {
 	if(key < 0 || key >= MAX_KEY_VCODE)
@@ -504,6 +510,12 @@ _graph_setting::_keystate(int key)
 	if(!(::USHORT(::GetKeyState(key)) & 0x8000))
 		keystatemap[key] = 0;
 	return keystatemap[key];
+}
+
+bool
+_graph_setting::_mousemsg()
+{
+	return exit_window ? false : bool(_peekmouse().hwnd);
 }
 
 void

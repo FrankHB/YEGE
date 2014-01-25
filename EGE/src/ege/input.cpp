@@ -8,8 +8,7 @@ namespace ege
 int
 kbmsg()
 {
-	return get_global_state().exit_window ? int(grNoInitGraph)
-		: int(get_global_state()._peekallkey(1));
+	return get_global_state()._kbmsg();
 }
 
 key_msg
@@ -46,8 +45,7 @@ kbhit()
 bool
 mousemsg()
 {
-	return get_global_state().exit_window ? false
-		: bool(get_global_state()._peekmouse().hwnd);
+	return get_global_state()._mousemsg();
 }
 
 mouse_msg
