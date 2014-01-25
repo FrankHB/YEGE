@@ -39,24 +39,6 @@ namespace
 double delay_ms_dwLast;
 double delay_fps_dwLast;
 
-void
-_delay_update()
-{
-	if(update_mark_count < UPDATE_MAX_CALL)
-	{
-		ege_sleep(1);
-		egectrl_root->draw({});
-		get_global_state()._dealmessage(true);
-		egectrl_root->update();
-
-		int l, t, r, b, c;
-
-		getviewport(&l, &t, &r, &b, &c);
-		setviewport(l, t, r, b, c);
-	}
-	delay_ms_dwLast = _get_highfeq_time_ls() * 1000.0;
-}
-
 } // unnamed namespace;
 
 
@@ -90,7 +72,21 @@ void
 delay_ms(long ms)
 {
 	if(ms == 0)
-		_delay_update();
+	{
+		if(update_mark_count < UPDATE_MAX_CALL)
+		{
+			ege_sleep(1);
+			egectrl_root->draw({});
+			get_global_state()._update();
+			egectrl_root->update();
+
+			int l, t, r, b, c;
+
+			getviewport(&l, &t, &r, &b, &c);
+			setviewport(l, t, r, b, c);
+		}
+		delay_ms_dwLast = _get_highfeq_time_ls() * 1000.0;
+	}
 	else
 	{
 		double delay_time(ms);
@@ -109,7 +105,7 @@ delay_ms(long ms)
 		{
 			if(f <= 0 || update_mark_count < UPDATE_MAX_CALL)
 			{
-				get_global_state()._dealmessage(true);
+				get_global_state()._update();
 				f = 256;
 			}
 			else
@@ -117,7 +113,7 @@ delay_ms(long ms)
 					* 1000.0));
 			--f;
 		}
-		get_global_state()._dealmessage(true);
+		get_global_state()._update();
 		dw = _get_highfeq_time_ls() * 1000.0;
 		get_global_state()._update_GUI();
 		egectrl_root->update();
@@ -154,7 +150,7 @@ delay_fps(double fps)
 					* 1000.0));
 			} while(dw + delay_time >= _get_highfeq_time_ls() * 1000.0);
 		}
-		get_global_state()._dealmessage(true);
+		get_global_state()._update();
 		dw = _get_highfeq_time_ls() * 1000.0;
 		get_global_state()._update_GUI();
 		egectrl_root->update();
@@ -193,7 +189,7 @@ delay_jfps(double fps)
 			bSleep = 1;
 		}
 		if(bSleep)
-			get_global_state()._dealmessage(true);
+			get_global_state()._update();
 		else
 			_get_FPS(-0x100);
 		dw = _get_highfeq_time_ls() * 1000.0;

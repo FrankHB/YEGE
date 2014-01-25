@@ -110,9 +110,6 @@ public:
 	void
 	_set_visualpage(int);
 
-	int
-	_dealmessage(bool);
-
 	void
 	_flushkey();
 
@@ -198,6 +195,9 @@ public:
 
 	void
 	_update_GUI();
+
+	void
+	_update_if_necessary();
 
 	int
 	_waitdealmessage();

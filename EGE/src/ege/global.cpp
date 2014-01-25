@@ -195,21 +195,13 @@ _graph_setting::_set_visualpage(int page)
 	update_mark_count = 0;
 }
 
-int
-_graph_setting::_dealmessage(bool force_update)
-{
-	if(force_update || update_mark_count <= 0)
-		_update();
-	return _is_run();
-}
-
 void
 _graph_setting::_flushkey()
 {
 	EGEMSG msg;
 
 	if(msgkey_queue.empty())
-		_dealmessage({});
+		_update_if_necessary();
 	if(!msgkey_queue.empty())
 		while(msgkey_queue.pop(msg))
 			;
@@ -221,7 +213,7 @@ _graph_setting::_flushmouse()
 	EGEMSG msg;
 
 	if(msgmouse_queue.empty())
-		_dealmessage({});
+		_update_if_necessary();
 	if(!msgmouse_queue.empty())
 		while(msgmouse_queue.pop(msg))
 			;
@@ -277,7 +269,7 @@ _graph_setting::_getflush()
 	int lastkey = 0;
 
 	if(msgkey_queue.empty())
-		_dealmessage({});
+		_update_if_necessary();
 	if(!msgkey_queue.empty())
 		while(msgkey_queue.pop(msg))
 			if(msg.message == WM_CHAR)
@@ -718,7 +710,7 @@ _graph_setting::_peekmouse()
 	auto msg = EGEMSG();
 
 	if(msgmouse_queue.empty())
-		_dealmessage({});
+		_update_if_necessary();
 	while(msgmouse_queue.pop(msg))
 	{
 		msgmouse_queue.unpop();
@@ -803,10 +795,8 @@ _graph_setting::_update()
 
 		::BitBlt(hdc, 0, 0, base_w, base_h, hDC, base_x - left, base_y - top,
 			SRCCOPY);
-		update_mark_count = UPDATE_MAX_CALL;
 	}
-	else
-		update_mark_count = UPDATE_MAX_CALL;
+	update_mark_count = UPDATE_MAX_CALL;
 	_get_FPS(0x100);
 
 	::RECT rect, crect;
@@ -837,6 +827,13 @@ _graph_setting::_update()
 			SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 	}
 	return grOk;
+}
+
+void
+_graph_setting::_update_if_necessary()
+{
+	if(update_mark_count <= 0)
+		_update();
 }
 
 void
