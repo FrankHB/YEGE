@@ -3,7 +3,10 @@
 
 #include "ege/gapi.h"
 #include "ege/viewport.h"
+#include <memory> // for std::unique_ptr;
 #include <windows.h>
+#include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
+#include <gdiplus.h>
 
 #define CONVERT_IMAGE(pimg) ( ((size_t)(pimg)<0x20 ? ((pimg) ? \
 	(get_pages().img_page[(size_t)(pimg) & 0xF]) \
@@ -41,9 +44,8 @@ public:
 	linestyletype m_linestyle;
 	float m_linewidth;
 	color_t m_bk_color;
-	void* m_pattern_obj = {};
-	int m_pattern_type;
-	void* m_texture = {};
+	std::unique_ptr<Gdiplus::Brush> m_pattern{};
+	std::unique_ptr<Gdiplus::Image> m_texture{};
 
 private:
 	void inittest(const wchar_t* strCallFunction = {}) const;
@@ -54,8 +56,7 @@ public:
 	IMAGE(IMAGE& img);              // 拷贝构造函数
 	IMAGE& operator = (const IMAGE& img); // 赋值运算符重载函数
 	~IMAGE();
-	void set_pattern(void* obj, int type);
-	void delete_pattern();
+
 	void gentexture(bool gen);
 
 	::HDC

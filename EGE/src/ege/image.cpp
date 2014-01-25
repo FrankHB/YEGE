@@ -5,8 +5,6 @@
 #include <utility> // for std::swap;
 #include <ocidl.h>
 #include <olectl.h>
-#include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
-#include <gdiplus.h>
 #include "../libpng/png.h"
 #include "../libpng/pngstruct.h"
 #include "../libpng/pnginfo.h"
@@ -48,8 +46,6 @@ IMAGE::IMAGE(IMAGE & img)
 
 IMAGE::~IMAGE()
 {
-	gentexture({});
-	delete_pattern();
 	deleteimage();
 }
 
@@ -66,48 +62,10 @@ void IMAGE::inittest(const wchar_t * strCallFunction) const
 }
 
 void
-IMAGE::set_pattern(void * obj, int type)
-{
-	delete_pattern();
-	m_pattern_type = type;
-	m_pattern_obj = obj;
-}
-
-void
-IMAGE::delete_pattern()
-{
-	if(!m_pattern_obj) return;
-
-	if(m_pattern_type == pattern_none)
-		;
-	else if(m_pattern_type == pattern_lineargradient)
-		delete (Gdiplus::LinearGradientBrush*)m_pattern_obj;
-	else if(m_pattern_type == pattern_pathgradient)
-		delete (Gdiplus::PathGradientBrush*)m_pattern_obj;
-	else if(m_pattern_type == pattern_texture)
-		delete (Gdiplus::TextureBrush*)m_pattern_obj;
-	m_pattern_obj = {};
-}
-
-void
 IMAGE::gentexture(bool gen)
 {
-	if(!gen)
-	{
-		if(m_texture)
-		{
-			delete (Gdiplus::Bitmap*)m_texture;
-			m_texture = {};
-		}
-	}
-	else
-	{
-		if(m_texture)
-			gentexture(true);
-		Gdiplus::Bitmap* bitmap = new Gdiplus::Bitmap(getwidth(), getheight(),
-			getwidth() * 4, PixelFormat32bppARGB, (BYTE*)getbuffer());
-		m_texture = bitmap;
-	}
+	m_texture.reset(gen ? new Gdiplus::Bitmap(getwidth(), getheight(),
+		getwidth() * 4, PixelFormat32bppARGB, (BYTE*)getbuffer()) : nullptr);
 }
 
 int
