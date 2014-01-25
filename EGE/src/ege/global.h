@@ -65,9 +65,10 @@ struct _graph_setting
 	::HINSTANCE instance;
 	::HWND    hwnd;
 
+	int exit_window;
+
 private:
 	bool exit_flag;
-	int exit_window;
 	bool use_force_exit; //强制关闭进程标记
 	thread_queue<EGEMSG> msgkey_queue, msgmouse_queue;
 
@@ -91,8 +92,6 @@ public:
 
 	/* 键盘状态记录 */
 	int keystatemap[MAX_KEY_VCODE];
-
-	static ::HWND _g_attach_hwnd;
 
 	_graph_setting(int, int*);
 	_graph_setting(const _graph_setting&) = delete;

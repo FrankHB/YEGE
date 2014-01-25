@@ -40,9 +40,6 @@ setcaption(const char*  caption);
 EGEAPI void
 setcaption(const wchar_t* caption);
 
-EGEAPI int
-attachHWND(::HWND hWnd);
-
 EGEAPI ::HWND
 getHWnd();         // 获取绘图窗口句柄
 

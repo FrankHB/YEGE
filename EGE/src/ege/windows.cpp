@@ -21,13 +21,6 @@ setcaption(const wchar_t* caption)
 	::SetWindowTextW(getHWnd(), caption);
 }
 
-int
-attachHWND(::HWND hWnd)
-{
-	_graph_setting::_g_attach_hwnd = hWnd;
-	return 0;
-}
-
 ::HWND
 getHWnd()
 {

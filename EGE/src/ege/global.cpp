@@ -90,7 +90,6 @@ _set_initmode(int mode, int x, int y)
 const ::TCHAR _graph_setting::window_class_name[32]
 	{TEXT("Easy Graphics Engine")};
 const ::TCHAR _graph_setting::window_caption[128]{EGE_TITLE};
-::HWND _graph_setting::_g_attach_hwnd{};
 
 _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 	: instance(::GetModuleHandle({}))
@@ -135,12 +134,6 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 				break;
 		}while(0);
 		::RegisterClassEx(&wcex);
-		if(_g_attach_hwnd)
-		{
-			::LONG_PTR style = ::GetWindowLongPtrW(_g_attach_hwnd, GWL_STYLE);
-			style |= WS_CHILDWINDOW | WS_CLIPCHILDREN;
-			::SetWindowLongPtrW(_g_attach_hwnd, GWL_STYLE, style);
-		}
 	});
 
 	assert(gdriver_n);
@@ -150,10 +143,7 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 		assert(gmode);
 		::RECT rect;
 
-		if(_g_attach_hwnd)
-			::GetClientRect(_g_attach_hwnd, &rect);
-		else
-			::GetWindowRect(GetDesktopWindow(), &rect);
+		::GetWindowRect(GetDesktopWindow(), &rect);
 		dc_w = short(*gmode & 0xFFFF);
 		dc_h = short(unsigned(*gmode >> 16));
 		if(dc_w < 0)
@@ -437,20 +427,10 @@ _graph_setting::_init_graph_x()
 				+ ::GetSystemMetrics(SM_CYCAPTION) * 2);
 			hwnd = ::CreateWindowEx(g_windowexstyle, window_class_name,
 				window_caption, g_windowstyle & ~WS_VISIBLE,
-				_g_windowpos_x, _g_windowpos_y, dc_w + dw, dc_h + dh,
-				_g_attach_hwnd, {}, instance, {});
+				_g_windowpos_x, _g_windowpos_y, dc_w + dw, dc_h + dh, {}, {},
+				instance, {});
 			if(!hwnd)
 				return ::DWORD(0xFFFFFFFF);
-			if(_g_attach_hwnd)
-			{
-				wchar_t name[64];
-
-				std::swprintf(name, L"ege_%X",
-					::DWORD(::DWORD_PTR(_g_attach_hwnd)));
-				if(::CreateEventW({}, {}, TRUE, name))
-					if(::GetLastError() == ERROR_ALREADY_EXISTS)
-						::PostMessage(hwnd, WM_CLOSE, 0, 0);
-			}
 			::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
 			exit_window = 0;
 			::ShowWindow(hwnd, nCmdShow);
