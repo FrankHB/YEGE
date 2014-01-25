@@ -30,11 +30,7 @@ IMAGE::IMAGE()
 {}
 
 IMAGE::IMAGE(int width, int height)
-	: IMAGE([]{
-		const auto img = get_pages().imgtarget;
-
-		return img ? img->m_hDC : get_pages().active_dc;
-	}(), width, height)
+	: IMAGE(get_pages().get_image_context(), width, height)
 {}
 
 IMAGE::IMAGE(::HDC hdc, int width, int height)
