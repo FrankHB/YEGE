@@ -327,29 +327,10 @@ void MoveStar(int i, double dt)
 	putpixel((int)(star[i].x * sc_width), star[i].y, star[i].color);
 }
 
-int preinit(int argc, char* argv[])
+int preinit(int, char* [])
 {
 	setinitmode(INIT_NOBORDER | INIT_TOPMOST);   // 指定初始化为无边框顶层窗口，并且窗口左上角坐标为(0, 0)
 	g_max = MAXSTAR;
-	if(argc < 2)
-	{
-		//::MessageBoxA( {}, "本屏幕保护程序无配置", "星空屏保", MB_OK );
-		//return -1;
-	}
-	else if(stricmp(argv[1], "/p") == 0)          // 小窗口预览模式
-	{
-		::HWND hwnd;
-		sscanf(argv[2], "%d", &hwnd);
-		attachHWND(hwnd);   // 新ege函数
-		setinitmode(INIT_NOBORDER | INIT_CHILD | INIT_WITHLOGO);   // 指定初始化为无边框子窗口
-		g_max = 200;
-		return 1;
-	}
-	else if(stricmp(argv[1], "/s"))          // 非测试运行模式
-	{
-		::MessageBoxA({}, "本屏幕保护程序无配置", "星空屏保", MB_OK);
-		return -1;
-	}
 	return 0; // 全屏模式
 }
 
