@@ -227,7 +227,7 @@ int
 IMAGE::resize(int width, int height)
 {
 	inittest(L"IMAGE::resize");
-	return init_image(get_pages().imgtarget->m_hDC, width, height);
+	return init_image(m_hDC, width, height);
 }
 
 void
