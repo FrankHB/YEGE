@@ -154,13 +154,13 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 bool
 _graph_setting::_is_run() const
 {
-	return !(_is_window_exit() || exit_flag);
+	return ui_thread.joinable();
 }
 
 bool
 _graph_setting::_is_window_exit() const
 {
-	return exit_window;
+	return !_is_run();
 }
 
 void
@@ -200,7 +200,7 @@ _graph_setting::_dealmessage(bool force_update)
 {
 	if(force_update || update_mark_count <= 0)
 		_update();
-	return !_is_window_exit();
+	return _is_run();
 }
 
 void
@@ -290,7 +290,7 @@ _graph_setting::_getkey()
 {
 	key_msg ret{0, key_msg_none, 0};
 
-	if(!_is_window_exit())
+	if(_is_run())
 	{
 		int key = 0;
 
@@ -436,7 +436,6 @@ _graph_setting::_init_graph_x()
 			if(!hwnd)
 				return ::DWORD(0xFFFFFFFF);
 			::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
-			exit_window = 0;
 			::ShowWindow(hwnd, nCmdShow);
 			if(g_windowexstyle & WS_EX_TOPMOST)
 				::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
@@ -460,7 +459,7 @@ _graph_setting::_init_graph_x()
 
 			MSG msg;
 
-			while(!_is_window_exit())
+			while(_is_run())
 				if(::GetMessage(&msg, {}, 0, 0))
 				{
 					::TranslateMessage(&msg);
@@ -483,8 +482,6 @@ _graph_setting::_init_graph_x()
 			setrendermode(RENDER_MANUAL);
 		mouse_show = true;
 	});
-	exit_flag = {};
-	exit_window = 0;
 	for(int page = 0; page < BITMAP_PAGE_SIZE; ++page)
 		if(img_page[page])
 			img_page[page]->createimage(dc_w, dc_h);
@@ -527,7 +524,9 @@ _graph_setting::_mousemsg()
 void
 _graph_setting::_on_destroy()
 {
-	exit_window = 1;
+	assert(_is_run());
+
+	ui_thread.detach(); // XXX: Use std::thread::join on non-UI thread instead.
 	if(dc)
 		::ReleaseDC(hwnd, window_dc);
 		// release objects, not finish
@@ -861,7 +860,7 @@ _graph_setting::_waitdealmessage()
 		egectrl_root->update();
 	}
 	ege_sleep(1);
-	return !_is_window_exit();
+	return _is_run();
 }
 
 void

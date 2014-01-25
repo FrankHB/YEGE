@@ -64,8 +64,6 @@ struct _graph_setting
 	::HWND    hwnd;
 
 private:
-	bool exit_window;
-	bool exit_flag;
 	bool use_force_exit; //强制关闭进程标记
 	thread_queue<EGEMSG> msgkey_queue, msgmouse_queue;
 
