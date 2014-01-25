@@ -171,7 +171,7 @@ _graph_setting::_set_activepage(int page)
 	{
 		img_page[page] = new IMAGE;
 		img_page[page]->createimage(dc_w, dc_h);
-		dc = img_page[page]->m_hDC;
+		active_dc = img_page[page]->m_hDC;
 	}
 }
 
@@ -436,7 +436,7 @@ _graph_setting::_init_graph_x()
 			//图形初始化
 			auto hDC(::GetDC(hwnd));
 
-			dc = hDC;
+			active_dc = hDC;
 			window_dc = hDC;
 			img_timer_update = newimage();
 			setactivepage(0);
@@ -519,7 +519,7 @@ _graph_setting::_on_destroy()
 	assert(_is_run());
 
 	ui_thread.detach(); // XXX: Use std::thread::join on non-UI thread instead.
-	if(dc)
+	if(active_dc)
 		::ReleaseDC(hwnd, window_dc);
 		// release objects, not finish
 	::PostQuitMessage(0);
@@ -722,39 +722,54 @@ _graph_setting::_peekmouse()
 void
 _graph_setting::_process_ui_msg(EGEMSG& qmsg)
 {
-	if((qmsg.flag & 1))
+	if(qmsg.flag & 1)
 		return;
 	qmsg.flag |= 1;
 	if(qmsg.message >= WM_KEYFIRST && qmsg.message <= WM_KEYLAST)
-	{
-		if(qmsg.message == WM_KEYDOWN)
+		switch(qmsg.message)
+		{
+		case WM_KEYDOWN:
 			egectrl_root->keymsgdown(unsigned(qmsg.wParam), 0); // 以后补加flag
-		else if(qmsg.message == WM_KEYUP)
+			break;
+		case WM_KEYUP:
 			egectrl_root->keymsgup(unsigned(qmsg.wParam), 0); // 以后补加flag
-		else if(qmsg.message == WM_CHAR)
+			break;
+		case WM_CHAR:
 			egectrl_root->keymsgchar(unsigned(qmsg.wParam), 0); // 以后补加flag
-	}
+		default:
+			break;
+		}
 	else if(qmsg.message >= WM_MOUSEFIRST && qmsg.message <= WM_MOUSELAST)
 	{
 		int x = (short int)((::UINT)qmsg.lParam & 0xFFFF),
 			y = (short int)((::UINT)qmsg.lParam >> 16);
-		if(qmsg.message == WM_LBUTTONDOWN)
-			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_left);
-		else if(qmsg.message == WM_LBUTTONUP)
-			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_left);
-		else if(qmsg.message == WM_RBUTTONDOWN)
-			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_right);
-		else if(qmsg.message == WM_RBUTTONUP)
-			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_right);
-		else if(qmsg.message == WM_MOUSEMOVE)
-		{
-			int flag = 0;
 
-			if(keystatemap[VK_LBUTTON])
-				flag |= mouse_flag_left;
-			if(keystatemap[VK_RBUTTON])
-				flag |= mouse_flag_right;
-			egectrl_root->mouse(x, y, mouse_msg_move | flag);
+		switch(qmsg.message)
+		{
+		case WM_LBUTTONDOWN:
+			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_left);
+			break;
+		case WM_LBUTTONUP:
+			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_left);
+			break;
+		case WM_RBUTTONDOWN:
+			egectrl_root->mouse(x, y, mouse_msg_down | mouse_flag_right);
+			break;
+		case WM_RBUTTONUP:
+			egectrl_root->mouse(x, y, mouse_msg_up | mouse_flag_right);
+			break;
+		case WM_MOUSEMOVE:
+			{
+				int flag = 0;
+
+				if(keystatemap[VK_LBUTTON])
+					flag |= mouse_flag_left;
+				if(keystatemap[VK_RBUTTON])
+					flag |= mouse_flag_right;
+				egectrl_root->mouse(x, y, mouse_msg_move | flag);
+			}
+		default:
+			break;
 		}
 	}
 }
@@ -781,42 +796,36 @@ _graph_setting::_update()
 	if(_is_window_exit())
 		return grNoInitGraph;
 
-	::HDC hdc;
 	if(IsWindowVisible(hwnd))
 	{
-		hdc = window_dc;
-		if(!hdc)
+		if(!window_dc)
 			return grNullPointer;
-		int page = visual_page;
-		::HDC hDC = img_page[page]->m_hDC;
-		int left = img_page[page]->m_vpt.left,
-			top = img_page[page]->m_vpt.top;
-		//::HRGN rgn = img_page[page]->m_rgn;
 
-		::BitBlt(hdc, 0, 0, base_w, base_h, hDC, base_x - left, base_y - top,
-			SRCCOPY);
+	//	::HRGN rgn = img_page[visual_page]->m_rgn;
+
+		::BitBlt(window_dc, 0, 0, base_w, base_h, img_page[visual_page]->m_hDC,
+			base_x - img_page[visual_page]->m_vpt.left,
+			base_y - img_page[visual_page]->m_vpt.top, SRCCOPY);
 	}
 	update_mark_count = UPDATE_MAX_CALL;
 	_get_FPS(0x100);
 
-	::RECT rect, crect;
-	::HWND h_wnd;
-	int _dw, _dh;
+	::RECT crect;
 
 	::GetClientRect(hwnd, &crect);
-	::GetWindowRect(hwnd, &rect);
 
-	int w = dc_w, h = dc_h;
-	_dw = w - (crect.right - crect.left);
-	_dh = h - (crect.bottom - crect.top);
+	int _dw = dc_w - (crect.right - crect.left),
+		_dh = dc_h - (crect.bottom - crect.top);
 	if(_dw != 0 || _dh != 0)
 	{
-		h_wnd = ::GetParent(hwnd);
-		if(h_wnd)
+		::RECT rect;
+
+		::GetWindowRect(hwnd, &rect);
+		if(::HWND h_parent_wnd = ::GetParent(hwnd))
 		{
 			::POINT pt{0, 0};
 
-			::ClientToScreen(h_wnd, &pt);
+			::ClientToScreen(h_parent_wnd, &pt);
 			rect.left -= pt.x;
 			rect.top -= pt.y;
 			rect.right -= pt.x;

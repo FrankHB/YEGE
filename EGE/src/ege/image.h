@@ -27,26 +27,26 @@ class IMAGE
 
 public:
 	::HDC m_hDC = {};
-	::HBITMAP     m_hBmp;
-	int         m_width;
-	int         m_height;
-	PDWORD      m_pBuffer;
-	color_t     m_color;
-	color_t     m_fillcolor;
-	bool        m_aa;
+	::HBITMAP  m_hBmp;
+	int m_width;
+	int m_height;
+	PDWORD m_pBuffer;
+	color_t m_color;
+	color_t m_fillcolor;
+	bool m_aa;
 
 private:
 	int  newimage(::HDC hdc, int width, int height);
 	int  deleteimage();
 
 public:
-	viewporttype        m_vpt;
-	textsettingstype    m_texttype;
-	linestyletype       m_linestyle;
-	float               m_linewidth;
-	color_t             m_bk_color;
+	viewporttype m_vpt;
+	textsettingstype m_texttype;
+	linestyletype m_linestyle;
+	float m_linewidth;
+	color_t m_bk_color;
 	void* m_pattern_obj = {};
-	int                 m_pattern_type;
+	int m_pattern_type;
 	void* m_texture = {};
 
 private:
@@ -62,42 +62,65 @@ public:
 	void delete_pattern();
 	void gentexture(bool gen);
 
-	::HDC getdc()        const
+	::HDC
+	getdc() const
 	{
 		return m_hDC;
 	}
-	int getwidth()     const
+	int
+	getwidth() const
 	{
 		return m_width;
 	}
-	int getheight()    const
+	int
+	getheight() const
 	{
 		return m_height;
 	}
-	PDWORD getbuffer() const
+	PDWORD
+	getbuffer() const
 	{
 		return m_pBuffer;
 	}
 
-	int  createimage(int width, int height);
-	int  resize(int width, int height);
-	void copyimage(IMAGE* pSrcImg);
-	void getimage(int srcX, int srcY, int srcWidth, int srcHeight);
-	void getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);
-	int  getimage(const char* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
-	int  getimage(const wchar_t* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
-	int  getimage(const char* pResType, const char* pResName, int zoomWidth = 0, int zoomHeight = 0);
-	int  getimage(const wchar_t* pResType, const wchar_t* pResName, int zoomWidth = 0, int zoomHeight = 0);
-	int  getimage(void* pMem, long size);
-	void putimage(int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;
-	void putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop = SRCCOPY) const;
-	void putimage(IMAGE* pDstImg, int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;
-	void putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop = SRCCOPY) const;
-	void putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop = SRCCOPY) const;
-	int  saveimage(const char*  filename);
-	int  saveimage(const wchar_t* filename);
-	int  getpngimg(FILE* fp);
-	int  savepngimg(FILE* fp, int bAlpha);
+	int
+	createimage(int width, int height);
+	int
+	resize(int width, int height);
+	void
+	copyimage(IMAGE* pSrcImg);
+	void
+	getimage(int srcX, int srcY, int srcWidth, int srcHeight);
+	void
+	getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);
+	int
+	getimage(const char* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
+	int
+	getimage(const wchar_t* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
+	int
+	getimage(const char* pResType, const char* pResName, int zoomWidth = 0, int zoomHeight = 0);
+	int
+	getimage(const wchar_t* pResType, const wchar_t* pResName, int zoomWidth = 0, int zoomHeight = 0);
+	int
+	getimage(void* pMem, long size);
+	void
+	putimage(int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;
+	void
+	putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop = SRCCOPY) const;
+	void
+	putimage(IMAGE* pDstImg, int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;
+	void
+	putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop = SRCCOPY) const;
+	void
+	putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop = SRCCOPY) const;
+	int
+	saveimage(const char*  filename);
+	int
+	saveimage(const wchar_t* filename);
+	int
+	getpngimg(FILE* fp);
+	int
+	savepngimg(FILE* fp, int bAlpha);
 	int
 	putimage_transparent(
 		IMAGE* imgdest,         // handle to dest

@@ -48,7 +48,7 @@ struct _graph_setting
 		int height;
 	} graph;
 
-	::HDC dc;
+	::HDC active_dc;
 	::HDC window_dc;
 	int dc_w = 640, dc_h = 480;
 	IMAGE* img_page[BITMAP_PAGE_SIZE];
