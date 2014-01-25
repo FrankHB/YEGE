@@ -87,7 +87,7 @@ resize(IMAGE* pDstImg, int width, int height)
 void
 getimage(IMAGE* pDstImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
-	pDstImg->getimage(srcX, srcY, srcWidth, srcHeight);
+	pDstImg->getimage(get_pages().imgtarget, srcX, srcY, srcWidth, srcHeight);
 }
 void
 getimage(IMAGE* pDstImg, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth,

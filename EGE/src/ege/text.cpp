@@ -601,7 +601,7 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int le
 	int w = 400, h = 300, x = (getwidth() - w) / 2, y = (getheight() - h) / 2;
 	int ret = 0;
 
-	bg.getimage(0, 0, getwidth(), getheight());
+	bg.getimage(get_pages().imgtarget, 0, 0, getwidth(), getheight());
 	window.createimage(w, h);
 	buf[0] = 0;
 

@@ -229,8 +229,10 @@ void
 IMAGE::copyimage(IMAGE* pSrcImg)
 {
 	inittest(L"IMAGE::copyimage");
+
 	const auto img = CONVERT_IMAGE_CONST(pSrcImg);
 	int ret = 0;
+
 	if(m_width != img->m_width || m_height != img->m_height)
 		ret = init_image({}, img->m_width, img->m_height);
 	if(ret == 0)
@@ -242,46 +244,12 @@ IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
 	inittest(L"IMAGE::getimage");
 
-	const auto img = CONVERT_IMAGE_CONST(pSrcImg);
-	int ret = init_image({}, srcWidth, srcHeight);
+	if(init_image({}, srcWidth, srcHeight) == 0)
+	{
+		const auto img = CONVERT_IMAGE_CONST(pSrcImg);
 
-	if(ret == 0)
 		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight, img->m_hDC, srcX, srcY, SRCCOPY);
-}
-
-void
-IMAGE::getimage(int srcX, int srcY, int srcWidth, int srcHeight)
-{
-	const auto img = get_pages().imgtarget;
-	getimage(img, srcX, srcY, srcWidth, srcHeight);
-}
-
-void
-IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop) const
-{
-	inittest(L"IMAGE::putimage");
-	const auto img = CONVERT_IMAGE(pDstImg);
-	::BitBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC, srcX, srcY, dwRop);
-}
-
-void
-IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, ::DWORD dwRop) const
-{
-	putimage(pDstImg, dstX, dstY, m_width, m_height, 0, 0, dwRop);
-}
-
-void
-IMAGE::putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop) const
-{
-	const auto img = CONVERT_IMAGE(nullptr);
-	putimage(img, dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
-}
-
-void
-IMAGE::putimage(int dstX, int dstY, ::DWORD dwRop) const
-{
-	const auto img = CONVERT_IMAGE(nullptr);
-	putimage(img, dstX, dstY, dwRop);
+	}
 }
 
 int
@@ -302,10 +270,8 @@ int
 IMAGE::getimage(const wchar_t* filename, int, int)
 {
 	inittest(L"IMAGE::getimage");
-	{
-		int ret = getimage_pngfile(this, filename);
-		if(ret == 0) return 0;
-	}
+	if(getimage_pngfile(this, filename) == 0)
+		return 0;
 
 	struct IPicture* pPicture;
 	OLECHAR wszPath[MAX_PATH * 2 + 1];
@@ -315,13 +281,9 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 	::HRESULT hr;
 
 	if(wcsstr(filename, L"http://"))
-	{
 		::lstrcpyW(szPath, filename);
-	}
 	else if(filename[1] == ':')
-	{
 		::lstrcpyW(szPath, filename);
-	}
 	else
 	{
 		::GetCurrentDirectoryW(MAX_PATH * 2, szPath);
@@ -352,6 +314,34 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 					 lWidth, -lHeight, {});
 	pPicture->Release();
 	return grOk;
+}
+
+void
+IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop) const
+{
+	inittest(L"IMAGE::putimage");
+	const auto img = CONVERT_IMAGE(pDstImg);
+	::BitBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC, srcX, srcY, dwRop);
+}
+
+void
+IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, ::DWORD dwRop) const
+{
+	putimage(pDstImg, dstX, dstY, m_width, m_height, 0, 0, dwRop);
+}
+
+void
+IMAGE::putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop) const
+{
+	const auto img = CONVERT_IMAGE(nullptr);
+	putimage(img, dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
+}
+
+void
+IMAGE::putimage(int dstX, int dstY, ::DWORD dwRop) const
+{
+	const auto img = CONVERT_IMAGE(nullptr);
+	putimage(img, dstX, dstY, dwRop);
 }
 
 // private function
@@ -465,14 +455,9 @@ IMAGE::getpngimg(FILE * fp)
 	for(std::uint32_t i = 0; i < height; ++i)
 	{
 		if(depth == 24)
-		{
 			for(std::uint32_t j = 0; j < width; ++j)
-			{
 				m_pBuffer[i * width + j] = 0xFFFFFF & (::DWORD&)row_pointers[i][j * 3];
-			}
-		}
 		else if(depth == 32)
-		{
 			for(std::uint32_t j = 0; j < width; ++j)
 			{
 				m_pBuffer[i * width + j] = ((::DWORD*)(row_pointers[i]))[j];
@@ -481,7 +466,6 @@ IMAGE::getpngimg(FILE * fp)
 					m_pBuffer[i * width + j] = 0;
 				}
 			}
-		}
 	}
 	::png_destroy_read_struct(&pic_ptr, &info_ptr, {});
 	return 0;
@@ -518,7 +502,7 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 
 	::png_init_io(pic_ptr, fp);
 	::png_set_IHDR(pic_ptr, info_ptr, width, height, 8, bAlpha ? PNG_COLOR_TYPE_RGBA : PNG_COLOR_TYPE_RGB,
-				 PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+		PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 	palette = (::png_colorp)::png_malloc(pic_ptr, PNG_MAX_PALETTE_LENGTH * sizeof(::png_color));
 	::png_set_PLTE(pic_ptr, info_ptr, palette, PNG_MAX_PALETTE_LENGTH);
 	::png_write_info(pic_ptr, info_ptr);
@@ -529,7 +513,6 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 		::png_destroy_write_struct(&pic_ptr, &info_ptr);
 		return -1;
 	}
-
 	row_pointers = (::png_bytep*)malloc(height * sizeof(::png_bytep));
 	if(!row_pointers)
 	{
@@ -538,14 +521,12 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 		image = {};
 		return -1;
 	}
-
 	for(i = 0; i < height; i++)
 	{
 		for(j = 0; j < width; ++j)\
 			(::DWORD&)image[(i * width  + j) * pixelsize] = RGBTOBGR(m_pBuffer[i * width + j]);
 		row_pointers[i] = (::png_bytep)image + i * width * pixelsize;
 	}
-
 	::png_write_image(pic_ptr, row_pointers);
 	::png_write_end(pic_ptr, info_ptr);
 	::png_free(pic_ptr, palette);
@@ -612,8 +593,6 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 	}
 	return grIOerror;
 }
-
-
 int
 IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 {
@@ -732,6 +711,7 @@ IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 {
 	inittest(L"IMAGE::putimage");
 	const auto img = CONVERT_IMAGE(pDstImg);
+
 	if(img)
 	{
 		SetStretchBltMode(img->m_hDC, COLORONCOLOR);
