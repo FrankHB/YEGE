@@ -35,7 +35,7 @@ public:
 	bool m_aa;
 
 private:
-	int newimage(::HDC hdc, int width, int height);
+	int init_image(::HDC hdc, int width, int height);
 
 public:
 	viewporttype m_vpt;
@@ -51,12 +51,19 @@ private:
 
 public:
 	IMAGE();
-	IMAGE(int width, int height);
-	IMAGE(IMAGE& img);              // 拷贝构造函数
-	IMAGE& operator = (const IMAGE& img); // 赋值运算符重载函数
+	IMAGE(int, int);
+	IMAGE(const IMAGE&);
+	IMAGE(IMAGE&&) ynothrow;
 	~IMAGE();
 
-	void gentexture(bool gen);
+	IMAGE&
+	operator=(IMAGE) ynothrow;
+
+	void
+	swap(IMAGE&) ynothrow;
+
+	void
+	gentexture(bool gen);
 
 	::HDC
 	getdc() const

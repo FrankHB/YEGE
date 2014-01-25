@@ -34,14 +34,19 @@ IMAGE::IMAGE(int width, int height)
 {
 	const auto img = get_pages().imgtarget;
 
-	newimage(img ? img->m_hDC : get_pages().active_dc, width, height);
+	init_image(img ? img->m_hDC : get_pages().active_dc, width, height);
 }
 
-IMAGE::IMAGE(IMAGE & img)
+IMAGE::IMAGE(const IMAGE& img)
 	: m_initflag(IMAGE_INIT_FLAG)
 {
-	newimage(img.m_hDC, img.m_width, img.m_height);
+	init_image(img.m_hDC, img.m_width, img.m_height);
 	::BitBlt(m_hDC, 0, 0, img.m_width, img.m_height, img.m_hDC, 0, 0, SRCCOPY);
+}
+IMAGE::IMAGE(IMAGE&& img) ynothrow
+	: m_initflag(IMAGE_INIT_FLAG)
+{
+	img.swap(*this);
 }
 
 IMAGE::~IMAGE()
@@ -51,6 +56,35 @@ IMAGE::~IMAGE()
 	::DeleteObject(::SelectObject(m_hDC, g_pen_def));
 	::DeleteObject(::SelectObject(m_hDC, g_font_def));
 	::DeleteDC(m_hDC);
+}
+
+IMAGE&
+IMAGE::operator=(IMAGE img) ynothrow
+{
+	img.swap(*this);
+	return *this;
+}
+
+void
+IMAGE::swap(IMAGE& img) ynothrow
+{
+	std::swap(m_hDC, img.m_hDC);
+	std::swap(m_hBmp, img.m_hBmp);
+	std::swap(m_width, img.m_width);
+	std::swap(m_height, img.m_height);
+	std::swap(m_pBuffer, img.m_pBuffer);
+	std::swap(m_color, img.m_color);
+	std::swap(m_fillcolor, img.m_fillcolor);
+	std::swap(m_aa, img.m_aa);
+	std::swap(m_vpt, img.m_vpt);
+	std::swap(m_pBuffer, img.m_pBuffer);
+	std::swap(m_vpt, img.m_vpt);
+	std::swap(m_texttype, img.m_texttype);
+	std::swap(m_linestyle, img.m_linestyle);
+	std::swap(m_linewidth, img.m_linewidth);
+	std::swap(m_bk_color, img.m_bk_color);
+	std::swap(m_pattern, img.m_pattern);
+	std::swap(m_texture, img.m_texture);
 }
 
 void IMAGE::inittest(const wchar_t * strCallFunction) const
@@ -73,7 +107,7 @@ IMAGE::gentexture(bool gen)
 }
 
 int
-IMAGE::newimage(::HDC hdc, int width, int height)
+IMAGE::init_image(::HDC hdc, int width, int height)
 {
 	::HDC dc;
 	::HBITMAP bitmap;
@@ -181,26 +215,14 @@ IMAGE::createimage(int width, int height)
 
 	if(!img)
 		img = &get_pages().get_apage_ref();
-
-	int ret = newimage(img->m_hDC, width, height);
-
-
-	return ret;
+	return init_image(img->m_hDC, width, height);
 }
 
 int
 IMAGE::resize(int width, int height)
 {
 	inittest(L"IMAGE::resize");
-	return newimage(get_pages().imgtarget->m_hDC, width, height);
-}
-
-IMAGE&
-IMAGE::operator=(const IMAGE& img)
-{
-	inittest(L"IMAGE::operator=");
-	getimage((IMAGE*)(&img), 0, 0, img.m_width, img.m_height);
-	return *this;
+	return init_image(get_pages().imgtarget->m_hDC, width, height);
 }
 
 void
@@ -210,7 +232,7 @@ IMAGE::copyimage(IMAGE* pSrcImg)
 	const auto img = CONVERT_IMAGE_CONST(pSrcImg);
 	int ret = 0;
 	if(m_width != img->m_width || m_height != img->m_height)
-		ret = newimage({}, img->m_width, img->m_height);
+		ret = init_image({}, img->m_width, img->m_height);
 	if(ret == 0)
 		std::memcpy(getbuffer(), img->getbuffer(), m_width * m_height * 4); // 4 byte per pixel
 }
@@ -221,7 +243,7 @@ IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 	inittest(L"IMAGE::getimage");
 
 	const auto img = CONVERT_IMAGE_CONST(pSrcImg);
-	int ret = newimage({}, srcWidth, srcHeight);
+	int ret = init_image({}, srcWidth, srcHeight);
 
 	if(ret == 0)
 		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight, img->m_hDC, srcX, srcY, SRCCOPY);
@@ -434,7 +456,7 @@ IMAGE::getpngimg(FILE * fp)
 	::png_read_png(pic_ptr, info_ptr, PNG_TRANSFORM_BGR | PNG_TRANSFORM_EXPAND, {});
 	::png_set_expand(pic_ptr);
 
-	newimage({}, (int)(info_ptr->width), (int)(info_ptr->height)); //::png_get_IHDR
+	init_image({}, (int)(info_ptr->width), (int)(info_ptr->height)); //::png_get_IHDR
 	width = info_ptr->width;
 	height = info_ptr->height;
 	depth = info_ptr->pixel_depth;
