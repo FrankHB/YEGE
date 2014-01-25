@@ -584,7 +584,7 @@ _graph_setting::_on_repaint(::HWND hwnd, ::HDC dc)
 	auto& img_timer_update = *pages.img_timer_update;
 	bool release = {};
 
-	img_timer_update.copyimage(pages.img_page[pages.visual_page]);
+	img_timer_update.copyimage(&pages.get_vpage_ref());
 	if(!dc)
 	{
 		dc = ::GetDC(hwnd);
@@ -861,46 +861,48 @@ _pages::_pages()
 	: gstate(get_global_state()), active_dc(gstate.window_dc)
 {}
 
+void
+_pages::check_page(int page) const
+{
+	const int dc_w(gstate.dc_w);
+	const int dc_h(gstate.dc_h);
+
+	if(!img_page[page])
+		img_page[page] = new IMAGE(dc_w, dc_h);
+}
+
 IMAGE&
 _pages::get_apage_ref() const
 {
-	assert(img_page[active_page]);
+	check_page(active_page);
 
 	return *img_page[active_page];
+}
+
+::HDC
+_pages::get_image_context() const
+{
+	return imgtarget ? imgtarget->m_hDC : active_dc;
 }
 
 IMAGE&
 _pages::get_vpage_ref() const
 {
-	assert(img_page[visual_page]);
+	check_page(visual_page);
 
 	return *img_page[visual_page];
 }
 
 void
 _pages::init_pages()
-{
-	const int dc_w(get_global_state().dc_w);
-	const int dc_h(get_global_state().dc_h);
-
-	for(int page = 0; page < BITMAP_PAGE_SIZE; ++page)
-		if(img_page[page])
-			img_page[page]->createimage(dc_w, dc_h);
-}
+{}
 
 void
 _pages::set_apage(int page)
 {
-	const int dc_w(get_global_state().dc_w);
-	const int dc_h(get_global_state().dc_h);
-
+	check_page(page);
 	active_page = page;
-	if(!img_page[page])
-	{
-		img_page[page] = new IMAGE;
-		img_page[page]->createimage(dc_w, dc_h);
-		active_dc = img_page[page]->m_hDC;
-	}
+	active_dc = img_page[page]->m_hDC;
 }
 
 int
@@ -914,15 +916,8 @@ _pages::set_target(IMAGE* pbuf)
 void
 _pages::set_vpage(int page)
 {
-	const int dc_w(get_global_state().dc_w);
-	const int dc_h(get_global_state().dc_h);
-
+	check_page(page);
 	visual_page = page;
-	if(!img_page[page])
-	{
-		img_page[page] = new IMAGE;
-		img_page[page]->createimage(dc_w, dc_h);
-	}
 	update_mark_count = 0;
 }
 

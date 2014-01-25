@@ -194,13 +194,19 @@ struct _pages
 	int active_page = 0;
 	int visual_page = 0;
 	IMAGE* imgtarget_set = {};
-	IMAGE* img_page[BITMAP_PAGE_SIZE] = {};
+	mutable IMAGE* img_page[BITMAP_PAGE_SIZE] = {};
 	IMAGE* imgtarget = {};
 
 	_pages();
 
+	void
+	check_page(int) const;
+
 	IMAGE&
 	get_apage_ref() const;
+
+	::HDC
+	get_image_context() const;
 
 	IMAGE&
 	get_vpage_ref() const;
