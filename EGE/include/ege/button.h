@@ -12,7 +12,7 @@
 
 /**
 * @brief 按钮控件
-*/
+ */
 class button : public egeControlBase
 {
 public:
@@ -21,13 +21,13 @@ public:
 	// 以下虚函数都不要直接相互调用
 	// 以下函数如果返回非0则不向子控件传递键盘鼠标消息
 	/**
-	* @brief 响应空格与回车的按下
-	*
-	* @param key
-	* @param flag
-	*
-	* @return 0
-	*/
+	 * @brief 响应空格与回车的按下
+	 *
+	 * @param key
+	 * @param flag
+	 *
+	 * @return 0
+	 */
 	virtual int
 	onKeyDown(int key, int)
 	{
@@ -39,13 +39,13 @@ public:
 		return 0;
 	}
 	/**
-	* @brief 响应空格与回车的弹起
-	*
-	* @param key
-	* @param flag
-	*
-	* @return 0
-	*/
+	 * @brief 响应空格与回车的弹起
+	 *
+	 * @param key
+	 * @param flag
+	 *
+	 * @return 0
+	 */
 	virtual int
 	onKeyUp(int key, int)
 	{
@@ -67,16 +67,15 @@ public:
 	}
 
 	/**
-	* @brief 响应鼠标左键点击
-	*
-	* @param x
-	* @param y
-	* @param flag
-	*
-	* @return 0
-	*/
-	virtual int
-	onMouse(int x, int y, int flag)
+	 * @brief 响应鼠标左键点击
+	 *
+	 * @param x
+	 * @param y
+	 * @param flag
+	 *
+	 * @return 0
+	 */
+	virtual int onMouse(int x, int y, int flag)
 	{
 		if((flag & mouse_flag_left) && (flag & mouse_msg_down))
 		{
@@ -107,56 +106,49 @@ public:
 		return 0;
 	}
 	/**
-	* @brief 屏幕更新后会被调用，用于更新逻辑
-	*
-	* @return 0
-	*/
-	virtual int
-	onUpdate()
+	 * @brief 屏幕更新后会被调用，用于更新逻辑
+	 *
+	 * @return 0
+	 */
+	virtual int onUpdate()
 	{
 		return 0;
 	}
 	/**
-	* @brief 在要获得焦点时调用，返回值一般返回0表示获取键盘输入焦点，返回非0放弃获得输入焦点
-	*
-	* @return 0
-	*/
-	virtual int
-	onGetFocus()
+	 * @brief 在要获得焦点时调用，返回值一般返回0表示获取键盘输入焦点，返回非0放弃获得输入焦点
+	 *
+	 * @return 0
+	 */
+	virtual int onGetFocus()
 	{
 		return 0;
 	}
 	/**
-	* @brief 失去输入焦点时调用
-	*/
-	virtual void
-	onLostFocus()
+	 * @brief 失去输入焦点时调用
+	 */
+	virtual void onLostFocus()
 	{
 		_pushed = {};
 		redraw();
 	}
 	// 设置尺寸前调用，自定义修正函数
-	virtual void
-	onSizing(int* w, int* h)
+	virtual void onSizing(int* w, int* h)
 	{
 		//egeControlBase::onSizing(w,h);
 	}
 	// 响应尺寸变化函数
-	virtual void
-	onSize(int w, int h)
+	virtual void onSize(int w, int h)
 	{
 		//egeControlBase::onSize(w,h);
 		updatesidewidth();
 		redraw();
 	}
 	// 重绘函数，尽量请画到pimg上，以便能控制绘画目标
-	virtual void
-	onDraw(IMAGE* pimg) const
+	virtual void onDraw(IMAGE* pimg) const
 	{
 	}
 	// 尺寸变化时调用，用于重画过滤缓冲区内容
-	virtual void
-	onResetFilter()
+	virtual void onResetFilter()
 	{
 	}
 	//virtual void onAddChild(egeControlBase* pChild){}
@@ -192,14 +184,14 @@ public:
 	}
 	//member functions
 	/**
-	* @brief 在回调函数指针为 nullptr 或回调函数返回0时被调用
-	*/
+	 * @brief 在回调函数指针为 nullptr 或回调函数返回0时被调用
+	 */
 	virtual void onClick()
 	{
 	}
 	/**
-	* @brief 重绘控件
-	*/
+	 * @brief 重绘控件
+	 */
 	virtual void redraw() const
 	{
 		PushTarget targer(buf());
@@ -257,12 +249,11 @@ public:
 	}
 	//attributes
 	/**
-	* @brief 设置alpha值
-	*
-	* @param alpha 0x00 - 0xFF
-	*/
-	void
-	alpha(int alpha)
+	 * @brief 设置alpha值
+	 *
+	 * @param alpha 0x00 - 0xff
+	 */
+	void alpha(int alpha)
 	{
 		if(alpha < 0)
 		{
@@ -287,227 +278,206 @@ public:
 
 	}
 	/**
-	* @brief 返回alpha值
-	*
-	* @return alpha
-	*/
-	int
-	alpha() const
+	 * @brief 返回alpha值
+	 *
+	 * @return alpha
+	 */
+	int alpha() const
 	{
 		return _alpha;
 	}
 	/**
-	* @brief 设置背景色
-	*
-	* @param color 背景色
-	*/
-	void
-	bgcolor(COLORREF color)
+	 * @brief 设置背景色
+	 *
+	 * @param color 背景色
+	 */
+	void bgcolor(COLORREF color)
 	{
 		_bg_color = color;
 		redraw();
 	}
 	/**
-	* @brief 返回背景色
-	*
-	* @return 背景色
-	*/
-	COLORREF
-	bgcolor() const
+	 * @brief 返回背景色
+	 *
+	 * @return 背景色
+	 */
+	COLORREF bgcolor() const
 	{
 		return _bg_color;
 	}
 	/**
-	* @brief 设置按钮点击回调函数
-	*
-	* @param fun 回调函数指针，当且仅当返回值为0时会自动调用onClick
-	* @param param 附加参数，将会原样传递给回调函数
-	*/
-	void
-	callback(int(*fun)(void*), void* param)
+	 * @brief 设置按钮点击回调函数
+	 *
+	 * @param fun 回调函数指针，当且仅当返回值为0时会自动调用onClick
+	 * @param param 附加参数，将会原样传递给回调函数
+	 */
+	void callback(int (*fun)(void*), void* param)
 	{
 		callback_param = param;
 		_on_click = fun;
 		redraw();
 	}
 	/**
-	* @brief 返回回调函数指针
-	*
-	* @return 回调函数指针；若未设置，返回 nullptr
-	*/
-	template<typename T>
-	T
-	callback() const
+	 * @brief 返回回调函数指针
+	 *
+	 * @return 回调函数指针；若未设置，返回 nullptr
+	 */
+	template <typename T>
+	T callback() const
 	{
 		return _on_click;
 	}
 	/**
-	* @brief 设置文本
-	*
-	* @param text 文本
-	*/
-	void
-	caption(const char* text)
+	 * @brief 设置文本
+	 *
+	 * @param text 文本
+	 */
+	void caption(const char* text)
 	{
 		strcpy(_caption, text);
 		redraw();
 	}
 	/**
-	* @brief 返回文本
-	*
-	* @return 文本
-	*/
-	const char*
-	caption() const
+	 * @brief 返回文本
+	 *
+	 * @return 文本
+	 */
+	const char* caption() const
 	{
 		return _caption;
 		//redraw();
 	}
 	/**
-	* @brief 设置字体
-	*
-	* @param fontface 字体名
-	*/
-	void
-	font(const char* fontface)
+	 * @brief 设置字体
+	 *
+	 * @param fontface 字体名
+	 */
+	void font(const char* fontface)
 	{
 		strcpy(_face, fontface);
 		redraw();
 	}
 	/**
-	* @brief 返回字体
-	*
-	* @return 字体名
-	*/
-	const char*
-	font() const
+	 * @brief 返回字体
+	 *
+	 * @return 字体名
+	 */
+	const char* font() const
 	{
 		return _face;
 		//redraw();
 	}
 	/**
-	* @brief 设置字体尺寸，待续
-	*
-	* @param height
-	*/
-	void
-	fontsize(int height)
+	 * @brief 设置字体尺寸，待续
+	 *
+	 * @param height
+	 */
+	void fontsize(int height)
 	{
 		_font_height = height;
 		redraw();
 	}
 	/**
-	* @brief 返回字体尺寸
-	*
-	* @return 字体尺寸
-	*/
-	int
-	fontsize() const
+	 * @brief 返回字体尺寸
+	 *
+	 * @return 字体尺寸
+	 */
+	int fontsize() const
 	{
 		return _font_height;
 	}
 	/**
-	* @brief 设置按钮的线条颜色
-	*
-	* @param color 颜色
-	*/
-	void
-	linecolor(COLORREF color)
+	 * @brief 设置按钮的线条颜色
+	 *
+	 * @param color 颜色
+	 */
+	void linecolor(COLORREF color)
 	{
 		_line_color = color;
 		redraw();
 	}
 	/**
-	* @brief 返回按钮线条颜色
-	*
-	* @return 线条颜色
-	*/
-	COLORREF
-	linecolor() const
+	 * @brief 返回按钮线条颜色
+	 *
+	 * @return 线条颜色
+	 */
+	COLORREF linecolor() const
 	{
 		return _line_color;
 	}
 #ifdef DEBUG
 	/**
-	* @brief 设置调试信息出口
-	*
-	* @param logger
-	*/
-	void
-	logger(label* logger)
+	 * @brief 设置调试信息出口
+	 *
+	 * @param logger
+	 */
+	void logger(label* logger)
 	{
 		_logger = logger;
 	}
 	/**
-	* @brief 返回调试信息出口
-	*
-	* @return
-	*/
-	label*
-	logger() const
+	 * @brief 返回调试信息出口
+	 *
+	 * @return
+	 */
+	label* logger() const
 	{
 		return _logger;
 	}
 #endif
 	/**
-	* @brief 设置阴影颜色
-	*
-	* @param color 阴影颜色
-	*/
-	void
-	shadowcolor(COLORREF color)
+	 * @brief 设置阴影颜色
+	 *
+	 * @param color 阴影颜色
+	 */
+	void shadowcolor(COLORREF color)
 	{
 		_shadow_color = color;
 		redraw();
 	}
 	/**
-	* @brief 返回阴影颜色
-	*
-	* @return 阴影颜色
-	*/
-	COLORREF
-	shadowcolor() const
+	 * @brief 返回阴影颜色
+	 *
+	 * @return 阴影颜色
+	 */
+	COLORREF shadowcolor() const
 	{
 		return _shadow_color;
 	}
 	/**
-	* @brief 设置文本颜色
-	*
-	* @param color 文本颜色
-	*/
-	void
-	textcolor(COLORREF color)
+	 * @brief 设置文本颜色
+	 *
+	 * @param color 文本颜色
+	 */
+	void textcolor(COLORREF color)
 	{
 		_text_color = color;
 		redraw();
 	}
 	/**
-	* @brief 返回文本颜色
-	*
-	* @return 文本颜色
-	*/
-	COLORREF
-	textcolor() const
+	 * @brief 返回文本颜色
+	 *
+	 * @return 文本颜色
+	 */
+	COLORREF textcolor() const
 	{
 		return _text_color;
 	}
 protected:
 	/**
-	* @brief 修正边的宽度
-	*/
-	void
-	updatesidewidth()
+	 * @brief 修正边的宽度
+	 */
+	void updatesidewidth()
 	{
 		_side_width = std::min(geth(), getw()) * 0.2;
 	}
 #ifdef DEBUG
 	/**
-	* @brief 输出调试信息
-	*
-	* @param msg 调试信息文本
-	*/
-	void
-	logout(const char* msg)
+	 * @brief 输出调试信息
+	 *
+	 * @param msg 调试信息文本
+	 */
+	void logout(const char* msg)
 	{
 		if(_logger)
 		{

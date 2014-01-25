@@ -94,6 +94,9 @@ public:
 	bool
 	_is_run() const;
 
+	bool
+	_is_window_exit() const;
+
 	IMAGE*
 	_get_target() const
 	{
