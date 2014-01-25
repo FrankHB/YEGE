@@ -595,14 +595,13 @@ inputbox_getline(const char* title, const char* text, char* buf, int len)
 int
 inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int len)
 {
-	auto pg = &get_global_state();
-	IMAGE bg;
-	IMAGE window;
 	int w = 400, h = 300, x = (getwidth() - w) / 2, y = (getheight() - h) / 2;
 	int ret = 0;
 
+	IMAGE bg;
 	bg.getimage(get_pages().imgtarget, 0, 0, getwidth(), getheight());
-	window.createimage(w, h);
+
+	IMAGE window(w, h);
 	buf[0] = 0;
 
 	sys_edit edit(true);
@@ -664,7 +663,7 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int le
 		buf[--len] = 0;
 	ret = len;
 	putimage(0, 0, &bg);
-	pg->_getflush();
+	get_global_state()._getflush();
 	return ret;
 }
 
