@@ -146,10 +146,10 @@ public:
 		int colormap[10]{0, 0xA00000, 0xA05000, 0xA0A000, 0xC000,
 							0x00A0A0, 0x4040C0, 0xA000A0, 0x808080, 0xFFFFFF
 						   };
-		memcpy(m_colormap, colormap, sizeof(m_colormap));
+		std::memcpy(m_colormap, colormap, sizeof(m_colormap));
 
 		int Keys[8]{VK_F2, VK_LEFT, VK_RIGHT, VK_DOWN, VK_UP, VK_NUMPAD0, VK_SPACE};
-		memcpy(m_Keys, Keys, sizeof(Keys));
+		std::memcpy(m_Keys, Keys, sizeof(Keys));
 
 		memset(m_KeyState, 0, sizeof(m_KeyState));
 		m_gamepool_w = w;
