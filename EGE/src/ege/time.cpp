@@ -55,7 +55,6 @@ _delay_update()
 		setviewport(l, t, r, b, c);
 	}
 	delay_ms_dwLast = _get_highfeq_time_ls() * 1000.0;
-	skip_timer_mark = {};
 }
 
 } // unnamed namespace;
@@ -90,7 +89,6 @@ delay(long ms)
 void
 delay_ms(long ms)
 {
-	skip_timer_mark = true;
 	if(ms == 0)
 		_delay_update();
 	else
@@ -128,7 +126,6 @@ delay_ms(long ms)
 		else
 			delay_ms_dwLast += delay_time;
 	}
-	skip_timer_mark = {};
 }
 
 /*
@@ -137,8 +134,6 @@ delay_ms(long ms)
 void
 delay_fps(double fps)
 {
-	skip_timer_mark = true;
-
 	double delay_time = 1000.0 / fps;
 	double avg_max_time = delay_time * 10.0; // 误差时间在这个数值以内做平衡
 	double dw = _get_highfeq_time_ls() * 1000.0;
@@ -169,7 +164,6 @@ delay_fps(double fps)
 		else
 			delay_fps_dwLast += delay_time;
 	}
-	skip_timer_mark = {};
 }
 
 /*
@@ -178,7 +172,6 @@ delay_fps(double fps)
 void
 delay_jfps(double fps)
 {
-	skip_timer_mark = true;
 	double delay_time = 1000.0 / fps;
 	double avg_max_time = delay_time * 10.0;
 	double dw = _get_highfeq_time_ls() * 1000.0;
@@ -212,7 +205,6 @@ delay_jfps(double fps)
 		else
 			delay_fps_dwLast += delay_time;
 	}
-	skip_timer_mark = {};
 }
 
 void

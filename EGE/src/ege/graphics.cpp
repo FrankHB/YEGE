@@ -24,10 +24,6 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		return ::DefWindowProc(hWnd, message, wParam, lParam);
 	switch(message)
 	{
-	case WM_TIMER:
-		if(pg == pg_w)
-			pg->_on_timer(hWnd, (unsigned int)wParam);
-		break;
 	case WM_PAINT:
 		if(pg == pg_w)
 			pg->_on_paint(hWnd);

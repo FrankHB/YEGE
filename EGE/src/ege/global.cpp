@@ -31,8 +31,6 @@ int _g_initoption(INIT_DEFAULT);
 bool _g_initcall;
 
 int update_mark_count; //更新标记
-bool timer_stop_mark;
-bool skip_timer_mark;
 egeControlBase* egectrl_root;
 egeControlBase* egectrl_focus;
 
@@ -451,7 +449,6 @@ _graph_setting::_init_graph_x()
 			//::ReleaseDC(hwnd, hDC);
 			mouse_show = {};
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
-			skip_timer_mark = {};
 			::SetTimer(hwnd, RENDER_TIMER_ID, 50, {});
 			init_finish = true;
 
@@ -599,17 +596,9 @@ _graph_setting::_on_mouse_button_up(::HWND h_wnd, ::UINT msg, ::WPARAM w_param,
 void
 _graph_setting::_on_paint(::HWND hwnd)
 {
-	if(!lock_window)
-	{
-		::PAINTSTRUCT ps;
+	::PAINTSTRUCT ps;
 
-		_on_repaint(hwnd, ::BeginPaint(hwnd, &ps));
-	}
-	else
-	{
-		::ValidateRect(hwnd, {});
-		--update_mark_count;
-	}
+	_on_repaint(hwnd, ::BeginPaint(hwnd, &ps));
 }
 
 void
@@ -649,24 +638,6 @@ _graph_setting::_on_setcursor(::HWND hwnd)
 			::SetCursor({});
 		else
 			::SetCursor(::LoadCursor({}, IDC_ARROW));
-	}
-}
-
-void
-_graph_setting::_on_timer(::HWND hwnd, unsigned id)
-{
-	if(!skip_timer_mark && id == RENDER_TIMER_ID)
-	{
-		if(update_mark_count <= 0)
-		{
-			update_mark_count = UPDATE_MAX_CALL;
-			_on_repaint(hwnd, {});
-		}
-		if(timer_stop_mark)
-		{
-			timer_stop_mark = {};
-			skip_timer_mark = true;
-		}
 	}
 }
 
@@ -788,29 +759,6 @@ _graph_setting::_push_mouse_msg(::UINT message, ::WPARAM wparam,
 		::UINT()});
 }
 
-void
-_graph_setting::_render_normal()
-{
-	delay_ms(0);
-	::SetTimer(hwnd, RENDER_TIMER_ID, 0, {});
-	skip_timer_mark = {};
-	lock_window = {};
-}
-
-void
-_graph_setting::_render_manual()
-{
-	if(!lock_window)
-	{
-		::KillTimer(hwnd, RENDER_TIMER_ID);
-		timer_stop_mark = true;
-		::PostMessageW(hwnd, WM_TIMER, RENDER_TIMER_ID, 0);
-		lock_window = true;
-		while(timer_stop_mark)
-			::Sleep(1);
-	}
-}
-
 int
 _graph_setting::_show_mouse(bool bShow)
 {
@@ -902,8 +850,7 @@ void
 _graph_setting::_window_create(msg_createwindow& msg)
 {
 	msg.hwnd = ::CreateWindowExW(msg.exstyle, msg.classname, {},
-		msg.style, 0, 0, 0, 0, getHWnd(), (HMENU)msg.id, getHInstance(),
-		{});
+		msg.style, 0, 0, 0, 0, getHWnd(), (HMENU)msg.id, getHInstance(), {});
 	if(msg.hEvent)
 		::SetEvent(msg.hEvent);
 }

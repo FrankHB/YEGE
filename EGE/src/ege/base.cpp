@@ -5,12 +5,8 @@ namespace ege
 {
 
 void
-setrendermode(rendermode_e mode)
+setrendermode(rendermode_e)
 {
-	if(mode == RENDER_MANUAL)
-		get_global_state()._render_manual();
-	else
-		get_global_state()._render_normal();
 }
 
 }

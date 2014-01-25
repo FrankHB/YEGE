@@ -33,6 +33,7 @@ Code::Blocks 。
 函数 showmouse 和 mousemsg 的参数/返回值使用 bool 代替 int 。
 宏 CTL_* 的定义不再被默认包含。若需使用，另行包含 <ege/mac.h> 或 <ege/ctl.h> 等。
 移除函数 attachHWND 以避免潜在的死锁。
+函数 setrendermode 无效，默认状态统一为 setrendermode(RENDER_MANUAL) ；仅为兼容性保留。
 
 向后兼容但不保证向前兼容原始实现的接口
 ----
@@ -65,6 +66,7 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别
 移除非接口函数 detectgraph 、message_addkeyhandler 和 message_addmousehandler 的孤立实现。
 使用 std::thread 代替 WinAPI 操作线程。
 移除 CONVERT_IMAGE_END 、CONVERT_IMAGE_F 和 CONVERT_IMAGE_F_CONST 宏。
+移除 setrendermode 实现所需的计时器例程；主窗口消息循环不响应 WM_TIMER 。
 
 实现质量(QoI)
 ----

@@ -599,18 +599,14 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int le
 	IMAGE bg;
 	IMAGE window;
 	int w = 400, h = 300, x = (getwidth() - w) / 2, y = (getheight() - h) / 2;
-	bool lock_window = {};
 	int ret = 0;
 
 	bg.getimage(0, 0, getwidth(), getheight());
 	window.createimage(w, h);
 	buf[0] = 0;
 
-	lock_window = pg->lock_window;
-	if(!lock_window)
-		setrendermode(RENDER_MANUAL);
-
 	sys_edit edit(true);
+
 	edit.create(true);
 	edit.move(x + 30 + 1, y + 192 + 1);
 	edit.size(w - (30 + 1) * 2, h - 40 - 192 - 2);
@@ -668,8 +664,6 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int le
 		buf[--len] = 0;
 	ret = len;
 	putimage(0, 0, &bg);
-	if(!lock_window)
-		setrendermode(RENDER_AUTO);
 	pg->_getflush();
 	return ret;
 }

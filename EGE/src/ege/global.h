@@ -27,8 +27,6 @@ extern int _g_initoption;
 extern bool _g_initcall;
 
 extern int update_mark_count; //更新标记
-extern bool timer_stop_mark;
-extern bool skip_timer_mark;
 /* egeControlBase */
 extern egeControlBase* egectrl_root;
 extern egeControlBase* egectrl_focus;
@@ -73,9 +71,7 @@ private:
 	thread_queue<EGEMSG> msgkey_queue, msgmouse_queue;
 
 public:
-	bool lock_window;
 	std::thread ui_thread;
-
 
 	/*鼠标状态记录*/
 	int mouse_state_l, mouse_state_m, mouse_state_r;
@@ -173,9 +169,6 @@ public:
 	void
 	_on_setcursor(::HWND);
 
-	void
-	_on_timer(::HWND, unsigned);
-
 	int
 	_peekkey();
 
@@ -190,12 +183,6 @@ public:
 
 	void
 	_push_mouse_msg(::UINT, ::WPARAM, ::LPARAM);
-
-	void
-	_render_normal();
-
-	void
-	_render_manual();
 
 	int
 	_show_mouse(bool);
