@@ -208,18 +208,6 @@ IMAGE::init_image(::HDC hdc, int width, int height)
 }
 
 int
-IMAGE::createimage(int width, int height)
-{
-	inittest(L"IMAGE::createimage");
-
-	auto img = get_pages().imgtarget;
-
-	if(!img)
-		img = &get_pages().get_apage_ref();
-	return init_image(img->m_hDC, width, height);
-}
-
-int
 IMAGE::resize(int width, int height)
 {
 	inittest(L"IMAGE::resize");
@@ -294,7 +282,7 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 
 	::lstrcpyW(wszPath, szPath);
 	hr = ::OleLoadPicturePath(wszPath, {}, 0, 0, IID_IPicture,
-							  (void**)&pPicture);
+		(void**)&pPicture);
 	if(FAILED(hr))
 		return grIOerror;
 
@@ -306,13 +294,9 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 	pPicture->get_Height(&lHeight);
 	lHeightPixels
 		= ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-
-	createimage(lWidthPixels, lHeightPixels);
-
-	::HDC dc = m_hDC;
-
-	pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-					 lWidth, -lHeight, {});
+	resize(lWidthPixels, lHeightPixels);
+	pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+		lWidth, -lHeight, {});
 	pPicture->Release();
 	return grOk;
 }
@@ -576,19 +560,14 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 		IMAGE* img(get_pages().imgtarget);
 
 		pPicture->get_Width(&lWidth);
-		lWidthPixels = ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX),
-							  2540);
+		lWidthPixels = ::MulDiv(lWidth,
+			::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
-		lHeightPixels = ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY),
-							   2540);
-
-		createimage(lWidthPixels, lHeightPixels);
-		{
-			auto dc(m_hDC);
-
-			pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-							 lWidth, -lHeight, {});
-		}
+		lHeightPixels = ::MulDiv(lHeight,
+			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
+		resize(lWidthPixels, lHeightPixels);
+		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+			lWidth, -lHeight, {});
 		pPicture->Release();
 		return grOk;
 	}
@@ -627,17 +606,14 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 			return grIOerror;
 
 		const auto img = get_pages().imgtarget;
+
 		pPicture->get_Width(&lWidth);
 		lWidthPixels = ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
 		lHeightPixels = ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-
-		createimage(lWidthPixels, lHeightPixels);
-
-		::HDC dc = m_hDC;
-
-		pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-						 lWidth, -lHeight, {});
+		resize(lWidthPixels, lHeightPixels);
+		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+			lWidth, -lHeight, {});
 		pPicture->Release();
 		return grOk;
 	}
@@ -693,13 +669,9 @@ IMAGE::getimage(void * pMem, long size)
 		pPicture->get_Height(&lHeight);
 		lHeightPixels = ::MulDiv(lHeight,
 			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-
-		createimage(lWidthPixels, lHeightPixels);
-
-		auto dc = m_hDC;
-
-		pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-						 lWidth, -lHeight, {});
+		resize(lWidthPixels, lHeightPixels);
+		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+			lWidth, -lHeight, {});
 		pPicture->Release();
 		return grOk;
 	}

@@ -88,9 +88,6 @@ public:
 	}
 
 	int
-	createimage(int width, int height);
-
-	int
 	resize(int width, int height);
 
 	void
