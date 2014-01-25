@@ -26,7 +26,7 @@ public:
 	::HBITMAP  m_hBmp;
 	int m_width;
 	int m_height;
-	PDWORD m_pBuffer;
+	DWORD* m_pBuffer;
 	color_t m_color;
 	color_t m_fillcolor;
 	bool m_aa;
@@ -73,7 +73,7 @@ public:
 	{
 		return m_height;
 	}
-	PDWORD
+	DWORD*
 	getbuffer() const
 	{
 		return m_pBuffer;

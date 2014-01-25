@@ -362,7 +362,7 @@ setbkcolor(color_t color, IMAGE* pimg)
 
 	if(img && img->m_hDC)
 	{
-		PDWORD p = img->m_pBuffer;
+		DWORD* p = img->m_pBuffer;
 		int size = img->m_width * img->m_height;
 		color_t col = img->m_bk_color;
 
@@ -449,7 +449,7 @@ putpixels(int nPoint, int* pPoints, IMAGE* pimg)
 {
 	const auto img(CONVERT_IMAGE(pimg));
 	int x, y, c;
-	PDWORD pb = &img->m_pBuffer[img->m_vpt.top * img->m_width + img->m_vpt.left];
+	DWORD* pb = &img->m_pBuffer[img->m_vpt.top * img->m_width + img->m_vpt.left];
 	int w = img->m_vpt.right - img->m_vpt.left, h = img->m_vpt.bottom - img->m_vpt.top;
 	int tw = img->m_width;
 

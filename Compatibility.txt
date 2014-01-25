@@ -61,7 +61,7 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别
 移除 enum dealmessage_update 类型，使用 bool 代替。
 移除 _DEBUG 宏。
 移除 ERROR_SUCCESS 宏，使用字面量 0 代替。
-移除 GRADIENT_* 、__int3264 宏 、typedef 名称（ LONG_PTR 和 DWORD_PTR ）、函数 GradientFill 的声明，使用 MinGW 头文件。
+移除 GRADIENT_* 、__int3264 宏 、typedef 名称（ LONG_PTR 和 DWORD_PTR ）和函数 GradientFill 的声明，使用 MinGW 头文件。
 移除 count_ptr 模板（当前未使用，必要时可用 std::shared_ptr<void> 代替）。
 移除 ASSERT_TRUE 宏。
 移除非接口函数 detectgraph 、message_addkeyhandler 和 message_addmousehandler 的孤立实现。
@@ -69,6 +69,7 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别
 移除 CONVERT_IMAGE_END 、CONVERT_IMAGE_F 和 CONVERT_IMAGE_F_CONST 宏。
 移除 setrendermode 实现所需的计时器例程；主窗口消息循环不响应 WM_TIMER 。
 取消手动设置 exit_window 状态，改用 UI 线程状态表示；移除无用的 exit_flag 。
+类型 PDWORD 用 DWORD* 代替。
 
 实现质量(QoI)
 ----
@@ -81,6 +82,10 @@ EGE 库中加入 -Wall -Wextra -Wmissing-include-dirs -Wzero-as-null-pointer-con
 指针和空指针的相等比较用 ! 操作符代替，不等比较使用 bool 转换代替。
 尽可能使用 {} 代替 NULL 或其它形式的空指针常量；无法使用 {} 的用 nullptr 代替。
 字面量 false 尽可能用 {} 代替。
+
+标准库实体名称
+----
+标准库实体名称保证 std:: 其实或使用 using 声明/指示。
 
 外部依赖项全局名称
 ----
@@ -162,6 +167,7 @@ lstrc
 lstrl
 mciSend
 png_
+wsprintfW
 
 以下所列外部依赖项全局名称在使用时前缀 :: 。
 HWND
