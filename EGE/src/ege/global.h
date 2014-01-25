@@ -58,10 +58,9 @@ struct _graph_setting
 private:
 	bool use_force_exit; //强制关闭进程标记
 	thread_queue<EGEMSG> msgkey_queue, msgmouse_queue;
-
-public:
 	std::thread ui_thread;
 
+public:
 	/*鼠标状态记录*/
 	int mouse_state_l, mouse_state_m, mouse_state_r;
 	int mouse_last_x, mouse_last_y;
