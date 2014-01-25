@@ -246,7 +246,7 @@ xyprintf(int x, int y, const wchar_t* fmt, ...)
 	get_global_state();
 	va_list v;
 	va_start(v, fmt);
-	vswprintf(buff, fmt, v);
+	std::vswprintf(buff, fmt, v);
 	outtextxy(x, y, buff);
 	va_end(v);
 }
@@ -274,7 +274,7 @@ rectprintf(int x, int y, int w, int h, const wchar_t* fmt, ...)
 	get_global_state();
 	va_list v;
 	va_start(v, fmt);
-	vswprintf(buff, fmt, v);
+	std::vswprintf(buff, fmt, v);
 	outtextrect(x, y, w, h, buff);
 	va_end(v);
 }

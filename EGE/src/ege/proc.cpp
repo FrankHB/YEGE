@@ -6,7 +6,7 @@ namespace ege
 {
 
 int
-SetCloseHandler(LPCALLBACK_PROC func)
+SetCloseHandler(CALLBACK_PROC* func)
 {
 	get_global_state().callback_close = func;
 	return grOk;

@@ -77,11 +77,11 @@ public:
 	int mouse_lastup_x, mouse_lastup_y;
 	bool mouse_show;
 
-	LPMSG_KEY_PROC callback_key;
+	MSG_KEY_PROC* callback_key;
 	void* callback_key_param;
-	LPMSG_MOUSE_PROC callback_mouse;
+	MSG_MOUSE_PROC* callback_mouse;
 	void* callback_mouse_param;
-	LPCALLBACK_PROC callback_close;
+	CALLBACK_PROC* callback_close;
 
 	/* 键盘状态记录 */
 	int keystatemap[MAX_KEY_VCODE];
