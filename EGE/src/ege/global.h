@@ -48,17 +48,9 @@ struct _graph_setting
 		int height;
 	} graph;
 
-	::HDC active_dc;
 	::HDC window_dc;
 	int dc_w = 640, dc_h = 480;
-	IMAGE* img_page[BITMAP_PAGE_SIZE];
 	int base_x, base_y, base_w, base_h;
-
-	int     visual_page;
-	int     active_page;
-	IMAGE*  imgtarget;
-	IMAGE*  imgtarget_set;
-	IMAGE*  img_timer_update;
 
 	::HINSTANCE instance;
 	::HWND    hwnd;
@@ -94,21 +86,6 @@ public:
 
 	bool
 	_is_window_exit() const;
-
-	IMAGE*
-	_get_target() const
-	{
-		return imgtarget_set;
-	}
-
-	void
-	_set_activepage(int);
-
-	int
-	_set_target(IMAGE*);
-
-	void
-	_set_visualpage(int);
 
 	void
 	_flushkey();
@@ -210,8 +187,50 @@ public:
 };
 
 
+struct _pages
+{
+	_graph_setting& gstate;
+	::HDC active_dc;
+	IMAGE* img_timer_update;
+	int active_page = 0;
+	int visual_page = 0;
+	IMAGE* imgtarget_set = {};
+	IMAGE* img_page[BITMAP_PAGE_SIZE] = {};
+	IMAGE* imgtarget = {};
+
+	_pages();
+
+	IMAGE&
+	get_apage_ref() const;
+
+	IMAGE&
+	get_vpage_ref() const;
+
+	IMAGE*
+	get_target() const
+	{
+		return imgtarget_set;
+	}
+
+	void
+	init_pages();
+
+	void
+	set_apage(int);
+
+	int
+	set_target(IMAGE*);
+
+	void
+	set_vpage(int);
+};
+
+
 _graph_setting&
 get_global_state(int = VGA, int* = {});
+
+_pages&
+get_pages();
 
 } // namespace ege;
 

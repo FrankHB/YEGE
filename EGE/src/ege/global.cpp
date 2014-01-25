@@ -164,38 +164,6 @@ _graph_setting::_is_window_exit() const
 }
 
 void
-_graph_setting::_set_activepage(int page)
-{
-	active_page = page;
-	if(!img_page[page])
-	{
-		img_page[page] = new IMAGE;
-		img_page[page]->createimage(dc_w, dc_h);
-		active_dc = img_page[page]->m_hDC;
-	}
-}
-
-int
-_graph_setting::_set_target(IMAGE* pbuf)
-{
-	imgtarget_set = pbuf;
-	imgtarget = pbuf ? pbuf : img_page[active_page];
-	return 0;
-}
-
-void
-_graph_setting::_set_visualpage(int page)
-{
-	visual_page = page;
-	if(!img_page[page])
-	{
-		img_page[page] = new IMAGE;
-		img_page[page]->createimage(dc_w, dc_h);
-	}
-	update_mark_count = 0;
-}
-
-void
 _graph_setting::_flushkey()
 {
 	EGEMSG msg;
@@ -436,9 +404,8 @@ _graph_setting::_init_graph_x()
 			//图形初始化
 			auto hDC(::GetDC(hwnd));
 
-			active_dc = hDC;
 			window_dc = hDC;
-			img_timer_update = newimage();
+			get_pages().img_timer_update = newimage();
 			setactivepage(0);
 			settarget({});
 			setvisualpage(0);
@@ -474,9 +441,7 @@ _graph_setting::_init_graph_x()
 			setrendermode(RENDER_MANUAL);
 		mouse_show = true;
 	});
-	for(int page = 0; page < BITMAP_PAGE_SIZE; ++page)
-		if(img_page[page])
-			img_page[page]->createimage(dc_w, dc_h);
+	get_pages().init_pages();
 	::ShowWindow(hwnd, SW_SHOW);
 }
 
@@ -519,7 +484,7 @@ _graph_setting::_on_destroy()
 	assert(_is_run());
 
 	ui_thread.detach(); // XXX: Use std::thread::join on non-UI thread instead.
-	if(active_dc)
+	if(get_pages().active_dc)
 		::ReleaseDC(hwnd, window_dc);
 		// release objects, not finish
 	::PostQuitMessage(0);
@@ -613,18 +578,22 @@ _graph_setting::_on_paint(::HWND hwnd)
 void
 _graph_setting::_on_repaint(::HWND hwnd, ::HDC dc)
 {
+	auto& pages(get_pages());
+	assert(get_pages().img_timer_update);
+
+	auto& img_timer_update = *pages.img_timer_update;
 	bool release = {};
 
-	img_timer_update->copyimage(img_page[visual_page]);
+	img_timer_update.copyimage(pages.img_page[pages.visual_page]);
 	if(!dc)
 	{
 		dc = ::GetDC(hwnd);
 		release = true;
 	}
 
-	int left = img_timer_update->m_vpt.left, top = img_timer_update->m_vpt.top;
+	int left = img_timer_update.m_vpt.left, top = img_timer_update.m_vpt.top;
 
-	::BitBlt(dc, 0, 0, base_w, base_h, img_timer_update->m_hDC,
+	::BitBlt(dc, 0, 0, base_w, base_h, img_timer_update.m_hDC,
 		base_x - left, base_y - top, SRCCOPY);
 	if(release)
 		::ReleaseDC(hwnd, dc);
@@ -801,11 +770,11 @@ _graph_setting::_update()
 		if(!window_dc)
 			return grNullPointer;
 
-	//	::HRGN rgn = img_page[visual_page]->m_rgn;
+		auto& vpage(get_pages().get_vpage_ref());
+	//	::HRGN rgn = vpage.m_rgn;
 
-		::BitBlt(window_dc, 0, 0, base_w, base_h, img_page[visual_page]->m_hDC,
-			base_x - img_page[visual_page]->m_vpt.left,
-			base_y - img_page[visual_page]->m_vpt.top, SRCCOPY);
+		::BitBlt(window_dc, 0, 0, base_w, base_h, vpage.m_hDC,
+			base_x - vpage.m_vpt.left, base_y - vpage.m_vpt.top, SRCCOPY);
 	}
 	update_mark_count = UPDATE_MAX_CALL;
 	_get_FPS(0x100);
@@ -888,11 +857,89 @@ _graph_setting::_window_destroy(msg_createwindow& msg)
 }
 
 
+_pages::_pages()
+	: gstate(get_global_state()), active_dc(gstate.window_dc)
+{}
+
+IMAGE&
+_pages::get_apage_ref() const
+{
+	assert(img_page[active_page]);
+
+	return *img_page[active_page];
+}
+
+IMAGE&
+_pages::get_vpage_ref() const
+{
+	assert(img_page[visual_page]);
+
+	return *img_page[visual_page];
+}
+
+void
+_pages::init_pages()
+{
+	const int dc_w(get_global_state().dc_w);
+	const int dc_h(get_global_state().dc_h);
+
+	for(int page = 0; page < BITMAP_PAGE_SIZE; ++page)
+		if(img_page[page])
+			img_page[page]->createimage(dc_w, dc_h);
+}
+
+void
+_pages::set_apage(int page)
+{
+	const int dc_w(get_global_state().dc_w);
+	const int dc_h(get_global_state().dc_h);
+
+	active_page = page;
+	if(!img_page[page])
+	{
+		img_page[page] = new IMAGE;
+		img_page[page]->createimage(dc_w, dc_h);
+		active_dc = img_page[page]->m_hDC;
+	}
+}
+
+int
+_pages::set_target(IMAGE* pbuf)
+{
+	imgtarget_set = pbuf;
+	imgtarget = pbuf ? pbuf : img_page[active_page];
+	return 0;
+}
+
+void
+_pages::set_vpage(int page)
+{
+	const int dc_w(get_global_state().dc_w);
+	const int dc_h(get_global_state().dc_h);
+
+	visual_page = page;
+	if(!img_page[page])
+	{
+		img_page[page] = new IMAGE;
+		img_page[page]->createimage(dc_w, dc_h);
+	}
+	update_mark_count = 0;
+}
+
+
 _graph_setting&
 get_global_state(int gdriver_n, int* gmode)
 {
 	static std::unique_ptr<_graph_setting>
 		p(new _graph_setting(gdriver_n, gmode));
+
+	return *p;
+}
+
+_pages&
+get_pages()
+{
+	static std::unique_ptr<_pages> p(new _pages());
 
 	return *p;
 }

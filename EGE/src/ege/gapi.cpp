@@ -45,7 +45,7 @@ _save_brush(IMAGE* img, int save)
 IMAGE*
 gettarget()
 {
-	return get_global_state()._get_target();
+	return get_pages().get_target();
 }
 
 #if 0
@@ -61,20 +61,20 @@ swappage()
 void
 setactivepage(int page)
 {
-	get_global_state()._set_activepage(page);
+	get_pages().set_apage(page);
 }
 
 void
 setvisualpage(int page)
 {
-	get_global_state()._set_visualpage(page);
+	get_pages().set_vpage(page);
 }
 
 
 int
 settarget(IMAGE* pbuf)
 {
-	return get_global_state()._set_target(pbuf);
+	return get_pages().set_target(pbuf);
 }
 
 void
