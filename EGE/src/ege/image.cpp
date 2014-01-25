@@ -30,17 +30,22 @@ IMAGE::IMAGE()
 {}
 
 IMAGE::IMAGE(int width, int height)
+	: IMAGE([]{
+		const auto img = get_pages().imgtarget;
+
+		return img ? img->m_hDC : get_pages().active_dc;
+	}(), width, height)
+{}
+
+IMAGE::IMAGE(::HDC hdc, int width, int height)
 	: m_initflag(IMAGE_INIT_FLAG)
 {
-	const auto img = get_pages().imgtarget;
-
-	init_image(img ? img->m_hDC : get_pages().active_dc, width, height);
+	init_image(hdc, width, height);
 }
 
 IMAGE::IMAGE(const IMAGE& img)
-	: m_initflag(IMAGE_INIT_FLAG)
+	: IMAGE(img.m_hDC, img.m_width, img.m_height)
 {
-	init_image(img.m_hDC, img.m_width, img.m_height);
 	::BitBlt(m_hDC, 0, 0, img.m_width, img.m_height, img.m_hDC, 0, 0, SRCCOPY);
 }
 IMAGE::IMAGE(IMAGE&& img) ynothrow
