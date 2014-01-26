@@ -405,7 +405,6 @@ _graph_setting::_init_graph_x()
 			auto hDC(::GetDC(hwnd));
 
 			window_dc = hDC;
-			get_pages().img_timer_update = newimage();
 			setactivepage(0);
 			settarget({});
 			setvisualpage(0);
@@ -571,32 +570,13 @@ void
 _graph_setting::_on_paint(::HWND hwnd)
 {
 	::PAINTSTRUCT ps;
+	::HDC dc(::BeginPaint(hwnd, &ps));
+	auto& vpage(get_pages().get_vpage_ref());
+	const int left(vpage.m_vpt.left), top(vpage.m_vpt.top);
 
-	_on_repaint(hwnd, ::BeginPaint(hwnd, &ps));
-}
-
-void
-_graph_setting::_on_repaint(::HWND hwnd, ::HDC dc)
-{
-	auto& pages(get_pages());
-	assert(get_pages().img_timer_update);
-
-	auto& img_timer_update = *pages.img_timer_update;
-	bool release = {};
-
-	img_timer_update.copyimage(&pages.get_vpage_ref());
-	if(!dc)
-	{
-		dc = ::GetDC(hwnd);
-		release = true;
-	}
-
-	int left = img_timer_update.m_vpt.left, top = img_timer_update.m_vpt.top;
-
-	::BitBlt(dc, 0, 0, base_w, base_h, img_timer_update.m_hDC,
+	::BitBlt(dc, 0, 0, base_w, base_h, vpage.m_hDC,
 		base_x - left, base_y - top, SRCCOPY);
-	if(release)
-		::ReleaseDC(hwnd, dc);
+	::EndPaint(hwnd, &ps);
 }
 
 void

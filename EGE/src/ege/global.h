@@ -143,9 +143,6 @@ public:
 	_on_paint(::HWND);
 
 	void
-	_on_repaint(::HWND, ::HDC);
-
-	void
 	_on_setcursor(::HWND);
 
 	int
@@ -190,7 +187,6 @@ struct _pages
 {
 	_graph_setting& gstate;
 	::HDC active_dc;
-	IMAGE* img_timer_update;
 	int active_page = 0;
 	int visual_page = 0;
 	IMAGE* imgtarget_set = {};
