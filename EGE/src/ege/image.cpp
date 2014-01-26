@@ -174,20 +174,6 @@ IMAGE::resize(int width, int height)
 }
 
 void
-IMAGE::copyimage(IMAGE* pSrcImg)
-{
-	inittest(L"IMAGE::copyimage");
-
-	const auto img = CONVERT_IMAGE_CONST(pSrcImg);
-	int ret = 0;
-
-	if(m_width != img->m_width || m_height != img->m_height)
-		ret = resize(img->m_width, img->m_height);
-	if(ret == 0)
-		std::memcpy(getbuffer(), img->getbuffer(), m_width * m_height * 4); // 4 byte per pixel
-}
-
-void
 IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
 	inittest(L"IMAGE::getimage");

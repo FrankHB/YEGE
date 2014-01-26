@@ -87,9 +87,6 @@ public:
 	resize(int width, int height);
 
 	void
-	copyimage(IMAGE* pSrcImg);
-
-	void
 	getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);
 	int
 	getimage(const char* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
