@@ -174,7 +174,7 @@ IMAGE::getimage(const char* filename, int zoomWidth, int zoomHeight)
 
 	wchar_t wszPath[MAX_PATH * 2 + 1];
 
-	MultiByteToWideChar(CP_ACP, 0, filename, -1, wszPath, MAX_PATH * 2);
+	::MultiByteToWideChar(CP_ACP, 0, filename, -1, wszPath, MAX_PATH * 2);
 	return getimage(wszPath, zoomWidth, zoomHeight);
 }
 
@@ -185,7 +185,7 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 		return 0;
 
 	struct IPicture* pPicture;
-	OLECHAR wszPath[MAX_PATH * 2 + 1];
+	::OLECHAR wszPath[MAX_PATH * 2 + 1];
 	wchar_t szPath[MAX_PATH * 2 + 1] = L"";
 	long lWidth, lHeight;
 	long lWidthPixels, lHeightPixels;
@@ -256,7 +256,7 @@ IMAGE::putimage(int dstX, int dstY, ::DWORD dwRop) const
 
 // private function
 static int
-saveimagetofile(IMAGE* img, FILE * fp)
+saveimagetofile(IMAGE* img, std::FILE * fp)
 {
 	auto bmpfHead = ::BITMAPFILEHEADER();
 	auto bmpinfo = ::BITMAPINFOHEADER();
@@ -277,8 +277,8 @@ saveimagetofile(IMAGE* img, FILE * fp)
 	bmpinfo.biPlanes = 1;
 	bmpinfo.biSizeImage = pitch * img->getheight();
 	//bmpinfo.biXPelsPerMeter
-	fwrite(&bmpfHead, sizeof(bmpfHead), 1, fp);
-	fwrite(&bmpinfo, sizeof(bmpinfo), 1, fp);
+	std::fwrite(&bmpfHead, sizeof(bmpfHead), 1, fp);
+	std::fwrite(&bmpinfo, sizeof(bmpinfo), 1, fp);
 	for(y = img->getheight() - 1; y >= 0; --y)
 	{
 		for(x = 0; x < img->getwidth(); ++x)
@@ -289,7 +289,7 @@ saveimagetofile(IMAGE* img, FILE * fp)
 				goto ERROR_BREAK;
 		}
 		if(addbit > 0)
-			fwrite(&zero, addbit, 1, fp);
+			std::fwrite(&zero, addbit, 1, fp);
 	}
 	return 0;
 ERROR_BREAK:
@@ -299,33 +299,33 @@ ERROR_BREAK:
 int
 IMAGE::saveimage(const char*  filename)
 {
-	FILE* fp = fopen(filename, "wb");
+	std::FILE* fp = std::fopen(filename, "wb");
 
 	if(!fp)
 		return grIOerror;
 
 	int ret = saveimagetofile(this, fp);
 
-	fclose(fp);
+	std::fclose(fp);
 	return ret;
 }
 
 int
 IMAGE::saveimage(const wchar_t* filename)
 {
-	FILE* fp = _wfopen(filename, L"wb");
+	std::FILE* fp = _wfopen(filename, L"wb");
 
 	if(!fp)
 		return grIOerror;
 
 	int ret = saveimagetofile(this, fp);
 
-	fclose(fp);
+	std::fclose(fp);
 	return ret;
 }
 
 int
-IMAGE::getpngimg(FILE * fp)
+IMAGE::getpngimg(std::FILE * fp)
 {
 	::png_structp pic_ptr;
 	::png_infop info_ptr;
@@ -334,7 +334,7 @@ IMAGE::getpngimg(FILE * fp)
 	{
 		char header[16];
 		std::uint32_t number = 8;
-		fread(header, 1, number, fp);
+		std::fread(header, 1, number, fp);
 		int isn_png = ::png_sig_cmp((::png_const_bytep)header, 0, number);
 
 		if(isn_png)
@@ -381,7 +381,7 @@ IMAGE::getpngimg(FILE * fp)
 }
 
 int
-IMAGE::savepngimg(FILE * fp, int bAlpha)
+IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 {
 	unsigned long i, j;
 	::png_structp pic_ptr;

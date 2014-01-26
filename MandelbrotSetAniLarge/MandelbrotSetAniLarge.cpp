@@ -779,7 +779,7 @@ main()
 	mindelta.setprec();
 	delta.setprec();
 	{
-		FILE* fp = fopen("MandelbrotSetAni.ini", "r");
+		std::FILE* fp = std::fopen("MandelbrotSetAni.ini", "r");
 		char str[1024]{0};
 		if(fp)
 		{
@@ -793,7 +793,7 @@ main()
 			//sscanf(str, "%lf", &delta_mul);
 			fgets(str, 1024, fp);
 			sscanf(str, "%d", &nbeg);
-			fclose(fp);
+			std::fclose(fp);
 		}
 	}
 	//mindelta.re = "0.000000000000001";
@@ -842,10 +842,10 @@ main()
 			}
 			else
 			{
-				FILE* fp = fopen(str, "w");
+				std::FILE* fp = std::fopen(str, "w");
 				if(fp)
 				{
-					fclose(fp);
+					std::fclose(fp);
 				}
 				else
 				{

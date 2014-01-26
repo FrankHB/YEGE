@@ -139,6 +139,8 @@ MCIE
 MessageBox
 MoveW
 MulD
+MultiB
+OLE
 POI
 Pie
 Poly

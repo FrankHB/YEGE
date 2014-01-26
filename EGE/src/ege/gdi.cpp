@@ -95,53 +95,53 @@ saveimage(IMAGE* pimg, const wchar_t* filename)
 int
 savepng(IMAGE* pimg, const char* filename, int bAlpha)
 {
-	FILE* fp = fopen(filename, "wb");
+	std::FILE* fp = std::fopen(filename, "wb");
 
 	if(!fp)
 		return grFileNotFound;
 
 	int ret = pimg->savepngimg(fp, bAlpha);
 
-	fclose(fp);
+	std::fclose(fp);
 	return ret;
 }
 int
 savepng(IMAGE* pimg, const wchar_t* filename, int bAlpha)
 {
-	FILE* fp = _wfopen(filename, L"wb");
+	std::FILE* fp = _wfopen(filename, L"wb");
 
 	if(!fp)
 		return grFileNotFound;
 
 	int ret = pimg->savepngimg(fp, bAlpha);
 
-	fclose(fp);
+	std::fclose(fp);
 	return ret;
 }
 
 int
 getimage_pngfile(IMAGE* pimg, const char* filename)
 {
-	FILE* fp = fopen(filename, "rb");
+	std::FILE* fp = std::fopen(filename, "rb");
 
 	if(!fp)
 		return grFileNotFound;
 
 	int ret = pimg->getpngimg(fp);
 
-	fclose(fp);
+	std::fclose(fp);
 	return ret;
 }
 int
 getimage_pngfile(IMAGE* pimg, const wchar_t* filename)
 {
-	FILE* fp = _wfopen(filename, L"rb");
+	std::FILE* fp = _wfopen(filename, L"rb");
 	if(!fp)
 		return grFileNotFound;
 
 	int ret = pimg->getpngimg(fp);
 
-	fclose(fp);
+	std::fclose(fp);
 	return ret;
 }
 

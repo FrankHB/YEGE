@@ -513,7 +513,7 @@ main()
 	// 初始化绘图窗口及颜色
 	int w = SC_W, h = SC_H, th = 12, tel = 4, tl = tel * 3 + 1;
 	int rw = 640, rh = 280;
-	freopen("log.txt", "w", stdout);
+	std::freopen("log.txt", "w", stdout);
 	setinitmode(0);
 	initgraph(rw, rh + th * tl);
 	randomize();
@@ -528,7 +528,7 @@ main()
 #if 0
 	do
 	{
-		FILE* fp = fopen("MandelbrotSet.ini", "r");
+		std::FILE* fp = std::fopen("MandelbrotSet.ini", "r");
 		char str[1024]{0};
 		COMPLEX center, delta;
 		if(fp)
@@ -551,7 +551,7 @@ main()
 			str[strlen(str) - 1] = 0;
 			printf("%s\n", str);
 			delta.real() = str;
-			fclose(fp);
+			std::fclose(fp);
 
 			delta.real() /= 2;
 			delta.imag() = delta.real() * 0.75;
@@ -610,7 +610,7 @@ main()
 			//*
 			if(k == 'r' || k == 'R')
 			{
-				FILE* fp = fopen("MandelbrotSet.ini", "w");
+				std::FILE* fp = std::fopen("MandelbrotSet.ini", "w");
 				if(fp)
 				{
 					char str[1000];
@@ -630,7 +630,7 @@ main()
 					fprintf(fp, "%s\n", str);
 					std::sprintf(str, "%.15lf", d);
 #endif
-					fclose(fp);
+					std::fclose(fp);
 				}
 			}//*/
 		}

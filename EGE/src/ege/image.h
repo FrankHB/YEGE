@@ -113,9 +113,9 @@ public:
 	int
 	saveimage(const wchar_t* filename);
 	int
-	getpngimg(FILE* fp);
+	getpngimg(std::FILE* fp);
 	int
-	savepngimg(FILE* fp, int bAlpha);
+	savepngimg(std::FILE* fp, int bAlpha);
 
 	int
 	putimage_transparent(
