@@ -68,10 +68,6 @@ public:
 	int mouse_lastup_x, mouse_lastup_y;
 	bool mouse_show;
 
-	MSG_KEY_PROC* callback_key;
-	void* callback_key_param;
-	MSG_MOUSE_PROC* callback_mouse;
-	void* callback_mouse_param;
 	CALLBACK_PROC* callback_close;
 
 	/* 键盘状态记录 */
@@ -93,7 +89,7 @@ public:
 	_flushmouse();
 
 	int
-	_getch_ex(int);
+	_getch();
 
 	int
 	_getflush();
@@ -107,16 +103,11 @@ public:
 	mouse_msg
 	_getmouse();
 
-#if 0
-	EGEMSG
-	_getmouse_p();
-#endif
-
 	void
 	_init_graph_x();
 
 	int
-	_kbhit_ex(int);
+	_kbhit();
 
 	int
 	_kbmsg();

@@ -188,7 +188,7 @@ _graph_setting::_flushmouse()
 }
 
 int
-_graph_setting::_getch_ex(int flag)
+_graph_setting::_getch()
 {
 	if(_is_window_exit())
 		return grNoInitGraph;
@@ -198,33 +198,22 @@ _graph_setting::_getch_ex(int flag)
 		::DWORD dw = GetTickCount();
 		do
 		{
-			key = _kbhit_ex(flag);
+			key = _kbhit();
 			if(key < 0)
 				break;
 			if(key > 0)
-			{
-				key = _getkey_p();
-				if(key)
+				if((key = _getkey_p()))
 				{
 					msg = msgkey_queue.last();
 					if(dw < msg.time + 1000)
 					{
-						int ogn_key = key;
-
-						key &= 0xFFFF;
-
-						int ret = key;
-
-						if(flag)
-							ret = ogn_key;
-						else if(((ogn_key & KEYMSG_DOWN) && (msg.wParam >= 0x70
+						if(((key & KEYMSG_DOWN) && (msg.wParam >= 0x70
 							&& msg.wParam < 0x80)) || (msg.wParam > ' '
 							&& msg.wParam < '0'))
-							ret |= 0x100;
-						return ret;
+							key |= 0x100;
+						return key & 0xFFFF;
 					}
 				}
-			}
 		} while(!_is_run() && _waitdealmessage());
 	}
 	return 0;
@@ -361,17 +350,6 @@ _graph_setting::_getmouse()
 	return mmsg;
 }
 
-#if 0
-EGEMSG
-_graph_setting::_getmouse_p()
-{
-	auto msg = EGEMSG();
-
-	msgmouse_queue.pop(msg);
-	return msg;
-}
-#endif
-
 void
 _graph_setting::_init_graph_x()
 {
@@ -445,14 +423,9 @@ _graph_setting::_init_graph_x()
 }
 
 int
-_graph_setting::_kbhit_ex(int flag)
+_graph_setting::_kbhit()
 {
-	if(_is_window_exit())
-		return grNoInitGraph;
-	if(flag == 0)
-		return _peekkey();
-	else
-		return _peekallkey(flag);
+	return _is_window_exit() ? int(grNoInitGraph) : int(_peekkey());
 }
 
 int
@@ -509,25 +482,10 @@ _graph_setting::_on_ime_control(::HWND hwnd, ::WPARAM wparam, ::LPARAM lparam)
 void
 _graph_setting::_on_key(::UINT message, unsigned long keycode, ::LPARAM keyflag)
 {
-	unsigned msg = 0;
-
 	if(message == WM_KEYDOWN && keycode < MAX_KEY_VCODE)
-	{
-		msg = 1;
 		keystatemap[keycode] = 1;
-	}
 	if(message == WM_KEYUP && keycode < MAX_KEY_VCODE)
 		keystatemap[keycode] = 0;
-	if(callback_key)
-	{
-		int ret;
-
-		if(message == WM_CHAR)
-			msg = 2;
-		ret = callback_key(callback_key_param, msg, (int)keycode);
-		if(ret == 0)
-			return;
-	}
 	msgkey_queue.push(EGEMSG{hwnd, message, keycode, keyflag,
 		::GetTickCount(), 0, 0});
 }
