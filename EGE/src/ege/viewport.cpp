@@ -29,7 +29,7 @@ setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 
 	const auto img = CONVERT_IMAGE(pimg);
 
-	::SetViewportOrgEx(img->m_hDC, 0, 0, {});
+	::SetViewportOrgEx(img->getdc(), 0, 0, {});
 
 	img->m_vpt.left     = left;
 	img->m_vpt.top      = top;
@@ -41,10 +41,10 @@ setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 		img->m_vpt.left = 0;
 	if(img->m_vpt.top < 0)
 		img->m_vpt.top = 0;
-	if(img->m_vpt.right > img->m_width)
-		img->m_vpt.right = img->m_width;
-	if(img->m_vpt.bottom > img->m_height)
-		img->m_vpt.bottom = img->m_height;
+	if(img->m_vpt.right > img->getwidth())
+		img->m_vpt.right = img->getwidth();
+	if(img->m_vpt.bottom > img->getheight())
+		img->m_vpt.bottom = img->getheight();
 
 	::HRGN rgn = {};
 
@@ -52,12 +52,12 @@ setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 		rgn = ::CreateRectRgn(img->m_vpt.left, img->m_vpt.top, img->m_vpt.right,
 			img->m_vpt.bottom);
 	else
-		rgn = ::CreateRectRgn(0, 0, img->m_width,img->m_height);
-	::SelectClipRgn(img->m_hDC, rgn);
+		rgn = ::CreateRectRgn(0, 0, img->getwidth(),img->getheight());
+	::SelectClipRgn(img->getdc(), rgn);
 	::DeleteObject(rgn);
 
-	//OffsetViewportOrgEx(img->m_hDC, img->m_vpt.left, img->m_vpt.top, {});
-	::SetViewportOrgEx(img->m_hDC, img->m_vpt.left, img->m_vpt.top, {});
+	//OffsetViewportOrgEx(img->getdc(), img->m_vpt.left, img->m_vpt.top, {});
+	::SetViewportOrgEx(img->getdc(), img->m_vpt.left, img->m_vpt.top, {});
 }
 
 void
@@ -65,16 +65,16 @@ clearviewport(IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
 
-	if(img && img->m_hDC)
+	if(img && img->getdc())
 	{
 		::RECT rect{0, 0, img->m_vpt.right - img->m_vpt.left,
 			img->m_vpt.bottom - img->m_vpt.top};
-		::HBRUSH hbr_c = (::HBRUSH)::GetCurrentObject(img->m_hDC, OBJ_BRUSH);
+		::HBRUSH hbr_c = (::HBRUSH)::GetCurrentObject(img->getdc(), OBJ_BRUSH);
 		::LOGBRUSH logBrush;
 
 		::GetObject(hbr_c, sizeof(logBrush), &logBrush);
 		::HBRUSH hbr = ::CreateSolidBrush(logBrush.lbColor);
-		::FillRect(img->m_hDC, &rect, hbr);
+		::FillRect(img->getdc(), &rect, hbr);
 		::DeleteObject(hbr);
 	}
 }

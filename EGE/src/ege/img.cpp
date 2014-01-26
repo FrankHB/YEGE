@@ -10,7 +10,7 @@ getwidth(IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE_CONST(pimg);
 
-	return img ? img->m_width : 0;
+	return img ? img->getwidth() : 0;
 }
 
 int
@@ -18,7 +18,7 @@ getheight(IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE_CONST(pimg);
 
-	return img ? img->m_height : 0;
+	return img ? img->getheight() : 0;
 }
 
 int
@@ -29,7 +29,7 @@ getx(IMAGE* pimg)
 	if(img)
 	{
 		::POINT pt;
-		::GetCurrentPositionEx(img->m_hDC, &pt);
+		::GetCurrentPositionEx(img->getdc(), &pt);
 		return pt.x;
 	}
 	return -1;
@@ -43,7 +43,7 @@ gety(IMAGE* pimg)
 	if(img)
 	{
 		::POINT pt;
-		::GetCurrentPositionEx(img->m_hDC, &pt);
+		::GetCurrentPositionEx(img->getdc(), &pt);
 		return pt.y;
 	}
 	return -1;
@@ -57,8 +57,10 @@ newimage()
 IMAGE*
 newimage(int width, int height)
 {
-	if(width  < 1) width  = 1;
-	if(height < 1) height = 1;
+	if(width < 1)
+		width = 1;
+	if(height < 1)
+		height = 1;
 	return new IMAGE(width, height);
 }
 

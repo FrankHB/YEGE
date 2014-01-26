@@ -800,7 +800,7 @@ _pages::get_apage_ref() const
 ::HDC
 _pages::get_image_context() const
 {
-	return imgtarget ? imgtarget->m_hDC : active_dc;
+	return imgtarget ? imgtarget->getdc() : active_dc;
 }
 
 IMAGE&
@@ -817,7 +817,7 @@ _pages::paint(::HDC dc)
 	auto& vpage(get_vpage_ref());
 	const int left(vpage.m_vpt.left), top(vpage.m_vpt.top);
 
-	::BitBlt(dc, 0, 0, base_w, base_h, vpage.m_hDC,
+	::BitBlt(dc, 0, 0, base_w, base_h, vpage.getdc(),
 		base_x - left, base_y - top, SRCCOPY);
 }
 
@@ -826,7 +826,7 @@ _pages::set_apage(int page)
 {
 	check_page(page);
 	active_page = page;
-	active_dc = img_page[page]->m_hDC;
+	active_dc = img_page[page]->getdc();
 }
 
 int
@@ -850,7 +850,7 @@ _pages::update()
 {
 	auto& vpage(get_vpage_ref());
 
-	::BitBlt(gstate._get_window_dc(), 0, 0, base_w, base_h, vpage.m_hDC,
+	::BitBlt(gstate._get_window_dc(), 0, 0, base_w, base_h, vpage.getdc(),
 		base_x - vpage.m_vpt.left, base_y - vpage.m_vpt.top, SRCCOPY);
 }
 

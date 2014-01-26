@@ -59,17 +59,17 @@ private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz, int
 			fMode |= TA_BOTTOM;
 		else
 			fMode |= TA_TOP;
-		::SetTextAlign(img->m_hDC, fMode);
+		::SetTextAlign(img->getdc(), fMode);
 	}
 	else
 	{
-		::SetTextAlign(img->m_hDC, private_gettextmode(img));
+		::SetTextAlign(img->getdc(), private_gettextmode(img));
 	}
 	if(textstring)
 	{
 		if(img->m_texttype.vert == CENTER_TEXT)
 			y -= textheight(textstring, img) / 2;
-		TextOutA(img->m_hDC, x, y, textstring, (int)strlen(textstring));
+		TextOutA(img->getdc(), x, y, textstring, (int)strlen(textstring));
 	}
 }
 
@@ -103,11 +103,11 @@ private_textout(IMAGE* img, const wchar_t* textstring, int x, int y, int horiz, 
 		{
 			fMode |= TA_TOP;
 		}
-		::SetTextAlign(img->m_hDC, fMode);
+		::SetTextAlign(img->getdc(), fMode);
 	}
 	else
 	{
-		::SetTextAlign(img->m_hDC, private_gettextmode(img));
+		::SetTextAlign(img->getdc(), private_gettextmode(img));
 	}
 	if(textstring)
 	{
@@ -115,7 +115,7 @@ private_textout(IMAGE* img, const wchar_t* textstring, int x, int y, int horiz, 
 		{
 			y -= textheight(textstring, img) / 2;
 		}
-		TextOutW(img->m_hDC, x, y, textstring, (int)::lstrlenW(textstring));
+		TextOutW(img->getdc(), x, y, textstring, (int)::lstrlenW(textstring));
 	}
 }
 
@@ -127,7 +127,7 @@ outtext(const char* textstring, IMAGE* pimg)
 	if(img)
 	{
 		::POINT pt;
-		::GetCurrentPositionEx(img->m_hDC, &pt);
+		::GetCurrentPositionEx(img->getdc(), &pt);
 		private_textout(img, textstring, pt.x, pt.y, -1, -1);
 	}
 }
@@ -140,7 +140,7 @@ outtext(const wchar_t* textstring, IMAGE* pimg)
 	if(img)
 	{
 		::POINT pt;
-		::GetCurrentPositionEx(img->m_hDC, &pt);
+		::GetCurrentPositionEx(img->getdc(), &pt);
 		private_textout(img, textstring, pt.x, pt.y, -1, -1);
 	}
 }
@@ -204,7 +204,7 @@ outtextrect(int x, int y, int w, int h, const char*  textstring, IMAGE* pimg)
 	{
 		unsigned int fmode = private_gettextmode(img);
 		::RECT rect{x, y, x + w, y + h};
-		::DrawTextA(img->m_hDC, textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
+		::DrawTextA(img->getdc(), textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
 	}
 
 }
@@ -218,7 +218,7 @@ outtextrect(int x, int y, int w, int h, const wchar_t* textstring, IMAGE* pimg)
 	{
 		unsigned int fmode = private_gettextmode(img);
 		::RECT rect{x, y, x + w, y + h};
-		::DrawTextW(img->m_hDC, textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
+		::DrawTextW(img->getdc(), textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
 	}
 
 }
@@ -286,7 +286,7 @@ textwidth(const char* textstring, IMAGE* pimg)
 	if(img)
 	{
 		SIZE sz;
-		GetTextExtentPoint32A(img->m_hDC, textstring, (int)strlen(textstring), &sz);
+		GetTextExtentPoint32A(img->getdc(), textstring, (int)strlen(textstring), &sz);
 		return sz.cx;
 	}
 	return 0;
@@ -299,7 +299,7 @@ textwidth(const wchar_t* textstring, IMAGE* pimg)
 	if(img)
 	{
 		SIZE sz;
-		GetTextExtentPoint32W(img->m_hDC, textstring, (int)::lstrlenW(textstring), &sz);
+		GetTextExtentPoint32W(img->getdc(), textstring, (int)::lstrlenW(textstring), &sz);
 		return sz.cx;
 	}
 	return 0;
@@ -326,7 +326,7 @@ textheight(const char* textstring, IMAGE* pimg)
 	if(img)
 	{
 		SIZE sz;
-		GetTextExtentPoint32A(img->m_hDC, textstring, (int)strlen(textstring), &sz);
+		GetTextExtentPoint32A(img->getdc(), textstring, (int)strlen(textstring), &sz);
 		return sz.cy;
 	}
 	return 0;
@@ -339,7 +339,7 @@ textheight(const wchar_t* textstring, IMAGE* pimg)
 	if(img)
 	{
 		SIZE sz;
-		GetTextExtentPoint32W(img->m_hDC, textstring, (int)::lstrlenW(textstring), &sz);
+		GetTextExtentPoint32W(img->getdc(), textstring, (int)::lstrlenW(textstring), &sz);
 		return sz.cy;
 	}
 	return 0;
@@ -398,7 +398,7 @@ setfont(
 
 		::lstrcpyA(lf.lfFaceName, lpszFace);
 		::HFONT hfont = ::CreateFontIndirectA(&lf);
-		::DeleteObject(::SelectObject(img->m_hDC, hfont));
+		::DeleteObject(::SelectObject(img->getdc(), hfont));
 	}
 }
 
@@ -429,7 +429,7 @@ setfont(
 
 		::lstrcpyW(lf.lfFaceName, lpszFace);
 		::HFONT hfont = ::CreateFontIndirectW(&lf);
-		::DeleteObject(::SelectObject(img->m_hDC, hfont));
+		::DeleteObject(::SelectObject(img->getdc(), hfont));
 	}
 }
 
@@ -456,7 +456,7 @@ setfont(
 
 		::lstrcpyA(lf.lfFaceName, lpszFace);
 		::HFONT hfont = ::CreateFontIndirectA(&lf);
-		::DeleteObject(::SelectObject(img->m_hDC, hfont));
+		::DeleteObject(::SelectObject(img->getdc(), hfont));
 	}
 }
 
@@ -483,7 +483,7 @@ setfont(
 
 		::lstrcpyW(lf.lfFaceName, lpszFace);
 		::HFONT hfont = ::CreateFontIndirectW(&lf);
-		::DeleteObject(::SelectObject(img->m_hDC, hfont));
+		::DeleteObject(::SelectObject(img->getdc(), hfont));
 	}
 }
 
@@ -499,7 +499,7 @@ setfont(int nHeight, int nWidth, const char* lpszFace, IMAGE* pimg)
 
 		::lstrcpyA(lf.lfFaceName, lpszFace);
 		::HFONT hfont = ::CreateFontIndirectA(&lf);
-		::DeleteObject(::SelectObject(img->m_hDC, hfont));
+		::DeleteObject(::SelectObject(img->getdc(), hfont));
 	}
 }
 
@@ -515,7 +515,7 @@ setfont(int nHeight, int nWidth, const wchar_t* lpszFace, IMAGE* pimg)
 
 		::lstrcpyW(lf.lfFaceName, lpszFace);
 		::HFONT hfont = ::CreateFontIndirectW(&lf);
-		::DeleteObject(::SelectObject(img->m_hDC, hfont));
+		::DeleteObject(::SelectObject(img->getdc(), hfont));
 	}
 }
 
@@ -525,7 +525,7 @@ setfont(const ::LOGFONTA* font, IMAGE* pimg)
 	const auto img = CONVERT_IMAGE_CONST(pimg);
 
 	if(img)
-		::DeleteObject(::SelectObject(img->m_hDC, ::CreateFontIndirectA(font)));
+		::DeleteObject(::SelectObject(img->getdc(), ::CreateFontIndirectA(font)));
 }
 
 void
@@ -534,7 +534,7 @@ setfont(const ::LOGFONTW* font, IMAGE* pimg)
 	const auto img = CONVERT_IMAGE_CONST(pimg);
 
 	if(img)
-		::DeleteObject(::SelectObject(img->m_hDC, ::CreateFontIndirectW(font)));
+		::DeleteObject(::SelectObject(img->getdc(), ::CreateFontIndirectW(font)));
 }
 
 void
@@ -543,7 +543,7 @@ getfont(::LOGFONTA* font, IMAGE* pimg)
 	const auto img = CONVERT_IMAGE_CONST(pimg);
 
 	if(img)
-		::GetObjectA((::HFONT)::GetCurrentObject(img->m_hDC, OBJ_FONT),
+		::GetObjectA((::HFONT)::GetCurrentObject(img->getdc(), OBJ_FONT),
 			sizeof(::LOGFONTA), font);
 }
 
@@ -553,7 +553,7 @@ getfont(::LOGFONTW* font, IMAGE* pimg)
 	const auto img = CONVERT_IMAGE_CONST(pimg);
 
 	if(img)
-		::GetObjectW((::HFONT)::GetCurrentObject(img->m_hDC, OBJ_FONT),
+		::GetObjectW((::HFONT)::GetCurrentObject(img->getdc(), OBJ_FONT),
 			sizeof(::LOGFONTA), font);
 }
 
@@ -651,7 +651,7 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int le
 
 			::RECT rect{30, 32, w - 30, 128 - 3};
 
-			::DrawTextW(window.m_hDC, text, -1, &rect, DT_NOPREFIX | DT_LEFT
+			::DrawTextW(window.getdc(), text, -1, &rect, DT_NOPREFIX | DT_LEFT
 				| DT_TOP | TA_NOUPDATECP | DT_WORDBREAK | DT_EDITCONTROL
 				| DT_EXPANDTABS);
 		}

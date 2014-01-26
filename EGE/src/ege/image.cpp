@@ -260,7 +260,7 @@ saveimagetofile(IMAGE* img, FILE * fp)
 {
 	auto bmpfHead = ::BITMAPFILEHEADER();
 	auto bmpinfo = ::BITMAPINFOHEADER();
-	int pitch = img->m_width * 3, addbit, y, x, zero = 0;
+	int pitch = img->getwidth() * 3, addbit, y, x, zero = 0;
 
 	addbit = 4 - (pitch & 3);
 	if(pitch & 3)
@@ -269,25 +269,24 @@ saveimagetofile(IMAGE* img, FILE * fp)
 	bmpfHead.bfType = *(WORD*)"BM";
 	bmpfHead.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 	bmpfHead.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER)
-					  + pitch * img->m_height;
+		+ pitch * img->getheight();
 	bmpinfo.biSize = sizeof(BITMAPINFOHEADER);
 	bmpinfo.biBitCount = 24;
-	bmpinfo.biHeight = img->m_height;
-	bmpinfo.biWidth = img->m_width;
+	bmpinfo.biHeight = img->getheight();
+	bmpinfo.biWidth = img->getwidth();
 	bmpinfo.biPlanes = 1;
-	bmpinfo.biSizeImage = pitch * img->m_height;
+	bmpinfo.biSizeImage = pitch * img->getheight();
 	//bmpinfo.biXPelsPerMeter
 	fwrite(&bmpfHead, sizeof(bmpfHead), 1, fp);
 	fwrite(&bmpinfo, sizeof(bmpinfo), 1, fp);
-
-	for(y = img->m_height - 1; y >= 0; --y)
+	for(y = img->getheight() - 1; y >= 0; --y)
 	{
-		for(x = 0; x < img->m_width; ++x)
+		for(x = 0; x < img->getwidth(); ++x)
 		{
-			::DWORD col = img->m_pBuffer[y * img->m_width + x];
+			::DWORD col = img->getbuffer()[y * img->getwidth() + x];
 			//col = RGBTOBGR(col);
-			size_t ret = fwrite(&col, 3, 1, fp);
-			if(ret < 1) goto ERROR_BREAK;
+			if(std::fwrite(&col, 3, 1, fp) < 1)
+				goto ERROR_BREAK;
 		}
 		if(addbit > 0)
 			fwrite(&zero, addbit, 1, fp);
@@ -622,23 +621,23 @@ fix_rect_1size(IMAGE* pdest, IMAGE* psrc,
 	int* nHeightSrc      // height of source rectangle
 )
 {
-	viewporttype _vpt{0, 0, pdest->m_width, pdest->m_height, 0};
+	viewporttype _vpt{0, 0, pdest->getwidth(), pdest->getheight(), 0};
 	/* default value proc */
 	if(*nWidthSrc == 0)
 	{
-		*nWidthSrc  = psrc->m_width;
-		*nHeightSrc = psrc->m_height;
+		*nWidthSrc  = psrc->getwidth();
+		*nHeightSrc = psrc->getheight();
 	}
 	/* fix src rect */
-	if(*nWidthSrc > psrc->m_width)
+	if(*nWidthSrc > psrc->getwidth())
 	{
-		*nWidthSrc -= *nWidthSrc - psrc->m_width;
-		*nWidthSrc = psrc->m_width;
+		*nWidthSrc -= *nWidthSrc - psrc->getwidth();
+		*nWidthSrc = psrc->getwidth();
 	}
-	if(*nHeightSrc > psrc->m_height)
+	if(*nHeightSrc > psrc->getheight())
 	{
-		*nHeightSrc -= *nHeightSrc - psrc->m_height;
-		*nHeightSrc = psrc->m_height;
+		*nHeightSrc -= *nHeightSrc - psrc->getheight();
+		*nHeightSrc = psrc->getheight();
 	}
 	if(*nXOriginSrc < 0)
 	{
@@ -955,13 +954,13 @@ fix_rect_0size(IMAGE* pdest,
 {
 	viewporttype _vpt
 	{
-		0, 0, pdest->m_width, pdest->m_height, 0
+		0, 0, pdest->getwidth(), pdest->getheight(), 0
 	};
 
 	if(*nWidthDest == 0)
-		*nWidthDest = pdest->m_width;
+		*nWidthDest = pdest->getwidth();
 	if(*nHeightDest == 0)
-		*nHeightDest = pdest->m_height;
+		*nHeightDest = pdest->getheight();
 	if(*nXOriginDest < _vpt.left)
 		*nXOriginDest += _vpt.left - *nXOriginDest;
 	if(*nYOriginDest < _vpt.top)
