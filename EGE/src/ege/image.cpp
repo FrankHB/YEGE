@@ -34,9 +34,22 @@ IMAGE::IMAGE(int width, int height)
 {}
 
 IMAGE::IMAGE(::HDC hdc, int width, int height)
-	: m_initflag(IMAGE_INIT_FLAG)
+	: m_initflag(IMAGE_INIT_FLAG),
+	m_hDC([hdc]{assert(hdc); return ::CreateCompatibleDC(hdc);}())
 {
-	init_image(hdc, width, height);
+	if(m_hDC)
+	{
+		resize(width, height);
+		setcolor(LIGHTGRAY, this);
+		setbkcolor(BLACK, this);
+		::SetBkMode(hdc, OPAQUE); //TRANSPARENT);
+		setfillstyle(SOLID_FILL, 0, this);
+		setlinestyle(PS_SOLID, 0, 1, this);
+		settextjustify(LEFT_TEXT, TOP_TEXT, this);
+		m_aa = {};
+	}
+//	else
+//		throw ::GetLastError();
 }
 
 IMAGE::IMAGE(const IMAGE& img)
@@ -108,12 +121,16 @@ IMAGE::gentexture(bool gen)
 }
 
 int
-IMAGE::init_image(::HDC hdc, int width, int height)
+IMAGE::resize(int width, int height)
 {
-	::HDC dc;
-	::HBITMAP bitmap;
-	auto bmi = ::BITMAPINFO();
+	inittest(L"IMAGE::resize");
+
+	memset(&m_vpt, 0, sizeof(m_vpt));
+
+	assert(m_hDC);
+
 	VOID* p_bmp_buf;
+	auto bmi = ::BITMAPINFO();
 
 	bmi.bmiHeader.biSize = sizeof(bmi.bmiHeader);
 	bmi.bmiHeader.biWidth = width;
@@ -122,96 +139,38 @@ IMAGE::init_image(::HDC hdc, int width, int height)
 	bmi.bmiHeader.biBitCount = 32;
 	bmi.bmiHeader.biSizeImage = width * height * 4;
 
-	memset(&m_vpt, 0, sizeof(m_vpt));
-
-	if(!hdc)
+	if(::HBITMAP bitmap = ::CreateDIBSection(
+		{},
+		&bmi,
+		DIB_RGB_COLORS,
+		(VOID**)&p_bmp_buf,
+		{},
+		0
+	))
 	{
-		hdc = m_hDC;
-		if(!hdc)
+		::HBITMAP hbmp_def = (::HBITMAP)::SelectObject(m_hDC, bitmap);
+		if(!g_hbmp_def)
 		{
-			wchar_t str[60];
-			wsprintfW(str, L"Fatal error: read/write at 0x%08x. At function 'newimage', construct IMAGE* before 'initgraph'?", this);
-			::MessageBoxW(get_global_state().hwnd, str, L"ERROR message", MB_ICONSTOP);
-			::ExitProcess((::UINT)grError);
+			g_hbmp_def = hbmp_def;
+			g_hbr_def  = (::HBRUSH)::GetCurrentObject(m_hDC, OBJ_BRUSH);
+			g_pen_def  = (::HPEN)::GetCurrentObject(m_hDC, OBJ_PEN);
+			g_font_def = (::HFONT)::GetCurrentObject(m_hDC, OBJ_FONT);
 		}
-	}
-	if(m_hDC)
-		dc = m_hDC;
-	else
-		dc = ::CreateCompatibleDC(hdc);
-	if(dc)
-	{
-		bitmap = ::CreateDIBSection(
-			{},
-			&bmi,
-			DIB_RGB_COLORS,
-			(VOID**)&p_bmp_buf,
-			{},
-			0
-		);
-
-		if(bitmap)
-		{
-			::HBITMAP hbmp_def = (::HBITMAP)::SelectObject(dc, bitmap);
-			int b_resize = 0;
-			if(!g_hbmp_def)
-			{
-				g_hbmp_def = hbmp_def;
-				g_hbr_def  = (::HBRUSH)::GetCurrentObject(dc, OBJ_BRUSH);
-				g_pen_def  = (::HPEN)::GetCurrentObject(dc, OBJ_PEN);
-				g_font_def = (::HFONT)::GetCurrentObject(dc, OBJ_FONT);
-			}
-			if(m_hDC)
-			{
-				::DeleteObject(hbmp_def);
-				b_resize = 1;
-			}
-			else
-			{
-				m_vpt.left   = 0;
-				m_vpt.top    = 0;
-				m_vpt.right  = width;
-				m_vpt.bottom = height;
-				m_vpt.clipflag   = 1;
-			}
-			m_hDC = dc;
-			m_hBmp = bitmap;
-			m_width = width;
-			m_height = height;
-			m_pBuffer = (DWORD*)p_bmp_buf;
-
-			if(b_resize == 0)
-			{
-				setcolor(LIGHTGRAY, this);
-				setbkcolor(BLACK, this);
-				::SetBkMode(dc, OPAQUE); //TRANSPARENT);
-				setfillstyle(SOLID_FILL, 0, this);
-				setlinestyle(PS_SOLID, 0, 1, this);
-				settextjustify(LEFT_TEXT, TOP_TEXT, this);
-				ege_enable_aa({}, this);
-			}
-			else
-				//::SetBkMode(dc, bkMode);
-			setviewport(0, 0, m_width, m_height, 1, this);
-			cleardevice(this);
-		}
-		else
-		{
-			int err = ::GetLastError();
-			::DeleteDC(dc);
-			return err;
-		}
+		::DeleteObject(hbmp_def);
+		m_hBmp = bitmap;
+		m_width = width;
+		m_height = height;
+		m_pBuffer = (DWORD*)p_bmp_buf;
+		setviewport(0, 0, m_width, m_height, 1, this);
+		cleardevice(this);
 	}
 	else
-		return ::GetLastError();
+	{
+		int err = ::GetLastError();
+		::DeleteDC(m_hDC);
+		return err;
+	}
 	return 0;
-}
-
-int
-IMAGE::resize(int width, int height)
-{
-	inittest(L"IMAGE::resize");
-	return init_image(m_hDC, width, height);
 }
 
 void
@@ -223,7 +182,7 @@ IMAGE::copyimage(IMAGE* pSrcImg)
 	int ret = 0;
 
 	if(m_width != img->m_width || m_height != img->m_height)
-		ret = init_image({}, img->m_width, img->m_height);
+		ret = resize(img->m_width, img->m_height);
 	if(ret == 0)
 		std::memcpy(getbuffer(), img->getbuffer(), m_width * m_height * 4); // 4 byte per pixel
 }
@@ -233,7 +192,7 @@ IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
 	inittest(L"IMAGE::getimage");
 
-	if(init_image({}, srcWidth, srcHeight) == 0)
+	if(resize(srcWidth, srcHeight) == 0)
 	{
 		const auto img = CONVERT_IMAGE_CONST(pSrcImg);
 
@@ -431,7 +390,7 @@ IMAGE::getpngimg(FILE * fp)
 	::png_read_png(pic_ptr, info_ptr, PNG_TRANSFORM_BGR | PNG_TRANSFORM_EXPAND, {});
 	::png_set_expand(pic_ptr);
 
-	init_image({}, (int)(info_ptr->width), (int)(info_ptr->height)); //::png_get_IHDR
+	resize((int)(info_ptr->width), (int)(info_ptr->height)); //::png_get_IHDR
 	width = info_ptr->width;
 	height = info_ptr->height;
 	depth = info_ptr->pixel_depth;

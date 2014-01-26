@@ -25,19 +25,14 @@ class IMAGE
 	int m_initflag;
 
 public:
-	::HDC m_hDC = {};
+	::HDC m_hDC;
 	::HBITMAP  m_hBmp;
 	int m_width;
 	int m_height;
 	DWORD* m_pBuffer;
 	color_t m_color;
 	color_t m_fillcolor;
-	bool m_aa;
-
-private:
-	int init_image(::HDC hdc, int width, int height);
-
-public:
+	bool m_aa = {};
 	viewporttype m_vpt;
 	textsettingstype m_texttype;
 	linestyletype m_linestyle;
@@ -46,10 +41,6 @@ public:
 	std::unique_ptr<Gdiplus::Brush> m_pattern{};
 	std::unique_ptr<Gdiplus::Image> m_texture{};
 
-private:
-	void inittest(const wchar_t* strCallFunction = {}) const;
-
-public:
 	IMAGE();
 	IMAGE(int, int);
 	IMAGE(::HDC, int, int);
@@ -60,6 +51,11 @@ public:
 	IMAGE&
 	operator=(IMAGE) ynothrow;
 
+private:
+	void
+	inittest(const wchar_t* strCallFunction = {}) const;
+
+public:
 	void
 	swap(IMAGE&) ynothrow;
 
