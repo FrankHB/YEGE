@@ -42,12 +42,6 @@ struct _graph_setting
 	static const ::TCHAR window_class_name[32];
 	static const ::TCHAR window_caption[128];
 
-	struct _graph
-	{
-		int width;
-		int height;
-	} graph;
-
 	::HDC window_dc;
 	int dc_w = 640, dc_h = 480;
 	int base_x, base_y, base_w, base_h;
