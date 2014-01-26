@@ -15,8 +15,6 @@
 #include "ege/gapi_aa.h"
 #include "ege/img.h"
 
-#define IMAGE_INIT_FLAG     0x20100916
-
 namespace ege
 {
 
@@ -34,8 +32,7 @@ IMAGE::IMAGE(int width, int height)
 {}
 
 IMAGE::IMAGE(::HDC hdc, int width, int height)
-	: m_initflag(IMAGE_INIT_FLAG),
-	m_hDC([hdc]{assert(hdc); return ::CreateCompatibleDC(hdc);}())
+	: m_hDC([hdc]{assert(hdc); return ::CreateCompatibleDC(hdc);}())
 {
 	if(m_hDC)
 	{
@@ -58,7 +55,6 @@ IMAGE::IMAGE(const IMAGE& img)
 	::BitBlt(m_hDC, 0, 0, img.m_width, img.m_height, img.m_hDC, 0, 0, SRCCOPY);
 }
 IMAGE::IMAGE(IMAGE&& img) ynothrow
-	: m_initflag(IMAGE_INIT_FLAG)
 {
 	img.swap(*this);
 }
@@ -101,20 +97,6 @@ IMAGE::swap(IMAGE& img) ynothrow
 	std::swap(m_texture, img.m_texture);
 }
 
-void IMAGE::inittest(const wchar_t * strCallFunction) const
-{
-	if(m_initflag != IMAGE_INIT_FLAG)
-	{
-		wchar_t str[60];
-
-		wsprintfW(str, L"Fatal error: read/write at 0x%p. At function '%s'",
-			this, strCallFunction);
-		::MessageBoxW(get_global_state()._get_hwnd(), str,
-			L"EGE ERROR message", MB_ICONSTOP);
-		::ExitProcess((::UINT)grError);
-	}
-}
-
 void
 IMAGE::gentexture(bool gen)
 {
@@ -125,8 +107,6 @@ IMAGE::gentexture(bool gen)
 int
 IMAGE::resize(int width, int height)
 {
-	inittest(L"IMAGE::resize");
-
 	memset(&m_vpt, 0, sizeof(m_vpt));
 
 	assert(m_hDC);
@@ -178,8 +158,6 @@ IMAGE::resize(int width, int height)
 void
 IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
-	inittest(L"IMAGE::getimage");
-
 	if(resize(srcWidth, srcHeight) == 0)
 	{
 		const auto img = CONVERT_IMAGE_CONST(pSrcImg);
@@ -191,13 +169,11 @@ IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 int
 IMAGE::getimage(const char* filename, int zoomWidth, int zoomHeight)
 {
-	inittest(L"IMAGE::getimage");
-	{
-		int ret = getimage_pngfile(this, filename);
-		if(ret == 0) return 0;
-	}
+	if(getimage_pngfile(this, filename) == 0)
+		return 0;
 
-	wchar_t           wszPath[MAX_PATH * 2 + 1];
+	wchar_t wszPath[MAX_PATH * 2 + 1];
+
 	MultiByteToWideChar(CP_ACP, 0, filename, -1, wszPath, MAX_PATH * 2);
 	return getimage(wszPath, zoomWidth, zoomHeight);
 }
@@ -205,7 +181,6 @@ IMAGE::getimage(const char* filename, int zoomWidth, int zoomHeight)
 int
 IMAGE::getimage(const wchar_t* filename, int, int)
 {
-	inittest(L"IMAGE::getimage");
 	if(getimage_pngfile(this, filename) == 0)
 		return 0;
 
@@ -249,11 +224,13 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 }
 
 void
-IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop) const
+IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
+	int srcX, int srcY, ::DWORD dwRop) const
 {
-	inittest(L"IMAGE::putimage");
 	const auto img = CONVERT_IMAGE(pDstImg);
-	::BitBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC, srcX, srcY, dwRop);
+
+	::BitBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC, srcX, srcY,
+		dwRop);
 }
 
 void
@@ -273,6 +250,7 @@ void
 IMAGE::putimage(int dstX, int dstY, ::DWORD dwRop) const
 {
 	const auto img = CONVERT_IMAGE(nullptr);
+
 	putimage(img, dstX, dstY, dwRop);
 }
 
@@ -474,8 +452,6 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 int
 IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 {
-	inittest(L"IMAGE::getimage");
-
 	if(const auto hrsrc = ::FindResourceA(_graph_setting::get_instance(),
 		pResName, pResType))
 	{
@@ -522,8 +498,6 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 int
 IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 {
-	inittest(L"IMAGE::getimage");
-
 	if(const auto hrsrc = ::FindResourceW(_graph_setting::get_instance(),
 		pResName, pResType))
 	{
@@ -568,8 +542,6 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 int
 IMAGE::getimage(void * pMem, long size)
 {
-	inittest(L"IMAGE::getimage");
-
 	if(pMem)
 	{
 		::DWORD dwSize = size;
@@ -628,7 +600,6 @@ void
 IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop) const
 {
-	inittest(L"IMAGE::putimage");
 	const auto img = CONVERT_IMAGE(pDstImg);
 
 	if(img)
@@ -722,9 +693,7 @@ IMAGE::putimage_transparent(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	inittest(L"IMAGE::putimage_transparent");
-	const auto img = CONVERT_IMAGE(imgdest);
-	if(img)
+	if(const auto img = CONVERT_IMAGE(imgdest))
 	{
 		IMAGE* imgsrc = this;
 		int y, x;
@@ -763,9 +732,7 @@ IMAGE::putimage_alphablend(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	inittest(L"IMAGE::putimage_alphablend");
-	const auto img = CONVERT_IMAGE(imgdest);
-	if(img)
+	if(const auto img = CONVERT_IMAGE(imgdest))
 	{
 		IMAGE* imgsrc = this;
 		int y, x;
@@ -817,9 +784,7 @@ IMAGE::putimage_alphatransparent(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	inittest(L"IMAGE::putimage_alphablend");
-	const auto img = CONVERT_IMAGE(imgdest);
-	if(img)
+	if(const auto img = CONVERT_IMAGE(imgdest))
 	{
 		IMAGE* imgsrc = this;
 		int y, x;
@@ -875,9 +840,7 @@ IMAGE::putimage_withalpha(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	inittest(L"IMAGE::putimage_alphablend");
-	const auto img = CONVERT_IMAGE(imgdest);
-	if(img)
+	if(const auto img = CONVERT_IMAGE(imgdest))
 	{
 		IMAGE* imgsrc = this;
 		int y, x;
@@ -934,9 +897,7 @@ IMAGE::putimage_alphafilter(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	inittest(L"IMAGE::putimage_alphablend");
-	const auto img = CONVERT_IMAGE(imgdest);
-	if(img)
+	if(const auto img = CONVERT_IMAGE(imgdest))
 	{
 		IMAGE* imgsrc = this;
 		int y, x;
@@ -1015,8 +976,6 @@ int
 IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 							  int nYOriginDest, int nWidthDest, int nHeightDest)
 {
-	inittest(L"IMAGE::imagefilter_blurring_4");
-
 	std::unique_ptr< ::DWORD[]> buff(new ::DWORD[8 << 10]);
 	int x2, y2, ix, iy;
 	::DWORD* pdp, lsum, sumRB, sumG;
@@ -1148,8 +1107,6 @@ IMAGE::imagefilter_blurring_8(
 	int nHeightDest
 )
 {
-	inittest(L"IMAGE::imagefilter_blurring_4");
-
 	std::unique_ptr< ::DWORD[]> buff(new ::DWORD[8 << 10]);
 	int x2, y2, ix, iy;
 	::DWORD* pdp, lsum, sumRB, sumG, lbuf;
@@ -1315,20 +1272,13 @@ IMAGE::imagefilter_blurring(
 	int nHeightDest
 )
 {
-	inittest(L"IMAGE::imagefilter_blurring");
 	IMAGE* imgdest = this;
 
 	fix_rect_0size(imgdest, &nXOriginDest, &nYOriginDest, &nWidthDest, &nHeightDest);
 	if(nWidthDest <= 0 || nHeightDest <= 0)
-	{
 		return grInvalidRegion;
-	}
-
 	if(alpha < 0 || alpha > 0x100)
-	{
 		alpha = 0x100;
-	}
-
 	if(intensity <= 0x80)
 	{
 		imagefilter_blurring_4(

@@ -22,8 +22,6 @@ namespace ege
 // 定义图像对象
 class IMAGE
 {
-	int m_initflag;
-
 public:
 	::HDC m_hDC;
 	::HBITMAP  m_hBmp;
