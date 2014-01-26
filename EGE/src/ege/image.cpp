@@ -107,8 +107,10 @@ void IMAGE::inittest(const wchar_t * strCallFunction) const
 	{
 		wchar_t str[60];
 
-		wsprintfW(str, L"Fatal error: read/write at 0x%p. At function '%s'", this, strCallFunction);
-		::MessageBoxW(get_global_state().hwnd, str, L"EGE ERROR message", MB_ICONSTOP);
+		wsprintfW(str, L"Fatal error: read/write at 0x%p. At function '%s'",
+			this, strCallFunction);
+		::MessageBoxW(get_global_state()._get_hwnd(), str,
+			L"EGE ERROR message", MB_ICONSTOP);
 		::ExitProcess((::UINT)grError);
 	}
 }
@@ -474,9 +476,8 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 {
 	inittest(L"IMAGE::getimage");
 
-	auto hrsrc = ::FindResourceA(get_global_state().instance, pResName, pResType);
-
-	if(hrsrc)
+	if(const auto hrsrc = ::FindResourceA(_graph_setting::get_instance(),
+		pResName, pResType))
 	{
 		auto hg(::LoadResource({}, hrsrc));
 		auto dwSize(::SizeofResource({}, hrsrc));
@@ -522,9 +523,9 @@ int
 IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 {
 	inittest(L"IMAGE::getimage");
-	auto hrsrc = ::FindResourceW(get_global_state().instance, pResName, pResType);
 
-	if(hrsrc)
+	if(const auto hrsrc = ::FindResourceW(_graph_setting::get_instance(),
+		pResName, pResType))
 	{
 		auto hg = ::LoadResource({}, hrsrc);
 		auto dwSize = ::SizeofResource({}, hrsrc);

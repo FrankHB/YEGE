@@ -24,13 +24,13 @@ setcaption(const wchar_t* caption)
 ::HWND
 getHWnd()
 {
-	return get_global_state().hwnd;
+	return get_global_state()._get_hwnd();
 }
 
 ::HINSTANCE
 getHInstance()
 {
-	return get_global_state().instance;
+	return _graph_setting::get_instance();
 }
 
 } // namespace ege;

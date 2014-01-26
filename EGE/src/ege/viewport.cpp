@@ -82,61 +82,66 @@ clearviewport(IMAGE* pimg)
 void
 window_getviewport(viewporttype* viewport)
 {
-	auto pg = &get_global_state();
-	viewport->left   = pg->base_x;
-	viewport->top    = pg->base_y;
-	viewport->right  = pg->base_w + pg->base_x;
-	viewport->bottom = pg->base_h + pg->base_y;
+	auto& pages(get_pages());
+
+	viewport->left = pages.base_x;
+	viewport->top = pages.base_y;
+	viewport->right = pages.base_w + pages.base_x;
+	viewport->bottom = pages.base_h + pages.base_y;
 }
 
 void
 window_getviewport(int* left, int* top, int* right, int* bottom)
 {
-	auto pg = &get_global_state();
-	if(left)   *left   = pg->base_x;
-	if(top)    *top    = pg->base_y;
-	if(right)  *right  = pg->base_w + pg->base_x;
-	if(bottom) *bottom = pg->base_h + pg->base_y;
+	auto& pages(get_pages());
+
+	if(left)
+		*left = pages.base_x;
+	if(top)
+		*top = pages.base_y;
+	if(right)
+		*right = pages.base_w + pages.base_x;
+	if(bottom)
+		*bottom = pages.base_h + pages.base_y;
 }
 
 void
 window_setviewport(int left, int top, int right, int bottom)
 {
-	auto pg = &get_global_state();
-	int same_xy = 0, same_wh = 0;
-	if(pg->base_x == left && pg->base_y == top)
-		same_xy = 1;
-	if(pg->base_w == bottom - top && pg->base_h == right - left)
-		same_wh = 1;
-	pg->base_x = left;
-	pg->base_y = top;
-	pg->base_w = right - left;
-	pg->base_h = bottom - top;
-	if(same_xy == 0 || same_wh == 0)
+	auto& pages(get_pages());
+	auto& gstate(get_global_state());
+	const auto hwnd(gstate._get_hwnd());
+	const bool same_xy(pages.base_x == left && pages.base_y == top),
+		same_wh(pages.base_w == bottom - top && pages.base_h == right - left);
+
+	pages.base_x = left;
+	pages.base_y = top;
+	pages.base_w = right - left;
+	pages.base_h = bottom - top;
+	if(!same_xy || !same_wh)
 		--update_mark_count;
 	/*修正窗口大小*/
-	if(same_wh == 0)
+	if(!same_wh)
 	{
 		::RECT rect, crect;
 		int dw, dh;
-		::GetClientRect(pg->hwnd, &crect);
-		::GetWindowRect(pg->hwnd, &rect);
-		dw = pg->base_w - crect.right;
-		dh = pg->base_h - crect.bottom;
+		::GetClientRect(hwnd, &crect);
+		::GetWindowRect(hwnd, &rect);
+		dw = pages.base_w - crect.right;
+		dh = pages.base_h - crect.bottom;
 		{
-			::HWND hwnd = GetParent(pg->hwnd);
-			if(hwnd)
+			::HWND hparent = GetParent(hwnd);
+			if(hparent)
 			{
 				::POINT pt{0, 0};
-				::ClientToScreen(hwnd, &pt);
+				::ClientToScreen(hparent, &pt);
 				rect.left   -= pt.x;
 				rect.top    -= pt.y;
 				rect.right  -= pt.x;
 				rect.bottom -= pt.y;
 			}
-
-			::MoveWindow(pg->hwnd, rect.left, rect.top,
-				rect.right + dw - rect.left, rect.bottom + dh - rect.top, TRUE);
+			::MoveWindow(hwnd, rect.left, rect.top,
+				rect.right + dw - rect.left, rect.bottom + dh - rect.top, true);
 		}
 	}
 }

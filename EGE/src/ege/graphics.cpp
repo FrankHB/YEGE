@@ -58,7 +58,7 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		pg->keystatemap[VK_LBUTTON] = 1;
 		::SetCapture(hWnd);
 		pg->mouse_state_l = 1;
-		if(hWnd == pg->hwnd)
+		if(hWnd == pg->_get_hwnd())
 			pg->_push_mouse_msg( message, wParam, lParam);
 		break;
 	case WM_MBUTTONDOWN:
@@ -68,7 +68,7 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		pg->keystatemap[VK_MBUTTON] = 1;
 		::SetCapture(hWnd);
 		pg->mouse_state_m = 1;
-		if(hWnd == pg->hwnd)
+		if(hWnd == pg->_get_hwnd())
 			pg->_push_mouse_msg( message, wParam, lParam);
 		break;
 	case WM_RBUTTONDOWN:
@@ -78,7 +78,8 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		pg->keystatemap[VK_RBUTTON] = 1;
 		::SetCapture(hWnd);
 		pg->mouse_state_r = 1;
-		if(hWnd == pg->hwnd) pg->_push_mouse_msg( message, wParam, lParam);
+		if(hWnd == pg->_get_hwnd())
+			pg->_push_mouse_msg( message, wParam, lParam);
 		break;
 	case WM_LBUTTONUP:
 	case WM_MBUTTONUP:
@@ -88,7 +89,7 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 	case WM_MOUSEMOVE:
 		pg->mouse_last_x = (short int)((::UINT)lParam & 0xFFFF);
 		pg->mouse_last_y = (short int)((::UINT)lParam >> 16);
-		if(hWnd == pg->hwnd && (pg->mouse_lastup_x != pg->mouse_last_x
+		if(hWnd == pg->_get_hwnd() && (pg->mouse_lastup_x != pg->mouse_last_x
 			|| pg->mouse_lastup_y != pg->mouse_last_y))
 			pg->_push_mouse_msg( message, wParam, lParam);
 		break;
@@ -97,14 +98,14 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 			::POINT pt{(short int)((::UINT)lParam & 0xFFFF),
 				(short int)((::UINT)lParam >> 16)};
 
-			::ScreenToClient(pg->hwnd, &pt);
+			::ScreenToClient(pg->_get_hwnd(), &pt);
 			pg->mouse_last_x = pt.x;
 			pg->mouse_last_y = pt.y;
 			lParam = ((unsigned short)(short int)pg->mouse_last_y << 16)
 				| (unsigned short)(short int)pg->mouse_last_x;
 		}
-		if(hWnd == pg->hwnd)
-			pg->_push_mouse_msg( message, wParam, lParam);
+		if(hWnd == pg->_get_hwnd())
+			pg->_push_mouse_msg(message, wParam, lParam);
 		break;
 	case WM_SETCURSOR:
 		if(pg == pg_w)
