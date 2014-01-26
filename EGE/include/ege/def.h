@@ -1,13 +1,9 @@
 ﻿#ifndef Inc_ege_def_h_
 #define Inc_ege_def_h_
 
-//#include <ydef.h>
-#include <cassert>
-#include <cwchar>
+#include <ydef.h>
 
-#define yconstfn constexpr
-#define yconstexpr constexpr
-#define ynothrow noexcept
+// XXX: Use __declspec(import) and __declspec(export).
 #define EGEAPI
 
 #endif
