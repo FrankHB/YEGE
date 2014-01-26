@@ -34,7 +34,7 @@ Code::Blocks 。
 宏 CTL_* 的定义不再被默认包含。若需使用，另行包含 <ege/mac.h> 或 <ege/ctl.h> 等。
 移除函数 attachHWND 以避免潜在的死锁。
 函数 setrendermode 无效，默认状态统一为 setrendermode(RENDER_MANUAL) ；仅为兼容性保留。
-移除类型 LPCALLBACK_PROC 、LPMSG_KEY_PROC 和 LPMSG_MOUSE_PROC，分别用 CALLBACK_PROC* 、MSG_KEY_PROC* 和 MSG_MOUSE_PROC 代替，
+移除类型 LPCALLBACK_PROC 、LPMSG_KEY_PROC 、LPMSG_MOUSE_PROC 、MSG_KEY_PROC 和 MSG_MOUSE_PROC ，其中 LPCALLBACK_PROC 可用 CALLBACK_PROC* 代替，
 
 向后兼容但不保证向前兼容原始实现的接口
 ----
