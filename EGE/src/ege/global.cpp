@@ -90,7 +90,6 @@ const ::TCHAR _graph_setting::window_class_name[32]
 const ::TCHAR _graph_setting::window_caption[128]{EGE_TITLE};
 
 _graph_setting::_graph_setting(int gdriver_n, int* gmode)
-	: instance(::GetModuleHandle({}))
 {
 	static std::once_flag init_flag;
 
@@ -107,7 +106,7 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 		wcex.lpfnWndProc = getProcfunc();
 		wcex.cbClsExtra = 0;
 		wcex.cbWndExtra = 0;
-		wcex.hInstance = instance;
+		wcex.hInstance = get_instance();
 		wcex.hIcon = ::LoadIcon({}, IDI_WINLOGO);
 		wcex.hCursor = ::LoadCursor({}, IDC_ARROW);
 		wcex.hbrBackground = (::HBRUSH)(COLOR_WINDOW + 1);
@@ -116,7 +115,7 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 		const auto load([&](::LPCTSTR rt){
 			::HICON hico = {};
 
-			EnumResourceNames(instance, rt, EnumResNameProc,
+			EnumResourceNames(get_instance(), rt, EnumResNameProc,
 				::LONG_PTR(&hico));
 			if(hico)
 				wcex.hIcon = hico;
@@ -361,33 +360,24 @@ _graph_setting::_init_graph_x()
 		bool init_finish{};
 
 		ui_thread = std::thread([this, &init_finish]{
-			const int nCmdShow(SW_SHOW);
-
 			//执行应用程序初始化
-			const auto dw(::GetSystemMetrics(SM_CXFRAME) * 2),
-				dh(::GetSystemMetrics(SM_CYFRAME)
-				+ ::GetSystemMetrics(SM_CYCAPTION) * 2);
 			hwnd = ::CreateWindowEx(g_windowexstyle, window_class_name,
-				window_caption, g_windowstyle & ~WS_VISIBLE,
-				_g_windowpos_x, _g_windowpos_y, dc_w + dw, dc_h + dh, {}, {},
-				instance, {});
+				window_caption, g_windowstyle & ~WS_VISIBLE, _g_windowpos_x,
+				_g_windowpos_y, dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
+				dc_h + ::GetSystemMetrics(SM_CYFRAME)
+				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, {}, {},
+				get_instance(), {});
 			if(!hwnd)
 				return ::DWORD(0xFFFFFFFF);
 			::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
-			::ShowWindow(hwnd, nCmdShow);
+			::ShowWindow(hwnd, SW_SHOW);
 			if(g_windowexstyle & WS_EX_TOPMOST)
 				::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
 					SWP_NOSIZE | SWP_NOMOVE);
 
 			//图形初始化
-			auto hDC(::GetDC(hwnd));
-
-			window_dc = hDC;
-			setactivepage(0);
-			settarget({});
-			setvisualpage(0);
-			window_setviewport(0, 0, dc_w, dc_h);
-			//::ReleaseDC(hwnd, hDC);
+			window_dc = ::GetDC(hwnd);
+			//::ReleaseDC(hwnd, window_dc);
 			mouse_show = {};
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
 			::SetTimer(hwnd, RENDER_TIMER_ID, 50, {});
@@ -418,8 +408,7 @@ _graph_setting::_init_graph_x()
 			setrendermode(RENDER_MANUAL);
 		mouse_show = true;
 	});
-	get_pages().init_pages();
-	::ShowWindow(hwnd, SW_SHOW);
+	window_setviewport(0, 0, dc_w, dc_h);
 }
 
 int
@@ -529,11 +518,7 @@ _graph_setting::_on_paint(::HWND hwnd)
 {
 	::PAINTSTRUCT ps;
 	::HDC dc(::BeginPaint(hwnd, &ps));
-	auto& vpage(get_pages().get_vpage_ref());
-	const int left(vpage.m_vpt.left), top(vpage.m_vpt.top);
-
-	::BitBlt(dc, 0, 0, base_w, base_h, vpage.m_hDC,
-		base_x - left, base_y - top, SRCCOPY);
+	get_pages().paint(dc);
 	::EndPaint(hwnd, &ps);
 }
 
@@ -707,12 +692,7 @@ _graph_setting::_update()
 	{
 		if(!window_dc)
 			return grNullPointer;
-
-		auto& vpage(get_pages().get_vpage_ref());
-	//	::HRGN rgn = vpage.m_rgn;
-
-		::BitBlt(window_dc, 0, 0, base_w, base_h, vpage.m_hDC,
-			base_x - vpage.m_vpt.left, base_y - vpage.m_vpt.top, SRCCOPY);
+		get_pages().update();
 	}
 	update_mark_count = UPDATE_MAX_CALL;
 	_get_FPS(0x100);
@@ -796,14 +776,14 @@ _graph_setting::_window_destroy(msg_createwindow& msg)
 
 
 _pages::_pages()
-	: gstate(get_global_state()), active_dc(gstate.window_dc)
+	: gstate(get_global_state()), active_dc(gstate._get_window_dc())
 {}
 
 void
 _pages::check_page(int page) const
 {
-	const int dc_w(gstate.dc_w);
-	const int dc_h(gstate.dc_h);
+	const int dc_w(gstate._get_dc_w());
+	const int dc_h(gstate._get_dc_h());
 
 	if(!img_page[page])
 		img_page[page] = new IMAGE(dc_w, dc_h);
@@ -832,8 +812,14 @@ _pages::get_vpage_ref() const
 }
 
 void
-_pages::init_pages()
-{}
+_pages::paint(::HDC dc)
+{
+	auto& vpage(get_vpage_ref());
+	const int left(vpage.m_vpt.left), top(vpage.m_vpt.top);
+
+	::BitBlt(dc, 0, 0, base_w, base_h, vpage.m_hDC,
+		base_x - left, base_y - top, SRCCOPY);
+}
 
 void
 _pages::set_apage(int page)
@@ -857,6 +843,15 @@ _pages::set_vpage(int page)
 	check_page(page);
 	visual_page = page;
 	update_mark_count = 0;
+}
+
+void
+_pages::update()
+{
+	auto& vpage(get_vpage_ref());
+
+	::BitBlt(gstate._get_window_dc(), 0, 0, base_w, base_h, vpage.m_hDC,
+		base_x - vpage.m_vpt.left, base_y - vpage.m_vpt.top, SRCCOPY);
 }
 
 

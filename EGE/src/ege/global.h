@@ -42,14 +42,10 @@ struct _graph_setting
 	static const ::TCHAR window_class_name[32];
 	static const ::TCHAR window_caption[128];
 
+private:
+	::HWND hwnd;
 	::HDC window_dc;
 	int dc_w = 640, dc_h = 480;
-	int base_x, base_y, base_w, base_h;
-
-	::HINSTANCE instance;
-	::HWND    hwnd;
-
-private:
 	bool use_force_exit; //强制关闭进程标记
 	thread_queue<EGEMSG> msgkey_queue, msgmouse_queue;
 	std::thread ui_thread;
@@ -81,6 +77,30 @@ public:
 
 	void
 	_flushmouse();
+
+	int
+	_get_dc_w() const
+	{
+		return dc_w;
+	}
+
+	int
+	_get_dc_h() const
+	{
+		return dc_h;
+	}
+
+	::HWND
+	_get_hwnd() const
+	{
+		return hwnd;
+	}
+
+	::HDC
+	_get_window_dc() const
+	{
+		return window_dc;
+	}
 
 	int
 	_getch();
@@ -165,6 +185,12 @@ public:
 
 	static void
 	_window_destroy(msg_createwindow&);
+
+	static ::HINSTANCE
+	get_instance()
+	{
+		return ::GetModuleHandleW({});
+	}
 };
 
 
@@ -177,6 +203,7 @@ struct _pages
 	IMAGE* imgtarget_set = {};
 	mutable IMAGE* img_page[BITMAP_PAGE_SIZE] = {};
 	IMAGE* imgtarget = {};
+	int base_x, base_y, base_w, base_h;
 
 	_pages();
 
@@ -199,7 +226,7 @@ struct _pages
 	}
 
 	void
-	init_pages();
+	paint(::HDC);
 
 	void
 	set_apage(int);
@@ -209,6 +236,9 @@ struct _pages
 
 	void
 	set_vpage(int);
+
+	void
+	update();
 };
 
 
