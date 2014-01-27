@@ -32,6 +32,7 @@ public:
 	// 构造函数可以自定义，但要按需要选择使不使用宏，详见前面代码或者文档示例代码
 	egeControlBase();
 	egeControlBase(int inherit, egeControlBase* pParent);
+	virtual
 	~egeControlBase();
 
 	// 以下虚函数都不要直接相互调用
