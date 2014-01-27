@@ -365,7 +365,7 @@ _graph_setting::_init_graph_x()
 				window_caption, g_windowstyle & ~WS_VISIBLE, _g_windowpos_x,
 				_g_windowpos_y, dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
 				dc_h + ::GetSystemMetrics(SM_CYFRAME)
-				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, {}, {},
+				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, HWND_DESKTOP, {},
 				get_instance(), {});
 			if(!hwnd)
 				return ::DWORD(0xFFFFFFFF);
@@ -377,6 +377,9 @@ _graph_setting::_init_graph_x()
 
 			//图形初始化
 			window_dc = ::GetDC(hwnd);
+			setactivepage(0);
+			settarget({});
+			setvisualpage(0);
 			//::ReleaseDC(hwnd, window_dc);
 			mouse_show = {};
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
