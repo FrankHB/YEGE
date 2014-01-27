@@ -86,11 +86,13 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-Wmissing-include-dirs" />
 			<Add option="-pedantic-errors" />
+			<Add option="-Wzero-as-null-pointer-constant" />
 			<Add option="-std=c++11" />
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
-			<Add option="-Wmissing-include-dirs -Wzero-as-null-pointer-constant" />
+			<Add option="-mthreads" />
 			<Add directory="include" />
 		</Compiler>
 		<Unit filename="include/ege.h" />
