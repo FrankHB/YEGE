@@ -1,7 +1,7 @@
 ﻿#ifndef Inc_ege_mac_h_
 #define Inc_ege_mac_h_
 
-#define CTL_PREINIT(classname, parent) struct preinit_obj \
+#define CTL_PREINIT(classname, parent) struct EGEAPI preinit_obj \
 	{ \
 		preinit_obj(classname* This, int inheritlevel) \
 		{ \

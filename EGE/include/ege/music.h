@@ -10,7 +10,7 @@ namespace ege
 //音乐类宏
 const auto MUSIC_ERROR(0xFFFFFFFF);
 
-class MUSIC
+class EGEAPI MUSIC
 {
 public:
 	MUSIC();
