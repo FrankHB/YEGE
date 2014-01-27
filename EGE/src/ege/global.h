@@ -42,36 +42,19 @@ struct _graph_setting
 	static const ::TCHAR window_class_name[32];
 	static const ::TCHAR window_caption[128];
 
-	struct _graph
-	{
-		int width;
-		int height;
-	} graph;
-
-	::HDC dc;
 	::HDC window_dc;
 	int dc_w = 640, dc_h = 480;
-	IMAGE* img_page[BITMAP_PAGE_SIZE];
 	int base_x, base_y, base_w, base_h;
-
-	int     visual_page;
-	int     active_page;
-	IMAGE*  imgtarget;
-	IMAGE*  imgtarget_set;
-	IMAGE*  img_timer_update;
 
 	::HINSTANCE instance;
 	::HWND    hwnd;
 
 private:
-	bool exit_window;
-	bool exit_flag;
 	bool use_force_exit; //强制关闭进程标记
 	thread_queue<EGEMSG> msgkey_queue, msgmouse_queue;
-
-public:
 	std::thread ui_thread;
 
+public:
 	/*鼠标状态记录*/
 	int mouse_state_l, mouse_state_m, mouse_state_r;
 	int mouse_last_x, mouse_last_y;
@@ -79,11 +62,7 @@ public:
 	int mouse_lastup_x, mouse_lastup_y;
 	bool mouse_show;
 
-	LPMSG_KEY_PROC callback_key;
-	void* callback_key_param;
-	LPMSG_MOUSE_PROC callback_mouse;
-	void* callback_mouse_param;
-	LPCALLBACK_PROC callback_close;
+	CALLBACK_PROC* callback_close;
 
 	/* 键盘状态记录 */
 	int keystatemap[MAX_KEY_VCODE];
@@ -97,24 +76,6 @@ public:
 	bool
 	_is_window_exit() const;
 
-	IMAGE*
-	_get_target() const
-	{
-		return imgtarget_set;
-	}
-
-	void
-	_set_activepage(int);
-
-	int
-	_set_target(IMAGE*);
-
-	void
-	_set_visualpage(int);
-
-	int
-	_dealmessage(bool);
-
 	void
 	_flushkey();
 
@@ -122,7 +83,7 @@ public:
 	_flushmouse();
 
 	int
-	_getch_ex(int);
+	_getch();
 
 	int
 	_getflush();
@@ -136,16 +97,11 @@ public:
 	mouse_msg
 	_getmouse();
 
-#if 0
-	EGEMSG
-	_getmouse_p();
-#endif
-
 	void
 	_init_graph_x();
 
 	int
-	_kbhit_ex(int);
+	_kbhit();
 
 	int
 	_kbmsg();
@@ -170,9 +126,6 @@ public:
 
 	void
 	_on_paint(::HWND);
-
-	void
-	_on_repaint(::HWND, ::HDC);
 
 	void
 	_on_setcursor(::HWND);
@@ -201,6 +154,9 @@ public:
 	void
 	_update_GUI();
 
+	void
+	_update_if_necessary();
+
 	int
 	_waitdealmessage();
 
@@ -212,8 +168,55 @@ public:
 };
 
 
+struct _pages
+{
+	_graph_setting& gstate;
+	::HDC active_dc;
+	int active_page = 0;
+	int visual_page = 0;
+	IMAGE* imgtarget_set = {};
+	mutable IMAGE* img_page[BITMAP_PAGE_SIZE] = {};
+	IMAGE* imgtarget = {};
+
+	_pages();
+
+	void
+	check_page(int) const;
+
+	IMAGE&
+	get_apage_ref() const;
+
+	::HDC
+	get_image_context() const;
+
+	IMAGE&
+	get_vpage_ref() const;
+
+	IMAGE*
+	get_target() const
+	{
+		return imgtarget_set;
+	}
+
+	void
+	init_pages();
+
+	void
+	set_apage(int);
+
+	int
+	set_target(IMAGE*);
+
+	void
+	set_vpage(int);
+};
+
+
 _graph_setting&
 get_global_state(int = VGA, int* = {});
+
+_pages&
+get_pages();
 
 } // namespace ege;
 

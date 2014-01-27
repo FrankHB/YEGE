@@ -45,7 +45,7 @@ _save_brush(IMAGE* img, int save)
 IMAGE*
 gettarget()
 {
-	return get_global_state()._get_target();
+	return get_pages().get_target();
 }
 
 #if 0
@@ -61,20 +61,20 @@ swappage()
 void
 setactivepage(int page)
 {
-	get_global_state()._set_activepage(page);
+	get_pages().set_apage(page);
 }
 
 void
 setvisualpage(int page)
 {
-	get_global_state()._set_visualpage(page);
+	get_pages().set_vpage(page);
 }
 
 
 int
 settarget(IMAGE* pbuf)
 {
-	return get_global_state()._set_target(pbuf);
+	return get_pages().set_target(pbuf);
 }
 
 void
@@ -362,7 +362,7 @@ setbkcolor(color_t color, IMAGE* pimg)
 
 	if(img && img->m_hDC)
 	{
-		PDWORD p = img->m_pBuffer;
+		DWORD* p = img->m_pBuffer;
 		int size = img->m_width * img->m_height;
 		color_t col = img->m_bk_color;
 
@@ -449,7 +449,7 @@ putpixels(int nPoint, int* pPoints, IMAGE* pimg)
 {
 	const auto img(CONVERT_IMAGE(pimg));
 	int x, y, c;
-	PDWORD pb = &img->m_pBuffer[img->m_vpt.top * img->m_width + img->m_vpt.left];
+	DWORD* pb = &img->m_pBuffer[img->m_vpt.top * img->m_width + img->m_vpt.left];
 	int w = img->m_vpt.right - img->m_vpt.left, h = img->m_vpt.bottom - img->m_vpt.top;
 	int tw = img->m_width;
 

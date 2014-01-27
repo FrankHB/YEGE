@@ -5,8 +5,6 @@
 #include <utility> // for std::swap;
 #include <ocidl.h>
 #include <olectl.h>
-#include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
-#include <gdiplus.h>
 #include "../libpng/png.h"
 #include "../libpng/pngstruct.h"
 #include "../libpng/pnginfo.h"
@@ -32,27 +30,75 @@ IMAGE::IMAGE()
 {}
 
 IMAGE::IMAGE(int width, int height)
-	: m_initflag(IMAGE_INIT_FLAG)
+	: IMAGE(get_pages().get_image_context(), width, height)
+{}
+
+IMAGE::IMAGE(::HDC hdc, int width, int height)
+	: m_initflag(IMAGE_INIT_FLAG),
+	m_hDC([hdc]{assert(hdc); return ::CreateCompatibleDC(hdc);}())
 {
-	const auto img = CONVERT_IMAGE_CONST(nullptr);
-	if(img)
-		newimage(img->m_hDC, width, height);
-	else
-		newimage(get_global_state().dc, width, height);
+	if(m_hDC)
+	{
+		resize(width, height);
+		setcolor(LIGHTGRAY, this);
+		setbkcolor(BLACK, this);
+		::SetBkMode(hdc, OPAQUE); //TRANSPARENT);
+		setfillstyle(SOLID_FILL, 0, this);
+		setlinestyle(PS_SOLID, 0, 1, this);
+		settextjustify(LEFT_TEXT, TOP_TEXT, this);
+		m_aa = {};
+	}
+//	else
+//		throw ::GetLastError();
 }
 
-IMAGE::IMAGE(IMAGE & img)
+IMAGE::IMAGE(const IMAGE& img)
+	: IMAGE(img.m_hDC, img.m_width, img.m_height)
+{
+	::BitBlt(m_hDC, 0, 0, img.m_width, img.m_height, img.m_hDC, 0, 0, SRCCOPY);
+}
+IMAGE::IMAGE(IMAGE&& img) ynothrow
 	: m_initflag(IMAGE_INIT_FLAG)
 {
-	newimage(img.m_hDC, img.m_width, img.m_height);
-	::BitBlt(m_hDC, 0, 0, img.m_width, img.m_height, img.m_hDC, 0, 0, SRCCOPY);
+	img.swap(*this);
 }
 
 IMAGE::~IMAGE()
 {
-	gentexture({});
-	delete_pattern();
-	deleteimage();
+	::DeleteObject(::SelectObject(m_hDC, g_hbmp_def));
+	::DeleteObject(::SelectObject(m_hDC, g_hbr_def));
+	::DeleteObject(::SelectObject(m_hDC, g_pen_def));
+	::DeleteObject(::SelectObject(m_hDC, g_font_def));
+	::DeleteDC(m_hDC);
+}
+
+IMAGE&
+IMAGE::operator=(IMAGE img) ynothrow
+{
+	img.swap(*this);
+	return *this;
+}
+
+void
+IMAGE::swap(IMAGE& img) ynothrow
+{
+	std::swap(m_hDC, img.m_hDC);
+	std::swap(m_hBmp, img.m_hBmp);
+	std::swap(m_width, img.m_width);
+	std::swap(m_height, img.m_height);
+	std::swap(m_pBuffer, img.m_pBuffer);
+	std::swap(m_color, img.m_color);
+	std::swap(m_fillcolor, img.m_fillcolor);
+	std::swap(m_aa, img.m_aa);
+	std::swap(m_vpt, img.m_vpt);
+	std::swap(m_pBuffer, img.m_pBuffer);
+	std::swap(m_vpt, img.m_vpt);
+	std::swap(m_texttype, img.m_texttype);
+	std::swap(m_linestyle, img.m_linestyle);
+	std::swap(m_linewidth, img.m_linewidth);
+	std::swap(m_bk_color, img.m_bk_color);
+	std::swap(m_pattern, img.m_pattern);
+	std::swap(m_texture, img.m_texture);
 }
 
 void IMAGE::inittest(const wchar_t * strCallFunction) const
@@ -68,69 +114,23 @@ void IMAGE::inittest(const wchar_t * strCallFunction) const
 }
 
 void
-IMAGE::set_pattern(void * obj, int type)
-{
-	delete_pattern();
-	m_pattern_type = type;
-	m_pattern_obj = obj;
-}
-
-void
-IMAGE::delete_pattern()
-{
-	if(!m_pattern_obj) return;
-
-	if(m_pattern_type == pattern_none)
-		;
-	else if(m_pattern_type == pattern_lineargradient)
-		delete (Gdiplus::LinearGradientBrush*)m_pattern_obj;
-	else if(m_pattern_type == pattern_pathgradient)
-		delete (Gdiplus::PathGradientBrush*)m_pattern_obj;
-	else if(m_pattern_type == pattern_texture)
-		delete (Gdiplus::TextureBrush*)m_pattern_obj;
-	m_pattern_obj = {};
-}
-
-void
 IMAGE::gentexture(bool gen)
 {
-	if(!gen)
-	{
-		if(m_texture)
-		{
-			delete (Gdiplus::Bitmap*)m_texture;
-			m_texture = {};
-		}
-	}
-	else
-	{
-		if(m_texture)
-			gentexture(true);
-		Gdiplus::Bitmap* bitmap = new Gdiplus::Bitmap(getwidth(), getheight(),
-			getwidth() * 4, PixelFormat32bppARGB, (BYTE*)getbuffer());
-		m_texture = bitmap;
-	}
+	m_texture.reset(gen ? new Gdiplus::Bitmap(getwidth(), getheight(),
+		getwidth() * 4, PixelFormat32bppARGB, (BYTE*)getbuffer()) : nullptr);
 }
 
 int
-IMAGE::deleteimage()
+IMAGE::resize(int width, int height)
 {
-	::DeleteObject(::SelectObject(m_hDC, g_hbmp_def));
-	::DeleteObject(::SelectObject(m_hDC, g_hbr_def));
-	::DeleteObject(::SelectObject(m_hDC, g_pen_def));
-	::DeleteObject(::SelectObject(m_hDC, g_font_def));
-	::DeleteDC(m_hDC);
-	m_hDC = {};
-	return 0;
-}
+	inittest(L"IMAGE::resize");
 
-int
-IMAGE::newimage(::HDC hdc, int width, int height)
-{
-	::HDC dc;
-	::HBITMAP bitmap;
-	auto bmi = ::BITMAPINFO();
+	memset(&m_vpt, 0, sizeof(m_vpt));
+
+	assert(m_hDC);
+
 	VOID* p_bmp_buf;
+	auto bmi = ::BITMAPINFO();
 
 	bmi.bmiHeader.biSize = sizeof(bmi.bmiHeader);
 	bmi.bmiHeader.biWidth = width;
@@ -139,140 +139,38 @@ IMAGE::newimage(::HDC hdc, int width, int height)
 	bmi.bmiHeader.biBitCount = 32;
 	bmi.bmiHeader.biSizeImage = width * height * 4;
 
-	memset(&m_vpt, 0, sizeof(m_vpt));
-
-	if(!hdc)
+	if(::HBITMAP bitmap = ::CreateDIBSection(
+		{},
+		&bmi,
+		DIB_RGB_COLORS,
+		(VOID**)&p_bmp_buf,
+		{},
+		0
+	))
 	{
-		hdc = m_hDC;
-		if(!hdc)
+		::HBITMAP hbmp_def = (::HBITMAP)::SelectObject(m_hDC, bitmap);
+		if(!g_hbmp_def)
 		{
-			wchar_t str[60];
-			wsprintfW(str, L"Fatal error: read/write at 0x%08x. At function 'newimage', construct IMAGE* before 'initgraph'?", this);
-			::MessageBoxW(get_global_state().hwnd, str, L"ERROR message", MB_ICONSTOP);
-			::ExitProcess((::UINT)grError);
+			g_hbmp_def = hbmp_def;
+			g_hbr_def  = (::HBRUSH)::GetCurrentObject(m_hDC, OBJ_BRUSH);
+			g_pen_def  = (::HPEN)::GetCurrentObject(m_hDC, OBJ_PEN);
+			g_font_def = (::HFONT)::GetCurrentObject(m_hDC, OBJ_FONT);
 		}
-	}
-	if(m_hDC)
-		dc = m_hDC;
-	else
-		dc = ::CreateCompatibleDC(hdc);
-	if(dc)
-	{
-		bitmap = ::CreateDIBSection(
-			{},
-			&bmi,
-			DIB_RGB_COLORS,
-			(VOID**)&p_bmp_buf,
-			{},
-			0
-		);
-
-		if(bitmap)
-		{
-			::HBITMAP hbmp_def = (::HBITMAP)::SelectObject(dc, bitmap);
-			int b_resize = 0;
-			if(!g_hbmp_def)
-			{
-				g_hbmp_def = hbmp_def;
-				g_hbr_def  = (::HBRUSH)::GetCurrentObject(dc, OBJ_BRUSH);
-				g_pen_def  = (::HPEN)::GetCurrentObject(dc, OBJ_PEN);
-				g_font_def = (::HFONT)::GetCurrentObject(dc, OBJ_FONT);
-			}
-			if(m_hDC)
-			{
-				::DeleteObject(hbmp_def);
-				b_resize = 1;
-			}
-			else
-			{
-				m_vpt.left   = 0;
-				m_vpt.top    = 0;
-				m_vpt.right  = width;
-				m_vpt.bottom = height;
-				m_vpt.clipflag   = 1;
-			}
-			m_hDC = dc;
-			m_hBmp = bitmap;
-			m_width = width;
-			m_height = height;
-			m_pBuffer = (PDWORD)p_bmp_buf;
-
-			if(b_resize == 0)
-			{
-				setcolor(LIGHTGRAY, this);
-				setbkcolor(BLACK, this);
-				::SetBkMode(dc, OPAQUE); //TRANSPARENT);
-				setfillstyle(SOLID_FILL, 0, this);
-				setlinestyle(PS_SOLID, 0, 1, this);
-				settextjustify(LEFT_TEXT, TOP_TEXT, this);
-				ege_enable_aa({}, this);
-			}
-			else
-				//::SetBkMode(dc, bkMode);
-			setviewport(0, 0, m_width, m_height, 1, this);
-			cleardevice(this);
-		}
-		else
-		{
-			int err = ::GetLastError();
-			::DeleteDC(dc);
-			return err;
-		}
+		::DeleteObject(hbmp_def);
+		m_hBmp = bitmap;
+		m_width = width;
+		m_height = height;
+		m_pBuffer = (DWORD*)p_bmp_buf;
+		setviewport(0, 0, m_width, m_height, 1, this);
+		cleardevice(this);
 	}
 	else
-		return ::GetLastError();
-	return 0;
-}
-
-int
-IMAGE::createimage(int width, int height)
-{
-	inittest(L"IMAGE::createimage");
-
-	auto img = CONVERT_IMAGE_CONST(nullptr);
-
-	if(!img)
-		img = get_global_state().img_page[get_global_state().active_page];
-
-	int ret = newimage(img->m_hDC, width, height);
-
-
-	return ret;
-}
-
-int
-IMAGE::resize(int width, int height)
-{
-	inittest(L"IMAGE::createimage");
-	const auto img = CONVERT_IMAGE_CONST(nullptr);
-	int ret = newimage(img->m_hDC, width, height);
-	if(ret)
 	{
-		return ret;
+		int err = ::GetLastError();
+		::DeleteDC(m_hDC);
+		return err;
 	}
 	return 0;
-}
-
-IMAGE&
-IMAGE::operator = (const IMAGE & img)
-{
-	inittest(L"IMAGE::operator=");
-	getimage((IMAGE*)(&img), 0, 0, img.m_width, img.m_height);
-	return *this;
-}
-
-void
-IMAGE::copyimage(IMAGE* pSrcImg)
-{
-	inittest(L"IMAGE::copyimage");
-	const auto img = CONVERT_IMAGE_CONST(pSrcImg);
-	int ret = 0;
-	if(m_width != img->m_width || m_height != img->m_height)
-		ret = newimage({}, img->m_width, img->m_height);
-	if(ret == 0)
-	{
-		memcpy(getbuffer(), img->getbuffer(), m_width * m_height * 4); // 4 byte per pixel
-	}
 }
 
 void
@@ -280,18 +178,72 @@ IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
 	inittest(L"IMAGE::getimage");
 
-	const auto img = CONVERT_IMAGE_CONST(pSrcImg);
-	int ret = newimage({}, srcWidth, srcHeight);
+	if(resize(srcWidth, srcHeight) == 0)
+	{
+		const auto img = CONVERT_IMAGE_CONST(pSrcImg);
 
-	if(ret == 0)
 		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight, img->m_hDC, srcX, srcY, SRCCOPY);
+	}
 }
 
-void
-IMAGE::getimage(int srcX, int srcY, int srcWidth, int srcHeight)
+int
+IMAGE::getimage(const char* filename, int zoomWidth, int zoomHeight)
 {
-	const auto img = CONVERT_IMAGE_CONST(nullptr);
-	getimage(img, srcX, srcY, srcWidth, srcHeight);
+	inittest(L"IMAGE::getimage");
+	{
+		int ret = getimage_pngfile(this, filename);
+		if(ret == 0) return 0;
+	}
+
+	wchar_t           wszPath[MAX_PATH * 2 + 1];
+	MultiByteToWideChar(CP_ACP, 0, filename, -1, wszPath, MAX_PATH * 2);
+	return getimage(wszPath, zoomWidth, zoomHeight);
+}
+
+int
+IMAGE::getimage(const wchar_t* filename, int, int)
+{
+	inittest(L"IMAGE::getimage");
+	if(getimage_pngfile(this, filename) == 0)
+		return 0;
+
+	struct IPicture* pPicture;
+	OLECHAR wszPath[MAX_PATH * 2 + 1];
+	wchar_t szPath[MAX_PATH * 2 + 1] = L"";
+	long lWidth, lHeight;
+	long lWidthPixels, lHeightPixels;
+	::HRESULT hr;
+
+	if(wcsstr(filename, L"http://"))
+		::lstrcpyW(szPath, filename);
+	else if(filename[1] == ':')
+		::lstrcpyW(szPath, filename);
+	else
+	{
+		::GetCurrentDirectoryW(MAX_PATH * 2, szPath);
+		::lstrcatW(szPath, L"\\");
+		::lstrcatW(szPath, filename);
+	}
+
+	::lstrcpyW(wszPath, szPath);
+	hr = ::OleLoadPicturePath(wszPath, {}, 0, 0, IID_IPicture,
+		(void**)&pPicture);
+	if(FAILED(hr))
+		return grIOerror;
+
+	const auto img = get_pages().imgtarget;
+
+	pPicture->get_Width(&lWidth);
+	lWidthPixels
+		= ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
+	pPicture->get_Height(&lHeight);
+	lHeightPixels
+		= ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
+	resize(lWidthPixels, lHeightPixels);
+	pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+		lWidth, -lHeight, {});
+	pPicture->Release();
+	return grOk;
 }
 
 void
@@ -320,76 +272,6 @@ IMAGE::putimage(int dstX, int dstY, ::DWORD dwRop) const
 {
 	const auto img = CONVERT_IMAGE(nullptr);
 	putimage(img, dstX, dstY, dwRop);
-}
-
-int
-IMAGE::getimage(const char* filename, int zoomWidth, int zoomHeight)
-{
-	inittest(L"IMAGE::getimage");
-	{
-		int ret = getimage_pngfile(this, filename);
-		if(ret == 0) return 0;
-	}
-
-	wchar_t           wszPath[MAX_PATH * 2 + 1];
-	MultiByteToWideChar(CP_ACP, 0, filename, -1, wszPath, MAX_PATH * 2);
-	return getimage(wszPath, zoomWidth, zoomHeight);
-}
-
-int
-IMAGE::getimage(const wchar_t* filename, int, int)
-{
-	inittest(L"IMAGE::getimage");
-	{
-		int ret = getimage_pngfile(this, filename);
-		if(ret == 0) return 0;
-	}
-
-	struct IPicture* pPicture;
-	OLECHAR wszPath[MAX_PATH * 2 + 1];
-	wchar_t szPath[MAX_PATH * 2 + 1] = L"";
-	long lWidth, lHeight;
-	long lWidthPixels, lHeightPixels;
-	::HRESULT hr;
-
-	if(wcsstr(filename, L"http://"))
-	{
-		::lstrcpyW(szPath, filename);
-	}
-	else if(filename[1] == ':')
-	{
-		::lstrcpyW(szPath, filename);
-	}
-	else
-	{
-		::GetCurrentDirectoryW(MAX_PATH * 2, szPath);
-		::lstrcatW(szPath, L"\\");
-		::lstrcatW(szPath, filename);
-	}
-
-	::lstrcpyW(wszPath, szPath);
-	hr = ::OleLoadPicturePath(wszPath, {}, 0, 0, IID_IPicture,
-							  (void**)&pPicture);
-	if(FAILED(hr))
-		return grIOerror;
-
-	const auto img = CONVERT_IMAGE_CONST(nullptr);
-
-	pPicture->get_Width(&lWidth);
-	lWidthPixels
-		= ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
-	pPicture->get_Height(&lHeight);
-	lHeightPixels
-		= ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-
-	createimage(lWidthPixels, lHeightPixels);
-
-	::HDC dc = m_hDC;
-
-	pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-					 lWidth, -lHeight, {});
-	pPicture->Release();
-	return grOk;
 }
 
 // private function
@@ -494,7 +376,7 @@ IMAGE::getpngimg(FILE * fp)
 	::png_read_png(pic_ptr, info_ptr, PNG_TRANSFORM_BGR | PNG_TRANSFORM_EXPAND, {});
 	::png_set_expand(pic_ptr);
 
-	newimage({}, (int)(info_ptr->width), (int)(info_ptr->height)); //::png_get_IHDR
+	resize((int)(info_ptr->width), (int)(info_ptr->height)); //::png_get_IHDR
 	width = info_ptr->width;
 	height = info_ptr->height;
 	depth = info_ptr->pixel_depth;
@@ -503,14 +385,9 @@ IMAGE::getpngimg(FILE * fp)
 	for(std::uint32_t i = 0; i < height; ++i)
 	{
 		if(depth == 24)
-		{
 			for(std::uint32_t j = 0; j < width; ++j)
-			{
 				m_pBuffer[i * width + j] = 0xFFFFFF & (::DWORD&)row_pointers[i][j * 3];
-			}
-		}
 		else if(depth == 32)
-		{
 			for(std::uint32_t j = 0; j < width; ++j)
 			{
 				m_pBuffer[i * width + j] = ((::DWORD*)(row_pointers[i]))[j];
@@ -519,7 +396,6 @@ IMAGE::getpngimg(FILE * fp)
 					m_pBuffer[i * width + j] = 0;
 				}
 			}
-		}
 	}
 	::png_destroy_read_struct(&pic_ptr, &info_ptr, {});
 	return 0;
@@ -556,7 +432,7 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 
 	::png_init_io(pic_ptr, fp);
 	::png_set_IHDR(pic_ptr, info_ptr, width, height, 8, bAlpha ? PNG_COLOR_TYPE_RGBA : PNG_COLOR_TYPE_RGB,
-				 PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+		PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 	palette = (::png_colorp)::png_malloc(pic_ptr, PNG_MAX_PALETTE_LENGTH * sizeof(::png_color));
 	::png_set_PLTE(pic_ptr, info_ptr, palette, PNG_MAX_PALETTE_LENGTH);
 	::png_write_info(pic_ptr, info_ptr);
@@ -567,7 +443,6 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 		::png_destroy_write_struct(&pic_ptr, &info_ptr);
 		return -1;
 	}
-
 	row_pointers = (::png_bytep*)malloc(height * sizeof(::png_bytep));
 	if(!row_pointers)
 	{
@@ -576,14 +451,12 @@ IMAGE::savepngimg(FILE * fp, int bAlpha)
 		image = {};
 		return -1;
 	}
-
 	for(i = 0; i < height; i++)
 	{
 		for(j = 0; j < width; ++j)\
 			(::DWORD&)image[(i * width  + j) * pixelsize] = RGBTOBGR(m_pBuffer[i * width + j]);
 		row_pointers[i] = (::png_bytep)image + i * width * pixelsize;
 	}
-
 	::png_write_image(pic_ptr, row_pointers);
 	::png_write_end(pic_ptr, info_ptr);
 	::png_free(pic_ptr, palette);
@@ -629,29 +502,22 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 		if(FAILED(hr))
 			return grIOerror;
 
-		IMAGE* img(CONVERT_IMAGE_CONST(nullptr));
+		IMAGE* img(get_pages().imgtarget);
 
 		pPicture->get_Width(&lWidth);
-		lWidthPixels = ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX),
-							  2540);
+		lWidthPixels = ::MulDiv(lWidth,
+			::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
-		lHeightPixels = ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY),
-							   2540);
-
-		createimage(lWidthPixels, lHeightPixels);
-		{
-			auto dc(m_hDC);
-
-			pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-							 lWidth, -lHeight, {});
-		}
+		lHeightPixels = ::MulDiv(lHeight,
+			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
+		resize(lWidthPixels, lHeightPixels);
+		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+			lWidth, -lHeight, {});
 		pPicture->Release();
 		return grOk;
 	}
 	return grIOerror;
 }
-
-
 int
 IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 {
@@ -672,7 +538,7 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 
 		if(!hGlobal || !(pvData = ::GlobalLock(hGlobal)))
 			return grAllocError;
-		::memcpy(pvData, pvRes, dwSize);
+		::std::memcpy(pvData, pvRes, dwSize);
 		::GlobalUnlock(hGlobal);
 		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
 			return grNullPointer;
@@ -684,18 +550,15 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 		if(FAILED(hr))
 			return grIOerror;
 
-		const auto img = CONVERT_IMAGE_CONST(nullptr);
+		const auto img = get_pages().imgtarget;
+
 		pPicture->get_Width(&lWidth);
 		lWidthPixels = ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
 		lHeightPixels = ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-
-		createimage(lWidthPixels, lHeightPixels);
-
-		::HDC dc = m_hDC;
-
-		pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-						 lWidth, -lHeight, {});
+		resize(lWidthPixels, lHeightPixels);
+		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+			lWidth, -lHeight, {});
 		pPicture->Release();
 		return grOk;
 	}
@@ -721,7 +584,7 @@ IMAGE::getimage(void * pMem, long size)
 		{
 			return grAllocError;
 		}
-		memcpy(pvData, pMem, dwSize);
+		std::memcpy(pvData, pMem, dwSize);
 		::GlobalUnlock(hGlobal);
 		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
 		{
@@ -744,20 +607,16 @@ IMAGE::getimage(void * pMem, long size)
 		}
 
 
-		const auto img = CONVERT_IMAGE_CONST(nullptr);
+		const auto img = get_pages().imgtarget;
 		pPicture->get_Width(&lWidth);
 		lWidthPixels = ::MulDiv(lWidth,
 			::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
 		lHeightPixels = ::MulDiv(lHeight,
 			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-
-		createimage(lWidthPixels, lHeightPixels);
-
-		auto dc = m_hDC;
-
-		pPicture->Render(dc, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-						 lWidth, -lHeight, {});
+		resize(lWidthPixels, lHeightPixels);
+		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+			lWidth, -lHeight, {});
 		pPicture->Release();
 		return grOk;
 	}
@@ -770,6 +629,7 @@ IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 {
 	inittest(L"IMAGE::putimage");
 	const auto img = CONVERT_IMAGE(pDstImg);
+
 	if(img)
 	{
 		SetStretchBltMode(img->m_hDC, COLORONCOLOR);
@@ -2638,7 +2498,7 @@ putimage_rotate(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 		_tt[1].p[1].x = 1;
 		_tt[1].p[1].y = 0;
 		_tt[1].p[2] = _tt[0].p[0];
-		memcpy(&_dt, &_tt, sizeof(triangle2d) * 2);
+		std::memcpy(&_dt, &_tt, sizeof(triangle2d) * 2);
 		for(j = 0; j < 2; ++j)
 			for(i = 0; i < 3; ++i)
 			{
@@ -2687,7 +2547,7 @@ putimage_rotatezoom(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 		_tt[1].p[1].x = 1;
 		_tt[1].p[1].y = 0;
 		_tt[1].p[2] = _tt[0].p[0];
-		memcpy(&_dt, &_tt, sizeof(triangle2d) * 2);
+		std::memcpy(&_dt, &_tt, sizeof(triangle2d) * 2);
 		for(j = 0; j < 2; ++j)
 			for(i = 0; i < 3; ++i)
 			{

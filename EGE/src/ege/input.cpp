@@ -32,13 +32,13 @@ flushkey()
 int
 getch()
 {
-	return get_global_state()._getch_ex(0);
+	return get_global_state()._getch();
 }
 
 int
 kbhit()
 {
-	return get_global_state()._kbhit_ex(0);
+	return get_global_state()._kbhit();
 }
 
 

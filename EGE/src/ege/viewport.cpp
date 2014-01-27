@@ -29,7 +29,7 @@ setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 
 	const auto img = CONVERT_IMAGE(pimg);
 
-	SetViewportOrgEx(img->m_hDC, 0, 0, {});
+	::SetViewportOrgEx(img->m_hDC, 0, 0, {});
 
 	img->m_vpt.left     = left;
 	img->m_vpt.top      = top;
