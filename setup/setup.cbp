@@ -20,9 +20,12 @@
 					<Add option="-Wl,-dn" />
 					<Add library="..\EGE\debug\libEGE.a" />
 					<Add library="YFrameworkd" />
+					<Add library="FreeImage" />
+					<Add library="freetype" />
 					<Add library="YBased" />
 					<Add library="png16" />
 					<Add library="z" />
+					<Add library="shlwapi" />
 					<Add library="gdi32" />
 					<Add library="imm32" />
 					<Add library="msimg32" />
@@ -48,9 +51,12 @@
 					<Add option="-Wl,-dn" />
 					<Add library="..\EGE\release\libEGE.a" />
 					<Add library="YFramework" />
+					<Add library="FreeImage" />
+					<Add library="freetype" />
 					<Add library="YBase" />
 					<Add library="png16" />
 					<Add library="z" />
+					<Add library="shlwapi" />
 					<Add library="gdi32" />
 					<Add library="imm32" />
 					<Add library="msimg32" />
