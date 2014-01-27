@@ -88,7 +88,7 @@ cleardevice(IMAGE* pimg)
 
 		for(color_t* p = (color_t*)img->getbuffer(),
 			*e = (color_t*)&img->getbuffer()[
-				img->getwidth() * img->getheight()]; p != e; ++p)
+				img->GetWidth() * img->GetHeight()]; p != e; ++p)
 			*p = c;
 	}
 }
@@ -347,7 +347,7 @@ setbkcolor(color_t color, IMAGE* pimg)
 	if(img && img->getdc())
 	{
 		DWORD* p = img->getbuffer();
-		int size = img->getwidth() * img->getheight();
+		int size = img->GetWidth() * img->GetHeight();
 		color_t col = img->m_bk_color;
 
 		img->m_bk_color = color;
@@ -398,8 +398,8 @@ getpixel(int x, int y, IMAGE* pimg)
 
 	x += img->m_vpt.left;
 	y += img->m_vpt.top;
-	return (x < 0) || (y < 0) || (x >= img->getwidth()) || (y >= img->getheight()) ? 0
-		: color_t(img->getbuffer()[y * img->getwidth() + x]);
+	return (x < 0) || (y < 0) || (x >= img->GetWidth()) || (y >= img->GetHeight()) ? 0
+		: color_t(img->getbuffer()[y * img->GetWidth() + x]);
 }
 
 void
@@ -410,14 +410,14 @@ putpixel(int x, int y, color_t color, IMAGE* pimg)
 	x += img->m_vpt.left;
 	y += img->m_vpt.top;
 	if(!(x < 0 || y < 0 || x >= img->m_vpt.right || y >= img->m_vpt.bottom))
-		img->getbuffer()[y * img->getwidth() + x] = color;
+		img->getbuffer()[y * img->GetWidth() + x] = color;
 }
 
 color_t
 getpixel_f(int x, int y, IMAGE* pimg)
 {
 	IMAGE* img = CONVERT_IMAGE_CONST(pimg);
-	color_t col = img->getbuffer()[y * img->getwidth() + x];
+	color_t col = img->getbuffer()[y * img->GetWidth() + x];
 	return col;
 }
 
@@ -425,7 +425,7 @@ void
 putpixel_f(int x, int y, color_t color, IMAGE* pimg)
 {
 	IMAGE* img = CONVERT_IMAGE(pimg);
-	img->getbuffer()[y * img->getwidth() + x] = color;
+	img->getbuffer()[y * img->GetWidth() + x] = color;
 }
 
 void
@@ -433,9 +433,9 @@ putpixels(int nPoint, int* pPoints, IMAGE* pimg)
 {
 	const auto img(CONVERT_IMAGE(pimg));
 	int x, y, c;
-	DWORD* pb = &img->getbuffer()[img->m_vpt.top * img->getwidth() + img->m_vpt.left];
+	DWORD* pb = &img->getbuffer()[img->m_vpt.top * img->GetWidth() + img->m_vpt.left];
 	int w = img->m_vpt.right - img->m_vpt.left, h = img->m_vpt.bottom - img->m_vpt.top;
-	int tw = img->getwidth();
+	int tw = img->GetWidth();
 
 	for(int n = 0; n < nPoint; ++n, pPoints += 3)
 	{
@@ -450,7 +450,7 @@ putpixels_f(int nPoint, int* pPoints, IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE(pimg);
 	int c;
-	int tw = img->getwidth();
+	int tw = img->GetWidth();
 	for(int n = 0; n < nPoint; ++n, pPoints += 3)
 	{
 		c = pPoints[2];
@@ -514,7 +514,7 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 	auto col = getcolor(img);
 	color_t endp = 0;
 	auto pBuffer = (color_t*)img->getbuffer();
-	int rw = img->getwidth();
+	int rw = img->GetWidth();
 
 	if(x1 > x2)
 	{

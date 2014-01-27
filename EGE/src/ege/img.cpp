@@ -10,7 +10,7 @@ getwidth(IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE_CONST(pimg);
 
-	return img ? img->getwidth() : 0;
+	return img ? img->GetWidth() : 0;
 }
 
 int
@@ -18,7 +18,7 @@ getheight(IMAGE* pimg)
 {
 	const auto img = CONVERT_IMAGE_CONST(pimg);
 
-	return img ? img->getheight() : 0;
+	return img ? img->GetHeight() : 0;
 }
 
 int
@@ -83,7 +83,7 @@ getbuffer(IMAGE* pImg)
 int
 resize(IMAGE* pDstImg, int width, int height)
 {
-	return pDstImg->resize(width, height);
+	return pDstImg->Resize(width, height);
 }
 
 void
