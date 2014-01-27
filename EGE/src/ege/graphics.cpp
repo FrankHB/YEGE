@@ -2,7 +2,7 @@
 #include <ctime>
 #include <cstdio>
 #include <cstdlib>
-#include "head.h"
+#include "ege.h"
 #include "global.h"
 #include "image.h"
 

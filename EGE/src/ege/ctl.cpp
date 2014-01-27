@@ -1,4 +1,4 @@
-﻿#include "head.h"
+﻿#include "ege.h"
 #include "global.h"
 #include "image.h"
 #include <algorithm>
