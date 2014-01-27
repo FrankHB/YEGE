@@ -3,8 +3,13 @@
 
 #include <ydef.h>
 
-// XXX: Use __declspec(import) and __declspec(export).
-#define EGEAPI
+#ifdef YEGE_DLL
+#	define EGEAPI __declspec(dllimport)
+#elif defined(YEGE_BUILD_DLL)
+#	define EGEAPI __declspec(dllexport)
+#else
+#	define EGEAPI
+#endif
 
 #endif
 
