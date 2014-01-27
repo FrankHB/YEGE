@@ -6,7 +6,7 @@
 namespace ege
 {
 
-class sys_edit : public egeControlBase
+class EGEAPI sys_edit : public egeControlBase
 {
 public:
 	CTL_PREINIT(sys_edit, egeControlBase)

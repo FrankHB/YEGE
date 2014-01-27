@@ -8,8 +8,11 @@ namespace ege
 {
 
 //绘图环境设置
-IMAGE* gettarget();
-int settarget(IMAGE* pbuf); //用 {} 设置窗口为绘图目标
+EGEAPI IMAGE*
+gettarget();
+
+EGEAPI int
+settarget(IMAGE* pbuf); //用 {} 设置窗口为绘图目标
 
 EGEAPI void
 cleardevice(IMAGE* pimg = {});                   //清屏

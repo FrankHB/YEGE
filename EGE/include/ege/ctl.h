@@ -10,7 +10,7 @@
 namespace ege
 {
 
-class egeControlBase
+class EGEAPI egeControlBase
 {
 public:
 	enum ROP
@@ -32,6 +32,7 @@ public:
 	// 构造函数可以自定义，但要按需要选择使不使用宏，详见前面代码或者文档示例代码
 	egeControlBase();
 	egeControlBase(int inherit, egeControlBase* pParent);
+	virtual
 	~egeControlBase();
 
 	// 以下虚函数都不要直接相互调用
@@ -191,27 +192,27 @@ public:
 	void zorderdown();
 	void zorderset(int z);
 
-	int getx()      const
+	int getx() const
 	{
 		return m_x;
 	}
-	int gety()      const
+	int gety() const
 	{
 		return m_y;
 	}
-	int getw()      const
+	int getw() const
 	{
 		return m_w;
 	}
-	int geth()      const
+	int geth() const
 	{
 		return m_h;
 	}
-	int width()     const
+	int width() const
 	{
 		return m_w;
 	}
-	int height()    const
+	int height() const
 	{
 		return m_h;
 	}
@@ -236,7 +237,7 @@ public:
 protected:
 	int allocId();
 	int allocZorder();
-	class InitObject
+	class EGEAPI InitObject
 	{
 	public:
 		InitObject(egeControlBase* pThis, int inherit_level);

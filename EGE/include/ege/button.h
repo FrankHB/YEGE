@@ -13,7 +13,7 @@
 /**
 * @brief 按钮控件
  */
-class button : public egeControlBase
+class EGEAPI button : public egeControlBase
 {
 public:
 	//overrides

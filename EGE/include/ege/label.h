@@ -3,7 +3,7 @@
 
 #include "ege/ctl.h"
 
-class label : public egeControlBase
+class EGEAPI label : public egeControlBase
 {
 public:
 	CTL_PREINIT(label, egeControlBase)

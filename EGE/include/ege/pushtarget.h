@@ -6,7 +6,7 @@
 namespace ege
 {
 
-class PushTarget
+class EGEAPI PushTarget
 {
 public:
 	PushTarget()

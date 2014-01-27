@@ -72,7 +72,7 @@ clearviewport(IMAGE* pimg)
 		::HBRUSH hbr_c = (::HBRUSH)::GetCurrentObject(img->getdc(), OBJ_BRUSH);
 		::LOGBRUSH logBrush;
 
-		::GetObject(hbr_c, sizeof(logBrush), &logBrush);
+		::GetObjectW(hbr_c, sizeof(logBrush), &logBrush);
 		::HBRUSH hbr = ::CreateSolidBrush(logBrush.lbColor);
 		::FillRect(img->getdc(), &rect, hbr);
 		::DeleteObject(hbr);
