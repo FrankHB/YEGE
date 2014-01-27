@@ -1,8 +1,8 @@
 // 烟花特效演示
 
 #include <graphics.h>
-#include <time.h>
-#include <math.h>
+#include <ctime>
+#include <cmath>
 
 #define myrand(m) ((float)(randomf() * m ))
 

@@ -2,7 +2,7 @@
 
 #include <graphics.h>
 #include <ege/fps.h>
-#include <math.h>
+#include <cmath>
 
 #define myrand(m)                 ((float)random(10000) * m / 10000.0f)
 #define IsCrash(a, b)             ((a.x - b.x)*(a.x - b.x)+(a.y - b.y)*(a.y - b.y) < (a.r + b.r)*(a.r + b.r))

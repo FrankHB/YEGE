@@ -1,8 +1,8 @@
 // 指针式时钟显示+抗锯齿演示
 #include <ege.h>
-#include <time.h>
-#include <math.h>
-#include <stdio.h>
+#include <ctime>
+#include <cmath>
+#include <cstdio>
 
 #define for if(0); else for
 
@@ -35,7 +35,7 @@ void draw()
 	{
 		char str[8];
 		ege::ege_point p = getpos(center, float(num * pi2 / 12), r);
-		sprintf(str, "%d", num);
+		std::sprintf(str, "%d", num);
 		ege::outtextxy((int)p.x, (int)p.y, str);
 	}
 	time_t t_now;
@@ -67,7 +67,7 @@ void draw()
 	}
 	{
 		char str[32];
-		sprintf(str, "%d/%02d/%02d %2d:%02d:%02d",
+		std::sprintf(str, "%d/%02d/%02d %2d:%02d:%02d",
 				t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
 				t->tm_hour, t->tm_min, t->tm_sec);
 		ege::setcolor(EGERGB(0xff, 0xff, 0));

@@ -1,6 +1,6 @@
 // Êó±êÍÏ¶¯µ¯ÇòÑİÊ¾
 #include <graphics.h>
-#include <math.h>
+#include <cmath>
 
 #define LEN 640
 #define WID 480

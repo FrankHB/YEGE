@@ -155,7 +155,7 @@ int main()
 		//f.zorderup();
 		{
 			char str[20];
-			sprintf(str, "%.2f", getfps());
+			std::sprintf(str, "%.2f", getfps());
 			edit.settext(str);
 		}
 		cleardevice();
@@ -489,7 +489,7 @@ int main(int argc, char* argv[])
 		setcolor(0x8000);
 		draw_net(&g_net);
 		setcolor(0xFFFFFF);
-		sprintf(str, "Ö¡ÂÊ %.2f fps", GetFPS());
+		std::sprintf(str, "Ö¡ÂÊ %.2f fps", GetFPS());
 		outtextxy(0, 0, str);
 	}
 	closegraph();

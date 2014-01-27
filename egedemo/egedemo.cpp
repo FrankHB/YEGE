@@ -830,7 +830,7 @@ public:
 	{
 		if(m_resettext)
 		{
-			char str[] = "#include \"graphics.h\"\n#include <stdio.h>\n#include <time.h>\n#include <string.h>\
+			char str[] = "#include \"graphics.h\"\n#include <cstdio>\n#include <ctime>\n#include <string.h>\
 \nvoid display(int arr[], int n)\
 \n{\
 \n	int a;\
@@ -920,12 +920,12 @@ public:
 	}
 	void smain()
 	{
-		int t = clock();
+		int t = std::clock();
 		char str[100];
 		for(; kbhit() == 0; delay_fps(60))
 		{
 			cleardevice();
-			sprintf(str, "经过时间%d", int(clock() - t));
+			std::sprintf(str, "经过时间%d", int(std::clock() - t));
 			setfont(36, 0, "幼圆");
 			outtextxy(0, 0, str);
 			info();
@@ -935,17 +935,17 @@ public:
 	{
 		if(getwidth(img) <= 1)
 		{
-			char str[] = "#include \"graphics.h\"\n#include <stdio.h>\n#include <time.h>\n#include <string.h>\nint main()\n{\
+			char str[] = "#include \"graphics.h\"\n#include <cstdio>\n#include <ctime>\n#include <string.h>\nint main()\n{\
 \n	initgraph(640, 480);\
 \n	{\
-\n		int t = clock(); //记录超始时间\
+\n		int t = std::clock(); //记录超始时间\
 \n		char str[100];\
 \n		for(; kbhit() == 0; delay_fps(60))\
 \n		{\
 \n			cleardevice();\
-\n			//把clock()-t的结果输出到字符串str\
+\n			//把std::clock()-t的结果输出到字符串str\
 \n			//实现简单的计时，可扩展成秒表\
-\n			sprintf(str, \"经过时间%d\", clock() - t;\
+\n			std::sprintf(str, \"经过时间%d\", std::clock() - t;\
 \n			setfont(36, 0, \"幼圆\");\
 \n			outtextxy(0, 0, str);\
 \n		}\
@@ -983,7 +983,7 @@ class SceneMenu : public SceneBase
 public:
 	SceneMenu()
 	{
-		memset(m_strlist, 0, sizeof(m_strlist));
+		std::memset(m_strlist, 0, sizeof(m_strlist));
 		strcpy(m_strlist[0], "1.如果我刚学会Hello World");
 	}
 	SceneBase* Update()
@@ -1017,7 +1017,7 @@ class SceneIntroduce : public SceneBase
 public:
 	SceneIntroduce()
 	{
-		memset(m_str, 0, sizeof(m_str));
+		std::memset(m_str, 0, sizeof(m_str));
 		strcpy(m_str, "你是刚刚学习Ｃ语言的新手吗？你是不是觉得单纯的字符输出有点无聊？Ｃ语言只能做这些吗？能不能做更有趣的？比如写游戏？\r\n本演示程序就是为了给你解开这个疑惑，本程序将带你进入精彩的Ｃ语言图形世界！不管你现在的C是刚刚开始学，还是学了一段时间，只要你有MinGW，都可以享受这个图形的盛宴。。。\r\n在正式开始前，请你百度“PowerEasyX”，下载并按里面的说明文档安装好。如果安装时遇到什么困难，可以到EGE吧说明情况。\r\n（请按任意键继续）\r\n");
 	}
 	SceneBase* Update()

@@ -1,8 +1,8 @@
 // ±‰ª√œﬂ∆¡±£
 #include <graphics.h>
-#include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <ctime>
+#include <cstdlib>
 #include "ege/fps.h"
 
 int width = 640, height = 480;

@@ -4,6 +4,8 @@
 //#include <gmpxx.h>
 #include <cstdio>
 #include <algorithm>
+#include <cstdio>
+#include <io.h> // for ::access;
 
 //using namespace std;
 
@@ -604,7 +606,7 @@ void addpoint(int x, int y, int it = -1)
 
 int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy)
 {
-	int t = clock();
+	int t = std::clock();
 	int x, y;
 
 	while(g_udlist.pop(&x, &y))
@@ -679,12 +681,12 @@ int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy)
 			}
 			else
 				addpoint(x, y);
-			if(clock() - t > 5000)
+			if(std::clock() - t > 5000)
 			{
 				//	if(keystate('J') && keystate('N'))
 				return 1;
 				delay(0);
-				t = clock();
+				t = std::clock();
 			}
 		}
 	}
@@ -721,8 +723,6 @@ void setgprec(Float f)
 	g_prec = t;
 }
 
-#include <stdio.h>
-#include <io.h>
 
 int
 main()
@@ -808,13 +808,13 @@ main()
 			gmp_sprintf(str, "%-6d %4d", mpf_get_prec(y.get_mpf_t()), ncnt);;
 			outtextxy(0, SC_H + 12 * 3, str);
 #else
-			sprintf(str, "%+.20Ff", x);
+			std::sprintf(str, "%+.20Ff", x);
 			outtextxy(0, SC_H + 12 * 0, str);
-			sprintf(str, "%+.20Ff", y);
+			std::sprintf(str, "%+.20Ff", y);
 			outtextxy(0, SC_H + 12 * 1, str);
-			sprintf(str, "%+.20Ff", d);
+			std::sprintf(str, "%+.20Ff", d);
 			outtextxy(0, SC_H + 12 * 2, str);
-			sprintf(str, "%-6d %4d", 32, ncnt);;
+			std::sprintf(str, "%-6d %4d", 32, ncnt);;
 			outtextxy(0, SC_H + 12 * 3, str);
 #endif
 			delay(0);
@@ -827,22 +827,16 @@ main()
 		else
 		{
 			char str[30];
-			sprintf(str, "snap%06d.bmp", ncnt);
-			if(access(str, 0) == 0)
-			{
+			std::sprintf(str, "snap%06d.bmp", ncnt);
+			if(::access(str, 0) == 0)
 				calc = 0;
-			}
 			else
 			{
 				std::FILE* fp = std::fopen(str, "w");
 				if(fp)
-				{
 					std::fclose(fp);
-				}
 				else
-				{
 					calc = 0;
-				}
 			}
 		}
 		if(calc)
@@ -862,35 +856,33 @@ main()
 			//g_iters = ITERATIONS;
 
 			unsigned last_min = 0;
-			for(unsigned m = 0, t = clock(); g_udlist.nLen > 0 && m < mend; ++m)
+			for(unsigned m = 0, t = std::clock(); g_udlist.nLen > 0 && m < mend; ++m)
 			{
 				g_b_update_mark = 0;
 				g_min_iter_last = 0x7FFFFFFF;
-				if(clock() - t > 20)
+				if(std::clock() - t > 20)
 				{
-					{
-						char str[100];
-						sprintf(str, "%8d %8d %8d %8d", g_base_iters,
-							g_max_iter, g_max_iter_last, last_min);
-						outtextxy(100, SC_H + 12 * 3, str);
-					}
-					{
-						::RECT rect, crect;
-						int _dw, _dh;
-						::GetClientRect(getHWnd(), &crect);
-						::GetWindowRect(getHWnd(), &rect);
-						_dw = w - crect.right;
-						_dh = h + dh - crect.bottom;
-						::MoveWindow(
-							getHWnd(),
-							rect.left,
-							rect.top,
-							rect.right  + _dw - rect.left,
-							rect.bottom + _dh - rect.top,
-							TRUE);
-					}
+					char str[100];
+					std::sprintf(str, "%8d %8d %8d %8d", g_base_iters,
+						g_max_iter, g_max_iter_last, last_min);
+					outtextxy(100, SC_H + 12 * 3, str);
+
+					::RECT rect, crect;
+					int _dw, _dh;
+					::GetClientRect(getHWnd(), &crect);
+					::GetWindowRect(getHWnd(), &rect);
+
+					_dw = w - crect.right;
+					_dh = h + dh - crect.bottom;
+					::MoveWindow(
+						getHWnd(),
+						rect.left,
+						rect.top,
+						rect.right  + _dw - rect.left,
+						rect.bottom + _dh - rect.top,
+						TRUE);
 					delay(0);
-					t = clock();
+					t = std::clock();
 				}
 				if(DrawEx(from.re, from.im, to.re, to.im))
 					break;
@@ -934,7 +926,7 @@ main()
 				char str[30];
 
 				getimage(mimage, 0, 0, SC_W, SC_H);
-				sprintf(str, "snap%06d.bmp", ncnt);
+				std::sprintf(str, "snap%06d.bmp", ncnt);
 				putimage_alphatransparent(mimage, img_logo, 2, SC_H - 26, 0, 0x80);
 				saveimage(mimage, str);
 			}

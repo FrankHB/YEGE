@@ -2,9 +2,9 @@
 #include <graphics.h>
 #include <ege/fps.h>
 
-#include <math.h>
-#include <time.h>
-#include <stdio.h>
+#include <cmath>
+#include <ctime>
+#include <cstdio>
 
 #define NET_W  256
 #define NET_H  256

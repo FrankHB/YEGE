@@ -87,9 +87,10 @@ EGE 库中加入 -Wall -Wextra -Wmissing-include-dirs -Wzero-as-null-pointer-con
 尽可能使用 {} 代替 NULL 或其它形式的空指针常量；无法使用 {} 的用 nullptr 代替。
 字面量 false 尽可能用 {} 代替。
 
-标准库实体名称
+标准库使用
 ----
 标准库实体名称保证 std:: 其实或使用 using 声明/指示。
+使用 C++ 标准库头文件而不是 C 标准库头文件。
 
 外部依赖项全局名称
 ----
@@ -177,4 +178,5 @@ wsprintfW
 
 以下所列外部依赖项全局名称在使用时前缀 :: 。
 HWND
+access
 

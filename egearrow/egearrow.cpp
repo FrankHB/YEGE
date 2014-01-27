@@ -1,6 +1,6 @@
 ﻿// 画箭头算法演示小程序
 #include <graphics.h>
-#include <math.h>
+#include <cmath>
 
 void draw_arrow(float sx, float sy,
 				float ex, float ey,

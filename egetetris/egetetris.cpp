@@ -1,7 +1,7 @@
 //ege¶íÂÞË¹·½¿éÓÎÏ·
 #include <graphics.h>
 
-#include <time.h>
+#include <ctime>
 #include <cstdio>
 #include <cstring>
 
@@ -151,7 +151,7 @@ public:
 		int Keys[8]{VK_F2, VK_LEFT, VK_RIGHT, VK_DOWN, VK_UP, VK_NUMPAD0, VK_SPACE};
 		std::memcpy(m_Keys, Keys, sizeof(Keys));
 
-		memset(m_KeyState, 0, sizeof(m_KeyState));
+		std::memset(m_KeyState, 0, sizeof(m_KeyState));
 		m_gamepool_w = w;
 		m_gamepool_h = h;
 		m_base_w = bw;
@@ -176,7 +176,7 @@ public:
 			m_next1_s = random(7) + 1;
 			m_next2_s = random(7) + 1;
 			m_pause = 0;
-			memset(m_gamepool, 255, sizeof(m_gamepool));
+			std::memset(m_gamepool, 255, sizeof(m_gamepool));
 			for(int y = 1; y <= m_gamepool_h; ++y)
 			{
 				for(int x = 1; x <= m_gamepool_w; ++x)
@@ -285,7 +285,7 @@ public:
 			if(m_KeyFlag[0] > 0)
 				m_state = ST_START;
 		}
-		memset(m_KeyFlag, 0, sizeof(m_KeyFlag));
+		std::memset(m_KeyFlag, 0, sizeof(m_KeyFlag));
 		return nRet;
 	}
 	/*Åö×²¼ì²â*/

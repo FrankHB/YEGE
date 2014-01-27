@@ -663,11 +663,11 @@ DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int = 0)
 				}
 				else
 					addpoint(x, y);
-				if(clock() - t > 5000)
+				if(std::clock() - t > 5000)
 				{
 					if(keystate('J') && keystate('N')) return 1;
 					delay(0);
-					t = clock();
+					t = std::clock();
 				}
 			}
 		}
@@ -706,11 +706,11 @@ DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int = 0)
 				}
 				else
 					addpoint(x, y);
-				if(clock() - t > 5000)
+				if(std::clock() - t > 5000)
 				{
 					if(keystate('J') && keystate('N')) return 1;
 					delay(0);
-					t = clock();
+					t = std::clock();
 				}
 			}
 		}
@@ -748,7 +748,7 @@ void setgprec(Float f)
 	g_prec = t;
 }
 
-#include <stdio.h>
+#include <cstdio>
 #include <io.h>
 
 // Ö÷º¯Êý
@@ -835,22 +835,17 @@ main()
 		else
 		{
 			char str[30];
-			sprintf(str, "snap%06d.bmp", ncnt);
-			if(access(str, 0) == 0)
-			{
+			std::sprintf(str, "snap%06d.bmp", ncnt);
+			if(::access(str, 0) == 0)
 				calc = 0;
-			}
 			else
 			{
 				std::FILE* fp = std::fopen(str, "w");
+
 				if(fp)
-				{
 					std::fclose(fp);
-				}
 				else
-				{
 					calc = 0;
-				}
 			}
 		}
 		if(calc)
@@ -872,16 +867,16 @@ main()
 
 			unsigned last_min = 0;
 
-			for(int m = 0, t = clock(); g_udlist.nLen > 0 && m < mend; ++m)
+			for(int m = 0, t = std::clock(); g_udlist.nLen > 0 && m < mend; ++m)
 			{
 				g_b_update_mark = 0;
 				g_min_iter_last = 0x7FFFFFFF;
-				if(clock() - t > 50)
+				if(std::clock() - t > 50)
 				{
-					t = clock();
+					t = std::clock();
 					{
 						char str[100];
-						sprintf(str, "%8d %8d %8d %8d", g_base_iters, g_max_iter, g_max_iter_last, last_min);
+						std::sprintf(str, "%8d %8d %8d %8d", g_base_iters, g_max_iter, g_max_iter_last, last_min);
 						outtextxy(100, SC_H + 12 * 3, str);
 					}
 					{
@@ -945,7 +940,7 @@ main()
 				char str[30];
 
 				getimage(mimage, 0, 0, SC_W, SC_H);
-				sprintf(str, "snap%06d.bmp", ncnt);
+				std::sprintf(str, "snap%06d.bmp", ncnt);
 				saveimage(mimage, str);
 			}
 		}

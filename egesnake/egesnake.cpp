@@ -1,6 +1,7 @@
 // 超简易90行贪吃蛇
 #include <graphics.h>
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstring>
 
 #define MAP_W 40
 #define MAP_H 30
@@ -62,7 +63,7 @@ int moveSnake(const int dx, const int dy, const bool u = {})
 void gameInit(void)
 {
 	int data[]{6, 0, 2, 0, 0x10000};
-	memset(game.pool, 0, sizeof(game.pool));
+	std::memset(game.pool, 0, sizeof(game.pool));
 	memmove(&game, data, sizeof(data));
 }
 

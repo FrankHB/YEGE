@@ -1,9 +1,10 @@
 // julia集计算屏保动画（编译后改为scr后缀使用）
 #include "graphics.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <math.h>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
+#include <cstring>
 
 // 定义常量
 #define MAXCOLOR 64     // 颜色数
@@ -197,7 +198,7 @@ int kbmouhit()
 
 int MDraw(double fromx, double fromy, double tox, double toy)
 {
-	clock();
+	std::clock();
 
 	int ret = 0;
 
@@ -255,7 +256,7 @@ int JDraw(COMPLEX c, double fromx, double fromy, double tox, double toy, double 
 {
 	int ret = 0;
 	state* st = g_st - 1;
-	clock_t tt = clock();
+	clock_t tt = std::clock();
 	g_updatepoint = 0;
 	for(int y = 0; y < g_h; y++)
 	{
@@ -302,9 +303,9 @@ int JDraw(COMPLEX c, double fromx, double fromy, double tox, double toy, double 
 				putpixel_f(x, y, c);
 			}
 		}
-		if(clock() - tt > 10)
+		if(std::clock() - tt > 10)
 		{
-			tt = clock();
+			tt = std::clock();
 			if(kbmouhit())
 			{
 				return -1;
@@ -316,7 +317,7 @@ int JDraw(COMPLEX c, double fromx, double fromy, double tox, double toy, double 
 
 int JDrawA(COMPLEX c, double, double, double, double)
 {
-	clock();
+	std::clock();
 
 	int ret = 0;
 
@@ -356,10 +357,10 @@ int JDrawA(COMPLEX c, double, double, double, double)
 				}
 			}
 			/*
-			if(clock() - tt > 10)
+			if(std::clock() - tt > 10)
 			{
 				delay(1);
-				tt = clock();
+				tt = std::clock();
 				if(0 && kbmouhit())
 				{
 					return -1;
@@ -373,7 +374,7 @@ int JDrawA(COMPLEX c, double, double, double, double)
 
 void init_st(int x, int y)
 {
-	memset(g_st, 0, x * y * sizeof(state));
+	std::memset(g_st, 0, x * y * sizeof(state));
 }
 
 
@@ -432,10 +433,10 @@ int main()
 			static int t = 0;
 
 			ret = JDrawA(c, z.re - r * d, z.im - r, z.re + r * d, z.im + r);
-			if(clock() - t > 30)
+			if(std::clock() - t > 30)
 			{
 				delay(1);
-				t = clock();
+				t = std::clock();
 			}
 		}
 		if(g_updatepoint == 0)
@@ -446,7 +447,7 @@ int main()
 		{
 			char str[500];
 
-			sprintf(str, "%d %d %f %f", g_w, g_h, r, d);
+			std::sprintf(str, "%d %d %f %f", g_w, g_h, r, d);
 			outtextxy(0, 0, str);
 		}
 		if(ret == 0 || n_update > 8 || loop > 1000)
@@ -456,7 +457,7 @@ int main()
 			if(g_mi[0][0] == 0)
 			{
 				delay(1);
-				memset(pMap, 0, BF_W * BF_H * sizeof(state));
+				std::memset(pMap, 0, BF_W * BF_H * sizeof(state));
 				g_udlist.clear();
 				for(int i = 0; i < BF_W; ++i)
 				{

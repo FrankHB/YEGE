@@ -1,8 +1,8 @@
 // 旋转图片演示程序
 #include <graphics.h>
 #include <ege/fps.h>
-#include <time.h>
-#include <math.h>
+#include <ctime>
+#include <cmath>
 
 int main()
 {
