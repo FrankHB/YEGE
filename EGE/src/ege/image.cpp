@@ -87,8 +87,6 @@ IMAGE::swap(IMAGE& img) ynothrow
 	std::swap(m_fillcolor, img.m_fillcolor);
 	std::swap(m_aa, img.m_aa);
 	std::swap(m_vpt, img.m_vpt);
-	std::swap(m_pBuffer, img.m_pBuffer);
-	std::swap(m_vpt, img.m_vpt);
 	std::swap(m_texttype, img.m_texttype);
 	std::swap(m_linestyle, img.m_linestyle);
 	std::swap(m_linewidth, img.m_linewidth);
