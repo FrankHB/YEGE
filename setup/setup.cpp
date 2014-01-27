@@ -1,5 +1,5 @@
 #include "graphics.h"
-#include <stdio.h>
+#include <cstdio>
 
 char installpath[8][MAX_PATH];
 char g_output[1024 * 16];
@@ -141,7 +141,7 @@ int getpath_scene()
 
 	for(it = 0; ver[it][0]; ++it)
 	{
-		sprintf(strpath, "%s%s", strbasepath, ver[it]);
+		std::sprintf(strpath, "%s%s", strbasepath, ver[it]);
 		if(::RegOpenKeyEx(HKEY_LOCAL_MACHINE, strpath, 0, KEY_READ, &key) == ERROR_SUCCESS)
 		{
 			::DWORD dwtype = REG_SZ;
@@ -168,23 +168,23 @@ copyfile(const char* path1, char* pathnew,
 	char strpath1[MAX_PATH];
 	char strpath2[MAX_PATH];
 	if(path1[strlen(path1) - 1] == '\\')
-		sprintf(strpath1, "%s%s\\%s", path1, dir, file);
+		std::sprintf(strpath1, "%s%s\\%s", path1, dir, file);
 	else
-		sprintf(strpath1, "%s\\%s\\%s", path1, dir, file);
+		std::sprintf(strpath1, "%s\\%s\\%s", path1, dir, file);
 	if(pathnew[strlen(pathnew) - 1] == '\\')
-		sprintf(strpath2, "%s%s\\%s", pathnew, dir, file);
+		std::sprintf(strpath2, "%s%s\\%s", pathnew, dir, file);
 	else
-		sprintf(strpath2, "%s\\%s\\%s", pathnew, dir, file);
+		std::sprintf(strpath2, "%s\\%s\\%s", pathnew, dir, file);
 
 	int ret = ::CopyFile(strpath1, strpath2, {});
 	if(ret == 0)
 	{
-		sprintf(strpath1, "Copy %s ERROR\n", strpath2);
+		std::sprintf(strpath1, "Copy %s ERROR\n", strpath2);
 		strcat(g_output, strpath1);
 	}
 	else
 	{
-		sprintf(strpath1, "Copy %s SUCCESS\n", strpath2);
+		std::sprintf(strpath1, "Copy %s SUCCESS\n", strpath2);
 		strcat(g_output, strpath1);
 	}
 	return ret;

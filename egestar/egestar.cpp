@@ -1,7 +1,7 @@
 // 星空屏保程序，请生成为scr后缀，或者手工改后缀，不要直接运行exe
 #include "graphics.h"
-#include <time.h>
-#include <stdio.h>
+#include <ctime>
+#include <cstdio>
 
 #define MAXSTAR 2000 // 星星总数
 int sc_width, sc_heigh; // 记录窗口宽高
@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
 		// 显示FPS
 		{
 			char str[60];
-			sprintf(str, "%8.2f FPS", getfps());
+			std::sprintf(str, "%8.2f FPS", getfps());
 			outtextxy(0, 0, str);   //显示fps
 		}
 	}

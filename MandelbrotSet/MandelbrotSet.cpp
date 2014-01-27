@@ -344,7 +344,7 @@ void
 Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 	COMPLEX _c = COMPLEX())
 {
-	unsigned t = clock();
+	unsigned t = std::clock();
 	COMPLEX z, c;
 	g_miniter = 0;
 	if(mode == 0)
@@ -363,10 +363,10 @@ Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 				else
 					putpixel_f(x, y, Color[k & COLORMASK]);
 			}
-			if(clock() - t > 50)
+			if(std::clock() - t > 50)
 			{
 				delay(0);
-				t = clock();
+				t = std::clock();
 			}
 		}
 	}
@@ -382,10 +382,10 @@ Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 				int k = Mandelbrot(z, c, x, y);
 				putpixel_f(x, y, pMap[y][x].ed == 0 ? BLACK : Color[k & COLORMASK]);
 			}
-			if(clock() - t > 100)
+			if(std::clock() - t > 100)
 			{
 				delay(0);
-				t = clock();
+				t = std::clock();
 			}
 		}
 	}
@@ -503,7 +503,7 @@ DrawEx(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 	g_udlist.swap();
 }
 
-#include <stdio.h>
+#include <cstdio>
 
 // Ö÷º¯Êý
 
@@ -803,10 +803,10 @@ main()
 		if(!bmsg)
 		{
 #if 1
-			for(int n = 0, t = clock(); g_udlist.nLen > 0 && n < 1024; ++n)
+			for(int n = 0, t = std::clock(); g_udlist.nLen > 0 && n < 1024; ++n)
 			{
 				DrawEx(from.real(), from.imag(), to.real(), to.imag(), mode, js_c);
-				if(clock() - t > 100) break;
+				if(std::clock() - t > 100) break;
 			}
 #endif
 			delay_fps(1000);

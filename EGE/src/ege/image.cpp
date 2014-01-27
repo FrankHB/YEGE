@@ -107,7 +107,7 @@ IMAGE::gentexture(bool gen)
 int
 IMAGE::resize(int width, int height)
 {
-	memset(&m_vpt, 0, sizeof(m_vpt));
+	std::memset(&m_vpt, 0, sizeof(m_vpt));
 
 	assert(m_hDC);
 
@@ -512,7 +512,7 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 
 		if(!hGlobal || !(pvData = ::GlobalLock(hGlobal)))
 			return grAllocError;
-		::std::memcpy(pvData, pvRes, dwSize);
+		std::memcpy(pvData, pvRes, dwSize);
 		::GlobalUnlock(hGlobal);
 		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
 			return grNullPointer;

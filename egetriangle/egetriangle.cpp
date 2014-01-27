@@ -1,9 +1,9 @@
 //彩色渐变三角形动画演示
 #include <graphics.h>
 #include <ege/fps.h>
-#include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <ctime>
+#include <cstdlib>
 
 int width = 640, height = 480;
 

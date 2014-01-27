@@ -86,7 +86,7 @@ int main()
 #include <graphics.h>
 #include <ege/fps.h>
 
-#include <stdio.h>
+#include <cstdio>
 
 class input : public egeControlBase
 {
@@ -116,7 +116,7 @@ public:
 		char str[10] = "";
 		if(m_key)
 		{
-			sprintf(str, "%d %c", m_key, m_key);
+			std::sprintf(str, "%d %c", m_key, m_key);
 		}
 		setbkcolor_f(GREEN, pimg);
 		cleardevice(pimg);
@@ -147,7 +147,7 @@ public:
 	void onDraw(IMAGE* pimg) const
 	{
 		char str[10] = "";
-		if(m_key) sprintf(str, "%c", m_key);
+		if(m_key) std::sprintf(str, "%c", m_key);
 		setbkcolor_f(RED, pimg);
 		cleardevice(pimg);
 		setcolor(WHITE, pimg);
@@ -186,7 +186,7 @@ int main()
 #include <ege.h>
 #include <ege/fps.h>
 
-#include <stdio.h>
+#include <cstdio>
 
 class alphafilter : public ege::egeControlBase
 {
@@ -285,8 +285,8 @@ int main()
 #elif _TUTORIAL_ == 60
 // 星空屏保程序，请生成为scr后缀，或者手工改后缀，不要直接运行exe
 #include "graphics.h"
-#include <time.h>
-#include <stdio.h>
+#include <ctime>
+#include <cstdio>
 
 #define MAXSTAR 2000 // 星星总数
 int sc_width, sc_heigh; // 记录窗口宽高
@@ -393,7 +393,7 @@ int main(int argc, char* argv[])
 		// 显示FPS
 		{
 			char str[60];
-			sprintf(str, "%8.2f FPS", getfps());
+			std::sprintf(str, "%8.2f FPS", getfps());
 			outtextxy(0, 0, str);   //显示fps
 		}
 	}
@@ -404,7 +404,7 @@ int main(int argc, char* argv[])
 
 #elif _TUTORIAL_ == 61
 
-#include <stdio.h>
+#include <cstdio>
 #include <graphics.h>
 #include <ege/label.h>
 #include "ege/sys_edit.h"
