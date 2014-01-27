@@ -1,4 +1,4 @@
-﻿#include "head.h"
+﻿#include "ege.h"
 #include <mmsystem.h>
 #include <Digitalv.h>
 

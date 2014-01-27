@@ -2,7 +2,7 @@
 #include "image.h" // for IMAGE;
 #include "ege/time.h" // for delay_ms;
 #include "ege/ctl.h"
-#include "head.h"
+#include "ege.h"
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
 #include <gdiplus.h>
 #include <windows.h>
