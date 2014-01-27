@@ -17,9 +17,12 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
+					<Add option="-Wl,-dn" />
 					<Add library="..\EGE\debug\libEGE.a" />
-					<Add library="z" />
+					<Add library="YFrameworkd" />
+					<Add library="YBased" />
 					<Add library="png16" />
+					<Add library="z" />
 					<Add library="gdi32" />
 					<Add library="imm32" />
 					<Add library="msimg32" />
@@ -42,9 +45,12 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-Wl,-dn" />
 					<Add library="..\EGE\release\libEGE.a" />
-					<Add library="z" />
+					<Add library="YFramework" />
+					<Add library="YBase" />
 					<Add library="png16" />
+					<Add library="z" />
 					<Add library="gdi32" />
 					<Add library="imm32" />
 					<Add library="msimg32" />
@@ -63,9 +69,12 @@
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-DYEGE_DLL" />
 				</Compiler>
 				<Linker>
 					<Add library="..\EGE\debug\EGE.dll" />
+					<Add library="YFrameworkd" />
+					<Add library="YBased" />
 				</Linker>
 				<ExtraCommands>
 					<Add before='CMD /C ECHO F | XCOPY /D /Y &quot;..\EGE\debug\EGE.dll&quot; &quot;debug\EGE.dll&quot;' />
@@ -80,10 +89,13 @@
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-DNDEBUG" />
+					<Add option="-DYEGE_DLL" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add library="..\EGE\release\EGE.dll" />
+					<Add library="YFramework" />
+					<Add library="YBase" />
 				</Linker>
 				<ExtraCommands>
 					<Add before='CMD /C ECHO F | XCOPY /D /Y &quot;..\EGE\release\EGE.dll&quot; &quot;release\EGE.dll&quot;' />

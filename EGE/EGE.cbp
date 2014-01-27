@@ -46,6 +46,8 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
+					<Add library="YFrameworkd" />
+					<Add library="YBased" />
 					<Add library="png16" />
 					<Add library="z" />
 					<Add library="gdi32" />
@@ -72,6 +74,8 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="YFramework" />
+					<Add library="YBase" />
 					<Add library="png16" />
 					<Add library="z" />
 					<Add library="gdi32" />
