@@ -265,7 +265,7 @@ _graph_setting::_getch_ex(int flag)
 					}
 				}
 			}
-		} while(!_is_run() && _waitdealmessage());
+		} while(_is_run() && _waitdealmessage());
 	}
 	return 0;
 }
@@ -313,7 +313,7 @@ _graph_setting::_getkey()
 					msg.flags |= key_flag_shift;
 				return msg;
 			}
-		} while(!_is_run() && _waitdealmessage());
+		} while(_is_run() && _waitdealmessage());
 	}
 	return ret;
 }
@@ -397,7 +397,7 @@ _graph_setting::_getmouse()
 			}
 			return mmsg;
 		}
-	} while(!_is_run() && _waitdealmessage());
+	} while(_is_run() && _waitdealmessage());
 	return mmsg;
 }
 
