@@ -165,11 +165,13 @@ SetB
 SetCa
 SetCursor
 SetE
+SetStretch
 SetT
 SetVi
 SetW
 ShowWindow
 Sleep
+Stretch
 TCHA
 Trans
 UINT

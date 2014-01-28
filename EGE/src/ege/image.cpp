@@ -609,8 +609,8 @@ IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 {
 	if(const auto img = CONVERT_IMAGE(pDstImg))
 	{
-		SetStretchBltMode(img->m_hDC, COLORONCOLOR);
-		StretchBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC,
+		::SetStretchBltMode(img->m_hDC, COLORONCOLOR);
+		::StretchBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC,
 			srcX, srcY, srcWidth, srcHeight, dwRop);
 	}
 }
