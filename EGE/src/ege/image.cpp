@@ -320,7 +320,7 @@ IMAGE::saveimage(const char*  filename)
 int
 IMAGE::saveimage(const wchar_t* filename)
 {
-	std::FILE* fp = _wfopen(filename, L"wb");
+	std::FILE* fp = ::_wfopen(filename, L"wb");
 
 	if(!fp)
 		return grIOerror;

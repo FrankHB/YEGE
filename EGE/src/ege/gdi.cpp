@@ -124,7 +124,7 @@ savepng(IMAGE* pimg, const char* filename, int bAlpha)
 int
 savepng(IMAGE* pimg, const wchar_t* filename, int bAlpha)
 {
-	if(std::FILE* fp = _wfopen(filename, L"wb"))
+	if(std::FILE* fp = ::_wfopen(filename, L"wb"))
 	{
 		yconstraint(pimg);
 
@@ -153,7 +153,7 @@ getimage_pngfile(IMAGE* pimg, const char* filename)
 int
 getimage_pngfile(IMAGE* pimg, const wchar_t* filename)
 {
-	if(std::FILE* fp = _wfopen(filename, L"rb"))
+	if(std::FILE* fp = ::_wfopen(filename, L"rb"))
 	{
 		yconstraint(pimg);
 
