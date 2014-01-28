@@ -16,27 +16,15 @@ namespace
 unsigned int
 private_gettextmode(IMAGE* img)
 {
-	::UINT fMode = TA_NOUPDATECP; //TA_UPDATECP;
+	::UINT fMode(TA_NOUPDATECP); //TA_UPDATECP;
+
 	if(img->m_texttype.horiz == RIGHT_TEXT)
-	{
 		fMode |= TA_RIGHT;
-	}
 	else if(img->m_texttype.horiz == CENTER_TEXT)
-	{
 		fMode |= TA_CENTER;
-	}
 	else
-	{
 		fMode |= TA_LEFT;
-	}
-	if(img->m_texttype.vert == BOTTOM_TEXT)
-	{
-		fMode |= TA_BOTTOM;
-	}
-	else
-	{
-		fMode |= TA_TOP;
-	}
+	fMode |= img->m_texttype.vert == BOTTOM_TEXT ? TA_BOTTOM : TA_TOP;
 	return fMode;
 }
 
@@ -46,6 +34,7 @@ private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz, int
 	if(horiz >= 0 && vert >= 0)
 	{
 		::UINT fMode = TA_NOUPDATECP; //TA_UPDATECP;
+
 		img->m_texttype.horiz = horiz;
 		img->m_texttype.vert = vert;
 		if(img->m_texttype.horiz == RIGHT_TEXT)
@@ -61,9 +50,7 @@ private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz, int
 		::SetTextAlign(img->getdc(), fMode);
 	}
 	else
-	{
 		::SetTextAlign(img->getdc(), private_gettextmode(img));
-	}
 	if(textstring)
 	{
 		if(img->m_texttype.vert == CENTER_TEXT)
@@ -73,39 +60,26 @@ private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz, int
 }
 
 void
-private_textout(IMAGE* img, const wchar_t* textstring, int x, int y, int horiz, int vert)
+private_textout(IMAGE* img, const wchar_t* textstring, int x, int y, int horiz,
+	int vert)
 {
 	if(horiz >= 0 && vert >= 0)
 	{
 		::UINT fMode = TA_NOUPDATECP; //TA_UPDATECP;
+
 		img->m_texttype.horiz = horiz;
 		img->m_texttype.vert = vert;
 		if(img->m_texttype.horiz == RIGHT_TEXT)
-		{
 			fMode |= TA_RIGHT;
-		}
 		else if(img->m_texttype.horiz == CENTER_TEXT)
-		{
 			fMode |= TA_CENTER;
-		}
 		else
-		{
 			fMode |= TA_LEFT;
-		}
-		if(img->m_texttype.vert == BOTTOM_TEXT)
-		{
-			fMode |= TA_BOTTOM;
-		}
-		else
-		{
-			fMode |= TA_TOP;
-		}
+		fMode |= img->m_texttype.vert == BOTTOM_TEXT ?  TA_BOTTOM : TA_TOP;
 		::SetTextAlign(img->getdc(), fMode);
 	}
 	else
-	{
 		::SetTextAlign(img->getdc(), private_gettextmode(img));
-	}
 	if(textstring)
 	{
 		if(img->m_texttype.vert == CENTER_TEXT)
@@ -121,12 +95,11 @@ private_textout(IMAGE* img, const wchar_t* textstring, int x, int y, int horiz, 
 void
 outtext(const char* textstring, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE(pimg);
-
-	if(img)
+	if(const auto img = CONVERT_IMAGE(pimg))
 	{
 		::POINT pt;
 		::GetCurrentPositionEx(img->getdc(), &pt);
+
 		private_textout(img, textstring, pt.x, pt.y, -1, -1);
 	}
 }
@@ -134,12 +107,11 @@ outtext(const char* textstring, IMAGE* pimg)
 void
 outtext(const wchar_t* textstring, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE(pimg);
-
-	if(img)
+	if(const auto img = CONVERT_IMAGE(pimg))
 	{
 		::POINT pt;
 		::GetCurrentPositionEx(img->getdc(), &pt);
+
 		private_textout(img, textstring, pt.x, pt.y, -1, -1);
 	}
 }
@@ -148,6 +120,7 @@ void
 outtext(char c, IMAGE* pimg)
 {
 	char str[10]{c};
+
 	outtext(str, pimg);
 }
 
@@ -155,35 +128,29 @@ void
 outtext(wchar_t c, IMAGE* pimg)
 {
 	wchar_t str[10]{c};
+
 	outtext(str, pimg);
 }
 
 void
 outtextxy(int x, int y, const char* textstring, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE(pimg);
-
-	if(img)
-	{
+	if(const auto img = CONVERT_IMAGE(pimg))
 		private_textout(img, textstring, x, y, -1, -1);
-	}
 }
 
 void
 outtextxy(int x, int y, const wchar_t* textstring, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE(pimg);
-
-	if(img)
-	{
+	if(const auto img = CONVERT_IMAGE(pimg))
 		private_textout(img, textstring, x, y, -1, -1);
-	}
 }
 
 void
 outtextxy(int x, int y, char c, IMAGE* pimg)
 {
 	char str[10]{c};
+
 	outtextxy(x, y, str, pimg);
 }
 
@@ -191,19 +158,20 @@ void
 outtextxy(int x, int y, wchar_t c, IMAGE* pimg)
 {
 	wchar_t str[10]{c};
+
 	outtextxy(x, y, str, pimg);
 }
 
 void
 outtextrect(int x, int y, int w, int h, const char*  textstring, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE(pimg);
-
-	if(img)
+	if(const auto img = CONVERT_IMAGE(pimg))
 	{
-		unsigned int fmode = private_gettextmode(img);
 		::RECT rect{x, y, x + w, y + h};
-		::DrawTextA(img->getdc(), textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
+
+		::DrawTextA(img->getdc(), textstring, -1, &rect,
+			private_gettextmode(img) | DT_NOPREFIX | DT_WORDBREAK
+			| DT_EDITCONTROL | DT_EXPANDTABS);
 	}
 
 }
@@ -211,13 +179,13 @@ outtextrect(int x, int y, int w, int h, const char*  textstring, IMAGE* pimg)
 void
 outtextrect(int x, int y, int w, int h, const wchar_t* textstring, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE(pimg);
-
-	if(img)
+	if(const auto img = CONVERT_IMAGE(pimg))
 	{
-		unsigned int fmode = private_gettextmode(img);
 		::RECT rect{x, y, x + w, y + h};
-		::DrawTextW(img->getdc(), textstring, -1, &rect, fmode | DT_NOPREFIX | DT_WORDBREAK | DT_EDITCONTROL | DT_EXPANDTABS);
+
+		::DrawTextW(img->getdc(), textstring, -1, &rect,
+			private_gettextmode(img) | DT_NOPREFIX | DT_WORDBREAK
+			| DT_EDITCONTROL | DT_EXPANDTABS);
 	}
 
 }
@@ -257,7 +225,9 @@ rectprintf(int x, int y, int w, int h, const char*  fmt, ...)
 	const auto buff(&buf[0]);
 
 	get_global_state();
+
 	va_list v;
+
 	va_start(v, fmt);
 	vsprintf(buff, fmt, v);
 	outtextrect(x, y, w, h, buff);
@@ -271,7 +241,9 @@ rectprintf(int x, int y, int w, int h, const wchar_t* fmt, ...)
 	const auto buff(&buf[0]);
 
 	get_global_state();
+
 	va_list v;
+
 	va_start(v, fmt);
 	std::vswprintf(buff, fmt, v);
 	outtextrect(x, y, w, h, buff);
@@ -281,11 +253,11 @@ rectprintf(int x, int y, int w, int h, const wchar_t* fmt, ...)
 int
 textwidth(const char* textstring, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		SIZE sz;
-		GetTextExtentPoint32A(img->getdc(), textstring, (int)strlen(textstring), &sz);
+		GetTextExtentPoint32A(img->getdc(), textstring, (int)strlen(textstring),
+			&sz);
 		return sz.cx;
 	}
 	return 0;
@@ -294,11 +266,11 @@ textwidth(const char* textstring, IMAGE* pimg)
 int
 textwidth(const wchar_t* textstring, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		SIZE sz;
-		GetTextExtentPoint32W(img->getdc(), textstring, (int)::lstrlenW(textstring), &sz);
+		GetTextExtentPoint32W(img->getdc(), textstring,
+			(int)::lstrlenW(textstring), &sz);
 		return sz.cx;
 	}
 	return 0;
@@ -308,6 +280,7 @@ int
 textwidth(char c, IMAGE* pimg)
 {
 	char str[2]{c};
+
 	return textwidth(str, pimg);
 }
 
@@ -315,17 +288,18 @@ int
 textwidth(wchar_t c, IMAGE* pimg)
 {
 	wchar_t str[2]{c};
+
 	return textwidth(str, pimg);
 }
 
 int
 textheight(const char* textstring, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		SIZE sz;
-		GetTextExtentPoint32A(img->getdc(), textstring, (int)strlen(textstring), &sz);
+		GetTextExtentPoint32A(img->getdc(), textstring, (int)strlen(textstring),
+			&sz);
 		return sz.cy;
 	}
 	return 0;
@@ -334,8 +308,7 @@ textheight(const char* textstring, IMAGE* pimg)
 int
 textheight(const wchar_t* textstring, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		SIZE sz;
 		GetTextExtentPoint32W(img->getdc(), textstring, (int)::lstrlenW(textstring), &sz);
@@ -348,6 +321,7 @@ int
 textheight(char c, IMAGE* pimg)
 {
 	char str[2]{c};
+
 	return textheight(str, pimg);
 }
 
@@ -355,14 +329,14 @@ int
 textheight(wchar_t c, IMAGE* pimg)
 {
 	wchar_t str[2]{c};
+
 	return textheight(str, pimg);
 }
 
 void
 settextjustify(int horiz, int vert, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		img->m_texttype.horiz = horiz;
 		img->m_texttype.vert = vert;
@@ -388,8 +362,7 @@ setfont(
 	BYTE fbPitchAndFamily,
 	IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		::LOGFONTA lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
 			bItalic != 0, bUnderline != 0, bStrikeOut != 0, fbCharSet,
@@ -419,8 +392,7 @@ setfont(
 	BYTE fbPitchAndFamily,
 	IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		::LOGFONTW lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
 			bItalic != 0, bUnderline != 0, bStrikeOut != 0, fbCharSet,
@@ -445,8 +417,7 @@ setfont(
 	int bStrikeOut,
 	IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		::LOGFONTA lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
 			bItalic != 0, bUnderline != 0, bStrikeOut != 0, DEFAULT_CHARSET,
@@ -472,8 +443,7 @@ setfont(
 	int bStrikeOut,
 	IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		::LOGFONTW lf{nHeight, nWidth, nEscapement, nOrientation, nWeight,
 			bItalic != 0, bUnderline != 0, bStrikeOut != 0, DEFAULT_CHARSET,
@@ -489,8 +459,7 @@ setfont(
 void
 setfont(int nHeight, int nWidth, const char* lpszFace, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		::LOGFONTA lf{nHeight, nWidth, 0, 0, FW_DONTCARE, 0, 0, 0,
 			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
@@ -505,8 +474,7 @@ setfont(int nHeight, int nWidth, const char* lpszFace, IMAGE* pimg)
 void
 setfont(int nHeight, int nWidth, const wchar_t* lpszFace, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		::LOGFONTW lf{nHeight, nWidth, 0, 0, FW_DONTCARE, 0, 0, 0,
 			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
@@ -521,27 +489,23 @@ setfont(int nHeight, int nWidth, const wchar_t* lpszFace, IMAGE* pimg)
 void
 setfont(const ::LOGFONTA* font, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-
-	if(img)
-		::DeleteObject(::SelectObject(img->getdc(), ::CreateFontIndirectA(font)));
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
+		::DeleteObject(::SelectObject(img->getdc(),
+			::CreateFontIndirectA(font)));
 }
 
 void
 setfont(const ::LOGFONTW* font, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-
-	if(img)
-		::DeleteObject(::SelectObject(img->getdc(), ::CreateFontIndirectW(font)));
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
+		::DeleteObject(::SelectObject(img->getdc(),
+			::CreateFontIndirectW(font)));
 }
 
 void
 getfont(::LOGFONTA* font, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 		::GetObjectA((::HFONT)::GetCurrentObject(img->getdc(), OBJ_FONT),
 			sizeof(::LOGFONTA), font);
 }
@@ -549,9 +513,7 @@ getfont(::LOGFONTA* font, IMAGE* pimg)
 void
 getfont(::LOGFONTW* font, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 		::GetObjectW((::HFONT)::GetCurrentObject(img->getdc(), OBJ_FONT),
 			sizeof(::LOGFONTA), font);
 }
@@ -583,7 +545,7 @@ inputbox_getline(const char* title, const char* text, char* buf, int len)
 	::MultiByteToWideChar(CP_ACP, 0,  text, -1,  _text, 256);
 	buf[0] = 0;
 
-	int ret = inputbox_getline(_title, _text, _buf, len);
+	const int ret(inputbox_getline(_title, _text, _buf, len));
 
 	if(ret)
 		::WideCharToMultiByte(CP_ACP, 0, _buf, -1, buf, len, {}, {});
