@@ -147,6 +147,9 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 			dc_h = rect.bottom;
 	}
 }
+_graph_setting::~_graph_setting()
+{
+}
 
 bool
 _graph_setting::_is_run() const
@@ -440,11 +443,11 @@ _graph_setting::_on_destroy()
 {
 	assert(_is_run());
 
-	ui_thread.detach(); // XXX: Use std::thread::join on non-UI thread instead.
 	if(get_pages().active_dc)
 		::ReleaseDC(hwnd, window_dc);
 		// release objects, not finish
 	::PostQuitMessage(0);
+	ui_thread.detach();
 	if(use_force_exit)
 		::ExitProcess(0);
 }

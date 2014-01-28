@@ -65,6 +65,7 @@ public:
 
 	_graph_setting(int, int*);
 	_graph_setting(const _graph_setting&) = delete;
+	~_graph_setting();
 
 	bool
 	_is_run() const;
