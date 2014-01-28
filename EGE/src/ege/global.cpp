@@ -22,8 +22,6 @@
 
 #define EGE_TITLE TEXT("yEGE13.04 ") TEXT("GCC") GCC_VER TEXT(ARCH)
 
-#define RENDER_TIMER_ID     916
-
 namespace ege
 {
 
@@ -149,6 +147,9 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 			dc_h = rect.bottom;
 	}
 }
+_graph_setting::~_graph_setting()
+{
+}
 
 bool
 _graph_setting::_is_run() const
@@ -213,7 +214,7 @@ _graph_setting::_getch()
 						return key & 0xFFFF;
 					}
 				}
-		} while(!_is_run() && _waitdealmessage());
+		} while(_is_run() && _waitdealmessage());
 	}
 	return 0;
 }
@@ -261,7 +262,7 @@ _graph_setting::_getkey()
 					msg.flags |= key_flag_shift;
 				return msg;
 			}
-		} while(!_is_run() && _waitdealmessage());
+		} while(_is_run() && _waitdealmessage());
 	}
 	return ret;
 }
@@ -345,7 +346,7 @@ _graph_setting::_getmouse()
 			}
 			return mmsg;
 		}
-	} while(!_is_run() && _waitdealmessage());
+	} while(_is_run() && _waitdealmessage());
 	return mmsg;
 }
 
@@ -365,25 +366,18 @@ _graph_setting::_init_graph_x()
 				window_caption, g_windowstyle & ~WS_VISIBLE, _g_windowpos_x,
 				_g_windowpos_y, dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
 				dc_h + ::GetSystemMetrics(SM_CYFRAME)
-				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, {}, {},
+				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, HWND_DESKTOP, {},
 				get_instance(), {});
 			if(!hwnd)
 				return ::DWORD(0xFFFFFFFF);
-			::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
-			::ShowWindow(hwnd, SW_SHOW);
-			if(g_windowexstyle & WS_EX_TOPMOST)
-				::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
-					SWP_NOSIZE | SWP_NOMOVE);
-
 			//图形初始化
 			window_dc = ::GetDC(hwnd);
 			//::ReleaseDC(hwnd, window_dc);
 			mouse_show = {};
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
-			::SetTimer(hwnd, RENDER_TIMER_ID, 50, {});
 			init_finish = true;
 
-			MSG msg;
+			::MSG msg;
 
 			while(_is_run())
 				if(::GetMessage(&msg, {}, 0, 0))
@@ -409,6 +403,11 @@ _graph_setting::_init_graph_x()
 		mouse_show = true;
 	});
 	window_setviewport(0, 0, dc_w, dc_h);
+	::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
+	::ShowWindow(hwnd, SW_SHOW);
+	if(g_windowexstyle & WS_EX_TOPMOST)
+		::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
+			SWP_NOSIZE | SWP_NOMOVE);
 }
 
 int
@@ -444,11 +443,11 @@ _graph_setting::_on_destroy()
 {
 	assert(_is_run());
 
-	ui_thread.detach(); // XXX: Use std::thread::join on non-UI thread instead.
 	if(get_pages().active_dc)
 		::ReleaseDC(hwnd, window_dc);
 		// release objects, not finish
 	::PostQuitMessage(0);
+	ui_thread.detach();
 	if(use_force_exit)
 		::ExitProcess(0);
 }
@@ -777,16 +776,23 @@ _graph_setting::_window_destroy(msg_createwindow& msg)
 
 _pages::_pages()
 	: gstate(get_global_state()), active_dc(gstate._get_window_dc())
-{}
+{
+	check_page(0);
+	active_dc = img_page[0]->getdc();
+	imgtarget = img_page[active_page];
+	update_mark_count = 0;
+}
 
 void
 _pages::check_page(int page) const
 {
-	const int dc_w(gstate._get_dc_w());
-	const int dc_h(gstate._get_dc_h());
-
 	if(!img_page[page])
-		img_page[page] = new IMAGE(dc_w, dc_h);
+	{
+		const int dc_w(gstate._get_dc_w());
+		const int dc_h(gstate._get_dc_h());
+
+		img_page[page] = new IMAGE(active_dc, dc_w, dc_h);
+	}
 }
 
 IMAGE&
