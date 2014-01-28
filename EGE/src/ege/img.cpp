@@ -65,15 +65,15 @@ newimage(int width, int height)
 }
 
 void
-delimage(IMAGE* pImg)
+delimage(IMAGE* pimg)
 {
-	delete pImg;
+	delete pimg;
 }
 
 void*
-getbuffer(IMAGE* pImg)
+getbuffer(IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pImg);
+	const auto img = CONVERT_IMAGE_CONST(pimg);
 
 	return img->getbuffer();
 }
