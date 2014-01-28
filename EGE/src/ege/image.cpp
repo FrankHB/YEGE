@@ -18,10 +18,15 @@
 namespace ege
 {
 
-static ::HBITMAP g_hbmp_def;
-static ::HBRUSH g_hbr_def;
-static ::HPEN g_pen_def;
-static ::HFONT g_font_def;
+namespace
+{
+
+::HBITMAP g_hbmp_def;
+::HBRUSH g_hbr_def;
+::HPEN g_pen_def;
+::HFONT g_font_def;
+
+} // unnamed namespace;
 
 IMAGE::IMAGE()
 	: IMAGE(1, 1)
@@ -252,8 +257,10 @@ IMAGE::putimage(int dstX, int dstY, ::DWORD dwRop) const
 	putimage(img, dstX, dstY, dwRop);
 }
 
-// private function
-static int
+namespace
+{
+
+int
 saveimagetofile(IMAGE* img, std::FILE * fp)
 {
 	auto bmpfHead = ::BITMAPFILEHEADER();
@@ -293,6 +300,8 @@ saveimagetofile(IMAGE* img, std::FILE * fp)
 ERROR_BREAK:
 	return grIOerror;
 }
+
+} // unnamed namespace;
 
 int
 IMAGE::saveimage(const char*  filename)
@@ -607,8 +616,9 @@ IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	}
 }
 
-/* private function */
-static
+namespace
+{
+
 void
 fix_rect_1size(IMAGE* pdest, IMAGE* psrc,
 	int * nXOriginDest,  // x-coord of destination upper-left corner
@@ -677,6 +687,8 @@ fix_rect_1size(IMAGE* pdest, IMAGE* psrc,
 		*nHeightSrc -= dy;
 	}
 }
+
+} // unnamed namespace;
 
 int
 IMAGE::putimage_transparent(
@@ -940,8 +952,9 @@ IMAGE::putimage_alphafilter(
 }
 
 
-/* private function */
-static
+namespace
+{
+
 void
 fix_rect_0size(IMAGE* pdest,
 			   int * nXOriginDest,  // x-coord of destination upper-left corner
@@ -968,6 +981,8 @@ fix_rect_0size(IMAGE* pdest,
 	if(*nYOriginDest + *nHeightDest > _vpt.bottom)
 		*nHeightDest -= *nYOriginDest + *nHeightDest - _vpt.bottom;
 }
+
+} // unnamed namespace;
 
 int
 IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
@@ -1385,15 +1400,16 @@ struct triangle3d
 	int color;
 };
 
-/* private funcion */
-static int
+namespace
+{
+
+int
 float2int(float f)
 {
 	return f >= 0 ? (int)(f + .5) : (int)(f - .5);
 }
 
-/* private funcion */
-static void
+void
 draw_flat_scanline(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
@@ -1432,8 +1448,6 @@ draw_flat_scanline(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vec
 	}
 }
 
-/* private funcion */
-static
 void
 draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2)
 {
@@ -1478,8 +1492,6 @@ draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_sr
 	}
 }
 
-/* private funcion */
-static
 void
 draw_flat_scanline_alpha(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
 {
@@ -1524,8 +1536,6 @@ draw_flat_scanline_alpha(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, con
 	}
 }
 
-/* private funcion */
-static
 void
 draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
 {
@@ -1576,8 +1586,7 @@ draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src
 	}
 }
 
-/* private funcion */
-/* static
+#if 0
 color_t bilinear_interpolation(color_t LT, color_t RT, color_t LB, color_t RB,
 	double x, double y)
 {
@@ -1594,10 +1603,9 @@ color_t bilinear_interpolation(color_t LT, color_t RT, color_t LB, color_t RB,
 	crb = ((Trb * alphaB + Brb * alphaA) & 0xFF00FF00);
 	cg =  ((Tg * alphaB + Bg * alphaA) & 0xFF0000);
 	return (crb | cg) >> 8;
-}// */
+}
+#endif
 
-/* private funcion */
-static
 void
 draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	const vector2d* svt, int x1, int x2)
@@ -1656,8 +1664,6 @@ draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	}
 }
 
-/* private funcion */
-static
 void
 draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt,
 	IMAGE* dc_src, const vector2d * svt, int x1, int x2)
@@ -1719,8 +1725,6 @@ draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt,
 	}
 }
 
-/* private funcion */
-static
 void
 draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	const vector2d * svt, int x1, int x2, int alpha)
@@ -1788,8 +1792,6 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	}
 }
 
-/* private funcion */
-static
 void
 draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d * vt,
 	IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
@@ -1858,8 +1860,6 @@ draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d * vt,
 	}
 }
 
-/* private funcion */
-static
 void
 draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src, const triangle2d * tt, int x1, int y1, int x2, int y2, int transparent, int alpha)
 {
@@ -2107,8 +2107,6 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src, co
 	}
 }
 
-/* private funcion */
-static
 void
 draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 						  const triangle2d * tt, int x1, int y1, int x2, int y2, int transparent,
@@ -2366,6 +2364,8 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 		}
 	}
 }
+
+} // unnamed namespace;
 
 int
 putimage_trangle(

@@ -10,8 +10,9 @@
 namespace ege
 {
 
-/* private function */
-static
+namespace
+{
+
 unsigned int
 private_gettextmode(IMAGE* img)
 {
@@ -39,8 +40,6 @@ private_gettextmode(IMAGE* img)
 	return fMode;
 }
 
-/* private function */
-static
 void
 private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz, int vert)
 {
@@ -73,8 +72,6 @@ private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz, int
 	}
 }
 
-/* private function */
-static
 void
 private_textout(IMAGE* img, const wchar_t* textstring, int x, int y, int horiz, int vert)
 {
@@ -118,6 +115,8 @@ private_textout(IMAGE* img, const wchar_t* textstring, int x, int y, int horiz, 
 		TextOutW(img->getdc(), x, y, textstring, (int)::lstrlenW(textstring));
 	}
 }
+
+} // unnamed namespace;
 
 void
 outtext(const char* textstring, IMAGE* pimg)

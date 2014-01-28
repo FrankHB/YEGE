@@ -8,7 +8,7 @@ namespace ege
 namespace
 {
 
-static std::random_device rd;
+std::random_device rd;
 
 std::unique_ptr<std::mt19937>
 rand_p()
@@ -16,9 +16,9 @@ rand_p()
 	return std::unique_ptr<std::mt19937>(new std::mt19937(rd()));
 }
 
-static std::unique_ptr<std::mt19937> p_mt(rand_p());
+std::unique_ptr<std::mt19937> p_mt(rand_p());
 
-}
+} // unnamed namespace;
 
 void
 randomize()
