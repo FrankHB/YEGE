@@ -8,6 +8,10 @@
 #define yconstfn constexpr
 #define yconstexpr constexpr
 #define ynothrow noexcept
+
+#define yconstraint assert
+#define yassume assert
+
 #define EGEAPI
 
 #endif
