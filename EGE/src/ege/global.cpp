@@ -367,12 +367,6 @@ _graph_setting::_init_graph_x()
 				get_instance(), {});
 			if(!hwnd)
 				return ::DWORD(0xFFFFFFFF);
-			::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
-			::ShowWindow(hwnd, SW_SHOW);
-			if(g_windowexstyle & WS_EX_TOPMOST)
-				::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
-					SWP_NOSIZE | SWP_NOMOVE);
-
 			//图形初始化
 			window_dc = ::GetDC(hwnd);
 			//::ReleaseDC(hwnd, window_dc);
@@ -406,6 +400,11 @@ _graph_setting::_init_graph_x()
 		mouse_show = true;
 	});
 	window_setviewport(0, 0, dc_w, dc_h);
+	::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
+	::ShowWindow(hwnd, SW_SHOW);
+	if(g_windowexstyle & WS_EX_TOPMOST)
+		::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
+			SWP_NOSIZE | SWP_NOMOVE);
 }
 
 int
