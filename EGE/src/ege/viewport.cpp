@@ -9,7 +9,10 @@ void
 getviewport(int* pleft, int* ptop, int* pright, int* pbottom, int* pclip,
 	IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
+	const auto img(CONVERT_IMAGE_CONST(pimg));
+
+	yassume(img);
+
 	if(pleft)
 		*pleft = img->m_vpt.left;
 	if(ptop)
@@ -25,9 +28,9 @@ getviewport(int* pleft, int* ptop, int* pright, int* pbottom, int* pclip,
 void
 setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 {
-	//_graph_setting * pg = &get_global_state();
+	const auto img(CONVERT_IMAGE(pimg));
 
-	const auto img = CONVERT_IMAGE(pimg);
+	yassume(img);
 
 	::SetViewportOrgEx(img->getdc(), 0, 0, {});
 
@@ -63,20 +66,22 @@ setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 void
 clearviewport(IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE(pimg);
+	if(const auto img = CONVERT_IMAGE(pimg))
+		if(img->getdc())
+		{
+			::RECT rect{0, 0, img->m_vpt.right - img->m_vpt.left,
+				img->m_vpt.bottom - img->m_vpt.top};
+			::HBRUSH hbr_c = ::HBRUSH(::GetCurrentObject(img->getdc(),
+				OBJ_BRUSH));
+			::LOGBRUSH logBrush;
 
-	if(img && img->getdc())
-	{
-		::RECT rect{0, 0, img->m_vpt.right - img->m_vpt.left,
-			img->m_vpt.bottom - img->m_vpt.top};
-		::HBRUSH hbr_c = (::HBRUSH)::GetCurrentObject(img->getdc(), OBJ_BRUSH);
-		::LOGBRUSH logBrush;
+			::GetObjectW(hbr_c, sizeof(logBrush), &logBrush);
 
-		::GetObjectW(hbr_c, sizeof(logBrush), &logBrush);
-		::HBRUSH hbr = ::CreateSolidBrush(logBrush.lbColor);
-		::FillRect(img->getdc(), &rect, hbr);
-		::DeleteObject(hbr);
-	}
+			::HBRUSH hbr(::CreateSolidBrush(logBrush.lbColor));
+
+			::FillRect(img->getdc(), &rect, hbr);
+			::DeleteObject(hbr);
+		}
 }
 
 void
