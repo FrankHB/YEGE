@@ -1,82 +1,80 @@
 ﻿#ifndef Inc_ege_colorbase_h_
 #define Inc_ege_colorbase_h_
 
+#include "def.h"
 #include <cstdint>
 
-typedef std::uint8_t u8;
-typedef std::uint32_t u32;
-
-yconstfn u32
-RGBTOBGR(u32 color)
+yconstfn std::uint32_t
+RGBTOBGR(std::uint32_t color)
 {
 	return ((color & 0xFF) << 16) | ((color & 0xFF0000) >> 16)
 		   | (color & 0xFF00FF00);
 }
 
-yconstfn u32
-EGERGB(u8 r, u8 g, u8 b)
+yconstfn std::uint32_t
+EGERGB(std::uint8_t r, std::uint8_t g, std::uint8_t b)
 {
 	return (r << 16) | (g << 8) | b;
 }
-yconstfn u32
-EGERGBA(u8 r, u8 g, u8 b, u8 a)
+yconstfn std::uint32_t
+EGERGBA(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a)
 {
 	return EGERGB(r, g, b) | a << 24;
 }
-yconstfn u32
-EGEARGB(u8 a, u8 r, u8 g, u8 b)
+yconstfn std::uint32_t
+EGEARGB(std::uint8_t a, std::uint8_t r, std::uint8_t g, std::uint8_t b)
 {
 	return EGERGB(r, g, b) | a << 24;
 }
 
 
-yconstfn u32
-EGEACOLOR(u8 a, u32 color)
+yconstfn std::uint32_t
+EGEACOLOR(std::uint8_t a, std::uint32_t color)
 {
 	return (color & 0xFFFFFF) | (a << 24);
 }
-yconstfn u32
-EGECOLORA(u8 a, u32 color)
+yconstfn std::uint32_t
+EGECOLORA(std::uint8_t a, std::uint32_t color)
 {
 	return (color & 0xFFFFFF) | (a << 24);
 }
 
 
-yconstfn u8
-EGEGET_R(u32 c)
+yconstfn std::uint8_t
+EGEGET_R(std::uint32_t c)
 {
 	return (c >> 16) & 0xFF;
 }
-yconstfn u8
-EGEGET_G(u32 c)
+yconstfn std::uint8_t
+EGEGET_G(std::uint32_t c)
 {
 	return (c >> 8) & 0xFF;
 }
-yconstfn u8
-EGEGET_B(u32 c)
+yconstfn std::uint8_t
+EGEGET_B(std::uint32_t c)
 {
 	return c & 0xFF;
 }
-yconstfn u8
-EGEGET_A(u32 c)
+yconstfn std::uint8_t
+EGEGET_A(std::uint32_t c)
 {
 	return (c >> 24) & 0xFF;
 }
 
-yconstfn u32
-EGEGRAY(u32 gray)
+yconstfn std::uint32_t
+EGEGRAY(std::uint32_t gray)
 {
 	return (gray << 16) | (gray << 8) | gray;
 }
 
-yconstfn u32
-EGEGRAYA(u32 gray, u8 a)
+yconstfn std::uint32_t
+EGEGRAYA(std::uint32_t gray, std::uint8_t a)
 {
 	return EGEGRAY(gray) | (a << 24);
 }
 
-yconstfn u32
-EGEAGRAY(u8 a, u32 gray)
+yconstfn std::uint32_t
+EGEAGRAY(std::uint8_t a, std::uint32_t gray)
 {
 	return EGEGRAY(gray) | (a << 24);
 }
