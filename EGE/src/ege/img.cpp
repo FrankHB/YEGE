@@ -8,7 +8,7 @@ namespace ege
 int
 getwidth(IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
+	const auto img(CONVERT_IMAGE_CONST(pimg));
 
 	return img ? img->getwidth() : 0;
 }
@@ -16,7 +16,7 @@ getwidth(IMAGE* pimg)
 int
 getheight(IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
+	const auto img(CONVERT_IMAGE_CONST(pimg));
 
 	return img ? img->getheight() : 0;
 }
@@ -24,11 +24,10 @@ getheight(IMAGE* pimg)
 int
 getx(IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		::POINT pt;
+
 		::GetCurrentPositionEx(img->getdc(), &pt);
 		return pt.x;
 	}
@@ -38,11 +37,10 @@ getx(IMAGE* pimg)
 int
 gety(IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
-
-	if(img)
+	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		::POINT pt;
+
 		::GetCurrentPositionEx(img->getdc(), &pt);
 		return pt.y;
 	}
@@ -57,11 +55,7 @@ newimage()
 IMAGE*
 newimage(int width, int height)
 {
-	if(width < 1)
-		width = 1;
-	if(height < 1)
-		height = 1;
-	return new IMAGE(width, height);
+	return new IMAGE(std::max(width, 1), std::max(height, 1));
 }
 
 void
@@ -73,7 +67,9 @@ delimage(IMAGE* pimg)
 void*
 getbuffer(IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE_CONST(pimg);
+	const auto img(CONVERT_IMAGE_CONST(pimg));
+
+	yassume(img);
 
 	return img->getbuffer();
 }
@@ -83,18 +79,24 @@ getbuffer(IMAGE* pimg)
 int
 resize(IMAGE* pDstImg, int width, int height)
 {
+	yassume(pDstImg);
+
 	return pDstImg->resize(width, height);
 }
 
 void
 getimage(IMAGE* pDstImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
+	yassume(pDstImg);
+
 	pDstImg->getimage(get_pages().imgtarget, srcX, srcY, srcWidth, srcHeight);
 }
 void
 getimage(IMAGE* pDstImg, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth,
 	int srcHeight)
 {
+	yassume(pDstImg);
+
 	pDstImg->getimage(pSrcImg, srcX, srcY, srcWidth, srcHeight);
 }
 
@@ -112,7 +114,10 @@ putimage_transparent(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	return imgsrc->putimage_transparent(imgdest, nXOriginDest, nYOriginDest, crTransparent, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
+	yassume(imgsrc);
+
+	return imgsrc->putimage_transparent(imgdest, nXOriginDest, nYOriginDest,
+		crTransparent, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
 }
 
 int
@@ -128,7 +133,10 @@ putimage_alphablend(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	return imgsrc->putimage_alphablend(imgdest, nXOriginDest, nYOriginDest, alpha, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
+	yassume(imgsrc);
+
+	return imgsrc->putimage_alphablend(imgdest, nXOriginDest, nYOriginDest,
+		alpha, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
 }
 
 int
@@ -145,7 +153,11 @@ putimage_alphatransparent(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	return imgsrc->putimage_alphatransparent(imgdest, nXOriginDest, nYOriginDest, crTransparent, alpha, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
+	yassume(imgsrc);
+
+	return imgsrc->putimage_alphatransparent(imgdest, nXOriginDest,
+		nYOriginDest, crTransparent, alpha, nXOriginSrc, nYOriginSrc, nWidthSrc,
+		nHeightSrc);
 }
 
 int
@@ -160,7 +172,10 @@ putimage_withalpha(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	return imgsrc->putimage_withalpha(imgdest, nXOriginDest, nYOriginDest, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
+	yassume(imgsrc);
+
+	return imgsrc->putimage_withalpha(imgdest, nXOriginDest, nYOriginDest,
+		nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
 }
 
 int
@@ -174,13 +189,12 @@ imagefilter_blurring(
 	int nHeightDest
 )
 {
-	const auto img = CONVERT_IMAGE(imgdest);
-	int ret = 0;
-	if(img)
+	if(const auto img = CONVERT_IMAGE(imgdest))
 	{
-		ret = img->imagefilter_blurring(intensity, alpha, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest);
+		return img->imagefilter_blurring(intensity, alpha, nXOriginDest,
+			nYOriginDest, nWidthDest, nHeightDest);
 	}
-	return ret;
+	return 0;
 }
 
 } // namespace ege;
