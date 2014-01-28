@@ -3,18 +3,11 @@
 
 #include "ege/gapi.h"
 #include "ege/viewport.h"
+#include "global.h"
 #include <memory> // for std::unique_ptr;
 #include <windows.h>
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
 #include <gdiplus.h>
-
-#define CONVERT_IMAGE(pimg) ( ((size_t)(pimg)<0x20 ? ((pimg) ? \
-	(get_pages().img_page[(size_t)(pimg) & 0xF]) \
-	: (--ege::update_mark_count, get_pages().imgtarget)) : pimg) )
-
-#define CONVERT_IMAGE_CONST(pimg) ( (size_t)(pimg)<0x20 ? ((pimg) ? \
-	(get_pages().img_page[(size_t)(pimg) & 0xF]) \
-	: get_pages().imgtarget) : pimg)
 
 namespace ege
 {
@@ -233,6 +226,18 @@ public:
 	);
 };
 
+
+inline IMAGE*
+CONVERT_IMAGE(IMAGE* pimg)
+{
+	return pimg ? pimg : (--update_mark_count, get_pages().imgtarget);
+}
+
+inline IMAGE*
+CONVERT_IMAGE_CONST(IMAGE* pimg)
+{
+	return pimg ? pimg : get_pages().imgtarget;
+}
 
 } // namespace ege;
 
