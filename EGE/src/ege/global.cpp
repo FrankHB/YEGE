@@ -377,9 +377,6 @@ _graph_setting::_init_graph_x()
 
 			//图形初始化
 			window_dc = ::GetDC(hwnd);
-			setactivepage(0);
-			settarget({});
-			setvisualpage(0);
 			//::ReleaseDC(hwnd, window_dc);
 			mouse_show = {};
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
@@ -780,16 +777,23 @@ _graph_setting::_window_destroy(msg_createwindow& msg)
 
 _pages::_pages()
 	: gstate(get_global_state()), active_dc(gstate._get_window_dc())
-{}
+{
+	check_page(0);
+	active_dc = img_page[0]->getdc();
+	imgtarget = img_page[active_page];
+	update_mark_count = 0;
+}
 
 void
 _pages::check_page(int page) const
 {
-	const int dc_w(gstate._get_dc_w());
-	const int dc_h(gstate._get_dc_h());
-
 	if(!img_page[page])
-		img_page[page] = new IMAGE(dc_w, dc_h);
+	{
+		const int dc_w(gstate._get_dc_w());
+		const int dc_h(gstate._get_dc_h());
+
+		img_page[page] = new IMAGE(active_dc, dc_w, dc_h);
+	}
 }
 
 IMAGE&
