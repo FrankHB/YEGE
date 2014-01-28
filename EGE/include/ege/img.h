@@ -30,10 +30,10 @@ IMAGE* EGEAPI
 newimage(int width, int height); //创建PIMAGE
 
 EGEAPI void
-delimage(IMAGE* pImg); //删除PIMAGE
+delimage(IMAGE* pimg); //删除PIMAGE
 
 void* EGEAPI
-getbuffer(IMAGE* pImg);
+getbuffer(IMAGE* pimg);
 
 
 EGEAPI int

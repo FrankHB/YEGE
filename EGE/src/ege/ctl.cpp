@@ -13,7 +13,12 @@ typedef std::vector<egeControlBase*> egectlvec;
 
 int egeControlBase::s_maxchildid = 1024;
 
-static egectlvec s_egeCtlParent;
+namespace
+{
+
+egectlvec s_egeCtlParent;
+
+} // unnamed namespace;
 
 egeControlBase::InitObject::InitObject(egeControlBase* pThis, int inherit_level)
 {

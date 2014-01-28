@@ -28,7 +28,7 @@ Code::Blocks 。
 原型 PVOID EGEAPI getProcfunc(); 更改为 EGEAPI ::WNDPROC getProcfunc(); 。
 移除 Array 和 Set 模版。
 移除 _Cdecl 宏。
-移除 PIMAGE 类型，用 IMAGE* 替代。
+移除 PIMAGE 类型，用 IMAGE* 替代；取消原 PIMAGE 类型表示图像页面的用法，仅保留空指针值表示目标图像页面。
 移除宏 INITGRAPH(x, y) 、INITGRAPH3(x, y, f) 和 EGECTRL_INITEND() 。
 函数 showmouse 和 mousemsg 的参数/返回值使用 bool 代替 int 。
 宏 CTL_* 的定义不再被默认包含。若需使用，另行包含 <ege/mac.h> 或 <ege/ctl.h> 等。
@@ -74,6 +74,8 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别
 取消手动设置 exit_window 状态，改用 UI 线程状态表示；移除无用的 exit_flag 。
 类型 PDWORD 用 DWORD* 代替。
 类 IMAGE ：修复复制构造；新增交换、转移构造和统一赋值操作；移除成员初始化检查；封装部分成员保证不可在外部修改；使用 YFramework 的 platform_ex::ScreenBuffer 代替 ::HBITMAP 实现。
+CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入除空指针值外返回原值。
+命名空间作用域静态函数和对象去除 static 并使用未命名命名空间代替。
 
 实现质量(QoI)
 ----
@@ -107,13 +109,16 @@ Dispatch
 DrawT
 Ellip
 ExitProcess
+ExtFloodF
 FillR
+FloodF
 GetClientRect
 GetCur
 GetDevice
 GetLastError
 GetM
 GetSystem
+GetTextE
 GetWindow
 Global
 HAND
@@ -177,7 +182,8 @@ png_
 wsprintfW
 
 以下所列外部依赖项全局名称在使用时前缀 :: 。
-MSG
+GRADIENT_TRIANGLE
 HWND
+MSG
 access
 
