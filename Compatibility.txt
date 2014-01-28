@@ -176,6 +176,7 @@ png_
 wsprintfW
 
 以下所列外部依赖项全局名称在使用时前缀 :: 。
+MSG
 HWND
 access
 

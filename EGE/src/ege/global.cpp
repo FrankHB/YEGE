@@ -383,7 +383,7 @@ _graph_setting::_init_graph_x()
 			::SetTimer(hwnd, RENDER_TIMER_ID, 50, {});
 			init_finish = true;
 
-			MSG msg;
+			::MSG msg;
 
 			while(_is_run())
 				if(::GetMessage(&msg, {}, 0, 0))
