@@ -145,7 +145,7 @@ IMAGE::resize(int width, int height)
 		m_hBmp = bitmap;
 		m_width = width;
 		m_height = height;
-		m_pBuffer = (DWORD*)p_bmp_buf;
+		m_pBuffer = (::DWORD*)p_bmp_buf;
 		setviewport(0, 0, m_width, m_height, 1, this);
 		cleardevice(this);
 	}

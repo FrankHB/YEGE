@@ -20,7 +20,7 @@ private:
 	::HBITMAP m_hBmp;
 	int m_width;
 	int m_height;
-	DWORD* m_pBuffer;
+	::DWORD* m_pBuffer;
 
 public:
 	color_t m_color;
@@ -68,7 +68,7 @@ public:
 		return m_height;
 	}
 
-	DWORD*
+	::DWORD*
 	getbuffer() const
 	{
 		return m_pBuffer;

@@ -352,7 +352,7 @@ setbkcolor(color_t color, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE(pimg))
 		if(img->getdc())
 		{
-			DWORD* p = img->getbuffer();
+			::DWORD* p = img->getbuffer();
 			int size = img->getwidth() * img->getheight();
 			color_t col = img->m_bk_color;
 
@@ -449,7 +449,7 @@ putpixels(int nPoint, int* pPoints, IMAGE* pimg)
 	yassume(img);
 
 	int x, y, c;
-	DWORD* pb = &img->getbuffer()[img->m_vpt.top * img->getwidth() + img->m_vpt.left];
+	::DWORD* pb = &img->getbuffer()[img->m_vpt.top * img->getwidth() + img->m_vpt.left];
 	int w = img->m_vpt.right - img->m_vpt.left, h = img->m_vpt.bottom - img->m_vpt.top;
 	int tw = img->getwidth();
 
@@ -907,8 +907,8 @@ fillpoly_gradient(int numpoints, const ege_colpoint* polypoints, IMAGE* pimg)
 		TRIVERTEX* vert = (TRIVERTEX*)malloc(sizeof(TRIVERTEX) * numpoints);
 		if(vert)
 		{
-			if(GRADIENT_TRIANGLE* tri
-				= (GRADIENT_TRIANGLE*)malloc(sizeof(GRADIENT_TRIANGLE)
+			if(::GRADIENT_TRIANGLE* tri
+				= (::GRADIENT_TRIANGLE*)malloc(sizeof(::GRADIENT_TRIANGLE)
 				* (numpoints - 2)))
 			{
 				for(int i = 0; i < numpoints; ++i)
@@ -940,14 +940,14 @@ void
 floodfill(int x, int y, int border, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
-		FloodFill(img->getdc(), x, y, RGBTOBGR(border));
+		::FloodFill(img->getdc(), x, y, RGBTOBGR(border));
 }
 
 void
 floodfillsurface(int x, int y, color_t areacolor, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
-		ExtFloodFill(img->getdc(), x, y, RGBTOBGR(areacolor), FLOODFILLSURFACE);
+		::ExtFloodFill(img->getdc(), x, y, RGBTOBGR(areacolor), FLOODFILLSURFACE);
 }
 
 } // namespace ege;

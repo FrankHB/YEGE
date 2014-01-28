@@ -256,7 +256,7 @@ textwidth(const char* textstring, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		SIZE sz;
-		GetTextExtentPoint32A(img->getdc(), textstring, (int)strlen(textstring),
+		::GetTextExtentPoint32A(img->getdc(), textstring, (int)strlen(textstring),
 			&sz);
 		return sz.cx;
 	}
@@ -269,7 +269,7 @@ textwidth(const wchar_t* textstring, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		SIZE sz;
-		GetTextExtentPoint32W(img->getdc(), textstring,
+		::GetTextExtentPoint32W(img->getdc(), textstring,
 			(int)::lstrlenW(textstring), &sz);
 		return sz.cx;
 	}
@@ -298,7 +298,8 @@ textheight(const char* textstring, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		SIZE sz;
-		GetTextExtentPoint32A(img->getdc(), textstring, (int)strlen(textstring),
+
+		::GetTextExtentPoint32A(img->getdc(), textstring, (int)strlen(textstring),
 			&sz);
 		return sz.cy;
 	}
@@ -311,7 +312,9 @@ textheight(const wchar_t* textstring, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		SIZE sz;
-		GetTextExtentPoint32W(img->getdc(), textstring, (int)::lstrlenW(textstring), &sz);
+
+		::GetTextExtentPoint32W(img->getdc(), textstring,
+			(int)::lstrlenW(textstring), &sz);
 		return sz.cy;
 	}
 	return 0;

@@ -108,13 +108,16 @@ Dispatch
 DrawT
 Ellip
 ExitProcess
+ExtFloodF
 FillR
+FloodF
 GetClientRect
 GetCur
 GetDevice
 GetLastError
 GetM
 GetSystem
+GetTextE
 GetWindow
 Global
 HAND
@@ -178,7 +181,8 @@ png_
 wsprintfW
 
 以下所列外部依赖项全局名称在使用时前缀 :: 。
-MSG
+GRADIENT_TRIANGLE
 HWND
+MSG
 access
 
