@@ -2,13 +2,13 @@
 #include "image.h" // for IMAGE;
 #include "ege/time.h" // for delay_ms;
 #include "ege/ctl.h"
-#include "ege.h"
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
 #include <gdiplus.h>
 #include <windows.h>
 #include <memory> // for std::unique_ptr;
 #include <functional> // for std::bind;
 #include <mutex> // for std::once_flag, std::call_once;
+#include "head.h"
 
 #ifdef _WIN64
 #define ARCH "x64"
@@ -24,6 +24,24 @@
 
 namespace ege
 {
+
+namespace
+{
+
+GUIApplication&
+FetchGUIApplicationInstance()
+{
+	static GUIApplication app;
+
+	return app;
+}
+
+unique_ptr<Panel> ys_pnl;
+std::thread ys_thrd;
+Host::Window* ys_window;
+
+} // unnamed namespace;
+
 
 int _g_initoption(INIT_DEFAULT);
 bool _g_initcall;
@@ -146,15 +164,25 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 		if(dc_h < 0)
 			dc_h = rect.bottom;
 	}
+
+	FetchGUIApplicationInstance();
+	ys_pnl.reset(new Panel(Size(SDst(dc_w), SDst(dc_h))));
+	ShowTopLevel(*ys_pnl, g_windowstyle, g_windowexstyle);
+	ys_window
+		= dynamic_cast<HostRenderer&>(ys_pnl->GetRenderer()).GetWindowPtr();
 }
+
 _graph_setting::~_graph_setting()
 {
+	yassume(!ys_thrd.joinable());
+
+	ys_pnl.reset();
 }
 
 bool
 _graph_setting::_is_run() const
 {
-	return ui_thread.joinable();
+	return ui_thread.joinable() || ys_thrd.joinable();
 }
 
 bool
@@ -355,19 +383,34 @@ _graph_setting::_init_graph_x()
 {
 	static std::once_flag init_flag;
 
-	std::call_once(init_flag, [this]{
+	yassume(ys_window);
+
+	const auto native_ys_window(ys_window->GetNativeHandle());
+
+	yassume(ys_window->GetNativeHandle());
+
+	std::call_once(init_flag, [this, native_ys_window]{
+		ys_thrd = std::thread([&]{
+			Execute(FetchGUIApplicationInstance());
+		});
+
 	//	::SECURITY_ATTRIBUTES sa{};
 	//	::DWORD pid;
 		bool init_finish{};
 
-		ui_thread = std::thread([this, &init_finish]{
+		ui_thread = std::thread([this, native_ys_window, &init_finish]{
 			//执行应用程序初始化
-			hwnd = ::CreateWindowEx(g_windowexstyle, window_class_name,
-				window_caption, g_windowstyle & ~WS_VISIBLE, _g_windowpos_x,
-				_g_windowpos_y, dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
+			::SetWindowText(native_ys_window, window_caption),
+		//	ys_window->Move(Point(_g_windowpos_x, _g_windowpos_y)),
+			ys_window->Resize(Size(dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
 				dc_h + ::GetSystemMetrics(SM_CYFRAME)
-				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, HWND_DESKTOP, {},
-				get_instance(), {});
+				+ ::GetSystemMetrics(SM_CYCAPTION) * 2));
+			hwnd = ::CreateWindowEx(0, window_class_name, window_caption,
+				WS_CHILD, _g_windowpos_x, _g_windowpos_y,
+				dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
+				dc_h + ::GetSystemMetrics(SM_CYFRAME)
+				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, native_ys_window,
+				{}, get_instance(), {});
 			if(!hwnd)
 				return ::DWORD(0xFFFFFFFF);
 			//图形初始化
@@ -375,6 +418,9 @@ _graph_setting::_init_graph_x()
 			//::ReleaseDC(hwnd, window_dc);
 			mouse_show = {};
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
+			if(!use_force_exit)
+				FetchGUIApplicationInstance().GetHost()
+					.ExitOnAllWindowThreadCompleted = {};
 			init_finish = true;
 
 			::MSG msg;
@@ -391,6 +437,7 @@ _graph_setting::_init_graph_x()
 		});
 		while(!init_finish)
 			::Sleep(1);
+		::ShowWindow(hwnd, SW_SHOW);
 		::UpdateWindow(hwnd);
 		//初始化鼠标位置数据
 		mouse_last_x = dc_w / 2;
@@ -404,7 +451,7 @@ _graph_setting::_init_graph_x()
 	});
 	window_setviewport(0, 0, dc_w, dc_h);
 	::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
-	::ShowWindow(hwnd, SW_SHOW);
+	::UpdateWindow(native_ys_window);
 	if(g_windowexstyle & WS_EX_TOPMOST)
 		::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
 			SWP_NOSIZE | SWP_NOMOVE);
@@ -449,7 +496,11 @@ _graph_setting::_on_destroy()
 	::PostQuitMessage(0);
 	ui_thread.detach();
 	if(use_force_exit)
-		::ExitProcess(0);
+	{
+		YSLib::PostQuitMessage(0);
+		ys_thrd.join();
+	//	::ExitProcess(0);
+	}
 }
 
 void

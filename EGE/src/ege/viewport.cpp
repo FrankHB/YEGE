@@ -44,10 +44,10 @@ setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 		img->m_vpt.left = 0;
 	if(img->m_vpt.top < 0)
 		img->m_vpt.top = 0;
-	if(img->m_vpt.right > img->getwidth())
-		img->m_vpt.right = img->getwidth();
-	if(img->m_vpt.bottom > img->getheight())
-		img->m_vpt.bottom = img->getheight();
+	if(img->m_vpt.right > img->GetWidth())
+		img->m_vpt.right = img->GetWidth();
+	if(img->m_vpt.bottom > img->GetHeight())
+		img->m_vpt.bottom = img->GetHeight();
 
 	::HRGN rgn = {};
 
@@ -55,7 +55,7 @@ setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 		rgn = ::CreateRectRgn(img->m_vpt.left, img->m_vpt.top, img->m_vpt.right,
 			img->m_vpt.bottom);
 	else
-		rgn = ::CreateRectRgn(0, 0, img->getwidth(),img->getheight());
+		rgn = ::CreateRectRgn(0, 0, img->GetWidth(),img->GetHeight());
 	::SelectClipRgn(img->getdc(), rgn);
 	::DeleteObject(rgn);
 

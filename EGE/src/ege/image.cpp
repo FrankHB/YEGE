@@ -31,17 +31,21 @@ namespace
 IMAGE::IMAGE()
 	: IMAGE(1, 1)
 {}
-
 IMAGE::IMAGE(int width, int height)
-	: IMAGE(get_pages().get_image_context(), width, height)
+	: IMAGE(ToSize(width, height))
 {}
-
+IMAGE::IMAGE(const Size& size)
+	: IMAGE(get_pages().get_image_context(), size)
+{}
 IMAGE::IMAGE(::HDC hdc, int width, int height)
-	: m_hDC([hdc]{assert(hdc); return ::CreateCompatibleDC(hdc);}())
+	: IMAGE(hdc, ToSize(width, height))
+{}
+IMAGE::IMAGE(::HDC hdc, const Size& size)
+	: sbuf(size), m_hDC([hdc]{assert(hdc); return ::CreateCompatibleDC(hdc);}())
 {
 	if(m_hDC)
 	{
-		resize(width, height);
+		Resize(size);
 		setcolor(LIGHTGRAY, this);
 		setbkcolor(BLACK, this);
 		::SetBkMode(hdc, OPAQUE); //TRANSPARENT);
@@ -53,13 +57,15 @@ IMAGE::IMAGE(::HDC hdc, int width, int height)
 //	else
 //		throw ::GetLastError();
 }
-
 IMAGE::IMAGE(const IMAGE& img)
-	: IMAGE(img.m_hDC, img.m_width, img.m_height)
+	: IMAGE(img.m_hDC, img.GetSize())
 {
-	::BitBlt(m_hDC, 0, 0, img.m_width, img.m_height, img.m_hDC, 0, 0, SRCCOPY);
+	sbuf.UpdateFrom(img.sbuf.GetBufferPtr());
+	::BitBlt(m_hDC, 0, 0, img.GetWidth(), img.GetHeight(), img.m_hDC, 0, 0,
+		SRCCOPY);
 }
 IMAGE::IMAGE(IMAGE&& img) ynothrow
+	: sbuf(img.sbuf.GetSize())
 {
 	img.swap(*this);
 }
@@ -83,11 +89,8 @@ IMAGE::operator=(IMAGE img) ynothrow
 void
 IMAGE::swap(IMAGE& img) ynothrow
 {
+	std::swap(sbuf, img.sbuf);
 	std::swap(m_hDC, img.m_hDC);
-	std::swap(m_hBmp, img.m_hBmp);
-	std::swap(m_width, img.m_width);
-	std::swap(m_height, img.m_height);
-	std::swap(m_pBuffer, img.m_pBuffer);
 	std::swap(m_color, img.m_color);
 	std::swap(m_fillcolor, img.m_fillcolor);
 	std::swap(m_aa, img.m_aa);
@@ -108,30 +111,9 @@ IMAGE::gentexture(bool gen)
 }
 
 int
-IMAGE::resize(int width, int height)
+IMAGE::Refresh()
 {
-	std::memset(&m_vpt, 0, sizeof(m_vpt));
-
-	assert(m_hDC);
-
-	VOID* p_bmp_buf;
-	auto bmi = ::BITMAPINFO();
-
-	bmi.bmiHeader.biSize = sizeof(bmi.bmiHeader);
-	bmi.bmiHeader.biWidth = width;
-	bmi.bmiHeader.biHeight = -height - 1;
-	bmi.bmiHeader.biPlanes = 1;
-	bmi.bmiHeader.biBitCount = 32;
-	bmi.bmiHeader.biSizeImage = width * height * 4;
-
-	if(::HBITMAP bitmap = ::CreateDIBSection(
-		{},
-		&bmi,
-		DIB_RGB_COLORS,
-		(VOID**)&p_bmp_buf,
-		{},
-		0
-	))
+	if(const auto bitmap = GetBitmap())
 	{
 		::HBITMAP hbmp_def = (::HBITMAP)::SelectObject(m_hDC, bitmap);
 		if(!g_hbmp_def)
@@ -142,11 +124,7 @@ IMAGE::resize(int width, int height)
 			g_font_def = (::HFONT)::GetCurrentObject(m_hDC, OBJ_FONT);
 		}
 		::DeleteObject(hbmp_def);
-		m_hBmp = bitmap;
-		m_width = width;
-		m_height = height;
-		m_pBuffer = (::DWORD*)p_bmp_buf;
-		setviewport(0, 0, m_width, m_height, 1, this);
+		setviewport(0, 0, GetWidth(), GetHeight(), 1, this);
 		cleardevice(this);
 	}
 	else
@@ -158,10 +136,22 @@ IMAGE::resize(int width, int height)
 	return 0;
 }
 
+int
+IMAGE::Resize(const Size& size)
+{
+	std::memset(&m_vpt, 0, sizeof(m_vpt));
+
+	assert(m_hDC);
+
+	if(GetSize() != size)
+		sbuf = ScreenBuffer(size);
+	return Refresh();
+}
+
 void
 IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
-	if(resize(srcWidth, srcHeight) == 0)
+	if(Resize(srcWidth, srcHeight) == 0)
 	{
 		const auto img = CONVERT_IMAGE_CONST(pSrcImg);
 
@@ -219,7 +209,7 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 	pPicture->get_Height(&lHeight);
 	lHeightPixels
 		= ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-	resize(lWidthPixels, lHeightPixels);
+	Resize(lWidthPixels, lHeightPixels);
 	pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 		lWidth, -lHeight, {});
 	pPicture->Release();
@@ -239,7 +229,7 @@ IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 void
 IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, ::DWORD dwRop) const
 {
-	putimage(pDstImg, dstX, dstY, m_width, m_height, 0, 0, dwRop);
+	putimage(pDstImg, dstX, dstY, GetWidth(), GetHeight(), 0, 0, dwRop);
 }
 
 void
@@ -265,7 +255,7 @@ saveimagetofile(IMAGE* img, std::FILE * fp)
 {
 	auto bmpfHead = ::BITMAPFILEHEADER();
 	auto bmpinfo = ::BITMAPINFOHEADER();
-	int pitch = img->getwidth() * 3, addbit, y, x, zero = 0;
+	int pitch = img->GetWidth() * 3, addbit, y, x, zero = 0;
 
 	addbit = 4 - (pitch & 3);
 	if(pitch & 3)
@@ -274,21 +264,21 @@ saveimagetofile(IMAGE* img, std::FILE * fp)
 	bmpfHead.bfType = *(WORD*)"BM";
 	bmpfHead.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 	bmpfHead.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER)
-		+ pitch * img->getheight();
+		+ pitch * img->GetHeight();
 	bmpinfo.biSize = sizeof(BITMAPINFOHEADER);
 	bmpinfo.biBitCount = 24;
-	bmpinfo.biHeight = img->getheight();
-	bmpinfo.biWidth = img->getwidth();
+	bmpinfo.biHeight = img->GetHeight();
+	bmpinfo.biWidth = img->GetWidth();
 	bmpinfo.biPlanes = 1;
-	bmpinfo.biSizeImage = pitch * img->getheight();
+	bmpinfo.biSizeImage = pitch * img->GetHeight();
 	//bmpinfo.biXPelsPerMeter
 	std::fwrite(&bmpfHead, sizeof(bmpfHead), 1, fp);
 	std::fwrite(&bmpinfo, sizeof(bmpinfo), 1, fp);
-	for(y = img->getheight() - 1; y >= 0; --y)
+	for(y = img->GetHeight() - 1; y >= 0; --y)
 	{
-		for(x = 0; x < img->getwidth(); ++x)
+		for(x = 0; x < img->GetWidth(); ++x)
 		{
-			::DWORD col = img->getbuffer()[y * img->getwidth() + x];
+			::DWORD col = img->getbuffer()[y * img->GetWidth() + x];
 			//col = RGBTOBGR(col);
 			if(std::fwrite(&col, 3, 1, fp) < 1)
 				goto ERROR_BREAK;
@@ -336,7 +326,7 @@ IMAGE::getpngimg(std::FILE * fp)
 {
 	::png_structp pic_ptr;
 	::png_infop info_ptr;
-	std::uint32_t width, height, depth;
+	std::uint32_t height, depth;
 
 	{
 		char header[16];
@@ -362,14 +352,16 @@ IMAGE::getpngimg(std::FILE * fp)
 	::png_read_png(pic_ptr, info_ptr, PNG_TRANSFORM_BGR | PNG_TRANSFORM_EXPAND, {});
 	::png_set_expand(pic_ptr);
 
-	resize((int)(info_ptr->width), (int)(info_ptr->height)); //::png_get_IHDR
-	width = info_ptr->width;
+	Resize(Size(info_ptr->width, info_ptr->height)); //::png_get_IHDR
 	height = info_ptr->height;
 	depth = info_ptr->pixel_depth;
 
 	::png_bytepp row_pointers = ::png_get_rows(pic_ptr, info_ptr);
 	for(std::uint32_t i = 0; i < height; ++i)
 	{
+		const auto width(GetWidth());
+		const auto m_pBuffer(GetBufferPtr());
+
 		if(depth == 24)
 			for(std::uint32_t j = 0; j < width; ++j)
 				m_pBuffer[i * width + j] = 0xFFFFFF & (::DWORD&)row_pointers[i][j * 3];
@@ -398,7 +390,7 @@ IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 	::png_bytep* row_pointers;
 	pic_ptr = ::png_create_write_struct(PNG_LIBPNG_VER_STRING, {}, {}, {});
 	std::uint32_t pixelsize = bAlpha ? 4 : 3;
-	std::uint32_t width = m_width, height = m_height;
+	std::uint32_t width = GetWidth(), height = GetHeight();
 	if(!pic_ptr)
 	{
 		return -1;
@@ -437,6 +429,9 @@ IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 		image = {};
 		return -1;
 	}
+
+	const auto m_pBuffer(GetBufferPtr());
+
 	for(i = 0; i < height; i++)
 	{
 		for(j = 0; j < width; ++j)\
@@ -493,7 +488,7 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 		pPicture->get_Height(&lHeight);
 		lHeightPixels = ::MulDiv(lHeight,
 			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-		resize(lWidthPixels, lHeightPixels);
+		Resize(lWidthPixels, lHeightPixels);
 		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 			lWidth, -lHeight, {});
 		pPicture->Release();
@@ -537,7 +532,7 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 		lWidthPixels = ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
 		lHeightPixels = ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-		resize(lWidthPixels, lHeightPixels);
+		Resize(lWidthPixels, lHeightPixels);
 		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 			lWidth, -lHeight, {});
 		pPicture->Release();
@@ -593,7 +588,7 @@ IMAGE::getimage(void * pMem, long size)
 		pPicture->get_Height(&lHeight);
 		lHeightPixels = ::MulDiv(lHeight,
 			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-		resize(lWidthPixels, lHeightPixels);
+		Resize(lWidthPixels, lHeightPixels);
 		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 			lWidth, -lHeight, {});
 		pPicture->Release();
@@ -629,23 +624,23 @@ fix_rect_1size(IMAGE* pdest, IMAGE* psrc,
 	int* nHeightSrc      // height of source rectangle
 )
 {
-	viewporttype _vpt{0, 0, pdest->getwidth(), pdest->getheight(), 0};
+	viewporttype _vpt{0, 0, pdest->GetWidth(), pdest->GetHeight(), 0};
 	/* default value proc */
 	if(*nWidthSrc == 0)
 	{
-		*nWidthSrc  = psrc->getwidth();
-		*nHeightSrc = psrc->getheight();
+		*nWidthSrc  = psrc->GetWidth();
+		*nHeightSrc = psrc->GetHeight();
 	}
 	/* fix src rect */
-	if(*nWidthSrc > psrc->getwidth())
+	if(*nWidthSrc > psrc->GetWidth())
 	{
-		*nWidthSrc -= *nWidthSrc - psrc->getwidth();
-		*nWidthSrc = psrc->getwidth();
+		*nWidthSrc -= *nWidthSrc - psrc->GetWidth();
+		*nWidthSrc = psrc->GetWidth();
 	}
-	if(*nHeightSrc > psrc->getheight())
+	if(*nHeightSrc > psrc->GetHeight())
 	{
-		*nHeightSrc -= *nHeightSrc - psrc->getheight();
-		*nHeightSrc = psrc->getheight();
+		*nHeightSrc -= *nHeightSrc - psrc->GetHeight();
+		*nHeightSrc = psrc->GetHeight();
 	}
 	if(*nXOriginSrc < 0)
 	{
@@ -707,15 +702,16 @@ IMAGE::putimage_transparent(
 		IMAGE* imgsrc = this;
 		int y, x;
 		::DWORD ddx, dsx;
-		::DWORD* pdp, *psp, cr;
+		::DWORD cr;
+
 		// fix rect
 		fix_rect_1size(img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
 			&nYOriginSrc, &nWidthSrc, &nHeightSrc);
 		// draw
-		pdp = img->m_pBuffer + nYOriginDest * img->m_width + nXOriginDest;
-		psp = imgsrc->m_pBuffer + nYOriginSrc  * imgsrc->m_width + nXOriginSrc;
-		ddx = img->m_width - nWidthSrc;
-		dsx = imgsrc->m_width - nWidthSrc;
+		auto pdp = img->GetBufferPtr() + nYOriginDest * img->GetWidth() + nXOriginDest;
+		auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth() + nXOriginSrc;
+		ddx = img->GetWidth() - nWidthSrc;
+		dsx = imgsrc->GetWidth() - nWidthSrc;
 		cr = crTransparent;
 		for(y = 0; y < nHeightSrc; ++y)
 		{
@@ -746,7 +742,6 @@ IMAGE::putimage_alphablend(
 		IMAGE* imgsrc = this;
 		int y, x;
 		::DWORD ddx, dsx;
-		::DWORD* pdp, *psp;
 		::DWORD sa = alpha + 1, da = 0xFF - alpha;
 		// fix rect
 		fix_rect_1size(
@@ -760,10 +755,10 @@ IMAGE::putimage_alphablend(
 			&nHeightSrc
 		);
 		// draw
-		pdp = img->m_pBuffer + nYOriginDest * img->m_width + nXOriginDest;
-		psp = imgsrc->m_pBuffer + nYOriginSrc  * imgsrc->m_width + nXOriginSrc;
-		ddx = img->m_width - nWidthSrc;
-		dsx = imgsrc->m_width - nWidthSrc;
+		auto pdp = img->GetBufferPtr() + nYOriginDest * img->GetWidth() + nXOriginDest;
+		auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth() + nXOriginSrc;
+		ddx = img->GetWidth() - nWidthSrc;
+		dsx = imgsrc->GetWidth() - nWidthSrc;
 		for(y = 0; y < nHeightSrc; ++y)
 		{
 			for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
@@ -798,7 +793,7 @@ IMAGE::putimage_alphatransparent(
 		IMAGE* imgsrc = this;
 		int y, x;
 		::DWORD ddx, dsx;
-		::DWORD* pdp, *psp, cr;
+		::DWORD cr;
 		::DWORD sa = alpha + 1, da = 0xFF - alpha;
 		// fix rect
 		fix_rect_1size(
@@ -812,10 +807,10 @@ IMAGE::putimage_alphatransparent(
 			&nHeightSrc
 		);
 		// draw
-		pdp = img->m_pBuffer + nYOriginDest * img->m_width + nXOriginDest;
-		psp = imgsrc->m_pBuffer + nYOriginSrc  * imgsrc->m_width + nXOriginSrc;
-		ddx = img->m_width - nWidthSrc;
-		dsx = imgsrc->m_width - nWidthSrc;
+		auto pdp = img->GetBufferPtr() + nYOriginDest * img->GetWidth() + nXOriginDest;
+		auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth() + nXOriginSrc;
+		ddx = img->GetWidth() - nWidthSrc;
+		dsx = imgsrc->GetWidth() - nWidthSrc;
 		cr = crTransparent;
 		for(y = 0; y < nHeightSrc; ++y)
 		{
@@ -854,7 +849,6 @@ IMAGE::putimage_withalpha(
 		IMAGE* imgsrc = this;
 		int y, x;
 		::DWORD ddx, dsx;
-		::DWORD* pdp, *psp;
 		// fix rect
 		fix_rect_1size(
 			img,
@@ -867,10 +861,10 @@ IMAGE::putimage_withalpha(
 			&nHeightSrc
 		);
 		// draw
-		pdp = img->m_pBuffer + nYOriginDest * img->m_width + nXOriginDest;
-		psp = imgsrc->m_pBuffer + nYOriginSrc  * imgsrc->m_width + nXOriginSrc;
-		ddx = img->m_width - nWidthSrc;
-		dsx = imgsrc->m_width - nWidthSrc;
+		auto pdp = img->GetBufferPtr() + nYOriginDest * img->GetWidth() + nXOriginDest;
+		auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth() + nXOriginSrc;
+		ddx = img->GetWidth() - nWidthSrc;
+		dsx = imgsrc->GetWidth() - nWidthSrc;
 		for(y = 0; y < nHeightSrc; ++y)
 		{
 			for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
@@ -911,7 +905,6 @@ IMAGE::putimage_alphafilter(
 		IMAGE* imgsrc = this;
 		int y, x;
 		::DWORD ddx, dsx;
-		::DWORD* pdp, *psp, *pap;
 		//::DWORD sa = alpha + 1, da = 0xFF - alpha;
 		// fix rect
 		fix_rect_1size(
@@ -925,11 +918,11 @@ IMAGE::putimage_alphafilter(
 			&nHeightSrc
 		);
 		// draw
-		pdp = img->m_pBuffer + nYOriginDest * img->m_width + nXOriginDest;
-		psp = imgsrc->m_pBuffer + nYOriginSrc  * imgsrc->m_width + nXOriginSrc;
-		pap = imgalpha->m_pBuffer + nYOriginSrc  * imgalpha->m_width + nXOriginSrc;
-		ddx = img->m_width - nWidthSrc;
-		dsx = imgsrc->m_width - nWidthSrc;
+		auto pdp = img->GetBufferPtr() + nYOriginDest * img->GetWidth() + nXOriginDest;
+		auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth() + nXOriginSrc;
+		auto pap = imgalpha->GetBufferPtr() + nYOriginSrc  * imgalpha->GetWidth() + nXOriginSrc;
+		ddx = img->GetWidth() - nWidthSrc;
+		dsx = imgsrc->GetWidth() - nWidthSrc;
 		for(y = 0; y < nHeightSrc; ++y)
 		{
 			for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp, ++pap)
@@ -965,13 +958,13 @@ fix_rect_0size(IMAGE* pdest,
 {
 	viewporttype _vpt
 	{
-		0, 0, pdest->getwidth(), pdest->getheight(), 0
+		0, 0, pdest->GetWidth(), pdest->GetHeight(), 0
 	};
 
 	if(*nWidthDest == 0)
-		*nWidthDest = pdest->getwidth();
+		*nWidthDest = pdest->GetWidth();
 	if(*nHeightDest == 0)
-		*nHeightDest = pdest->getheight();
+		*nHeightDest = pdest->GetHeight();
 	if(*nXOriginDest < _vpt.left)
 		*nXOriginDest += _vpt.left - *nXOriginDest;
 	if(*nYOriginDest < _vpt.top)
@@ -990,7 +983,8 @@ IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 {
 	std::unique_ptr< ::DWORD[]> buff(new ::DWORD[8 << 10]);
 	int x2, y2, ix, iy;
-	::DWORD* pdp, lsum, sumRB, sumG;
+	PixelType lsum;
+	::DWORD sumRB, sumG;
 	int ddx, dldx;
 	int centerintensity;
 	int intensity2, intensity3, intensity4;
@@ -999,9 +993,9 @@ IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 
 	x2 = nXOriginDest + nWidthDest - 1;
 	y2 = nYOriginDest + nHeightDest - 1;
-	pdp = imgdest->m_pBuffer + nYOriginDest * imgdest->m_width + nXOriginDest;
-	ddx = imgdest->m_width - nWidthDest;
-	dldx = imgdest->m_width;
+	auto pdp = imgdest->GetBufferPtr() + nYOriginDest * imgdest->GetWidth() + nXOriginDest;
+	ddx = imgdest->GetWidth() - nWidthDest;
+	dldx = imgdest->GetWidth();
 	centerintensity = (0xFF - intensity) * alpha >> 8;
 	intensity2 = intensity * alpha / 2 >> 8;
 	intensity3 = intensity * alpha / 3 >> 8;
@@ -1121,7 +1115,7 @@ IMAGE::imagefilter_blurring_8(
 {
 	std::unique_ptr< ::DWORD[]> buff(new ::DWORD[8 << 10]);
 	int x2, y2, ix, iy;
-	::DWORD* pdp, lsum, sumRB, sumG, lbuf;
+	::DWORD lsum, sumRB, sumG, lbuf;
 	int ddx, dldx;
 	int centerintensity;
 	int intensity2, intensity3, intensity4;
@@ -1130,9 +1124,9 @@ IMAGE::imagefilter_blurring_8(
 	IMAGE* imgdest = this;
 	x2 = nXOriginDest + nWidthDest - 1;
 	y2 = nYOriginDest + nHeightDest - 1;
-	pdp = imgdest->m_pBuffer + nYOriginDest * imgdest->m_width + nXOriginDest;
-	ddx = imgdest->m_width - nWidthDest;
-	dldx = imgdest->m_width;
+	auto pdp = imgdest->GetBufferPtr() + nYOriginDest * imgdest->GetWidth() + nXOriginDest;
+	ddx = imgdest->GetWidth() - nWidthDest;
+	dldx = imgdest->GetWidth();
 
 	centerintensity = (0xFF - intensity) * alpha >> 8;
 	intensity2 = intensity * alpha / 3 >> 8;
@@ -1416,8 +1410,8 @@ draw_flat_scanline(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vec
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
 	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
 	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	if(w > 0)
 	{
 		int i, bx = s;
@@ -1456,8 +1450,8 @@ draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_sr
 	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
 	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
 	::DWORD  col;
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	if(w > 0)
 	{
 		int i, bx = s;
@@ -1501,8 +1495,8 @@ draw_flat_scanline_alpha(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, con
 	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
 	::DWORD sa = alpha, da = 0xFF - sa;
 
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	if(w > 0)
 	{
 		int i, bx = s;
@@ -1545,8 +1539,8 @@ draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src
 	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
 	::DWORD sa = alpha, da = 0xFF - sa;
 
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	if(w > 0)
 	{
 		int i, bx = s;
@@ -1617,8 +1611,8 @@ draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
 	::DWORD Trb, Tg, Brb, Bg, crb, cg;
 	::DWORD alphaA, alphaB;
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
 
 	if(w > 0)
@@ -1675,8 +1669,8 @@ draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt,
 	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
 	::DWORD Trb, Tg, Brb, Bg, crb, cg;
 	::DWORD alphaA, alphaB;
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
 
 	if(w > 0)
@@ -1738,8 +1732,8 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	::DWORD alphaA, alphaB;
 	::DWORD sa = alpha, da = 0xFF - sa;
 
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
 
 	if(w > 0)
@@ -1805,8 +1799,8 @@ draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d * vt,
 	::DWORD alphaA, alphaB;
 	::DWORD sa = alpha, da = 0xFF - sa;
 
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
 
 	if(w > 0)
@@ -2385,30 +2379,30 @@ putimage_trangle(
 	{
 		triangle2d _dt = *dt;
 		triangle2d _tt = *tt;
-		int x1 = 0, y1 = 0, x2 = dc_dest->getwidth(),
-			y2 = dc_dest->getheight(), i;
+		int x1 = 0, y1 = 0, x2 = dc_dest->GetWidth(),
+			y2 = dc_dest->GetHeight(), i;
 
 		if(smooth)
 		{
 			for(i = 0; i < 3; ++i)
 			{
 				_tt.p[i].x = (float)float2int((float)(_tt.p[i].x
-					* (dc_src->getwidth() - 2)));
+					* (dc_src->GetWidth() - 2)));
 				_tt.p[i].y = (float)float2int((float)(_tt.p[i].y
-					* (dc_src->getheight() - 2)));
+					* (dc_src->GetHeight() - 2)));
 			}
 		}
 		else
 			for(i = 0; i < 3; ++i)
 			{
 				_tt.p[i].x = (float)float2int((float)(_tt.p[i].x
-					* (dc_src->getwidth() - 1)));
+					* (dc_src->GetWidth() - 1)));
 				_tt.p[i].y = (float)float2int((float)(_tt.p[i].y
-					* (dc_src->getheight() - 1)));
+					* (dc_src->GetHeight() - 1)));
 			}
 		if(smooth)
 		{
-			if(dc_src->getwidth() > 1 && dc_src->getheight() > 1)
+			if(dc_src->GetWidth() > 1 && dc_src->GetHeight() > 1)
 				draw_flat_trangle_alpha_s(dc_dest, &_dt, dc_src, &_tt, x1, y1,
 					x2, y2, btransparent, alpha);
 		}
@@ -2451,9 +2445,9 @@ putimage_rotate(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 			for(i = 0; i < 3; ++i)
 			{
 				_dt[j].p[i].x = (_dt[j].p[i].x - centerx)
-					* (dc_src->getwidth());
+					* (dc_src->GetWidth());
 				_dt[j].p[i].y = (_dt[j].p[i].y - centery)
-					* (dc_src->getheight());
+					* (dc_src->GetHeight());
 				dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
 				dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
 				_dt[j].p[i].x = float(float2int(float((dx + nXOriginDest)
@@ -2499,8 +2493,8 @@ putimage_rotatezoom(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 		for(j = 0; j < 2; ++j)
 			for(i = 0; i < 3; ++i)
 			{
-				_dt[j].p[i].x = (_dt[j].p[i].x - centerx) * (dc_src->getwidth());
-				_dt[j].p[i].y = (_dt[j].p[i].y - centery) * (dc_src->getheight());
+				_dt[j].p[i].x = (_dt[j].p[i].x - centerx) * (dc_src->GetWidth());
+				_dt[j].p[i].y = (_dt[j].p[i].y - centery) * (dc_src->GetHeight());
 				dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
 				dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
 				_dt[j].p[i].x = float(float2int(float((dx * zoom + nXOriginDest) + FLT_EPSILON)));

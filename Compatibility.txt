@@ -73,7 +73,7 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别
 移除 setrendermode 实现所需的计时器例程；主窗口消息循环不响应 WM_TIMER 。
 取消手动设置 exit_window 状态，改用 UI 线程状态表示；移除无用的 exit_flag 。
 类型 PDWORD 用 DWORD* 代替。
-类 IMAGE ：修复复制构造；新增交换、转移构造和统一赋值操作；移除成员初始化检查；封装部分成员保证不可在外部修改。
+类 IMAGE ：修复复制构造；新增交换、转移构造和统一赋值操作；移除成员初始化检查；封装部分成员保证不可在外部修改；使用 YFramework 的 platform_ex::ScreenBuffer 代替 ::HBITMAP 实现。
 CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入除空指针值外返回原值。
 命名空间作用域静态函数和对象去除 static 并使用未命名命名空间代替。
 

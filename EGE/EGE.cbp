@@ -46,8 +46,13 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
+					<Add library="YFrameworkd" />
+					<Add library="FreeImage" />
+					<Add library="freetype" />
+					<Add library="YBased" />
 					<Add library="png16" />
 					<Add library="z" />
+					<Add library="shlwapi" />
 					<Add library="gdi32" />
 					<Add library="imm32" />
 					<Add library="msimg32" />
@@ -72,8 +77,13 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="YFramework" />
+					<Add library="FreeImage" />
+					<Add library="freetype" />
+					<Add library="YBase" />
 					<Add library="png16" />
 					<Add library="z" />
+					<Add library="shlwapi" />
 					<Add library="gdi32" />
 					<Add library="imm32" />
 					<Add library="msimg32" />

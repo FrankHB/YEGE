@@ -1,6 +1,6 @@
 ﻿#include "ege/random.h"
 #include <random>
-#include <memory>
+#include <ystdex/memory.hpp> // for ystdex::make_unique;
 
 namespace ege
 {
@@ -13,7 +13,7 @@ std::random_device rd;
 std::unique_ptr<std::mt19937>
 rand_p()
 {
-	return std::unique_ptr<std::mt19937>(new std::mt19937(rd()));
+	return ystdex::make_unique<std::mt19937>(rd());
 }
 
 std::unique_ptr<std::mt19937> p_mt(rand_p());

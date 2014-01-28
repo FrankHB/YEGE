@@ -308,8 +308,8 @@ ege_setalpha(int alpha, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
 		int a = alpha << 24;
-		int w = pimg->getwidth();
-		int h = pimg->getheight();
+		int w = pimg->GetWidth();
+		int h = pimg->GetHeight();
 
 		for(int y = 0; y < h; ++y)
 			for(int x = 0; x < w; ++x)
@@ -345,8 +345,8 @@ ege_puttexture(IMAGE* srcimg, ege_rect dest, IMAGE* pimg)
 	{
 		src.x = 0;
 		src.y = 0;
-		src.w = (float)srcimg->getwidth();
-		src.h = (float)srcimg->getheight();
+		src.w = (float)srcimg->GetWidth();
+		src.h = (float)srcimg->GetHeight();
 		ege_puttexture(srcimg, dest, src, img);
 	}
 }
