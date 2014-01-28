@@ -16,7 +16,7 @@ namespace
 LRESULT CALLBACK
 wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 {
-	auto pg = &get_global_state();
+	auto& gstate(get_global_state());
 	//int wmId, wmEvent;
 	auto pg_w = (_graph_setting*)::GetWindowLongPtrW(hWnd, GWLP_USERDATA);
 
@@ -25,92 +25,93 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 	switch(message)
 	{
 	case WM_PAINT:
-		if(pg == pg_w)
-			pg->_on_paint(hWnd);
+		if(&gstate == pg_w)
+			gstate._on_paint(hWnd);
 		break;
 	case WM_CLOSE:
-		if(pg == pg_w)
+		if(&gstate == pg_w)
 		{
-			if(pg->callback_close)
-				pg->callback_close();
+			if(gstate.callback_close)
+				gstate.callback_close();
 			else
 				return ::DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
 	case WM_DESTROY:
-		if(pg == pg_w)
-			pg->_on_destroy();
+		if(&gstate == pg_w)
+			gstate._on_destroy();
 		break;
 	case WM_ERASEBKGND:
-		if(pg == pg_w)
+		if(&gstate == pg_w)
 			return TRUE;
 		break;
 	case WM_KEYDOWN:
 	case WM_KEYUP:
 	case WM_CHAR:
-	//	if(hWnd == pg->hwnd)
-		pg->_on_key(message, (unsigned long)wParam, lParam);
+	//	if(hWnd == gstate.hwnd)
+		gstate._on_key(message, (unsigned long)wParam, lParam);
 		break;
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONDBLCLK:
-		pg->mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
-		pg->mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
-		pg->keystatemap[VK_LBUTTON] = 1;
+		gstate.mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
+		gstate.mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
+		gstate.keystatemap[VK_LBUTTON] = 1;
 		::SetCapture(hWnd);
-		pg->mouse_state_l = 1;
-		if(hWnd == pg->_get_hwnd())
-			pg->_push_mouse_msg( message, wParam, lParam);
+		gstate.mouse_state_l = 1;
+		if(hWnd == gstate._get_hwnd())
+			gstate._push_mouse_msg( message, wParam, lParam);
 		break;
 	case WM_MBUTTONDOWN:
 	case WM_MBUTTONDBLCLK:
-		pg->mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
-		pg->mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
-		pg->keystatemap[VK_MBUTTON] = 1;
+		gstate.mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
+		gstate.mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
+		gstate.keystatemap[VK_MBUTTON] = 1;
 		::SetCapture(hWnd);
-		pg->mouse_state_m = 1;
-		if(hWnd == pg->_get_hwnd())
-			pg->_push_mouse_msg( message, wParam, lParam);
+		gstate.mouse_state_m = 1;
+		if(hWnd == gstate._get_hwnd())
+			gstate._push_mouse_msg(message, wParam, lParam);
 		break;
 	case WM_RBUTTONDOWN:
 	case WM_RBUTTONDBLCLK:
-		pg->mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
-		pg->mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
-		pg->keystatemap[VK_RBUTTON] = 1;
+		gstate.mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
+		gstate.mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
+		gstate.keystatemap[VK_RBUTTON] = 1;
 		::SetCapture(hWnd);
-		pg->mouse_state_r = 1;
-		if(hWnd == pg->_get_hwnd())
-			pg->_push_mouse_msg( message, wParam, lParam);
+		gstate.mouse_state_r = 1;
+		if(hWnd == gstate._get_hwnd())
+			gstate._push_mouse_msg( message, wParam, lParam);
 		break;
 	case WM_LBUTTONUP:
 	case WM_MBUTTONUP:
 	case WM_RBUTTONUP:
-		pg->_on_mouse_button_up(hWnd, message, wParam, lParam);
+		gstate._on_mouse_button_up(hWnd, message, wParam, lParam);
 		break;
 	case WM_MOUSEMOVE:
-		pg->mouse_last_x = (short int)((::UINT)lParam & 0xFFFF);
-		pg->mouse_last_y = (short int)((::UINT)lParam >> 16);
-		if(hWnd == pg->_get_hwnd() && (pg->mouse_lastup_x != pg->mouse_last_x
-			|| pg->mouse_lastup_y != pg->mouse_last_y))
-			pg->_push_mouse_msg( message, wParam, lParam);
+		gstate.mouse_last_x = (short int)((::UINT)lParam & 0xFFFF);
+		gstate.mouse_last_y = (short int)((::UINT)lParam >> 16);
+		if(hWnd == gstate._get_hwnd() && (gstate.mouse_lastup_x
+			!= gstate.mouse_last_x || gstate.mouse_lastup_y
+			!= gstate.mouse_last_y))
+			gstate._push_mouse_msg(message, wParam, lParam);
 		break;
 	case WM_MOUSEWHEEL:
 		{
-			::POINT pt{(short int)((::UINT)lParam & 0xFFFF),
-				(short int)((::UINT)lParam >> 16)};
+			::POINT pt{(short int)(::UINT(lParam) & 0xFFFF),
+				(short int)(::UINT(lParam) >> 16)};
 
-			::ScreenToClient(pg->_get_hwnd(), &pt);
-			pg->mouse_last_x = pt.x;
-			pg->mouse_last_y = pt.y;
-			lParam = ((unsigned short)(short int)pg->mouse_last_y << 16)
-				| (unsigned short)(short int)pg->mouse_last_x;
+			::ScreenToClient(gstate._get_hwnd(), &pt);
+			gstate.mouse_last_x = pt.x;
+			gstate.mouse_last_y = pt.y;
+			lParam = ((unsigned short)(short int)gstate.mouse_last_y << 16)
+				| (unsigned short)(short int)gstate.mouse_last_x;
 		}
-		if(hWnd == pg->_get_hwnd())
-			pg->_push_mouse_msg(message, wParam, lParam);
+		if(hWnd == gstate._get_hwnd())
+			gstate._push_mouse_msg(message, wParam, lParam);
 		break;
 	case WM_SETCURSOR:
-		if(pg == pg_w)
+		if(&gstate == pg_w)
 		{
-			pg->_on_setcursor(hWnd);
+			gstate._on_setcursor(hWnd);
 			return TRUE;
 		}
 		break;
@@ -139,11 +140,10 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 			GWLP_USERDATA))->onMessage(message, wParam, lParam);
 		break;
 	default:
-		if(pg != pg_w)
-			return ((egeControlBase*)pg_w)->onMessage(message, wParam, lParam);
-		return ::DefWindowProc(hWnd, message, wParam, lParam);
+		if(&gstate == pg_w)
+			return ::DefWindowProc(hWnd, message, wParam, lParam);
 	}
-	if(pg != pg_w)
+	if(&gstate != pg_w)
 		return ((egeControlBase*)pg_w)->onMessage(message, wParam, lParam);
 	return 0;
 }
