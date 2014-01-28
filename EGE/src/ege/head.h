@@ -6,8 +6,6 @@
 #include YFM_Helper_Host
 #include YFM_Helper_HostedUI
 #include YFM_YSLib_UI_YPanel
-#include "ege.h"
-#include "thread_queue.h"
 
 #ifndef DEFAULT_CHARSET
 #define DEFAULT_CHARSET ANSI_CHARSET
