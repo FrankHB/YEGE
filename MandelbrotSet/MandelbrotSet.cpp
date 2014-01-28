@@ -67,7 +67,7 @@ setgprec(Float f)
 }
 #endif
 
-//typedef complex<double> COMPLEX;
+//using COMPLEX = complex<double>;
 
 #define W_B 10
 #define WIDTH (1<<W_B)

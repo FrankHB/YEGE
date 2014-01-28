@@ -8,8 +8,8 @@
 namespace ege
 {
 
-typedef std::set<egeControlBase*> egectlmap;
-typedef std::vector<egeControlBase*> egectlvec;
+using egectlmap = std::set<egeControlBase*>;
+using egectlvec = std::vector<egeControlBase*>;
 
 int egeControlBase::s_maxchildid = 1024;
 

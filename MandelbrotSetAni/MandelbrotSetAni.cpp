@@ -46,13 +46,13 @@ struct complex
 	}
 };
 
-typedef complex<double> COMPLEX;
+using COMPLEX = complex<double>;
 //*/
 
 #ifdef USINGDOUBLE
-typedef double Float;
+using Float = double;
 #else
-typedef mpf_class Float;
+using Float = mpf_class;
 #endif
 
 struct COMPLEXI
@@ -67,7 +67,7 @@ Float& str2float(Float& f, const char str[])
 	sscanf(str, "%lf", &f);
 	return f;
 }
-typedef int mp_bitcnt_t;
+using mp_bitcnt_t = int;
 #endif
 
 mp_bitcnt_t g_prec = 64;
@@ -199,7 +199,7 @@ bool abs4(const COMPLEX& c)
 #endif
 }
 
-//typedef complex<double> COMPLEX;
+//using COMPLEX = complex<double>;
 
 struct PIXEL
 {

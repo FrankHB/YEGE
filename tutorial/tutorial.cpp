@@ -466,9 +466,11 @@ template <typename str_t>
 class IniParser
 {
 public:
-	typedef std::map<str_t, str_t>* key_val_ptr;
+	using key_val_ptr = std::map<str_t, str_t>*;
+
 	IniParser(){}
-	virtual ~IniParser(){}
+	virtual
+	~IniParser(){}
 
 	void
 	clear()

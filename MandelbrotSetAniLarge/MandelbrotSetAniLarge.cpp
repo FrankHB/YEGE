@@ -43,10 +43,10 @@ struct complex
 	}
 };
 
-typedef complex<double> COMPLEX;
+using COMPLEX = complex<double>;
 //*/
 
-typedef mpf_class Float;
+using Float = mpf_class;
 struct COMPLEXI
 {
 	int re;
@@ -164,7 +164,7 @@ bool abs4(const COMPLEX& c)
 	//return {};
 }
 
-//typedef complex<double> COMPLEX;
+//using COMPLEX = complex<double>;
 
 struct PIXEL
 {
