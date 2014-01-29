@@ -693,6 +693,27 @@ fix_rect_1size(IMAGE* pdest, IMAGE* psrc,
 	}
 }
 
+color_t
+bilinear_interpolation(color_t LT, color_t RT, color_t LB, color_t RB,
+	double x, double y)
+{
+	color_t Trb, Tg, Brb, Bg, crb, cg;
+	color_t alphaA, alphaB;
+	alphaA = (color_t)(x * 0x100);
+	alphaB = 0xFF - alphaA;
+	Trb = (((LT & 0xFF00FF) * alphaB + (RT & 0xFF00FF) * alphaA) & 0xFF00FF00)
+		>> 8;
+	Tg = (((LT & 0xFF00) * alphaB + (RT & 0xFF00) * alphaA) & 0xFF0000) >> 8;
+	Brb = (((LB & 0xFF00FF) * alphaB + (RB & 0xFF00FF) * alphaA) & 0xFF00FF00)
+		>> 8;
+	Bg = (((LB & 0xFF00) * alphaB + (RB & 0xFF00) * alphaA) & 0xFF0000) >> 8;
+	alphaA = (color_t)(y * 0x100);
+	alphaB = 0xFF - alphaA;
+	crb = ((Trb * alphaB + Brb * alphaA) & 0xFF00FF00);
+	cg = ((Tg * alphaB + Bg * alphaA) & 0xFF0000);
+	return (crb | cg) >> 8;
+}
+
 } // unnamed namespace;
 
 int
@@ -1422,25 +1443,6 @@ IMAGE::putimage_rotatezoom(
 }
 
 
-#define BILINEAR_INTERPOLATION(s, LT, RT, LB, RB, x, y) \
-	{\
-		alphaA = int(x * 0x100);\
-		alphaB = 0xFF - alphaA;\
-		Trb = (((LT & 0xFF00FF) * alphaB + (RT & 0xFF00FF) * alphaA) \
-			& 0xFF00FF00) >> 8;\
-		Tg =  (((LT & 0xFF00) * alphaB + (RT & 0xFF00) * alphaA) & 0xFF0000) \
-			>> 8;\
-		Brb = (((LB & 0xFF00FF) * alphaB + (RB & 0xFF00FF) * alphaA) \
-			& 0xFF00FF00) >> 8;\
-		Bg =  (((LB & 0xFF00) * alphaB + (RB & 0xFF00) * alphaA) & 0xFF0000) \
-			>> 8;\
-		alphaA = int(y * 0x100);\
-		alphaB = 0xFF - alphaA;\
-		crb = ((Trb * alphaB + Brb * alphaA) & 0xFF00FF00);\
-		cg =  ((Tg * alphaB + Bg * alphaA) & 0xFF0000);\
-		s = (crb | cg) >> 8;\
-	}
-
 struct point2d
 {
 	float x;
@@ -1657,28 +1659,6 @@ draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d * vt,
 	}
 }
 
-#if 0
-color_t bilinear_interpolation(color_t LT, color_t RT, color_t LB, color_t RB,
-	double x, double y)
-{
-	color_t Trb, Tg, Brb, Bg, crb, cg;
-	color_t alphaA, alphaB;
-	alphaA = (color_t)(x * 0x100);
-	alphaB = 0xFF - alphaA;
-	Trb = (((LT & 0xFF00FF) * alphaB + (RT & 0xFF00FF) * alphaA) & 0xFF00FF00)
-		>> 8;
-	Tg =  (((LT & 0xFF00) * alphaB + (RT & 0xFF00) * alphaA) & 0xFF0000) >> 8;
-	Brb = (((LB & 0xFF00FF) * alphaB + (RB & 0xFF00FF) * alphaA) & 0xFF00FF00)
-		>> 8;
-	Bg =  (((LB & 0xFF00) * alphaB + (RB & 0xFF00) * alphaA) & 0xFF0000) >> 8;
-	alphaA = (color_t)(y * 0x100);
-	alphaB = 0xFF - alphaA;
-	crb = ((Trb * alphaB + Brb * alphaA) & 0xFF00FF00);
-	cg =  ((Tg * alphaB + Bg * alphaA) & 0xFF0000);
-	return (crb | cg) >> 8;
-}
-#endif
-
 void
 draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	const vector2d* svt, int x1, int x2)
@@ -1688,8 +1668,6 @@ draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 		y = float2int(vt->p[0].y), w = e - s;
 	::DWORD* lp_dest_bmp_byte = dc_dest->getbuffer();
 	::DWORD* lp_src_bmp_byte = dc_src->getbuffer();
-	::DWORD Trb, Tg, Brb, Bg, crb, cg;
-	::DWORD alphaA, alphaB;
 	int dest_w = dc_dest->GetWidth();
 	int src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
@@ -1716,17 +1694,15 @@ draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 				int ix = curx, iy = cury;
 				double fx(curx - ix), fy = cury - iy;
 				::DWORD* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
-				::DWORD col;
-
-				BILINEAR_INTERPOLATION(
-					col,
+				::DWORD col(bilinear_interpolation(
 					lp_src_byte[0],
 					lp_src_byte[1],
 					lp_src_byte[src_w],
 					lp_src_byte[src_w + 1],
 					fx,
 					fy
-				);
+				));
+
 				lp_dest_bmp_byte[dest_w * y + i] = col;
 			}
 		}
@@ -1742,8 +1718,6 @@ draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt,
 		y = float2int(vt->p[0].y), w = e - s;
 	::DWORD* lp_dest_bmp_byte = dc_dest->getbuffer();
 	::DWORD* lp_src_bmp_byte = dc_src->getbuffer();
-	::DWORD Trb, Tg, Brb, Bg, crb, cg;
-	::DWORD alphaA, alphaB;
 	int dest_w = dc_dest->GetWidth();
 	int src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
@@ -1771,21 +1745,15 @@ draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt,
 				int ix(curx), iy(cury);
 				float fx(curx - ix), fy = cury - iy;
 				::DWORD* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
-				::DWORD col;
-
-				BILINEAR_INTERPOLATION(
-					col,
+				if(::DWORD col = bilinear_interpolation(
 					lp_src_byte[0],
 					lp_src_byte[1],
 					lp_src_byte[src_w],
 					lp_src_byte[src_w + 1],
 					fx,
 					fy
-				);
-				if(col)
-				{
+				))
 					lp_dest_bmp_byte[dest_w * y + i] = col;
-				}
 			}
 		}
 	}
@@ -1800,10 +1768,7 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 		y = float2int(vt->p[0].y), w = e - s;
 	::DWORD* lp_dest_bmp_byte = dc_dest->getbuffer();
 	::DWORD* lp_src_bmp_byte = dc_src->getbuffer();
-	::DWORD Trb, Tg, Brb, Bg, crb, cg;
-	::DWORD alphaA, alphaB;
 	::DWORD sa = alpha, da = 0xFF - sa;
-
 	int dest_w = dc_dest->GetWidth();
 	int src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
@@ -1831,17 +1796,14 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 				int ix(curx), iy(cury);
 				float fx(curx - ix), fy = cury - iy;
 				::DWORD* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
-				::DWORD col;
-
-				BILINEAR_INTERPOLATION(
-					col,
+				::DWORD col(bilinear_interpolation(
 					lp_src_byte[0],
 					lp_src_byte[1],
 					lp_src_byte[src_w],
 					lp_src_byte[src_w + 1],
 					fx,
 					fy
-				);
+				));
 
 				::DWORD d = lp_dest_bmp_byte[dest_w * y + i];
 
@@ -1864,10 +1826,7 @@ draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d * vt,
 		y = float2int(vt->p[0].y), w = e - s;
 	::DWORD* lp_dest_bmp_byte = dc_dest->getbuffer();
 	::DWORD* lp_src_bmp_byte = dc_src->getbuffer();
-	::DWORD Trb, Tg, Brb, Bg, crb, cg;
-	::DWORD alphaA, alphaB;
 	::DWORD sa = alpha, da = 0xFF - sa;
-
 	int dest_w = dc_dest->GetWidth();
 	int src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
@@ -1895,18 +1854,14 @@ draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d * vt,
 				int ix(curx), iy(cury);
 				float fx(curx - ix), fy = cury - iy;
 				::DWORD* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
-				::DWORD col;
-
-				BILINEAR_INTERPOLATION(
-					col,
+				if(::DWORD col = bilinear_interpolation(
 					lp_src_byte[0],
 					lp_src_byte[1],
 					lp_src_byte[src_w],
 					lp_src_byte[src_w + 1],
 					fx,
 					fy
-				);
-				if(col)
+				))
 				{
 					::DWORD d = lp_dest_bmp_byte[dest_w * y + i];
 					d = (((d & 0xFF00FF) * da & 0xFF00FF00)
