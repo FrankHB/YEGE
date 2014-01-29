@@ -1,18 +1,14 @@
 ﻿#include "ege/colorbase.h"
 #include <cmath>
 #include <algorithm> // for std::min, std::max;
+#include <ysbuild.h>
+#include YFM_YSLib_UI_YStyle
 
 namespace ege
 {
 
 using platform::MonoType;
 
-struct COLORHSL
-{
-	float h;
-	float s;
-	float l;
-};
 
 struct COLORHSV
 {
@@ -147,89 +143,9 @@ rgb2hsl(color_t rgb, float* h, float* s, float* l)
 	yassume(s),
 	yassume(l);
 
-	COLORHSL hsl = [](color_t::Trait::IntegerType _col) -> COLORHSL{
-		COLORHSL cr_col;
-		float r(EGEGET_R(_col) / 255.0f), g(EGEGET_G(_col) / 255.0f),
-			b(EGEGET_B(_col) / 255.0f);
-		float*dp[3]{&r, &g, &b};
+	const auto hsl(YSLib::Drawing::ColorToHSL(rgb));
 
-#define IFSWAP(a, b) \
-	if(*a>*b) \
-		std::swap(a, b)
-		IFSWAP(dp[0], dp[1]);
-		IFSWAP(dp[1], dp[2]);
-		IFSWAP(dp[0], dp[1]);
-#undef IFSWAP
-		cr_col.l = (*dp[0] + *dp[2]) / 2;
-		if(cr_col.l < 1e-2f)
-		{
-			cr_col.l = 0;
-			cr_col.h = 0;
-			cr_col.s = 0;
-			return cr_col;
-		}
-		if(cr_col.l > 0.99)
-		{
-			cr_col.l = 1;
-			cr_col.h = 0;
-			cr_col.s = 0;
-			return cr_col;
-		}
-		if(fabs(cr_col.l - 0.5) < 1e-2)
-			cr_col.l = 0.5;
-	#define BLACKUNFORMAT(c, v) ((c)/((v)*2))
-	#define WHITEUNFORMAT(c, v) (1-(1-c)/((1-(v))*2))
-		if(cr_col.l == 0.5)
-			;
-		else if(cr_col.l < 0.5)
-			for(int n = 0; n < 3; ++n)
-			{
-				*dp[n] = BLACKUNFORMAT(*dp[n], cr_col.l);
-				if(*dp[n] > 1)
-					*dp[n] = 1;
-			}
-		else
-			for(int n = 0; n < 3; ++n)
-			{
-				*dp[n] = WHITEUNFORMAT(*dp[n], cr_col.l);
-				if(*dp[n] > 1)
-					*dp[n] = 1;
-			}
-	#undef BLACKUNFORMAT
-	#undef WHITEUNFORMAT
-		cr_col.s = *dp[2] * 2 - 1;
-		if(cr_col.s < 1e-2)
-		{
-			cr_col.h = 0;
-			return cr_col;
-		}
-	#define SATUNFORMAT(c, s) (((c)-0.5f)/(s)+0.5f)
-		for(int n = 0; n < 3; ++n)
-		{
-			*dp[n] = SATUNFORMAT(*dp[n], cr_col.s);
-			if(*dp[n] > 1)
-				*dp[n] = 1;
-		}
-	#undef SATUNFORMAT
-		cr_col.h = *dp[1];
-		if((dp[2] == &r) && (dp[1] == &g)) cr_col.h = cr_col.h + 0;
-		else if((dp[2] == &g) && (dp[1] == &b))
-			cr_col.h = cr_col.h + 2;
-		else if((dp[2] == &b) && (dp[1] == &r))
-			cr_col.h = cr_col.h + 4;
-		else if((dp[2] == &g) && (dp[1] == &r))
-			cr_col.h = 2 - cr_col.h;
-		else if((dp[2] == &b) && (dp[1] == &g))
-			cr_col.h = 4 - cr_col.h;
-		else if((dp[2] == &r) && (dp[1] == &b))
-			cr_col.h = 6 - cr_col.h;
-		cr_col.h /= 6;
-		return cr_col;
-	}(rgb);
-
-	*h = hsl.h * 360.0f;
-	*s = hsl.s;
-	*l = hsl.l;
+	yunseq(*h = hsl.h, *s = hsl.s, *l = hsl.l);
 }
 
 color_t
