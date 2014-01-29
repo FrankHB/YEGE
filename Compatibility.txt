@@ -76,6 +76,7 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别
 类 IMAGE ：修复复制构造；新增交换、转移构造和统一赋值操作；移除成员初始化检查；封装部分成员保证不可在外部修改；使用 YFramework 的 platform_ex::ScreenBuffer 代替 ::HBITMAP 实现。
 CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入除空指针值外返回原值。
 命名空间作用域静态函数和对象去除 static 并使用未命名命名空间代替。
+typedef 类型名 color_t 从 unsigned int 改为 YCLib 提供的 platform::PixelType 。
 
 实现质量(QoI)
 ----

@@ -26,7 +26,7 @@ ege_line(float x1, float y1, float x2, float y2, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
 		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(img->m_color, img->m_linewidth);
+		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
 
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img->m_aa)
@@ -41,7 +41,7 @@ ege_drawpoly(int numpoints, ege_point* polypoints, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
 		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(img->m_color, img->m_linewidth);
+		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
 
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img->m_aa)
@@ -56,7 +56,7 @@ ege_drawcurve(int numpoints, ege_point* polypoints, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
 		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(img->m_color, img->m_linewidth);
+		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
 
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img->m_aa)
@@ -71,7 +71,7 @@ ege_rectangle(float x, float y, float w, float h, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
 		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(img->m_color, img->m_linewidth);
+		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
 
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img->m_aa)
@@ -86,7 +86,7 @@ ege_ellipse(float x, float y, float w, float h, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
 		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(img->m_color, img->m_linewidth);
+		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
 
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img->m_aa)
@@ -102,7 +102,7 @@ ege_pie(float x, float y, float w, float h, float stangle, float sweepAngle,
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
 		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(img->m_color, img->m_linewidth);
+		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
 
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img->m_aa)
@@ -119,7 +119,7 @@ ege_arc(float x, float y, float w, float h, float stangle, float sweepAngle,
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
 		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(img->m_color, img->m_linewidth);
+		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
 
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img->m_aa)
@@ -136,7 +136,7 @@ ege_bezier(int numpoints, ege_point* polypoints, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
 		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(img->m_color, img->m_linewidth);
+		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
 
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img->m_aa)
@@ -161,7 +161,7 @@ ege_fillpoly(int numpoints, ege_point* polypoints, IMAGE* pimg)
 				(Gdiplus::PointF*)polypoints, numpoints);
 		else
 		{
-			Gdiplus::SolidBrush brush(img->m_fillcolor);
+			Gdiplus::SolidBrush brush(std::uint32_t(img->m_fillcolor));
 
 			graphics.FillPolygon(&brush, (Gdiplus::PointF*)polypoints,
 				numpoints);
@@ -183,7 +183,7 @@ ege_fillrect(float x, float y, float w, float h, IMAGE* pimg)
 			graphics.FillRectangle(img->m_pattern.get(), x, y, w, h);
 		else
 		{
-			Gdiplus::SolidBrush brush(img->m_fillcolor);
+			Gdiplus::SolidBrush brush(std::uint32_t(img->m_fillcolor));
 
 			graphics.FillRectangle(&brush, x, y, w, h);
 		}
@@ -204,7 +204,7 @@ ege_fillellipse(float x, float y, float w, float h, IMAGE* pimg)
 			graphics.FillEllipse(img->m_pattern.get(), x, y, w, h);
 		else
 		{
-			Gdiplus::SolidBrush brush(img->m_fillcolor);
+			Gdiplus::SolidBrush brush(std::uint32_t(img->m_fillcolor));
 
 			graphics.FillEllipse(&brush, x, y, w, h);
 		}
@@ -227,7 +227,7 @@ ege_fillpie(float x, float y, float w, float h, float stangle, float sweepAngle,
 				sweepAngle);
 		else
 		{
-			Gdiplus::SolidBrush brush(img->m_fillcolor);
+			Gdiplus::SolidBrush brush(std::uint32_t(img->m_fillcolor));
 
 			graphics.FillPie(&brush, x, y, w, h, stangle, sweepAngle);
 		}
