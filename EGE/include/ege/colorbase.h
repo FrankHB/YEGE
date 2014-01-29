@@ -3,78 +3,87 @@
 
 #include "def.h"
 #include <cstdint>
+#include <ysbuild.h>
+#include YFM_YCLib_Video
 
-yconstfn std::uint32_t
-RGBTOBGR(std::uint32_t color)
+namespace ege
+{
+
+using color_t = platform::PixelType;
+
+yconstfn color_t::Trait::IntegerType
+RGBTOBGR(platform::MonoType color)
 {
 	return ((color & 0xFF) << 16) | ((color & 0xFF0000) >> 16)
 		   | (color & 0xFF00FF00);
 }
 
-yconstfn std::uint32_t
-EGERGB(std::uint8_t r, std::uint8_t g, std::uint8_t b)
+yconstfn color_t::Trait::IntegerType
+EGERGB(platform::MonoType r, platform::MonoType g, platform::MonoType b)
 {
 	return (r << 16) | (g << 8) | b;
 }
-yconstfn std::uint32_t
-EGERGBA(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a)
+yconstfn color_t::Trait::IntegerType
+EGERGBA(platform::MonoType r, platform::MonoType g, platform::MonoType b,
+	platform::MonoType a)
 {
 	return EGERGB(r, g, b) | a << 24;
 }
-yconstfn std::uint32_t
-EGEARGB(std::uint8_t a, std::uint8_t r, std::uint8_t g, std::uint8_t b)
+yconstfn color_t::Trait::IntegerType
+EGEARGB(platform::MonoType a, platform::MonoType r, platform::MonoType g,
+	platform::MonoType b)
 {
 	return EGERGB(r, g, b) | a << 24;
 }
 
 
-yconstfn std::uint32_t
-EGEACOLOR(std::uint8_t a, std::uint32_t color)
+yconstfn color_t::Trait::IntegerType
+EGEACOLOR(platform::MonoType a, color_t::Trait::IntegerType color)
 {
 	return (color & 0xFFFFFF) | (a << 24);
 }
-yconstfn std::uint32_t
-EGECOLORA(std::uint8_t a, std::uint32_t color)
+yconstfn color_t::Trait::IntegerType
+EGECOLORA(platform::MonoType a, color_t::Trait::IntegerType color)
 {
 	return (color & 0xFFFFFF) | (a << 24);
 }
 
 
-yconstfn std::uint8_t
-EGEGET_R(std::uint32_t c)
+yconstfn platform::MonoType
+EGEGET_R(color_t::Trait::IntegerType c)
 {
 	return (c >> 16) & 0xFF;
 }
-yconstfn std::uint8_t
-EGEGET_G(std::uint32_t c)
+yconstfn platform::MonoType
+EGEGET_G(color_t::Trait::IntegerType c)
 {
 	return (c >> 8) & 0xFF;
 }
-yconstfn std::uint8_t
-EGEGET_B(std::uint32_t c)
+yconstfn platform::MonoType
+EGEGET_B(color_t::Trait::IntegerType c)
 {
 	return c & 0xFF;
 }
-yconstfn std::uint8_t
-EGEGET_A(std::uint32_t c)
+yconstfn platform::MonoType
+EGEGET_A(color_t::Trait::IntegerType c)
 {
 	return (c >> 24) & 0xFF;
 }
 
-yconstfn std::uint32_t
-EGEGRAY(std::uint32_t gray)
+yconstfn color_t::Trait::IntegerType
+EGEGRAY(color_t::Trait::IntegerType gray)
 {
 	return (gray << 16) | (gray << 8) | gray;
 }
 
-yconstfn std::uint32_t
-EGEGRAYA(std::uint32_t gray, std::uint8_t a)
+yconstfn color_t::Trait::IntegerType
+EGEGRAYA(color_t::Trait::IntegerType gray, platform::MonoType a)
 {
 	return EGEGRAY(gray) | (a << 24);
 }
 
-yconstfn std::uint32_t
-EGEAGRAY(std::uint8_t a, std::uint32_t gray)
+yconstfn color_t::Trait::IntegerType
+EGEAGRAY(platform::MonoType a, color_t::Trait::IntegerType gray)
 {
 	return EGEGRAY(gray) | (a << 24);
 }
@@ -85,6 +94,8 @@ EGEAGRAY(std::uint8_t a, std::uint32_t gray)
 #define RGBtoHSV    rgb2hsv
 #define HSLtoRGB    hsl2rgb
 #define HSVtoRGB    hsv2rgb
+
+} // namespace ege;
 
 #endif
 

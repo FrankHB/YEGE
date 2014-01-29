@@ -35,6 +35,10 @@ Code::Blocks 。
 移除函数 attachHWND 以避免潜在的死锁。
 函数 setrendermode 无效，默认状态统一为 setrendermode(RENDER_MANUAL) ；仅为兼容性保留。
 移除类型 LPCALLBACK_PROC 、LPMSG_KEY_PROC 、LPMSG_MOUSE_PROC 、MSG_KEY_PROC 和 MSG_MOUSE_PROC ，其中 LPCALLBACK_PROC 可用 CALLBACK_PROC* 代替，
+typedef 类型名 color_t 从 unsigned int 改为 YCLib 提供的 platform::PixelType 。
+使用 YCLib 提供的 platform::MonoType 表示颜色分量。
+使用 platform::PixelType::Integer 表示颜色对应的整数类型。
+宏 RGBTOBGR 、EGERGB 、EGERGBA 、EGEARGB 、EGEACOLOR 、EGECOLORA 、EGEGET_R 、EGEGET_G 、EGEGET_B 、EGEGET_A 、EGEGRAY 、EGEGRAYA 和 EGEAGRAY 变更为 ege 命名空间内的函数。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
@@ -76,7 +80,7 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别
 类 IMAGE ：修复复制构造；新增交换、转移构造和统一赋值操作；移除成员初始化检查；封装部分成员保证不可在外部修改；使用 YFramework 的 platform_ex::ScreenBuffer 代替 ::HBITMAP 实现。
 CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入除空指针值外返回原值。
 命名空间作用域静态函数和对象去除 static 并使用未命名命名空间代替。
-typedef 类型名 color_t 从 unsigned int 改为 YCLib 提供的 platform::PixelType 。
+移除不符合标准的保留名称 _RGBtoHSL 和 _HSLtoRGB 的使用。
 
 实现质量(QoI)
 ----
