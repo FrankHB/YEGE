@@ -151,74 +151,6 @@ IMAGE::Resize(const Size& size)
 }
 
 void
-IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
-{
-	if(Resize(srcWidth, srcHeight) == 0)
-	{
-		const auto img = CONVERT_IMAGE_CONST(pSrcImg);
-
-		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight, img->m_hDC, srcX, srcY, SRCCOPY);
-	}
-}
-
-int
-IMAGE::getimage(const char* filename, int zoomWidth, int zoomHeight)
-{
-	if(getimage_pngfile(this, filename) == 0)
-		return 0;
-
-	wchar_t wszPath[MAX_PATH * 2 + 1];
-
-	::MultiByteToWideChar(CP_ACP, 0, filename, -1, wszPath, MAX_PATH * 2);
-	return getimage(wszPath, zoomWidth, zoomHeight);
-}
-
-int
-IMAGE::getimage(const wchar_t* filename, int, int)
-{
-	if(getimage_pngfile(this, filename) == 0)
-		return 0;
-
-	struct IPicture* pPicture;
-	::OLECHAR wszPath[MAX_PATH * 2 + 1];
-	wchar_t szPath[MAX_PATH * 2 + 1] = L"";
-	long lWidth, lHeight;
-	long lWidthPixels, lHeightPixels;
-	::HRESULT hr;
-
-	if(wcsstr(filename, L"http://"))
-		::lstrcpyW(szPath, filename);
-	else if(filename[1] == ':')
-		::lstrcpyW(szPath, filename);
-	else
-	{
-		::GetCurrentDirectoryW(MAX_PATH * 2, szPath);
-		::lstrcatW(szPath, L"\\");
-		::lstrcatW(szPath, filename);
-	}
-
-	::lstrcpyW(wszPath, szPath);
-	hr = ::OleLoadPicturePath(wszPath, {}, 0, 0, IID_IPicture,
-		reinterpret_cast<void**>(&pPicture));
-	if(FAILED(hr))
-		return grIOerror;
-
-	const auto img = get_pages().imgtarget;
-
-	pPicture->get_Width(&lWidth);
-	lWidthPixels
-		= ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
-	pPicture->get_Height(&lHeight);
-	lHeightPixels
-		= ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-	Resize(lWidthPixels, lHeightPixels);
-	pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-		lWidth, -lHeight, {});
-	pPicture->Release();
-	return grOk;
-}
-
-void
 IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	int srcX, int srcY, ::DWORD dwRop) const
 {
@@ -295,7 +227,7 @@ ERROR_BREAK:
 } // unnamed namespace;
 
 int
-IMAGE::saveimage(const char*  filename)
+IMAGE::saveimage(const char* filename)
 {
 	if(std::FILE* fp = std::fopen(filename, "wb"))
 	{
@@ -324,60 +256,29 @@ IMAGE::saveimage(const wchar_t* filename)
 int
 IMAGE::getpngimg(std::FILE * fp)
 {
-	::png_structp pic_ptr;
-	::png_infop info_ptr;
-	std::uint32_t height, depth;
-
+	std::rewind(fp);
+	try
 	{
-		ystdex::byte header[16];
-		const auto number = 8;
-		std::fread(header, 1, number, fp);
+		// XXX: Use encapsulated file size getter.
+		struct ::stat st;
+		vector<octet> buf(::fstat(::_fileno(fp), &st));
+		ystdex::ifile_iterator i(fp);
 
-		if(::png_sig_cmp(header, 0, number))
-			return grIOerror;
-		fseek(fp, 0, SEEK_SET);
+		buf.assign(i, ystdex::ifile_iterator());
+
+		HBitmap bitmap(ImageMemory(std::move(buf)));
+		const Size& s(bitmap.GetSize());
+
+		Resize(s);
+
+		// XXX: Use raw conversion without buffer to improve performance.
+		std::copy_n(ImageCodec::Convert(bitmap).GetBufferPtr(),
+			s.Width * s.Height, sbuf.GetBufferPtr());
+		return grOk;
 	}
-
-	pic_ptr = ::png_create_read_struct(PNG_LIBPNG_VER_STRING, {}, {}, {});
-	if(!pic_ptr)
-		return -1;
-	info_ptr = ::png_create_info_struct(pic_ptr);
-	if(!info_ptr)
-	{
-		::png_destroy_write_struct(&pic_ptr, {});
-		return -1;
-	}
-	::png_init_io(pic_ptr, fp);
-	::png_read_png(pic_ptr, info_ptr, PNG_TRANSFORM_BGR | PNG_TRANSFORM_EXPAND,
-		{});
-	::png_set_expand(pic_ptr);
-
-	Resize(Size(info_ptr->width, info_ptr->height)); //::png_get_IHDR
-	height = info_ptr->height;
-	depth = info_ptr->pixel_depth;
-
-	::png_bytepp row_pointers = ::png_get_rows(pic_ptr, info_ptr);
-
-	for(std::uint32_t i = 0; i < height; ++i)
-	{
-		const auto width(GetWidth());
-		const auto m_pBuffer(GetBufferPtr());
-
-		if(depth == 24)
-			for(std::uint32_t j = 0; j < width; ++j)
-				m_pBuffer[i * width + j] = 0xFFFFFF
-					& reinterpret_cast<::DWORD&>(row_pointers[i][j * 3]);
-		else if(depth == 32)
-			for(std::uint32_t j = 0; j < width; ++j)
-			{
-				m_pBuffer[i * width + j] = (reinterpret_cast<::DWORD*>(
-					row_pointers[i]))[j];
-				if((m_pBuffer[i * width + j] & 0xFF000000) == 0)
-					m_pBuffer[i * width + j] = 0;
-			}
-	}
-	::png_destroy_read_struct(&pic_ptr, &info_ptr, {});
-	return 0;
+	catch(std::exception&)
+	{}
+	return grIOerror;
 }
 
 int
@@ -457,153 +358,90 @@ IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 	return 0;
 }
 
-int
-IMAGE::getimage(const char* pResType, const char* pResName, int, int)
+graphics_errors
+IMAGE::getimage(HBitmap&& bitmap)
+{
+	try
+	{
+		const Size& s(bitmap.GetSize());
+
+		Resize(s);
+
+		// XXX: Use raw conversion without buffer to improve performance.
+		std::copy_n(ImageCodec::Convert(bitmap).GetBufferPtr(),
+			s.Width * s.Height, sbuf.GetBufferPtr());
+		return grOk;
+	}
+	catch(std::exception&)
+	{}
+	return grIOerror;
+}
+graphics_errors
+IMAGE::getimage(ystdex::octet* p, size_t l)
+{
+	try
+	{
+		return getimage(HBitmap(ImageMemory(vector<octet>(p, p + l))));
+	}
+	catch(std::exception&)
+	{}
+	return grIOerror;
+}
+graphics_errors
+IMAGE::getimage(const char* filename)
+{
+	if(getimage_pngfile(this, filename) == 0)
+		return grOk;
+
+	wchar_t wszPath[MAX_PATH * 2 + 1];
+
+	::MultiByteToWideChar(CP_ACP, 0, filename, -1, wszPath, MAX_PATH * 2);
+	return getimage(wszPath);
+}
+graphics_errors
+IMAGE::getimage(const wchar_t* filename)
+{
+	try
+	{
+		// XXX: URL unsupported.
+		return getimage(HBitmap(filename));
+	}
+	catch(std::exception&)
+	{}
+	return grIOerror;
+}
+graphics_errors
+IMAGE::getimage(const char* pResType, const char* pResName)
 {
 	if(const auto hrsrc = ::FindResourceA(_graph_setting::get_instance(),
 		pResName, pResType))
-	{
-		auto hg(::LoadResource({}, hrsrc));
-		auto dwSize(::SizeofResource({}, hrsrc));
-		auto hGlobal(::GlobalAlloc(GMEM_MOVEABLE, dwSize));
-		auto pvRes(::LockResource(hg));
-		LPVOID pvData;
-		IPicture* pPicture;
-		IStream* pStm;
-		long lWidth, lHeight;
-		long lWidthPixels, lHeightPixels;
-		::HRESULT hr;
-
-		if(!hGlobal || !(pvData = ::GlobalLock(hGlobal)))
-			return grAllocError;
-		std::memcpy(pvData, pvRes, dwSize);
-		::GlobalUnlock(hGlobal);
-		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
-			return grNullPointer;
-
-		hr = OleLoadPicture(pStm, ::LONG(dwSize), TRUE, IID_IPicture,
-							reinterpret_cast<void**>(&pPicture));
-		::GlobalFree(hGlobal);
-		if(FAILED(hr))
-			return grIOerror;
-
-		IMAGE* img(get_pages().imgtarget);
-
-		pPicture->get_Width(&lWidth);
-		lWidthPixels = ::MulDiv(lWidth,
-			::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
-		pPicture->get_Height(&lHeight);
-		lHeightPixels = ::MulDiv(lHeight,
-			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-		Resize(lWidthPixels, lHeightPixels);
-		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-			lWidth, -lHeight, {});
-		pPicture->Release();
-		return grOk;
-	}
+		if(const auto hg = ::LoadResource({}, hrsrc))
+			if(const auto pvRes = ::LockResource(hg))
+				return getimage(static_cast<ystdex::octet*>(pvRes),
+					::SizeofResource({}, hrsrc));
 	return grIOerror;
 }
-int
-IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
+graphics_errors
+IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName)
 {
 	if(const auto hrsrc = ::FindResourceW(_graph_setting::get_instance(),
 		pResName, pResType))
-	{
-		auto hg = ::LoadResource({}, hrsrc);
-		auto dwSize = ::SizeofResource({}, hrsrc);
-		auto hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, dwSize);
-		auto pvRes = ::LockResource(hg);
-		LPVOID pvData;
-		IPicture* pPicture;
-		IStream* pStm;
-		long lWidth, lHeight;
-		long lWidthPixels, lHeightPixels;
-
-		if(!hGlobal || !(pvData = ::GlobalLock(hGlobal)))
-			return grAllocError;
-		std::memcpy(pvData, pvRes, dwSize);
-		::GlobalUnlock(hGlobal);
-		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
-			return grNullPointer;
-
-		auto hr(OleLoadPicture(pStm, ::LONG(dwSize), TRUE, IID_IPicture,
-			reinterpret_cast<void**>(&pPicture)));
-
-		::GlobalFree(hGlobal);
-		if(FAILED(hr))
-			return grIOerror;
-
-		const auto img = get_pages().imgtarget;
-
-		pPicture->get_Width(&lWidth);
-		lWidthPixels
-			= ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
-		pPicture->get_Height(&lHeight);
-		lHeightPixels
-			= ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-		Resize(lWidthPixels, lHeightPixels);
-		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-			lWidth, -lHeight, {});
-		pPicture->Release();
-		return grOk;
-	}
+		if(const auto hg = ::LoadResource({}, hrsrc))
+			if(const auto pvRes = ::LockResource(hg))
+				return getimage(static_cast<ystdex::octet*>(pvRes),
+					::SizeofResource({}, hrsrc));
 	return grIOerror;
 }
-int
-IMAGE::getimage(void * pMem, long size)
+void
+IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
-	if(pMem)
+	if(Resize(srcWidth, srcHeight) == 0)
 	{
-		::DWORD dwSize = size;
-		::HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, dwSize);
-		LPVOID pvData;
-		struct IPicture* pPicture;
-		IStream* pStm;
-		long lWidth, lHeight;
-		long lWidthPixels, lHeightPixels;
-		::HRESULT hr;
+		const auto img = CONVERT_IMAGE_CONST(pSrcImg);
 
-		if(!hGlobal || !(pvData = ::GlobalLock(hGlobal)))
-		{
-			return grAllocError;
-		}
-		std::memcpy(pvData, pMem, dwSize);
-		::GlobalUnlock(hGlobal);
-		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
-		{
-			return grNullPointer;
-		}
-
-		hr = OleLoadPicture(
-				 pStm,
-				 ::LONG(dwSize),
-				 TRUE,
-				 IID_IPicture,
-				 reinterpret_cast<void**>(&pPicture)
-			 );
-
-		::GlobalFree(hGlobal);
-
-		if(FAILED(hr))
-		{
-			return grIOerror;
-		}
-
-
-		const auto img = get_pages().imgtarget;
-		pPicture->get_Width(&lWidth);
-		lWidthPixels = ::MulDiv(lWidth,
-			::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
-		pPicture->get_Height(&lHeight);
-		lHeightPixels = ::MulDiv(lHeight,
-			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-		Resize(lWidthPixels, lHeightPixels);
-		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-			lWidth, -lHeight, {});
-		pPicture->Release();
-		return grOk;
+		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight, img->m_hDC, srcX, srcY,
+			SRCCOPY);
 	}
-	return grIOerror;
 }
 
 void

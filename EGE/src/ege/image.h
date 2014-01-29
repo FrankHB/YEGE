@@ -8,6 +8,7 @@
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
 #include <gdiplus.h>
 #include "head.h"
+#include YFM_YSLib_Adaptor_Image
 
 namespace ege
 {
@@ -97,18 +98,20 @@ public:
 		return Resize(ToSize(width, height));
 	}
 
+	graphics_errors
+	getimage(HBitmap&&);
+	graphics_errors
+	getimage(ystdex::octet*, size_t);
+	graphics_errors
+	getimage(const char*);
+	graphics_errors
+	getimage(const wchar_t*);
+	graphics_errors
+	getimage(const char*, const char*);
+	graphics_errors
+	getimage(const wchar_t*, const wchar_t*);
 	void
-	getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);
-	int
-	getimage(const char* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
-	int
-	getimage(const wchar_t* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
-	int
-	getimage(const char* pResType, const char* pResName, int zoomWidth = 0, int zoomHeight = 0);
-	int
-	getimage(const wchar_t* pResType, const wchar_t* pResName, int zoomWidth = 0, int zoomHeight = 0);
-	int
-	getimage(void* pMem, long size);
+	getimage(IMAGE*, int, int, int, int);
 
 	void
 	putimage(int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;

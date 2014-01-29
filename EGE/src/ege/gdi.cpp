@@ -7,34 +7,33 @@ namespace ege
 {
 
 int
-getimage(IMAGE* pDstImg, const char* pImgFile, int zoomWidth, int zoomHeight)
+getimage(IMAGE* pDstImg, const char* pImgFile, int, int)
 {
 	yassume(pDstImg);
 
-	return pDstImg->getimage(pImgFile, zoomWidth, zoomHeight);
+	return pDstImg->getimage(pImgFile);
 }
 int
-getimage(IMAGE* pDstImg, const wchar_t* pImgFile, int zoomWidth, int zoomHeight)
+getimage(IMAGE* pDstImg, const wchar_t* pImgFile, int, int)
 {
 	yassume(pDstImg);
 
-	return pDstImg->getimage(pImgFile, zoomWidth, zoomHeight);
+	return pDstImg->getimage(pImgFile);
 }
 int
-getimage(IMAGE* pDstImg, const char* pResType, const char* pResName,
-	int zoomWidth, int zoomHeight)
+getimage(IMAGE* pDstImg, const char* pResType, const char* pResName, int, int)
 {
 	yassume(pDstImg);
 
-	return pDstImg->getimage(pResType, pResName, zoomWidth, zoomHeight);
+	return pDstImg->getimage(pResType, pResName);
 }
 int
-getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName,
-	int zoomWidth, int zoomHeight)
+getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName, int,
+	int)
 {
 	yassume(pDstImg);
 
-	return pDstImg->getimage(pResType, pResName, zoomWidth, zoomHeight);
+	return pDstImg->getimage(pResType, pResName);
 }
 
 void
