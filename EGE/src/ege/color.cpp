@@ -7,120 +7,8 @@
 namespace ege
 {
 
-using YSLib::Drawing::MonoType;
-
-
-struct COLORHSV
-{
-	float h;
-	float s;
-	float v;
-};
-
-struct COLORRGB
-{
-	MonoType r;
-	MonoType g;
-	MonoType b;
-};
-
-namespace
-{
-
-COLORHSV
-RGB_TO_HSV(const COLORRGB& rgb)
-{
-	float r, g, b, minRGB, maxRGB, deltaRGB;
-	COLORHSV output;
-
-	output.h = 0;
-	r = rgb.r / 255.0f;
-	g = rgb.g / 255.0f;
-	b = rgb.b / 255.0f;
-	minRGB = std::min(r, std::min(g, b));
-	maxRGB = std::max(r, std::max(g, b));
-	deltaRGB = maxRGB - minRGB;
-	output.v = maxRGB;
-	if(maxRGB != 0.0f)
-		output.s = deltaRGB / maxRGB;
-	else
-		output.s = 0.0f;
-	if(output.s <= 0.0f)
-		output.h = -1.0f;
-	else
-	{
-		if(r == maxRGB)
-			output.h = (g - b) / deltaRGB;
-		else if(g == maxRGB)
-			output.h = 2.0f + (b - r) / deltaRGB;
-		else if(b == maxRGB)
-			output.h = 4.0f + (r - g) / deltaRGB;
-		output.h *= 60.0f;
-		if(output.h < 0.0f)
-			output.h += 360.0f;
-		output.h /= 360.0f;
-	}
-	return output;
-}
-
-COLORRGB
-HSV_TO_RGB(COLORHSV hsv)
-{
-	float R = 0, G = 0, B = 0;
-
-	if(hsv.s <= 0.0)
-		return {MonoType(hsv.v * 255), MonoType(hsv.v * 255),
-			MonoType(hsv.v * 255)};
-	else
-	{
-		if(hsv.h == 1.0)
-			hsv.h = 0.0;
-		hsv.h *= 6.0;
-
-		int k = floor(hsv.h);
-		float f = hsv.h - k, aa(hsv.v * (1.0f - hsv.s)),
-			bb(hsv.v * (1.0f - hsv.s * f)),
-			cc(hsv.v * (1.0f - (hsv.s * (1.0f - f))));
-
-		switch(k)
-		{
-		case 0:
-			R = hsv.v;
-			G = cc;
-			B = aa;
-			break;
-		case 1:
-			R = bb;
-			G = hsv.v;
-			B = aa;
-			break;
-		case 2:
-			R = aa;
-			G = hsv.v;
-			B = cc;
-			break;
-		case 3:
-			R = aa;
-			G = bb;
-			B = hsv.v;
-			break;
-		case 4:
-			R = cc;
-			G = aa;
-			B = hsv.v;
-			break;
-		case 5:
-			R = hsv.v;
-			G = aa;
-			B = bb;
-			break;
-		}
-	}
-	return {MonoType(R * 255), MonoType(G * 255), MonoType(B * 255)};
-}
-
-}
-
+using namespace YSLib;
+using namespace Drawing;
 
 
 color_t
@@ -133,7 +21,7 @@ rgb2gray(color_t color)
 	c += ((color >> 8) & 0xFF) * 0.587;
 	c += ((color) & 0xFF) * 0.114;
 	r = color_t::Trait::IntegerType(c);
-	return EGERGB(r, r, r);
+	return MakeGray(r);
 }
 
 void
@@ -143,7 +31,7 @@ rgb2hsl(color_t rgb, float* h, float* s, float* l)
 	yassume(s),
 	yassume(l);
 
-	const auto hsl(YSLib::Drawing::ColorToHSL(rgb));
+	const auto hsl(ColorToHSL(rgb));
 
 	yunseq(*h = hsl.h, *s = hsl.s, *l = hsl.l);
 }
@@ -252,25 +140,86 @@ rgb2hsv(color_t rgb, float* h, float* s, float* v)
 	yassume(s),
 	yassume(v);
 
-	const auto
-		chsv(RGB_TO_HSV(COLORRGB{EGEGET_R(rgb), EGEGET_G(rgb), EGEGET_B(rgb)}));
+	[&](float& h, float& s, float& v){
+		const float r(rgb.GetR() / 255.0f), g(rgb.GetG() / 255.0f),
+			b(rgb.GetB() / 255.0f), max_color(std::max(r, std::max(g, b))),
+			delta(max_color - std::min(r, std::min(g, b)));
 
-	*h = chsv.h * 360.0f;
-	*s = chsv.s;
-	*v = chsv.v;
+		yunseq(s = max_color == 0.F ? 0.F : delta / max_color, v = max_color);
+		h = (s > 0.F ? [=]{
+			float res(0);
+
+			if(r == max_color)
+				res = (g - b) / delta;
+			else if(g == max_color)
+				res = 2.F + (b - r) / delta;
+			else if(b == max_color)
+				res = 4.F + (r - g) / delta;
+			if(res < 0.F)
+				res += 6.F;
+			return res;
+		}() : -6.F) * 60.F;
+	}(*h, *s, *v);
 }
 
 color_t
-hsv2rgb(float H, float S, float V)
+hsv2rgb(float h, float s, float v)
 {
-	if(H < 0.0f)
-		H += int(-H / 360.0f + 1) * 360.0f;
-	if(H >= 360.0f)
-		H -= int(H / 360.0f) * 360.0f;
+	YAssert(IsInInterval<float>(h, 0, 360), "Invalid hue found."),
+	YAssert(IsInClosedInterval(s, 0.F, 1.F), "Invalid saturation found."),
+	YAssert(IsInClosedInterval(v, 0.F, 1.F), "Invalid value found.");
 
-	const auto crgb(HSV_TO_RGB(COLORHSV{H / 360.0f, S, V}));
+	if(s > 0.F)
+	{
+		h /= 60.F;
+		if(h == 6.F)
+			h = 0.F;
 
-	return EGERGB(crgb.r, crgb.g, crgb.b);
+		const unsigned k(std::floor(h));
+		const float f(h - k), aa(v * (1.F - s)),
+			bb(v * (1.F - s * f)),
+			cc(v * (1.F - (s * (1.F - f))));
+		float r(0), g(0), b(0);
+
+		switch(k)
+		{
+		case 0U:
+			r = v;
+			g = cc;
+			b = aa;
+			break;
+		case 1U:
+			r = bb;
+			g = v;
+			b = aa;
+			break;
+		case 2U:
+			r = aa;
+			g = v;
+			b = cc;
+			break;
+		case 3U:
+			r = aa;
+			g = bb;
+			b = v;
+			break;
+		case 4U:
+			r = cc;
+			g = aa;
+			b = v;
+			break;
+		case 5U:
+			r = v;
+			g = aa;
+			b = bb;
+			break;
+		default:
+			YAssert(false, "Invalid state found.");
+		}
+		return Color(r * 255, g * 255, b * 255);
+	}
+	return MakeGray(v * 255);
 }
 
 } // namespace ege;
+
