@@ -143,13 +143,13 @@ int getpath_scene()
 	for(it = 0; ver[it][0]; ++it)
 	{
 		std::sprintf(strpath, "%s%s", strbasepath, ver[it]);
-		if(::RegOpenKeyEx(HKEY_LOCAL_MACHINE, strpath, 0, KEY_READ, &key) == ERROR_SUCCESS)
+		if(::RegOpenKeyExA(HKEY_LOCAL_MACHINE, strpath, 0, KEY_READ, &key) == ERROR_SUCCESS)
 		{
 			::DWORD dwtype = REG_SZ;
 			::DWORD dwsize = MAX_PATH;
-			if(::RegQueryValueEx(key, "ProductDir", {}, &dwtype, (ystdex::byte*)(installpath[it]), &dwsize))
+			if(::RegQueryValueExA(key, "ProductDir", {}, &dwtype, (ystdex::byte*)(installpath[it]), &dwsize))
 			{
-				::RegQueryValueEx(key, "InstallDir", {}, &dwtype, (ystdex::byte*)(installpath[it]), &dwsize);
+				::RegQueryValueExA(key, "InstallDir", {}, &dwtype, (ystdex::byte*)(installpath[it]), &dwsize);
 				strcat(installpath[it], "\\mingw");
 			}
 			::RegCloseKey(key);
@@ -177,7 +177,7 @@ copyfile(const char* path1, char* pathnew,
 	else
 		std::sprintf(strpath2, "%s\\%s\\%s", pathnew, dir, file);
 
-	int ret = ::CopyFile(strpath1, strpath2, {});
+	int ret = ::CopyFileA(strpath1, strpath2, {});
 	if(ret == 0)
 	{
 		std::sprintf(strpath1, "Copy %s ERROR\n", strpath2);
