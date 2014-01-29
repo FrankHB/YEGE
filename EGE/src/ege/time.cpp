@@ -29,7 +29,7 @@ _get_highfeq_time_ls()
 	{
 		::QueryPerformanceCounter(&llNow);
 		llNow.QuadPart -= get_highfeq_time_start.QuadPart;
-		return (double)llNow.QuadPart / llFeq.QuadPart;
+		return double(llNow.QuadPart) / llFeq.QuadPart;
 	}
 }
 
@@ -49,11 +49,12 @@ ege_sleep(long ms)
 		return;
 
 	static ::HANDLE hTimer = ::CreateWaitableTimer({}, TRUE, {});
-	::LARGE_INTEGER liDueTime;
 
-	liDueTime.QuadPart = ms * (::LONGLONG) - 10000;
 	if(hTimer)
 	{
+		::LARGE_INTEGER liDueTime;
+
+		liDueTime.QuadPart = ms * ::LONGLONG(-10000);
 		if(::SetWaitableTimer(hTimer, &liDueTime, 0, {}, {}, {}))
 			::WaitForSingleObject(hTimer, INFINITE); // != WAIT_OBJECT_0;
 		//::CloseHandle(hTimer);
@@ -109,8 +110,7 @@ delay_ms(long ms)
 				f = 256;
 			}
 			else
-				ege_sleep((int)(dw + delay_time - _get_highfeq_time_ls()
-					* 1000.0));
+				ege_sleep(dw + delay_time - _get_highfeq_time_ls() * 1000.0);
 			--f;
 		}
 		get_global_state()._update();
@@ -146,9 +146,8 @@ delay_fps(double fps)
 		{
 			do
 			{
-				ege_sleep((int)(dw + delay_time - _get_highfeq_time_ls()
-					* 1000.0));
-			} while(dw + delay_time >= _get_highfeq_time_ls() * 1000.0);
+				ege_sleep(dw + delay_time - _get_highfeq_time_ls() * 1000.0);
+			}while(dw + delay_time >= _get_highfeq_time_ls() * 1000.0);
 		}
 		get_global_state()._update();
 		dw = _get_highfeq_time_ls() * 1000.0;
@@ -184,8 +183,7 @@ delay_jfps(double fps)
 
 		while(dw + delay_time >= _get_highfeq_time_ls() * 1000.0)
 		{
-			ege_sleep((int)(dw + delay_time - _get_highfeq_time_ls()
-				* 1000.0));
+			ege_sleep(dw + delay_time - _get_highfeq_time_ls() * 1000.0);
 			bSleep = 1;
 		}
 		if(bSleep)

@@ -14,14 +14,14 @@
 	}; \
 	static void firstinit(ege::egeControlBase* This) \
 	{ \
-		((classname*)This)->m_inheritlevel = 1; \
+		reinterpret_cast<classname*>(This)->m_inheritlevel = 1; \
 	} \
 	void pre_init(int inheritlevel) \
 	{ \
 
 #define CTL_PREINITEND  }
 #define CTL_DEFPARAM    int inherit = inherit_level_e, ege::egeControlBase* pParent = {}
-#define CTL_INITBASE(parent)    parent(inherit, (ege::egeControlBase*)pParent), _preinit_obj(this, inherit_level_e)
+#define CTL_INITBASE(parent)    parent(inherit, reinterpret_cast<ege::egeControlBase*>(pParent)), _preinit_obj(this, inherit_level_e)
 #define CTL_INIT        InitObject iobj(this, inherit_level_e);\
 	ege::PushTarget _pushtarget(buf());
 

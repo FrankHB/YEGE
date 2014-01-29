@@ -107,7 +107,8 @@ void
 IMAGE::gentexture(bool gen)
 {
 	m_texture.reset(gen ? new Gdiplus::Bitmap(getwidth(), getheight(),
-		getwidth() * 4, PixelFormat32bppARGB, (BYTE*)getbuffer()) : nullptr);
+		getwidth() * 4, PixelFormat32bppARGB,
+		reinterpret_cast<ystdex::byte*>(getbuffer())) : nullptr);
 }
 
 int
@@ -115,13 +116,14 @@ IMAGE::Refresh()
 {
 	if(const auto bitmap = GetBitmap())
 	{
-		::HBITMAP hbmp_def = (::HBITMAP)::SelectObject(m_hDC, bitmap);
+		const auto hbmp_def = ::HBITMAP(::SelectObject(m_hDC, bitmap));
+
 		if(!g_hbmp_def)
 		{
 			g_hbmp_def = hbmp_def;
-			g_hbr_def  = (::HBRUSH)::GetCurrentObject(m_hDC, OBJ_BRUSH);
-			g_pen_def  = (::HPEN)::GetCurrentObject(m_hDC, OBJ_PEN);
-			g_font_def = (::HFONT)::GetCurrentObject(m_hDC, OBJ_FONT);
+			g_hbr_def = ::HBRUSH(::GetCurrentObject(m_hDC, OBJ_BRUSH));
+			g_pen_def = ::HPEN(::GetCurrentObject(m_hDC, OBJ_PEN));
+			g_font_def = ::HFONT(::GetCurrentObject(m_hDC, OBJ_FONT));
 		}
 		::DeleteObject(hbmp_def);
 		setviewport(0, 0, GetWidth(), GetHeight(), 1, this);
@@ -129,7 +131,8 @@ IMAGE::Refresh()
 	}
 	else
 	{
-		int err = ::GetLastError();
+		const int err(::GetLastError());
+
 		::DeleteDC(m_hDC);
 		return err;
 	}
@@ -197,7 +200,7 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 
 	::lstrcpyW(wszPath, szPath);
 	hr = ::OleLoadPicturePath(wszPath, {}, 0, 0, IID_IPicture,
-		(void**)&pPicture);
+		reinterpret_cast<void**>(&pPicture));
 	if(FAILED(hr))
 		return grIOerror;
 
@@ -260,7 +263,7 @@ saveimagetofile(IMAGE* img, std::FILE * fp)
 	if(pitch & 3)
 		pitch = ((pitch + 4) & ~3);
 	else addbit = 0;
-	bmpfHead.bfType = *(WORD*)"BM";
+	bmpfHead.bfType = *(reinterpret_cast<const WORD*>("BM"));
 	bmpfHead.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 	bmpfHead.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER)
 		+ pitch * img->GetHeight();
@@ -327,12 +330,11 @@ IMAGE::getpngimg(std::FILE * fp)
 	std::uint32_t height, depth;
 
 	{
-		char header[16];
-		std::uint32_t number = 8;
+		ystdex::byte header[16];
+		const auto number = 8;
 		std::fread(header, 1, number, fp);
-		int isn_png = ::png_sig_cmp((::png_const_bytep)header, 0, number);
 
-		if(isn_png)
+		if(::png_sig_cmp(header, 0, number))
 			return grIOerror;
 		fseek(fp, 0, SEEK_SET);
 	}
@@ -356,6 +358,7 @@ IMAGE::getpngimg(std::FILE * fp)
 	depth = info_ptr->pixel_depth;
 
 	::png_bytepp row_pointers = ::png_get_rows(pic_ptr, info_ptr);
+
 	for(std::uint32_t i = 0; i < height; ++i)
 	{
 		const auto width(GetWidth());
@@ -363,16 +366,15 @@ IMAGE::getpngimg(std::FILE * fp)
 
 		if(depth == 24)
 			for(std::uint32_t j = 0; j < width; ++j)
-				m_pBuffer[i * width + j]
-					= 0xFFFFFF & (::DWORD&)row_pointers[i][j * 3];
+				m_pBuffer[i * width + j] = 0xFFFFFF
+					& reinterpret_cast<::DWORD&>(row_pointers[i][j * 3]);
 		else if(depth == 32)
 			for(std::uint32_t j = 0; j < width; ++j)
 			{
-				m_pBuffer[i * width + j] = ((::DWORD*)(row_pointers[i]))[j];
+				m_pBuffer[i * width + j] = (reinterpret_cast<::DWORD*>(
+					row_pointers[i]))[j];
 				if((m_pBuffer[i * width + j] & 0xFF000000) == 0)
-				{
 					m_pBuffer[i * width + j] = 0;
-				}
 			}
 	}
 	::png_destroy_read_struct(&pic_ptr, &info_ptr, {});
@@ -382,19 +384,19 @@ IMAGE::getpngimg(std::FILE * fp)
 int
 IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 {
-	unsigned long i, j;
-	::png_structp pic_ptr;
+	::png_structp
+		pic_ptr(::png_create_write_struct(PNG_LIBPNG_VER_STRING, {}, {}, {}));
+
+	if(!pic_ptr)
+		return -1;
+
 	::png_infop info_ptr;
 	::png_colorp palette;
 	::png_byte* image;
 	::png_bytep* row_pointers;
-	pic_ptr = ::png_create_write_struct(PNG_LIBPNG_VER_STRING, {}, {}, {});
+
 	std::uint32_t pixelsize = bAlpha ? 4 : 3;
 	std::uint32_t width = GetWidth(), height = GetHeight();
-	if(!pic_ptr)
-	{
-		return -1;
-	}
 	info_ptr = ::png_create_info_struct(pic_ptr);
 	if(!info_ptr)
 	{
@@ -412,19 +414,20 @@ IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 	::png_set_IHDR(pic_ptr, info_ptr, width, height, 8, bAlpha
 		? PNG_COLOR_TYPE_RGBA : PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
 		PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-	palette = (::png_colorp)::png_malloc(pic_ptr,
-		PNG_MAX_PALETTE_LENGTH * sizeof(::png_color));
+	palette = static_cast<::png_colorp>(::png_malloc(pic_ptr,
+		PNG_MAX_PALETTE_LENGTH * sizeof(::png_color)));
 	::png_set_PLTE(pic_ptr, info_ptr, palette, PNG_MAX_PALETTE_LENGTH);
 	::png_write_info(pic_ptr, info_ptr);
 	::png_set_packing(pic_ptr);
-	image = (::png_byte*)malloc(width * height * pixelsize
-		* sizeof(::png_byte) + 4);
+	image = static_cast<::png_byte*>(malloc(width * height * pixelsize
+		* sizeof(::png_byte) + 4));
 	if(!image)
 	{
 		::png_destroy_write_struct(&pic_ptr, &info_ptr);
 		return -1;
 	}
-	row_pointers = (::png_bytep*)malloc(height * sizeof(::png_bytep));
+	row_pointers
+		= static_cast<::png_bytep*>(malloc(height * sizeof(::png_bytep)));
 	if(!row_pointers)
 	{
 		::png_destroy_write_struct(&pic_ptr, &info_ptr);
@@ -435,12 +438,13 @@ IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 
 	const auto m_pBuffer(GetBufferPtr());
 
-	for(i = 0; i < height; i++)
+	for(size_t i = 0; i < height; i++)
 	{
-		for(j = 0; j < width; ++j)\
-			(::DWORD&)image[(i * width  + j) * pixelsize]
-				= RGBTOBGR(m_pBuffer[i * width + j]);
-		row_pointers[i] = (::png_bytep)image + i * width * pixelsize;
+		for(size_t j = 0; j < width; ++j)\
+			reinterpret_cast<::DWORD&>(image[(i * width  + j) * pixelsize]
+				= RGBTOBGR(m_pBuffer[i * width + j]));
+		row_pointers[i] = static_cast<::png_bytep>(image) + i * width
+			* pixelsize;
 	}
 	::png_write_image(pic_ptr, row_pointers);
 	::png_write_end(pic_ptr, info_ptr);
@@ -479,7 +483,7 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 			return grNullPointer;
 
 		hr = OleLoadPicture(pStm, ::LONG(dwSize), TRUE, IID_IPicture,
-							(void**)&pPicture);
+							reinterpret_cast<void**>(&pPicture));
 		::GlobalFree(hGlobal);
 		if(FAILED(hr))
 			return grIOerror;
@@ -523,8 +527,8 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
 			return grNullPointer;
 
-		auto hr(OleLoadPicture(pStm, (::LONG)dwSize, TRUE, IID_IPicture,
-							   (void**)&pPicture));
+		auto hr(OleLoadPicture(pStm, ::LONG(dwSize), TRUE, IID_IPicture,
+			reinterpret_cast<void**>(&pPicture)));
 
 		::GlobalFree(hGlobal);
 		if(FAILED(hr))
@@ -573,10 +577,10 @@ IMAGE::getimage(void * pMem, long size)
 
 		hr = OleLoadPicture(
 				 pStm,
-				 (::LONG)dwSize,
+				 ::LONG(dwSize),
 				 TRUE,
 				 IID_IPicture,
-				 (void**)&pPicture
+				 reinterpret_cast<void**>(&pPicture)
 			 );
 
 		::GlobalFree(hGlobal);
@@ -1002,7 +1006,7 @@ int
 IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 							  int nYOriginDest, int nWidthDest, int nHeightDest)
 {
-	std::unique_ptr< ::DWORD[]> buff(new ::DWORD[8 << 10]);
+	std::unique_ptr<::DWORD[]> buff(new ::DWORD[8 << 10]);
 	int x2, y2, ix, iy;
 	PixelType lsum;
 	::DWORD sumRB, sumG;
@@ -1160,7 +1164,7 @@ IMAGE::imagefilter_blurring_8(
 	int nHeightDest
 )
 {
-	std::unique_ptr< ::DWORD[]> buff(new ::DWORD[8 << 10]);
+	std::unique_ptr<::DWORD[]> buff(new ::DWORD[8 << 10]);
 	int x2, y2, ix, iy;
 	::DWORD lsum, sumRB, sumG, lbuf;
 	int ddx, dldx;
@@ -1420,7 +1424,7 @@ IMAGE::putimage_rotatezoom(
 
 #define BILINEAR_INTERPOLATION(s, LT, RT, LB, RB, x, y) \
 	{\
-		alphaA = (int)(x*0x100);\
+		alphaA = int(x * 0x100);\
 		alphaB = 0xFF - alphaA;\
 		Trb = (((LT & 0xFF00FF) * alphaB + (RT & 0xFF00FF) * alphaA) \
 			& 0xFF00FF00) >> 8;\
@@ -1430,7 +1434,7 @@ IMAGE::putimage_rotatezoom(
 			& 0xFF00FF00) >> 8;\
 		Bg =  (((LB & 0xFF00) * alphaB + (RB & 0xFF00) * alphaA) & 0xFF0000) \
 			>> 8;\
-		alphaA = (int)(y*0x100);\
+		alphaA = int(y * 0x100);\
 		alphaB = 0xFF - alphaA;\
 		crb = ((Trb * alphaB + Brb * alphaA) & 0xFF00FF00);\
 		cg =  ((Tg * alphaB + Bg * alphaA) & 0xFF0000);\
@@ -1478,7 +1482,7 @@ namespace
 int
 float2int(float f)
 {
-	return f >= 0 ? (int)(f + .5) : (int)(f - .5);
+	return f >= 0 ? int(f + .5) : int(f - .5);
 }
 
 void
@@ -1486,10 +1490,10 @@ draw_flat_scanline(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	const vector2d * svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x),
-		y = float2int((float)vt->p[0].y), w = e - s;
-	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
-	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
+	int s = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
+		y = float2int(vt->p[0].y), w = e - s;
+	auto lp_dest_bmp_byte = reinterpret_cast<::DWORD*>(dc_dest->getbuffer());
+	auto lp_src_bmp_byte = reinterpret_cast<::DWORD*>(dc_src->getbuffer());
 	int dest_w = dc_dest->GetWidth();
 	int src_w = dc_src->GetWidth();
 
@@ -1497,8 +1501,8 @@ draw_flat_scanline(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	{
 		int i, bx = s;
 		vector2d _svt = *svt;
-		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
-		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
+		_svt.p[0].x += (s - vt->p[0].x) * rw / dw;
+		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
 		{
 			float curx = _svt.p[0].x + .5f, cury = _svt.p[0].y + .5f;
 			float dx = (_svt.p[1].x - _svt.p[0].x) / w;
@@ -1518,7 +1522,7 @@ draw_flat_scanline(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 			for(i = s; i < e; ++i, curx += dx, cury += dy)
 			{
 				lp_dest_bmp_byte[dest_w * y + i]
-					= lp_src_bmp_byte[src_w * (int)(cury) + (int)(curx)];
+					= lp_src_bmp_byte[src_w * int(cury) + int(curx)];
 			}
 		}
 	}
@@ -1529,11 +1533,11 @@ draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d * vt,
 	IMAGE* dc_src, const vector2d * svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int s = (int)(vt->p[0].x + .5), e = (int)(vt->p[1].x + .5),
-		y = (int)(vt->p[0].y + .5), w = e - s;
-	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
-	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
-	::DWORD  col;
+	int s = vt->p[0].x + .5, e = vt->p[1].x + .5,
+		y = vt->p[0].y + .5, w = e - s;
+	auto lp_dest_bmp_byte = dc_dest->getbuffer();
+	auto lp_src_bmp_byte = dc_src->getbuffer();
+	::DWORD col;
 	int dest_w = dc_dest->GetWidth();
 	int src_w = dc_src->GetWidth();
 
@@ -1541,33 +1545,22 @@ draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d * vt,
 	{
 		int i, bx = s;
 		vector2d _svt = *svt;
-		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
-		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
-		{
-			float curx = _svt.p[0].x + .5f, cury = _svt.p[0].y + .5f;
-			float dx = (_svt.p[1].x - _svt.p[0].x) / w;
-			float dy = (_svt.p[1].y - _svt.p[0].y) / w;
+		_svt.p[0].x += (s - vt->p[0].x) * rw / dw;
+		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
 
-			if(s < x1)
-			{
-				s = x1;
-			}
-			if(e > x2)
-			{
-				e = x2;
-			}
-			curx += (s - bx) * dx;
-			cury += (s - bx) * dy;
+		float curx = _svt.p[0].x + .5f, cury = _svt.p[0].y + .5f;
+		float dx = (_svt.p[1].x - _svt.p[0].x) / w;
+		float dy = (_svt.p[1].y - _svt.p[0].y) / w;
 
-			for(i = s; i < e; ++i, curx += dx, cury += dy)
-			{
-				col = lp_src_bmp_byte[src_w * (int)(cury) + (int)(curx)];
-				if(col)
-				{
-					lp_dest_bmp_byte[dest_w * y + i] = col;
-				}
-			}
-		}
+		if(s < x1)
+			s = x1;
+		if(e > x2)
+			e = x2;
+		curx += (s - bx) * dx;
+		cury += (s - bx) * dy;
+		for(i = s; i < e; yunseq(++i, curx += dx, cury += dy))
+			if((col = lp_src_bmp_byte[src_w * int(cury) + int(curx)]))
+				lp_dest_bmp_byte[dest_w * y + i] = col;
 	}
 }
 
@@ -1576,10 +1569,10 @@ draw_flat_scanline_alpha(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	const vector2d * svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x),
-		y = float2int((float)vt->p[0].y), w = e - s;
-	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
-	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
+	int s = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
+		y = float2int(vt->p[0].y), w = e - s;
+	::DWORD* lp_dest_bmp_byte = dc_dest->getbuffer();
+	::DWORD* lp_src_bmp_byte = dc_src->getbuffer();
 	::DWORD sa = alpha, da = 0xFF - sa;
 
 	int dest_w = dc_dest->GetWidth();
@@ -1588,28 +1581,24 @@ draw_flat_scanline_alpha(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	{
 		int i, bx = s;
 		vector2d _svt = *svt;
-		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
-		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
+		_svt.p[0].x += (s - vt->p[0].x) * rw / dw;
+		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
 		{
 			float curx = _svt.p[0].x + .5f, cury = _svt.p[0].y + .5f;
 			float dx = (_svt.p[1].x - _svt.p[0].x) / w;
 			float dy = (_svt.p[1].y - _svt.p[0].y) / w;
 
 			if(s < x1)
-			{
 				s = x1;
-			}
 			if(e > x2)
-			{
 				e = x2;
-			}
 			curx += (s - bx) * dx;
 			cury += (s - bx) * dy;
 
 			for(i = s; i < e; ++i, curx += dx, cury += dy)
 			{
 				::DWORD d = lp_dest_bmp_byte[dest_w * y + i],
-					s = lp_src_bmp_byte[src_w * (int)(cury) + (int)(curx)];
+					s = lp_src_bmp_byte[src_w * int(cury) + int(curx)];
 				d = ((d & 0xFF00FF) * da & 0xFF00FF00)
 					| ((d & 0xFF00) * da >> 16 << 16);
 				s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
@@ -1625,10 +1614,10 @@ draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d * vt,
 	IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int s = (int)(vt->p[0].x + .5), e = (int)(vt->p[1].x + .5),
-		y = (int)(vt->p[0].y + .5), w = e - s;
-	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
-	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
+	int s = vt->p[0].x + .5, e = vt->p[1].x + .5,
+		y = vt->p[0].y + .5, w = e - s;
+	::DWORD* lp_dest_bmp_byte = dc_dest->getbuffer();
+	::DWORD* lp_src_bmp_byte = dc_src->getbuffer();
 	::DWORD sa = alpha, da = 0xFF - sa;
 
 	int dest_w = dc_dest->GetWidth();
@@ -1637,27 +1626,23 @@ draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d * vt,
 	{
 		int i, bx = s;
 		vector2d _svt = *svt;
-		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
-		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
+		_svt.p[0].x += (s - vt->p[0].x) * rw / dw;
+		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
 		{
 			float curx = _svt.p[0].x + .5f, cury = _svt.p[0].y + .5f;
 			float dx = (_svt.p[1].x - _svt.p[0].x) / w;
 			float dy = (_svt.p[1].y - _svt.p[0].y) / w;
 
 			if(s < x1)
-			{
 				s = x1;
-			}
 			if(e > x2)
-			{
 				e = x2;
-			}
 			curx += (s - bx) * dx;
 			cury += (s - bx) * dy;
-
 			for(i = s; i < e; ++i, curx += dx, cury += dy)
 			{
-				::DWORD s = lp_src_bmp_byte[src_w * (int)(cury) + (int)(curx)];
+				::DWORD s = lp_src_bmp_byte[src_w * int(cury) + int(curx)];
+
 				if(s)
 				{
 					::DWORD d = lp_dest_bmp_byte[dest_w * y + i];
@@ -1699,10 +1684,10 @@ draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	const vector2d* svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x),
-		y = float2int((float)vt->p[0].y), w = e - s;
-	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
-	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
+	int s = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
+		y = float2int(vt->p[0].y), w = e - s;
+	::DWORD* lp_dest_bmp_byte = dc_dest->getbuffer();
+	::DWORD* lp_src_bmp_byte = dc_src->getbuffer();
 	::DWORD Trb, Tg, Brb, Bg, crb, cg;
 	::DWORD alphaA, alphaB;
 	int dest_w = dc_dest->GetWidth();
@@ -1713,30 +1698,26 @@ draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	{
 		int i, bx = s;
 		vector2d _svt = *svt;
-		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
-		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
+		_svt.p[0].x += (s - vt->p[0].x) * rw / dw;
+		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
 		{
 			float curx = _svt.p[0].x, cury = _svt.p[0].y;
 			float dx = (_svt.p[1].x - _svt.p[0].x) / w;
 			float dy = (_svt.p[1].y - _svt.p[0].y) / w;
 
 			if(s < x1)
-			{
 				s = x1;
-			}
 			if(e > x2)
-			{
 				e = x2;
-			}
 			curx += (s - bx) * dx;
 			cury += (s - bx) * dy;
-
 			for(i = s; i < e; ++i, curx += dx, cury += dy)
 			{
-				int ix = (int)curx, iy = (int)cury;
-				double fx = curx - ix, fy = cury - iy;
+				int ix = curx, iy = cury;
+				double fx(curx - ix), fy = cury - iy;
 				::DWORD* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
 				::DWORD col;
+
 				BILINEAR_INTERPOLATION(
 					col,
 					lp_src_byte[0],
@@ -1757,10 +1738,10 @@ draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt,
 	IMAGE* dc_src, const vector2d * svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x),
-		y = float2int((float)vt->p[0].y), w = e - s;
-	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
-	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
+	int s = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
+		y = float2int(vt->p[0].y), w = e - s;
+	::DWORD* lp_dest_bmp_byte = dc_dest->getbuffer();
+	::DWORD* lp_src_bmp_byte = dc_src->getbuffer();
 	::DWORD Trb, Tg, Brb, Bg, crb, cg;
 	::DWORD alphaA, alphaB;
 	int dest_w = dc_dest->GetWidth();
@@ -1771,30 +1752,27 @@ draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt,
 	{
 		int i, bx = s;
 		vector2d _svt = *svt;
-		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
-		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
+		_svt.p[0].x += (s - vt->p[0].x) * rw / dw;
+		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
 		{
 			float curx = _svt.p[0].x, cury = _svt.p[0].y;
 			float dx = (_svt.p[1].x - _svt.p[0].x) / w;
 			float dy = (_svt.p[1].y - _svt.p[0].y) / w;
 
 			if(s < x1)
-			{
 				s = x1;
-			}
 			if(e > x2)
-			{
 				e = x2;
-			}
 			curx += (s - bx) * dx;
 			cury += (s - bx) * dy;
 
 			for(i = s; i < e; ++i, curx += dx, cury += dy)
 			{
-				int ix = (int)curx, iy = (int)cury;
-				float fx = curx - ix, fy = cury - iy;
+				int ix(curx), iy(cury);
+				float fx(curx - ix), fy = cury - iy;
 				::DWORD* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
 				::DWORD col;
+
 				BILINEAR_INTERPOLATION(
 					col,
 					lp_src_byte[0],
@@ -1818,10 +1796,10 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	const vector2d * svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x),
-		y = float2int((float)vt->p[0].y), w = e - s;
-	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
-	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
+	int s = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
+		y = float2int(vt->p[0].y), w = e - s;
+	::DWORD* lp_dest_bmp_byte = dc_dest->getbuffer();
+	::DWORD* lp_src_bmp_byte = dc_src->getbuffer();
 	::DWORD Trb, Tg, Brb, Bg, crb, cg;
 	::DWORD alphaA, alphaB;
 	::DWORD sa = alpha, da = 0xFF - sa;
@@ -1834,30 +1812,27 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	{
 		int i, bx = s;
 		vector2d _svt = *svt;
-		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
-		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
+		_svt.p[0].x += (s - vt->p[0].x) * rw / dw;
+		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
 		{
 			float curx = _svt.p[0].x, cury = _svt.p[0].y;
 			float dx = (_svt.p[1].x - _svt.p[0].x) / w;
 			float dy = (_svt.p[1].y - _svt.p[0].y) / w;
 
 			if(s < x1)
-			{
 				s = x1;
-			}
 			if(e > x2)
-			{
 				e = x2;
-			}
 			curx += (s - bx) * dx;
 			cury += (s - bx) * dy;
 
 			for(i = s; i < e; ++i, curx += dx, cury += dy)
 			{
-				int ix = (int)curx, iy = (int)cury;
-				float fx = curx - ix, fy = cury - iy;
+				int ix(curx), iy(cury);
+				float fx(curx - ix), fy = cury - iy;
 				::DWORD* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
 				::DWORD col;
+
 				BILINEAR_INTERPOLATION(
 					col,
 					lp_src_byte[0],
@@ -1867,14 +1842,14 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 					fx,
 					fy
 				);
-				{
-					::DWORD d = lp_dest_bmp_byte[dest_w * y + i];
-					d = (((d & 0xFF00FF) * da & 0xFF00FF00)
-						| ((d & 0xFF00) * da & 0xFF0000)) >> 8;
-					col = (((col & 0xFF00FF) * sa & 0xFF00FF00)
-						| ((col & 0xFF00) * sa & 0xFF0000)) >> 8;
-					lp_dest_bmp_byte[dest_w * y + i] = d + col;
-				}
+
+				::DWORD d = lp_dest_bmp_byte[dest_w * y + i];
+
+				d = (((d & 0xFF00FF) * da & 0xFF00FF00)
+					| ((d & 0xFF00) * da & 0xFF0000)) >> 8;
+				col = (((col & 0xFF00FF) * sa & 0xFF00FF00)
+					| ((col & 0xFF00) * sa & 0xFF0000)) >> 8;
+				lp_dest_bmp_byte[dest_w * y + i] = d + col;
 			}
 		}
 	}
@@ -1885,10 +1860,10 @@ draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d * vt,
 	IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x),
-		y = float2int((float)vt->p[0].y), w = e - s;
-	::DWORD* lp_dest_bmp_byte = (::DWORD*)dc_dest->getbuffer();
-	::DWORD* lp_src_bmp_byte = (::DWORD*)dc_src->getbuffer();
+	int s = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
+		y = float2int(vt->p[0].y), w = e - s;
+	::DWORD* lp_dest_bmp_byte = dc_dest->getbuffer();
+	::DWORD* lp_src_bmp_byte = dc_src->getbuffer();
 	::DWORD Trb, Tg, Brb, Bg, crb, cg;
 	::DWORD alphaA, alphaB;
 	::DWORD sa = alpha, da = 0xFF - sa;
@@ -1901,30 +1876,27 @@ draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d * vt,
 	{
 		int i, bx = s;
 		vector2d _svt = *svt;
-		_svt.p[0].x += (float)((s - vt->p[0].x) * rw / dw);
-		_svt.p[1].x += (float)((e - vt->p[1].x) * rw / dw);
+
+		_svt.p[0].x += (s - vt->p[0].x) * rw / dw;
+		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
 		{
 			float curx = _svt.p[0].x, cury = _svt.p[0].y;
 			float dx = (_svt.p[1].x - _svt.p[0].x) / w;
 			float dy = (_svt.p[1].y - _svt.p[0].y) / w;
 
 			if(s < x1)
-			{
 				s = x1;
-			}
 			if(e > x2)
-			{
 				e = x2;
-			}
 			curx += (s - bx) * dx;
 			cury += (s - bx) * dy;
-
 			for(i = s; i < e; ++i, curx += dx, cury += dy)
 			{
-				int ix = (int)curx, iy = (int)cury;
-				float fx = curx - ix, fy = cury - iy;
+				int ix(curx), iy(cury);
+				float fx(curx - ix), fy = cury - iy;
 				::DWORD* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
 				::DWORD col;
+
 				BILINEAR_INTERPOLATION(
 					col,
 					lp_src_byte[0],
@@ -1977,8 +1949,8 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 	}
 	{
 		float dd;
-		int s = float2int((float)t2d.p[0].y), e = float2int((float)t2d.p[2].y),
-			h, m = float2int((float)t2d.p[1].y);
+		int s = float2int(t2d.p[0].y), e = float2int(t2d.p[2].y),
+			h, m = float2int(t2d.p[1].y);
 		int rs, re;
 		int i, lh, rh;
 		//	float dm = t2d.p[1].y;
@@ -2020,18 +1992,18 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 			swap(pl, pr);
 			swap(spl, spr);
 		}
-		lh = float2int((float)(pl.y + t2d.p[0].y))
-			 - float2int((float)(t2d.p[0].y));
-		rh = float2int((float)(pr.y + t2d.p[0].y))
-			 - float2int((float)(t2d.p[0].y));
+		lh = float2int((pl.y + t2d.p[0].y))
+			 - float2int((t2d.p[0].y));
+		rh = float2int((pr.y + t2d.p[0].y))
+			 - float2int((t2d.p[0].y));
 		if(h > 0)
 			for(i = s; i < m; ++i)
 			{
 				vector2d vt;
 				vector2d svt;
-				//float dt = (float)(i - rs) / h;
-				float dlt = (float)(i - rs) / lh;
-				float drt = (float)(i - rs) / rh;
+				//float dt = (i - rs) / h;
+				float dlt = (i - rs) / lh;
+				float drt = (i - rs) / rh;
 
 				/*
 				vt.p[0].x = t2d.p[0].x + pl.x * dt;
@@ -2045,7 +2017,7 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 				// */
 				vt.p[0].x = t2d.p[0].x + pl.x * dlt;
 				vt.p[1].x = t2d.p[0].x + pr.x * drt;
-				vt.p[0].y = vt.p[1].y = (float)(i);
+				vt.p[0].y = vt.p[1].y = (i);
 				svt.p[0].x = t3d.p[0].x + spl.x * dlt;
 				svt.p[1].x = t3d.p[0].x + spr.x * drt;
 				svt.p[0].y = t3d.p[0].y + spl.y * dlt;
@@ -2089,7 +2061,7 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 
 			vt.p[0].x = t2d.p[0].x + pl.x;
 			vt.p[1].x = t2d.p[0].x + pr.x;
-			vt.p[0].y = vt.p[1].y = (float)(m);
+			vt.p[0].y = vt.p[1].y = (m);
 			svt.p[0].x = t3d.p[0].x + spl.x;
 			svt.p[1].x = t3d.p[0].x + spr.x;
 			svt.p[0].y = t3d.p[0].y + spl.y;
@@ -2147,18 +2119,18 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 			swap(pl, pr);
 			swap(spl, spr);
 		}
-		lh = float2int((float)(t2d.p[2].y))
-			 - float2int((float)(pl.y + t2d.p[2].y));
-		rh = float2int((float)(t2d.p[2].y))
-			 - float2int((float)(pr.y + t2d.p[2].y));
+		lh = float2int((t2d.p[2].y))
+			 - float2int((pl.y + t2d.p[2].y));
+		rh = float2int((t2d.p[2].y))
+			 - float2int((pr.y + t2d.p[2].y));
 		if(h > 0)
 			for(i = e; i > m; --i)
 			{
 				vector2d vt;
 				vector2d svt;
-				//float dt = (float)(re - i) / h;
-				float dlt = (float)(re - i) / lh;
-				float drt = (float)(re - i) / rh;
+				//float dt = (re - i) / h;
+				float dlt = (re - i) / lh;
+				float drt = (re - i) / rh;
 				/*
 				vt.p[0].x = t2d.p[2].x + pl.x * dt;
 				vt.p[1].x = t2d.p[2].x + pr.x * dt;
@@ -2171,7 +2143,7 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 				// */
 				vt.p[0].x = t2d.p[2].x + pl.x * dlt;
 				vt.p[1].x = t2d.p[2].x + pr.x * drt;
-				vt.p[0].y = vt.p[1].y = (float)(i);
+				vt.p[0].y = vt.p[1].y = (i);
 				svt.p[0].x = t3d.p[2].x + spl.x * dlt;
 				svt.p[1].x = t3d.p[2].x + spr.x * drt;
 				svt.p[0].y = t3d.p[2].y + spl.y * dlt;
@@ -2226,8 +2198,8 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 	}
 	{
 		float dd;
-		int s = float2int((float)t2d.p[0].y), e = float2int((float)t2d.p[2].y),
-			h, m = float2int((float)t2d.p[1].y);
+		int s = float2int(t2d.p[0].y), e = float2int(t2d.p[2].y),
+			h, m = float2int(t2d.p[1].y);
 		int rs, re;
 		int i, lh, rh;
 		//	float dm = t2d.p[1].y;
@@ -2270,19 +2242,19 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 			swap(pl, pr);
 			swap(spl, spr);
 		}
-		lh = float2int((float)(pl.y + t2d.p[0].y))
-			 - float2int((float)(t2d.p[0].y));
-		rh = float2int((float)(pr.y + t2d.p[0].y))
-			 - float2int((float)(t2d.p[0].y));
+		lh = float2int((pl.y + t2d.p[0].y))
+			 - float2int((t2d.p[0].y));
+		rh = float2int((pr.y + t2d.p[0].y))
+			 - float2int((t2d.p[0].y));
 		if(h > 0)
 		{
 			for(i = s; i < m; ++i)
 			{
 				vector2d vt;
 				vector2d svt;
-				//float dt = (float)(i - rs) / h;
-				float dlt = (float)(i - rs) / lh;
-				float drt = (float)(i - rs) / rh;
+				//float dt = (i - rs) / h;
+				float dlt = (i - rs) / lh;
+				float drt = (i - rs) / rh;
 
 				/*
 				vt.p[0].x = t2d.p[0].x + pl.x * dt;
@@ -2296,7 +2268,7 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 				// */
 				vt.p[0].x = t2d.p[0].x + pl.x * dlt;
 				vt.p[1].x = t2d.p[0].x + pr.x * drt;
-				vt.p[0].y = vt.p[1].y = (float)(i);
+				vt.p[0].y = vt.p[1].y = (i);
 
 				svt.p[0].x = t3d.p[0].x + spl.x * dlt;
 				svt.p[1].x = t3d.p[0].x + spr.x * drt;
@@ -2344,7 +2316,7 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 
 			vt.p[0].x = t2d.p[0].x + pl.x;
 			vt.p[1].x = t2d.p[0].x + pr.x;
-			vt.p[0].y = vt.p[1].y = (float)(m);
+			vt.p[0].y = vt.p[1].y = (m);
 
 			svt.p[0].x = t3d.p[0].x + spl.x;
 			svt.p[1].x = t3d.p[0].x + spr.x;
@@ -2419,9 +2391,9 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 			{
 				vector2d vt;
 				vector2d svt;
-				//float dt = (float)(re - i) / h;
-				float dlt = (float)(re - i) / lh;
-				float drt = (float)(re - i) / rh;
+				//float dt = (re - i) / h;
+				float dlt = (re - i) / lh;
+				float drt = (re - i) / rh;
 
 				/*
 				vt.p[0].x = t2d.p[2].x + pl.x * dt;
@@ -2435,7 +2407,7 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 				// */
 				vt.p[0].x = t2d.p[2].x + pl.x * dlt;
 				vt.p[1].x = t2d.p[2].x + pr.x * drt;
-				vt.p[0].y = vt.p[1].y = (float)(i);
+				vt.p[0].y = vt.p[1].y = (i);
 
 				svt.p[0].x = t3d.p[2].x + spl.x * dlt;
 				svt.p[1].x = t3d.p[2].x + spr.x * drt;
@@ -2493,18 +2465,18 @@ putimage_trangle(
 		{
 			for(i = 0; i < 3; ++i)
 			{
-				_tt.p[i].x = (float)float2int((float)(_tt.p[i].x
+				_tt.p[i].x = float2int((_tt.p[i].x
 					* (dc_src->GetWidth() - 2)));
-				_tt.p[i].y = (float)float2int((float)(_tt.p[i].y
+				_tt.p[i].y = float2int((_tt.p[i].y
 					* (dc_src->GetHeight() - 2)));
 			}
 		}
 		else
 			for(i = 0; i < 3; ++i)
 			{
-				_tt.p[i].x = (float)float2int((float)(_tt.p[i].x
+				_tt.p[i].x = float2int((_tt.p[i].x
 					* (dc_src->GetWidth() - 1)));
-				_tt.p[i].y = (float)float2int((float)(_tt.p[i].y
+				_tt.p[i].y = float2int((_tt.p[i].y
 					* (dc_src->GetHeight() - 1)));
 			}
 		if(smooth)

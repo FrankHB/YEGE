@@ -1,6 +1,7 @@
 ﻿#include "ege.h"
 #include <mmsystem.h>
 #include <Digitalv.h>
+#include <ystdex/cassert.h>
 
 namespace ege
 {
@@ -29,7 +30,7 @@ MUSIC::OpenFile(const char* _szStr)
 
 	mci_p.lpstrElementName = _szStr;
 	mci_p.lpstrDeviceType = {};
-	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
+	mci_p.dwCallback = ::DWORD_PTR(m_dwCallBack);
 
 	if(m_DID != MUSIC_ERROR)
 		Close();
@@ -38,7 +39,7 @@ MUSIC::OpenFile(const char* _szStr)
 				 0,
 				 MCI_OPEN,
 				 MCI_NOTIFY | MCI_OPEN_ELEMENT,
-				 (::DWORD_PTR)&mci_p);
+				 ::DWORD_PTR(&mci_p));
 
 	if(mciERR == 0)
 	{
@@ -48,9 +49,9 @@ MUSIC::OpenFile(const char* _szStr)
 		{
 			::MCI_SET_PARMS mci_p{::DWORD_PTR(), MCI_FORMAT_MILLISECONDS,
 				::DWORD()};
-			//::DWORD dw =
+
 			::mciSendCommandW(m_DID, MCI_SET, MCI_NOTIFY | MCI_SET_TIME_FORMAT,
-				(::DWORD_PTR)&mci_p);
+				::DWORD_PTR(&mci_p));
 		}
 	}
 
@@ -68,12 +69,12 @@ MUSIC::OpenFile(const wchar_t* _szStr)
 
 	mci_p.lpstrElementName = _szStr;
 	mci_p.lpstrDeviceType = {};
-	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
+	mci_p.dwCallback = ::DWORD_PTR(m_dwCallBack);
 
 	if(m_DID != MUSIC_ERROR)
 		Close();
 	mciERR = ::mciSendCommandW(0, MCI_OPEN, MCI_NOTIFY | MCI_OPEN_ELEMENT,
-		(::DWORD_PTR)&mci_p);
+		::DWORD_PTR(&mci_p));
 
 	if(mciERR == 0)
 	{
@@ -85,7 +86,7 @@ MUSIC::OpenFile(const wchar_t* _szStr)
 		mci_p.dwTimeFormat = MCI_FORMAT_MILLISECONDS;
 		//::DWORD dw =
 		::mciSendCommandW(m_DID, MCI_SET, MCI_NOTIFY | MCI_SET_TIME_FORMAT,
-			(::DWORD_PTR)&mci_p);
+			::DWORD_PTR(&mci_p));
 	}
 	return mciERR;
 }
@@ -95,7 +96,7 @@ MUSIC::OpenFile(const wchar_t* _szStr)
 ::DWORD
 MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 {
-	assert(m_DID != MUSIC_ERROR);
+	yconstraint(m_DID != MUSIC_ERROR);
 
 	::MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_PLAY_PARMS();
@@ -103,13 +104,13 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 
 	mci_p.dwFrom = dwFrom;
 	mci_p.dwTo = dwTo;
-	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
+	mci_p.dwCallback = ::DWORD_PTR(m_dwCallBack);
 
 	if(dwFrom != MUSIC_ERROR)
 		dwFlag |= MCI_FROM;
 	if(dwTo != MUSIC_ERROR)
 		dwFlag |= MCI_TO;
-	mciERR = ::mciSendCommandW(m_DID, MCI_PLAY, dwFlag, (::DWORD_PTR)&mci_p);
+	mciERR = ::mciSendCommandW(m_DID, MCI_PLAY, dwFlag, ::DWORD_PTR(&mci_p));
 	::Sleep(1);
 	return mciERR;
 }
@@ -118,13 +119,13 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 // pause the music stream.
 ::DWORD MUSIC::Pause()
 {
-	assert(m_DID != MUSIC_ERROR);
+	yconstraint(m_DID != MUSIC_ERROR);
 
 	::MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_GENERIC_PARMS();
 
-	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
-	mciERR = ::mciSendCommandW(m_DID, MCI_PAUSE, MCI_NOTIFY, (::DWORD_PTR)&mci_p);
+	mci_p.dwCallback = ::DWORD_PTR(m_dwCallBack);
+	mciERR = ::mciSendCommandW(m_DID, MCI_PAUSE, MCI_NOTIFY, ::DWORD_PTR(&mci_p));
 	return mciERR;
 }
 
@@ -134,27 +135,27 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 
 ::DWORD MUSIC::Stop()
 {
-	assert(m_DID != MUSIC_ERROR);
+	yconstraint(m_DID != MUSIC_ERROR);
 
 	::MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_GENERIC_PARMS();
 
-	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
-	mciERR = ::mciSendCommandW(m_DID, MCI_STOP, MCI_NOTIFY, (::DWORD_PTR)&mci_p);
+	mci_p.dwCallback = ::DWORD_PTR(m_dwCallBack);
+	mciERR = ::mciSendCommandW(m_DID, MCI_STOP, MCI_NOTIFY, ::DWORD_PTR(&mci_p));
 	return mciERR;
 }
 
 ::DWORD MUSIC::SetVolume(float value)
 {
-	assert(m_DID != MUSIC_ERROR);
+	yconstraint(m_DID != MUSIC_ERROR);
 
 	::MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_DGV_SETAUDIO_PARMSW();
 
 	mci_p.dwItem = MCI_DGV_SETAUDIO_VOLUME;
-	mci_p.dwValue = (::DWORD)(value * 1000); //此处就是音量大小 (0--1000)
+	mci_p.dwValue = ::DWORD(value * 1000); //此处就是音量大小 (0--1000)
 	mciERR = ::mciSendCommandW(m_DID, MCI_SETAUDIO, MCI_DGV_SETAUDIO_VALUE
-		| MCI_DGV_SETAUDIO_ITEM, (::DWORD_PTR)&mci_p);
+		| MCI_DGV_SETAUDIO_ITEM, ::DWORD_PTR(&mci_p));
 	return mciERR;
 }
 
@@ -162,15 +163,15 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 // seek the music stream playposition to `dwTo`
 ::DWORD MUSIC::Seek(::DWORD dwTo)
 {
-	assert(m_DID != MUSIC_ERROR);
+	yconstraint(m_DID != MUSIC_ERROR);
 
 	::MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_SEEK_PARMS();
 
-	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
+	mci_p.dwCallback = ::DWORD_PTR(m_dwCallBack);
 	mci_p.dwTo = dwTo;
 
-	mciERR = ::mciSendCommandW(m_DID, MCI_SEEK, MCI_NOTIFY, (::DWORD_PTR)&mci_p);
+	mciERR = ::mciSendCommandW(m_DID, MCI_SEEK, MCI_NOTIFY, ::DWORD_PTR(&mci_p));
 
 	return mciERR;
 }
@@ -181,12 +182,12 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 {
 	if(m_DID != MUSIC_ERROR)
 	{
-		::MCIERROR mciERR = 0;
+		::MCIERROR mciERR(0);
 		auto mci_p = ::MCI_GENERIC_PARMS();
 
-		mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
+		mci_p.dwCallback = ::DWORD_PTR(m_dwCallBack);
 		mciERR = ::mciSendCommandW(m_DID, MCI_CLOSE, MCI_NOTIFY,
-			(::DWORD_PTR)&mci_p);
+			::DWORD_PTR(&mci_p));
 		m_DID = MUSIC_ERROR;
 		return mciERR;
 	}
@@ -198,43 +199,43 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 // get the playing position. return by milliseconds
 ::DWORD MUSIC::GetPosition()
 {
-	assert(m_DID != MUSIC_ERROR);
+	yconstraint(m_DID != MUSIC_ERROR);
 
 	auto mci_p = ::MCI_STATUS_PARMS();
 
-	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
+	mci_p.dwCallback = ::DWORD_PTR(m_dwCallBack);
 	mci_p.dwItem = MCI_STATUS_POSITION;
 	::mciSendCommandW(m_DID, MCI_STATUS, MCI_NOTIFY | MCI_STATUS_ITEM,
-		(::DWORD_PTR)&mci_p);
-	return (::DWORD)mci_p.dwReturn;
+		::DWORD_PTR(&mci_p));
+	return ::DWORD(mci_p.dwReturn);
 }
 
 // mciGetLength()
 // get the length of the music stream. return by milliseconds
 ::DWORD MUSIC::GetLength()
 {
-	assert(m_DID != MUSIC_ERROR);
+	yconstraint(m_DID != MUSIC_ERROR);
 
 	auto mci_p = ::MCI_STATUS_PARMS();
 
-	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
+	mci_p.dwCallback = ::DWORD_PTR(m_dwCallBack);
 	mci_p.dwItem = MCI_STATUS_LENGTH;
 	::mciSendCommandW(m_DID, MCI_STATUS, MCI_NOTIFY | MCI_STATUS_ITEM,
-		(::DWORD_PTR)&mci_p);
-	return (::DWORD)mci_p.dwReturn;
+		::DWORD_PTR(&mci_p));
+	return ::DWORD(mci_p.dwReturn);
 }
 
 ::DWORD MUSIC::GetPlayStatus()
 {
-	assert(m_DID != MUSIC_ERROR);
+	yconstraint(m_DID != MUSIC_ERROR);
 
 	auto mci_p = ::MCI_STATUS_PARMS();
 
-	mci_p.dwCallback = (::DWORD_PTR)m_dwCallBack;
+	mci_p.dwCallback = ::DWORD_PTR(m_dwCallBack);
 	mci_p.dwItem = MCI_STATUS_MODE;
 	::mciSendCommandW(m_DID, MCI_STATUS, MCI_NOTIFY | MCI_STATUS_ITEM,
-		(::DWORD_PTR)&mci_p);
-	return (::DWORD)mci_p.dwReturn;
+		::DWORD_PTR(&mci_p));
+	return ::DWORD(mci_p.dwReturn);
 }
 
 } // namespace ege;

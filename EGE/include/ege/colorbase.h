@@ -23,12 +23,14 @@ EGERGB(platform::MonoType r, platform::MonoType g, platform::MonoType b)
 {
 	return (r << 16) | (g << 8) | b;
 }
+
 yconstfn color_t::Trait::IntegerType
 EGERGBA(platform::MonoType r, platform::MonoType g, platform::MonoType b,
 	platform::MonoType a)
 {
 	return EGERGB(r, g, b) | a << 24;
 }
+
 yconstfn color_t::Trait::IntegerType
 EGEARGB(platform::MonoType a, platform::MonoType r, platform::MonoType g,
 	platform::MonoType b)
@@ -54,16 +56,19 @@ EGEGET_R(color_t::Trait::IntegerType c)
 {
 	return (c >> 16) & 0xFF;
 }
+
 yconstfn platform::MonoType
 EGEGET_G(color_t::Trait::IntegerType c)
 {
 	return (c >> 8) & 0xFF;
 }
+
 yconstfn platform::MonoType
 EGEGET_B(color_t::Trait::IntegerType c)
 {
 	return c & 0xFF;
 }
+
 yconstfn platform::MonoType
 EGEGET_A(color_t::Trait::IntegerType c)
 {

@@ -136,14 +136,14 @@ rgb2gray(color_t color)
 	c = ((color >> 16) & 0xFF) * 0.299;
 	c += ((color >> 8) & 0xFF) * 0.587;
 	c += ((color) & 0xFF) * 0.114;
-	r = (color_t)c;
+	r = color_t::Trait::IntegerType(c);
 	return EGERGB(r, r, r);
 }
 
 void
 rgb2hsl(color_t rgb, float* H, float* S, float* L)
 {
-	COLORHSL hsl = [](std::uint32_t _col) -> COLORHSL{
+	COLORHSL hsl = [](color_t::Trait::IntegerType _col) -> COLORHSL{
 		COLORHSL cr_col;
 		float r(EGEGET_R(_col) / 255.0f), g(EGEGET_G(_col) / 255.0f),
 			b(EGEGET_B(_col) / 255.0f);
@@ -248,8 +248,12 @@ hsl2rgb(float _h, float _s, float _l)
 	{
 		float dp[3];
 		float xh = _h * 6;
-		if(xh ==    6) xh = 0;
-		int i = (int)(floor(xh) + 0.1), n;
+
+		if(xh == 6)
+			xh = 0;
+
+		int i(floor(xh) + 0.1), n;
+
 		dp[0] = 1;
 		dp[2] = 0;
 		xh -= i;

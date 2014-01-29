@@ -25,8 +25,8 @@ _get_FPS(int add)
 	if(cur - time >= 0.5)
 	{
 		flret = fret;
-		fret = (float)(fps / (cur - time));
-		fret_inv = (float)((fps - fps_inv) / (cur - time));
+		fret = float(fps / (cur - time));
+		fret_inv = float((fps - fps_inv) / (cur - time));
 		fps = 0;
 		fps_inv = 0;
 		time = cur;

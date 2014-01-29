@@ -32,8 +32,8 @@ rotate_point3d_z(VECTOR3D* pt, float r)
 	double sr = sin(r), cr = cos(r);
 	VECTOR3D t_pt = *pt;
 
-	t_pt.x = (float)(cr * pt->x - sr * pt->y);
-	t_pt.y = (float)(cr * pt->y + sr * pt->x);
+	t_pt.x = float(cr * pt->x - sr * pt->y);
+	t_pt.y = float(cr * pt->y + sr * pt->x);
 	*pt = t_pt;
 }
 
@@ -124,7 +124,7 @@ VECTOR3D&
 VECTOR3D::Rotate(float rad, const VECTOR3D& v)
 {
 	VECTOR3D p = *this, a = v, b;
-	float cr = (float)cos(rad), sr = (float)sin(rad);
+	float cr = float(cos(rad)), sr = float(sin(rad));
 
 	a.SetModule(1.0f);
 	*this = p * cr;

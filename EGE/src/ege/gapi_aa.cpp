@@ -46,7 +46,8 @@ ege_drawpoly(int numpoints, ege_point* polypoints, IMAGE* pimg)
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img->m_aa)
 			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-		graphics.DrawLines(&pen, (Gdiplus::PointF*)polypoints, numpoints);
+		graphics.DrawLines(&pen, reinterpret_cast<Gdiplus::PointF*>(polypoints),
+			numpoints);
 	}
 }
 
@@ -61,7 +62,8 @@ ege_drawcurve(int numpoints, ege_point* polypoints, IMAGE* pimg)
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img->m_aa)
 			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-		graphics.DrawCurve(&pen, (Gdiplus::PointF*)polypoints, numpoints);
+		graphics.DrawCurve(&pen, reinterpret_cast<Gdiplus::PointF*>(polypoints),
+			numpoints);
 	}
 }
 
@@ -141,7 +143,8 @@ ege_bezier(int numpoints, ege_point* polypoints, IMAGE* pimg)
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img->m_aa)
 			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-		graphics.DrawBeziers(&pen, (Gdiplus::PointF*)polypoints, numpoints);
+		graphics.DrawBeziers(&pen,
+			reinterpret_cast<Gdiplus::PointF*>(polypoints), numpoints);
 	}
 }
 
@@ -158,13 +161,13 @@ ege_fillpoly(int numpoints, ege_point* polypoints, IMAGE* pimg)
 			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
 		if(img->m_pattern)
 			graphics.FillPolygon(img->m_pattern.get(),
-				(Gdiplus::PointF*)polypoints, numpoints);
+				reinterpret_cast<Gdiplus::PointF*>(polypoints), numpoints);
 		else
 		{
 			Gdiplus::SolidBrush brush(std::uint32_t(img->m_fillcolor));
 
-			graphics.FillPolygon(&brush, (Gdiplus::PointF*)polypoints,
-				numpoints);
+			graphics.FillPolygon(&brush,
+				reinterpret_cast<Gdiplus::PointF*>(polypoints), numpoints);
 		}
 	}
 }
@@ -260,13 +263,13 @@ ege_setpattern_pathgradient(ege_point center, color_t centercolor, int count,
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
-		const auto pbrush(new Gdiplus::PathGradientBrush(
-			(Gdiplus::PointF*)points, count, Gdiplus::WrapModeTile
-		));
+		const auto pbrush(new Gdiplus::PathGradientBrush(reinterpret_cast<
+			Gdiplus::PointF*>(points), count, Gdiplus::WrapModeTile));
 
 		pbrush->SetCenterColor(Gdiplus::Color(centercolor));
 		pbrush->SetCenterPoint(Gdiplus::PointF(center.x, center.y));
-		pbrush->SetSurroundColors((Gdiplus::Color*)pointscolor, &colcount);
+		pbrush->SetSurroundColors(
+			reinterpret_cast<Gdiplus::Color*>(pointscolor), &colcount);
 		img->m_pattern.reset(pbrush);
 	}
 }
@@ -286,7 +289,8 @@ ege_setpattern_ellipsegradient(ege_point center, color_t centercolor,
 
 		pbrush->SetCenterColor(Gdiplus::Color(centercolor));
 		pbrush->SetCenterPoint(Gdiplus::PointF(center.x, center.y));
-		pbrush->SetSurroundColors((Gdiplus::Color*)&color, &count);
+		pbrush->SetSurroundColors(&reinterpret_cast<Gdiplus::Color&>(color),
+			&count);
 		img->m_pattern.reset(pbrush);
 	}
 }
@@ -345,8 +349,8 @@ ege_puttexture(IMAGE* srcimg, ege_rect dest, IMAGE* pimg)
 	{
 		src.x = 0;
 		src.y = 0;
-		src.w = (float)srcimg->GetWidth();
-		src.h = (float)srcimg->GetHeight();
+		src.w = srcimg->GetWidth();
+		src.h = srcimg->GetHeight();
 		ege_puttexture(srcimg, dest, src, img);
 	}
 }

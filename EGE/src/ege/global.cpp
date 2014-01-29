@@ -66,7 +66,7 @@ EnumResNameProc(::HMODULE hModule, ::LPCTSTR, ::LPTSTR lpszName,
 	if(const auto hico = ::HICON(::LoadImage(hModule, lpszName, IMAGE_ICON,
 		0, 0, LR_DEFAULTSIZE)))
 	{
-		*((::HICON*)lParam) = hico;
+		*(reinterpret_cast<::HICON*>(lParam)) = hico;
 		return {};
 	}
 	return true;
@@ -125,7 +125,7 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 		wcex.hInstance = get_instance();
 		wcex.hIcon = ::LoadIcon({}, IDI_WINLOGO);
 		wcex.hCursor = ::LoadCursor({}, IDC_ARROW);
-		wcex.hbrBackground = (::HBRUSH)(COLOR_WINDOW + 1);
+		wcex.hbrBackground = ::HBRUSH(COLOR_WINDOW + 1);
 		wcex.lpszClassName = window_class_name;
 
 		const auto load([&](::LPCTSTR rt){
@@ -242,7 +242,7 @@ _graph_setting::_getch()
 						return key & 0xFFFF;
 					}
 				}
-		} while(_is_run() && _waitdealmessage());
+		}while(_is_run() && _waitdealmessage());
 	}
 	return 0;
 }
@@ -290,7 +290,7 @@ _graph_setting::_getkey()
 					msg.flags |= key_flag_shift;
 				return msg;
 			}
-		} while(_is_run() && _waitdealmessage());
+		}while(_is_run() && _waitdealmessage());
 	}
 	return ret;
 }
@@ -374,7 +374,7 @@ _graph_setting::_getmouse()
 			}
 			return mmsg;
 		}
-	} while(_is_run() && _waitdealmessage());
+	}while(_is_run() && _waitdealmessage());
 	return mmsg;
 }
 
@@ -513,7 +513,7 @@ _graph_setting::_on_ime_control(::HWND hwnd, ::WPARAM wparam, ::LPARAM lparam)
 		COMPOSITIONFORM cpf{0, ::POINT(), ::RECT()};
 
 		cpf.dwStyle = CFS_POINT;
-		cpf.ptCurrentPos = *(LPPOINT)lparam;
+		cpf.ptCurrentPos = *reinterpret_cast<LPPOINT>(lparam);
 		::ImmSetCompositionWindow(hImc, &cpf);
 	}
 }
@@ -552,8 +552,8 @@ _graph_setting::_on_mouse_button_up(::HWND h_wnd, ::UINT msg, ::WPARAM w_param,
 		assert(false);
 		return;
 	}
-	mouse_lastup_x = (short int)((::UINT)l_param & 0xFFFF);
-	mouse_lastup_y = (short int)((::UINT)l_param >> 16);
+	mouse_lastup_x = short(l_param & 0xFFFF);
+	mouse_lastup_y = short(::UINT(l_param) >> 16);
 	*l = 0;
 	keystatemap[vk] = 0;
 	if(mouse_state_l == 0 && mouse_state_m == 0
@@ -683,8 +683,8 @@ _graph_setting::_process_ui_msg(EGEMSG& qmsg)
 		}
 	else if(qmsg.message >= WM_MOUSEFIRST && qmsg.message <= WM_MOUSELAST)
 	{
-		int x = (short int)((::UINT)qmsg.lParam & 0xFFFF),
-			y = (short int)((::UINT)qmsg.lParam >> 16);
+		int x = short(qmsg.lParam & 0xFFFF),
+			y = short(::UINT(qmsg.lParam) >> 16);
 
 		switch(qmsg.message)
 		{
@@ -810,7 +810,7 @@ void
 _graph_setting::_window_create(msg_createwindow& msg)
 {
 	msg.hwnd = ::CreateWindowExW(msg.exstyle, msg.classname, {},
-		msg.style, 0, 0, 0, 0, getHWnd(), (HMENU)msg.id, getHInstance(), {});
+		msg.style, 0, 0, 0, 0, getHWnd(), HMENU(msg.id), getHInstance(), {});
 	if(msg.hEvent)
 		::SetEvent(msg.hEvent);
 }
