@@ -49,7 +49,7 @@ public:
 	::DWORD GetPlayStatus();
 private:
 	::DWORD m_DID;
-	PVOID m_dwCallBack;
+	void* m_dwCallBack;
 };
 
 }

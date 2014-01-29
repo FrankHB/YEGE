@@ -50,7 +50,7 @@ delay_fps 和 delay_jfps 仅保留 double 重载版本。
 
 兼容接口和实现调整
 ----
-Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别用 wchar_t 、char* 、const char* 、wchar_t* 和 const wchar_t* 代替。
+Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 、LPCWSTR 、PVOID 和 LPPOINT 分别用 wchar_t 、char* 、const char* 、wchar_t* 、const wchar_t* 、void* 和 ::POINT* 代替。
 所有同名 typedef 结构体名称或 typedef 匿名结构体调整为非 typedef 结构体类型名。
 宏 EGEAPI 调整至返回值前；移除函数形参中不必要的 const 。
 移除宏 EGE_DEPRECATED 。
