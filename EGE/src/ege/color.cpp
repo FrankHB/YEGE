@@ -7,7 +7,7 @@
 namespace ege
 {
 
-using platform::MonoType;
+using YSLib::Drawing::MonoType;
 
 
 struct COLORHSV

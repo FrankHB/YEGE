@@ -9,67 +9,67 @@
 namespace ege
 {
 
-using color_t = platform::PixelType;
+using color_t = YSLib::Drawing::PixelType;
 
 yconstfn color_t::Trait::IntegerType
-RGBTOBGR(platform::MonoType color)
+RGBTOBGR(YSLib::Drawing::MonoType color)
 {
 	return ((color & 0xFF) << 16) | ((color & 0xFF0000) >> 16)
 		   | (color & 0xFF00FF00);
 }
 
 yconstfn color_t::Trait::IntegerType
-EGERGB(platform::MonoType r, platform::MonoType g, platform::MonoType b)
+EGERGB(YSLib::Drawing::MonoType r, YSLib::Drawing::MonoType g, YSLib::Drawing::MonoType b)
 {
 	return (r << 16) | (g << 8) | b;
 }
 
 yconstfn color_t::Trait::IntegerType
-EGERGBA(platform::MonoType r, platform::MonoType g, platform::MonoType b,
-	platform::MonoType a)
+EGERGBA(YSLib::Drawing::MonoType r, YSLib::Drawing::MonoType g, YSLib::Drawing::MonoType b,
+	YSLib::Drawing::MonoType a)
 {
 	return EGERGB(r, g, b) | a << 24;
 }
 
 yconstfn color_t::Trait::IntegerType
-EGEARGB(platform::MonoType a, platform::MonoType r, platform::MonoType g,
-	platform::MonoType b)
+EGEARGB(YSLib::Drawing::MonoType a, YSLib::Drawing::MonoType r, YSLib::Drawing::MonoType g,
+	YSLib::Drawing::MonoType b)
 {
 	return EGERGB(r, g, b) | a << 24;
 }
 
 
 yconstfn color_t::Trait::IntegerType
-EGEACOLOR(platform::MonoType a, color_t::Trait::IntegerType color)
+EGEACOLOR(YSLib::Drawing::MonoType a, color_t::Trait::IntegerType color)
 {
 	return (color & 0xFFFFFF) | (a << 24);
 }
 yconstfn color_t::Trait::IntegerType
-EGECOLORA(platform::MonoType a, color_t::Trait::IntegerType color)
+EGECOLORA(YSLib::Drawing::MonoType a, color_t::Trait::IntegerType color)
 {
 	return (color & 0xFFFFFF) | (a << 24);
 }
 
 
-yconstfn platform::MonoType
+yconstfn YSLib::Drawing::MonoType
 EGEGET_R(color_t::Trait::IntegerType c)
 {
 	return (c >> 16) & 0xFF;
 }
 
-yconstfn platform::MonoType
+yconstfn YSLib::Drawing::MonoType
 EGEGET_G(color_t::Trait::IntegerType c)
 {
 	return (c >> 8) & 0xFF;
 }
 
-yconstfn platform::MonoType
+yconstfn YSLib::Drawing::MonoType
 EGEGET_B(color_t::Trait::IntegerType c)
 {
 	return c & 0xFF;
 }
 
-yconstfn platform::MonoType
+yconstfn YSLib::Drawing::MonoType
 EGEGET_A(color_t::Trait::IntegerType c)
 {
 	return (c >> 24) & 0xFF;
@@ -82,13 +82,13 @@ EGEGRAY(color_t::Trait::IntegerType gray)
 }
 
 yconstfn color_t::Trait::IntegerType
-EGEGRAYA(color_t::Trait::IntegerType gray, platform::MonoType a)
+EGEGRAYA(color_t::Trait::IntegerType gray, YSLib::Drawing::MonoType a)
 {
 	return EGEGRAY(gray) | (a << 24);
 }
 
 yconstfn color_t::Trait::IntegerType
-EGEAGRAY(platform::MonoType a, color_t::Trait::IntegerType gray)
+EGEAGRAY(YSLib::Drawing::MonoType a, color_t::Trait::IntegerType gray)
 {
 	return EGEGRAY(gray) | (a << 24);
 }

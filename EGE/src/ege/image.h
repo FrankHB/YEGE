@@ -8,14 +8,15 @@
 #include <windows.h>
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
 #include <gdiplus.h>
-#include <YCLib/Win32GUI.h>
+#include <ysbuild.h>
+#include YFM_YSLib_Core_YGDIBase
 
 namespace ege
 {
 
-using platform::SPos;
-using platform::SDst;
-using platform::PixelType;
+using YSLib::SPos;
+using YSLib::SDst;
+using YSLib::Drawing::PixelType;
 using YSLib::Drawing::Point;
 using YSLib::Drawing::Size;
 using YSLib::Drawing::Rect;
@@ -90,8 +91,8 @@ public:
 	::DWORD*
 	getbuffer() const
 	{
-		static_assert(sizeof( ::DWORD) == sizeof(platform::PixelType), "");
-		static_assert(yalignof( ::DWORD) == yalignof(platform::PixelType), "");
+		static_assert(sizeof( ::DWORD) == sizeof(YSLib::Drawing::PixelType), "");
+		static_assert(yalignof( ::DWORD) == yalignof(YSLib::Drawing::PixelType), "");
 
 		return reinterpret_cast<::DWORD*>(sbuf.GetBufferPtr());
 	}
