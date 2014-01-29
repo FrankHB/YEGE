@@ -25,7 +25,7 @@
 // 定义复数及乘、加运算
 
 
-/*
+#if 0
 // 定义复数
 template <class TFLOAT>
 struct complex
@@ -47,7 +47,7 @@ struct complex
 };
 
 using COMPLEX = complex<double>;
-//*/
+#endif
 
 #ifdef USINGDOUBLE
 using Float = double;
