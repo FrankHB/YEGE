@@ -176,8 +176,8 @@
 		<Unit filename="src/zlib/inflate.h" />
 		<Unit filename="src/zlib/inftrees.h" />
 		<Unit filename="src/zlib/trees.h" />
-		<Unit filename="src/zlib/z.h" />
 		<Unit filename="src/zlib/zconf.h" />
+		<Unit filename="src/zlib/zlib.h" />
 		<Unit filename="src/zlib/zutil.h" />
 		<Extensions>
 			<code_completion />
