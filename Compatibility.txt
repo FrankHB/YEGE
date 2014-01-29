@@ -136,6 +136,7 @@ HGLOBAL
 HDC
 HICON
 HINSTANCE
+HME
 HMOD
 HPE
 HRGN
@@ -179,6 +180,7 @@ ShowWindow
 Sleep
 Stretch
 TCHA
+TRIVE
 Trans
 UINT
 ULONG
@@ -191,6 +193,7 @@ png_
 wsprintfW
 
 以下所列外部依赖项全局名称在使用时前缀 :: 。
+BYTE
 GRADIENT_TRIANGLE
 HWND
 MSG

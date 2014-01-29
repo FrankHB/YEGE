@@ -417,7 +417,7 @@ int main()
 		char str[1024];
 		inputbox_getline("aaa", "bbb", str, sizeof(str));
 		//inputbox_getline("aaa", "bbb", str, sizeof(str));
-		int a = strlen(str);
+		int a = std::strlen(str);
 	}//*/
 	label lb;
 	//button bt;

@@ -540,15 +540,15 @@ main()
 			setprec(to);
 
 			fgets(str, 1000, fp);
-			str[strlen(str) - 1] = 0;
+			str[std::strlen(str) - 1] = 0;
 			printf("%s\n", str);
 			center.real(stoi(str));
 			fgets(str, 1000, fp);
-			str[strlen(str) - 1] = 0;
+			str[std::strlen(str) - 1] = 0;
 			printf("%s\n", str);
 			center.imag(stoi(str));
 			fgets(str, 1000, fp);
-			str[strlen(str) - 1] = 0;
+			str[std::strlen(str) - 1] = 0;
 			printf("%s\n", str);
 			delta.real() = str;
 			std::fclose(fp);

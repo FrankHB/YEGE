@@ -580,7 +580,7 @@ public:
 		for(int n = 0; n < 320; n++)
 		{
 			double x = ((double)n - 160) / 20;
-			double y = sin(x);
+			double y = std::sin(x);
 			y = -y * 80 + 240;
 			putpixel(n, (int)y, WHITE);
 		}
@@ -595,7 +595,7 @@ public:
 \n		//映射到-8到8的浮点数范围\
 \n		double x = ((double)n - 160) / 20;\
 \n		//计算对应的y\
-\n		double y = sin(x);\
+\n		double y = std::sin(x);\
 \n		//把y映射回屏幕坐标\
 \n		y = -y * 80 + 240;\
 \n		//画出这个点\

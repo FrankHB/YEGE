@@ -6,7 +6,7 @@ void draw_arrow(float sx, float sy,
 				float ex, float ey,
 				float r, float len)
 {
-	float c = cos(r), s = sin(r);
+	float c = std::cos(r), s = std::sin(r);
 	float dx = sx - ex, dy = sy - ey;
 	ege_line(sx, sy, ex, ey);
 	ege_point points[3] =

@@ -55,7 +55,7 @@ private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz, int
 	{
 		if(img->m_texttype.vert == CENTER_TEXT)
 			y -= textheight(textstring, img) / 2;
-		TextOutA(img->getdc(), x, y, textstring, strlen(textstring));
+		TextOutA(img->getdc(), x, y, textstring, std::strlen(textstring));
 	}
 }
 
@@ -256,7 +256,7 @@ textwidth(const char* textstring, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		SIZE sz;
-		::GetTextExtentPoint32A(img->getdc(), textstring, strlen(textstring),
+		::GetTextExtentPoint32A(img->getdc(), textstring, std::strlen(textstring),
 			&sz);
 		return sz.cx;
 	}
@@ -299,8 +299,8 @@ textheight(const char* textstring, IMAGE* pimg)
 	{
 		SIZE sz;
 
-		::GetTextExtentPoint32A(img->getdc(), textstring, strlen(textstring),
-			&sz);
+		::GetTextExtentPoint32A(img->getdc(), textstring,
+			std::strlen(textstring), &sz);
 		return sz.cy;
 	}
 	return 0;
@@ -358,11 +358,11 @@ setfont(
 	int bItalic,
 	int bUnderline,
 	int bStrikeOut,
-	BYTE fbCharSet,
-	BYTE fbOutPrecision,
-	BYTE fbClipPrecision,
-	BYTE fbQuality,
-	BYTE fbPitchAndFamily,
+	ystdex::byte fbCharSet,
+	ystdex::byte fbOutPrecision,
+	ystdex::byte fbClipPrecision,
+	ystdex::byte fbQuality,
+	ystdex::byte fbPitchAndFamily,
 	IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
@@ -388,11 +388,11 @@ setfont(
 	int bItalic,
 	int bUnderline,
 	int bStrikeOut,
-	BYTE fbCharSet,
-	BYTE fbOutPrecision,
-	BYTE fbClipPrecision,
-	BYTE fbQuality,
-	BYTE fbPitchAndFamily,
+	ystdex::byte fbCharSet,
+	ystdex::byte fbOutPrecision,
+	ystdex::byte fbClipPrecision,
+	ystdex::byte fbQuality,
+	ystdex::byte fbPitchAndFamily,
 	IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))

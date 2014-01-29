@@ -2506,7 +2506,7 @@ putimage_rotate(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 	{
 		triangle2d _tt[2];
 		triangle2d _dt[2];
-		double dx, dy, cr = cos(radian), sr = -sin(radian);
+		double dx, dy, cr = std::cos(radian), sr = -std::sin(radian);
 		int i, j;
 
 		_tt[0].p[0].x = 0;
@@ -2556,7 +2556,7 @@ putimage_rotatezoom(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 	{
 		triangle2d _tt[2];
 		triangle2d _dt[2];
-		double dx, dy, cr = cos(radian), sr = -sin(radian);
+		double dx, dy, cr = std::cos(radian), sr = -std::sin(radian);
 		int i, j;
 		_tt[0].p[0].x = 0;
 		_tt[0].p[0].y = 0;

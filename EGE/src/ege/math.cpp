@@ -7,7 +7,7 @@ namespace ege
 void
 rotate_point3d_x(VECTOR3D* pt, float r)
 {
-	double sr = sin(r), cr = cos(r);
+	double sr = std::sin(r), cr = std::cos(r);
 	VECTOR3D t_pt = *pt;
 
 	t_pt.y = float(cr * pt->y - sr * pt->z);
@@ -18,7 +18,7 @@ rotate_point3d_x(VECTOR3D* pt, float r)
 void
 rotate_point3d_y(VECTOR3D* pt, float r)
 {
-	double sr = sin(r), cr = cos(r);
+	double sr = std::sin(r), cr = std::cos(r);
 	VECTOR3D t_pt = *pt;
 
 	t_pt.z = float(cr * pt->z - sr * pt->x);
@@ -29,7 +29,7 @@ rotate_point3d_y(VECTOR3D* pt, float r)
 void
 rotate_point3d_z(VECTOR3D* pt, float r)
 {
-	double sr = sin(r), cr = cos(r);
+	double sr = std::sin(r), cr = std::cos(r);
 	VECTOR3D t_pt = *pt;
 
 	t_pt.x = float(cr * pt->x - sr * pt->y);
@@ -124,7 +124,7 @@ VECTOR3D&
 VECTOR3D::Rotate(float rad, const VECTOR3D& v)
 {
 	VECTOR3D p = *this, a = v, b;
-	float cr = float(cos(rad)), sr = float(sin(rad));
+	float cr = float(std::cos(rad)), sr = float(std::sin(rad));
 
 	a.SetModule(1.0f);
 	*this = p * cr;

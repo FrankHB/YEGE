@@ -89,11 +89,11 @@ EGEAPI void
 setfont(int nHeight, int nWidth, const wchar_t* lpszFace, int nEscapement, int nOrientation,
 	int nWeight, int bItalic, int bUnderline, int bStrikeOut, IMAGE* pimg = {});
 EGEAPI void setfont(int nHeight, int nWidth, const char* lpszFace,  int nEscapement, int nOrientation,
-	int nWeight, int bItalic, int bUnderline, int bStrikeOut, BYTE fbCharSet,
-	BYTE fbOutPrecision, BYTE fbClipPrecision, BYTE fbQuality, BYTE fbPitchAndFamily, IMAGE* pimg = {});
+	int nWeight, int bItalic, int bUnderline, int bStrikeOut, ::BYTE fbCharSet,
+	::BYTE fbOutPrecision, ::BYTE fbClipPrecision, ::BYTE fbQuality, ::BYTE fbPitchAndFamily, IMAGE* pimg = {});
 EGEAPI void setfont(int nHeight, int nWidth, const wchar_t* lpszFace, int nEscapement, int nOrientation,
-	int nWeight, int bItalic, int bUnderline, int bStrikeOut, BYTE fbCharSet,
-	BYTE fbOutPrecision, BYTE fbClipPrecision, BYTE fbQuality, BYTE fbPitchAndFamily, IMAGE* pimg = {});
+	int nWeight, int bItalic, int bUnderline, int bStrikeOut, ::BYTE fbCharSet,
+	::BYTE fbOutPrecision, ::BYTE fbClipPrecision, ::BYTE fbQuality, ::BYTE fbPitchAndFamily, IMAGE* pimg = {});
 
 EGEAPI void
 setfont(const ::LOGFONTA* font, IMAGE* pimg = {}); // 设置当前字体样式

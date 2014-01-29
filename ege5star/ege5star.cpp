@@ -9,8 +9,8 @@ void paintstar(double x, double y, double r, double a)
 	int pt[10];
 	for(int n = 0; n < 5; ++n)
 	{
-		pt[n * 2] = (int)(-cos(PI * 4 / 5 * n + a) * r + x);
-		pt[n * 2 + 1] = (int)(sin(PI * 4 / 5 * n + a) * r + y);
+		pt[n * 2] = (int)(-std::cos(PI * 4 / 5 * n + a) * r + x);
+		pt[n * 2 + 1] = (int)(std::sin(PI * 4 / 5 * n + a) * r + y);
 	}
 	fillpoly(5, pt);
 }

@@ -9,8 +9,8 @@
 ege::ege_point getpos(ege::ege_point center, float rad, float r)
 {
 	ege::ege_point pos;
-	pos.x = sin(rad) * r + center.x;
-	pos.y = -cos(rad) * r + center.y;
+	pos.x = std::sin(rad) * r + center.x;
+	pos.y = -std::cos(rad) * r + center.y;
 	return pos;
 }
 

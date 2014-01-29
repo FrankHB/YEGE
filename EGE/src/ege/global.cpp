@@ -810,7 +810,7 @@ void
 _graph_setting::_window_create(msg_createwindow& msg)
 {
 	msg.hwnd = ::CreateWindowExW(msg.exstyle, msg.classname, {},
-		msg.style, 0, 0, 0, 0, getHWnd(), HMENU(msg.id), getHInstance(), {});
+		msg.style, 0, 0, 0, 0, getHWnd(), ::HMENU(msg.id), getHInstance(), {});
 	if(msg.hEvent)
 		::SetEvent(msg.hEvent);
 }

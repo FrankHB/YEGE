@@ -744,8 +744,8 @@ ellipse(int x, int y, int stangle, int endangle, int xradius, int yradius,
 		const auto sr(stangle / 180.0 * PI), er(endangle / 180.0 * PI);
 
 		::Arc(img->getdc(), x - xradius, y - yradius, x + xradius, y + yradius,
-			x + xradius * cos(sr), y - yradius * sin(sr),
-			x + xradius * cos(er), y - yradius * sin(er));
+			x + xradius * std::cos(sr), y - yradius * std::sin(sr),
+			x + xradius * std::cos(er), y - yradius * std::sin(er));
 	}
 }
 
@@ -765,8 +765,8 @@ sector(int x, int y, int stangle, int endangle, int xradius, int yradius,
 	{
 		const auto sr(stangle / 180.0 * PI), er(endangle / 180.0 * PI);
 		::Pie(img->getdc(), x - xradius, y - yradius, x + xradius, y + yradius,
-			x + xradius * cos(sr), y - yradius * sin(sr),
-			x + xradius * cos(er), y - yradius * sin(er));
+			x + xradius * std::cos(sr), y - yradius * std::sin(sr),
+			x + xradius * std::cos(er), y - yradius * std::sin(er));
 	}
 }
 
@@ -799,8 +799,8 @@ ellipsef(float x, float y, float stangle, float endangle, float xradius,
 		const auto sr(stangle / 180.0 * PI), er(endangle / 180.0 * PI);
 
 		::Arc(img->getdc(), x - xradius, y - yradius, x + xradius, y + yradius,
-			x + xradius * cos(sr), y - yradius * sin(sr),
-			x + xradius * cos(er), y - yradius * sin(er));
+			x + xradius * std::cos(sr), y - yradius * std::sin(sr),
+			x + xradius * std::cos(er), y - yradius * std::sin(er));
 	}
 }
 
@@ -821,8 +821,8 @@ sectorf(float x, float y, float stangle, float endangle, float xradius,
 		const auto sr(stangle / 180.0 * PI), er(endangle / 180.0 * PI);
 
 		::Pie(img->getdc(), x - xradius, y - yradius, x + xradius, y + yradius,
-			x + xradius * cos(sr), y - yradius * sin(sr),
-			x + xradius * cos(er), y - yradius * sin(er));
+			x + xradius * std::cos(sr), y - yradius * std::sin(sr),
+			x + xradius * std::cos(er), y - yradius * std::sin(er));
 	}
 }
 
@@ -911,7 +911,7 @@ fillpoly_gradient(int numpoints, const ege_colpoint* polypoints, IMAGE* pimg)
 		return;
 	if(const auto img = CONVERT_IMAGE(pimg))
 		if(const auto vert
-			= static_cast<TRIVERTEX*>(malloc(sizeof(TRIVERTEX) * numpoints)))
+			= static_cast<::TRIVERTEX*>(malloc(sizeof(::TRIVERTEX) * numpoints)))
 		{
 			if(const auto tri = static_cast<::GRADIENT_TRIANGLE*>(
 				malloc(sizeof(::GRADIENT_TRIANGLE) * (numpoints - 2))))

@@ -22,7 +22,8 @@ public:
 	Mira(int w, int h)
 	{
 		m_a = 0.1 + random(10000) / 10000.0 * 1.6 - 0.8, m_b = 0.99;
-		m_da = 0.0002 * ((int)random(2) * 2 - 1), m_db = 0.0000061 * ((int)random(2) * 2 - 1);
+		m_da = 0.0002 * ((int)random(2) * 2 - 1), m_db = 0.0000061
+			* (int(random(2)) * 2 - 1);
 		m_cr = 0.0;
 		m_tt = random(10000) / 10000.0 * 16.0 + 4;
 		m_zoom = 0.7 / m_tt;
@@ -146,9 +147,9 @@ int getpath_scene()
 		{
 			::DWORD dwtype = REG_SZ;
 			::DWORD dwsize = MAX_PATH;
-			if(::RegQueryValueEx(key, "ProductDir", {}, &dwtype, (BYTE*)(installpath[it]), &dwsize))
+			if(::RegQueryValueEx(key, "ProductDir", {}, &dwtype, (ystdex::byte*)(installpath[it]), &dwsize))
 			{
-				::RegQueryValueEx(key, "InstallDir", {}, &dwtype, (BYTE*)(installpath[it]), &dwsize);
+				::RegQueryValueEx(key, "InstallDir", {}, &dwtype, (ystdex::byte*)(installpath[it]), &dwsize);
 				strcat(installpath[it], "\\mingw");
 			}
 			::RegCloseKey(key);
@@ -167,11 +168,11 @@ copyfile(const char* path1, char* pathnew,
 {
 	char strpath1[MAX_PATH];
 	char strpath2[MAX_PATH];
-	if(path1[strlen(path1) - 1] == '\\')
+	if(path1[std::strlen(path1) - 1] == '\\')
 		std::sprintf(strpath1, "%s%s\\%s", path1, dir, file);
 	else
 		std::sprintf(strpath1, "%s\\%s\\%s", path1, dir, file);
-	if(pathnew[strlen(pathnew) - 1] == '\\')
+	if(pathnew[std::strlen(pathnew) - 1] == '\\')
 		std::sprintf(strpath2, "%s%s\\%s", pathnew, dir, file);
 	else
 		std::sprintf(strpath2, "%s\\%s\\%s", pathnew, dir, file);

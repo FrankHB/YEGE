@@ -26,7 +26,7 @@ MUSIC::~MUSIC()
 MUSIC::OpenFile(const char* _szStr)
 {
 	::MCIERROR mciERR = 0;
-	auto mci_p = MCI_OPEN_PARMSA();
+	auto mci_p = ::MCI_OPEN_PARMSA();
 
 	mci_p.lpstrElementName = _szStr;
 	mci_p.lpstrDeviceType = {};

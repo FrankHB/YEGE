@@ -397,7 +397,7 @@ int main()
 	g_h = getheight({});
 	g_st = (state*)malloc(g_w * g_h * sizeof(state));
 	COMPLEX c{0.262, 0.002}, z{0, 0};
-	double r = 1.5, d = g_w / (double)g_h, rotate = 0, sr = sin(rotate), cr = cos(rotate);
+	double r = 1.5, d = g_w / (double)g_h, rotate = 0, sr = std::sin(rotate), cr = std::cos(rotate);
 	init_st(g_w, g_h);
 	int n_update = 0;
 	double ftime = fclock();
@@ -409,7 +409,7 @@ int main()
 	col_ag = randomf() * dca;
 	col_ab = randomf() * dca;
 	rotate = randomf() * 360;
-	sr = sin(rotate), cr = cos(rotate);
+	sr = std::sin(rotate), cr = std::cos(rotate);
 	setrendermode(RENDER_MANUAL);
 	for(int loop = 1; kbmouhit() == 0; ++loop)
 	{
@@ -484,7 +484,7 @@ int main()
 			col_ag = randomf() * dca;
 			col_ab = randomf() * dca;
 			rotate = randomf() * 360;
-			sr = sin(rotate), cr = cos(rotate);
+			sr = std::sin(rotate), cr = std::cos(rotate);
 			do
 			{
 				c.re = randomf() * 2.4 - 1.9;
