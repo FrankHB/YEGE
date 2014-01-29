@@ -1,4 +1,4 @@
-﻿#include "ege.h"
+﻿#include "ege/colorbase.h"
 #include <cmath>
 #include <algorithm> // for std::min, std::max;
 
@@ -141,8 +141,12 @@ rgb2gray(color_t color)
 }
 
 void
-rgb2hsl(color_t rgb, float* H, float* S, float* L)
+rgb2hsl(color_t rgb, float* h, float* s, float* l)
 {
+	yassume(h),
+	yassume(s),
+	yassume(l);
+
 	COLORHSL hsl = [](color_t::Trait::IntegerType _col) -> COLORHSL{
 		COLORHSL cr_col;
 		float r(EGEGET_R(_col) / 255.0f), g(EGEGET_G(_col) / 255.0f),
@@ -223,9 +227,9 @@ rgb2hsl(color_t rgb, float* H, float* S, float* L)
 		return cr_col;
 	}(rgb);
 
-	*H = hsl.h * 360.0f;
-	*S = hsl.s;
-	*L = hsl.l;
+	*h = hsl.h * 360.0f;
+	*s = hsl.s;
+	*l = hsl.l;
 }
 
 color_t
@@ -326,14 +330,18 @@ hsl2rgb(float _h, float _s, float _l)
 }
 
 void
-rgb2hsv(color_t rgb, float* H, float* S, float* V)
+rgb2hsv(color_t rgb, float* h, float* s, float* v)
 {
+	yassume(h),
+	yassume(s),
+	yassume(v);
+
 	const auto
 		chsv(RGB_TO_HSV(COLORRGB{EGEGET_R(rgb), EGEGET_G(rgb), EGEGET_B(rgb)}));
 
-	*H = chsv.h * 360.0f;
-	*S = chsv.s;
-	*V = chsv.v;
+	*h = chsv.h * 360.0f;
+	*s = chsv.s;
+	*v = chsv.v;
 }
 
 color_t
