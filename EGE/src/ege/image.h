@@ -1,25 +1,17 @@
 ﻿#ifndef Inc_ege_image_h_
 #define Inc_ege_image_h_
 
-#include "ege/gapi.h"
+#include "ege/base.h"
+#include "ege/color.h"
 #include "ege/viewport.h"
-#include "global.h"
 #include <memory> // for std::unique_ptr;
-#include <windows.h>
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
 #include <gdiplus.h>
-#include <ysbuild.h>
-#include YFM_YSLib_Core_YGDIBase
+#include "head.h"
 
 namespace ege
 {
 
-using YSLib::SPos;
-using YSLib::SDst;
-using YSLib::Drawing::PixelType;
-using YSLib::Drawing::Point;
-using YSLib::Drawing::Size;
-using YSLib::Drawing::Rect;
 using platform_ex::ScreenBuffer;
 
 inline Size
@@ -255,17 +247,11 @@ public:
 };
 
 
-inline IMAGE*
-CONVERT_IMAGE(IMAGE* pimg)
-{
-	return pimg ? pimg : (--update_mark_count, get_pages().imgtarget);
-}
+IMAGE*
+CONVERT_IMAGE(IMAGE*);
 
-inline IMAGE*
-CONVERT_IMAGE_CONST(IMAGE* pimg)
-{
-	return pimg ? pimg : get_pages().imgtarget;
-}
+IMAGE*
+CONVERT_IMAGE_CONST(IMAGE*);
 
 } // namespace ege;
 

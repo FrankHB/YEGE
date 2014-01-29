@@ -2,7 +2,7 @@
 #define Inc_ege_music_h_
 
 #include "ege/def.h"
-#include <windows.h>
+#include <windef.h>
 
 namespace ege
 {

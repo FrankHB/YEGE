@@ -2,7 +2,8 @@
 #define Inc_ege_text_h_
 
 #include "ege/def.h"
-#include <windows.h>
+#include <windef.h>
+#include <wingdi.h>
 
 namespace ege
 {

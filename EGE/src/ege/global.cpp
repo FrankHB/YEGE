@@ -4,11 +4,12 @@
 #include "ege/ctl.h"
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
 #include <gdiplus.h>
-#include <windows.h>
 #include <memory> // for std::unique_ptr;
 #include <functional> // for std::bind;
 #include <mutex> // for std::once_flag, std::call_once;
 #include "head.h"
+#include YFM_Helper_Host
+#include YFM_Helper_HostedUI
 
 #ifdef _WIN64
 #define ARCH "x64"
@@ -24,6 +25,8 @@
 
 namespace ege
 {
+
+using namespace Host;
 
 namespace
 {

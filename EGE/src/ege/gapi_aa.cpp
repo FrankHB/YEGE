@@ -1,4 +1,5 @@
 ﻿#include "ege/gapi_aa.h"
+#include "ege/gapi.h"
 #include "image.h"
 #include "global.h"
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;

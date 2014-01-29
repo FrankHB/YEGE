@@ -1,15 +1,10 @@
 ﻿#include "ege/colorbase.h"
 #include <cmath>
 #include <algorithm> // for std::min, std::max;
-#include <ysbuild.h>
-#include YFM_YSLib_UI_YStyle
+#include "head.h"
 
 namespace ege
 {
-
-using namespace YSLib;
-using namespace Drawing;
-
 
 color_t
 rgb2gray(color_t color)

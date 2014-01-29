@@ -2,14 +2,12 @@
 #ifndef Inc_ege_global_h_
 #define Inc_ege_global_h_
 
-#include "msg.h"
 #include "ege/proc.h"
 #include "ege/input.h"
-#include "ege/env.h"
+#include "msg.h"
 #include "ege/base.h"
 #include <thread>
 #include "thread_queue.h"
-#include <windows.h>
 
 #define BITMAP_PAGE_SIZE 4
 #define MAX_KEY_VCODE 256

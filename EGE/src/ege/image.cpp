@@ -3,7 +3,6 @@
 #include <cstring>
 #include <cfloat> // for FLT_EPSILON;
 #include <utility> // for std::swap;
-#include <ocidl.h>
 #include <olectl.h>
 #include "../libpng/png.h"
 #include "../libpng/pngstruct.h"
@@ -2551,6 +2550,19 @@ putimage_rotatezoom(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 		);
 	}
 	return grOk;
+}
+
+
+IMAGE*
+CONVERT_IMAGE(IMAGE* pimg)
+{
+	return pimg ? pimg : (--update_mark_count, get_pages().imgtarget);
+}
+
+IMAGE*
+CONVERT_IMAGE_CONST(IMAGE* pimg)
+{
+	return pimg ? pimg : get_pages().imgtarget;
 }
 
 } // namespace ege;

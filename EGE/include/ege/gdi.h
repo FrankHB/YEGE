@@ -2,7 +2,7 @@
 #define Inc_ege_gdi_h_
 
 #include "ege/base.h"
-#include <windows.h>
+#include <wingdi.h>
 
 namespace ege
 {

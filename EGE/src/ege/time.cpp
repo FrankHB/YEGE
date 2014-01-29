@@ -2,7 +2,6 @@
 #include "ege/ctl.h"
 #include "ege/viewport.h"
 #include "global.h"
-#include <windows.h>
 
 namespace ege
 {

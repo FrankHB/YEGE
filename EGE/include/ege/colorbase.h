@@ -4,7 +4,6 @@
 #include "def.h"
 #include <cstdint>
 #include <ysbuild.h>
-#include YFM_YCLib_Video
 
 namespace ege
 {
