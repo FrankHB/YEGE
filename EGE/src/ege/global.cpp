@@ -113,6 +113,7 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 	static std::once_flag init_flag;
 
 	std::call_once(init_flag, [this]{
+		static std::unique_ptr<ImageCodec> p(new ImageCodec());
 		static ::ULONG_PTR g_gdiplusToken;
 		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 
