@@ -77,7 +77,7 @@ public:
 		return 0;
 	}
 
-	LRESULT
+	::LRESULT
 	onMessage(::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 	{
 		if(message == WM_CTLCOLOREDIT)
@@ -97,7 +97,7 @@ public:
 			//    return 0;
 		}
 		else
-			return (reinterpret_cast<LRESULT(CALLBACK*)(::HWND, ::UINT,
+			return (reinterpret_cast<::LRESULT(CALLBACK*)(::HWND, ::UINT,
 				::WPARAM, ::LPARAM)>(m_callback))(m_hwnd, message, wParam,
 				lParam);
 		//return 0;

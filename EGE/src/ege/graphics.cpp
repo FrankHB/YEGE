@@ -13,7 +13,7 @@ namespace ege
 namespace
 {
 
-LRESULT CALLBACK
+::LRESULT CALLBACK
 wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 {
 	auto& gstate(get_global_state());

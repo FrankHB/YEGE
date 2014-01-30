@@ -32,7 +32,7 @@ struct msg_createwindow
 	::DWORD style;
 	::DWORD exstyle;
 	unsigned id;
-	LPVOID param;
+	void* param;
 };
 
 EGEAPI void

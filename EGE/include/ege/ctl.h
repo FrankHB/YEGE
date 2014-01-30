@@ -36,7 +36,7 @@ public:
 	~egeControlBase();
 
 	// 以下虚函数都不要直接相互调用
-	virtual LRESULT onMessage(::UINT, ::WPARAM, ::LPARAM)
+	virtual ::LRESULT onMessage(::UINT, ::WPARAM, ::LPARAM)
 	{
 		return 0;
 	}

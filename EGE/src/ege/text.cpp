@@ -547,9 +547,9 @@ inputbox_getline(const char* title, const char* text, char* buf, int len)
 	buf[0] = 0;
 
 	if(const int ret = inputbox_getline(MBCSToWCS(title).c_str(),
-		MBCSToWCS(text).c_str(), wbuf.get(), len)))
+		MBCSToWCS(text).c_str(), wbuf.get(), len))
 		// XXX: Remove redundant copy.
-		std::strcpy(buf, WCSToMBCS(wbuf).c_str());
+		std::strcpy(buf, WCSToMBCS(wbuf.get()).c_str());
 	return 0;
 }
 
