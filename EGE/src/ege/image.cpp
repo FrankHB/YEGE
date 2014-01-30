@@ -272,7 +272,7 @@ IMAGE::getpngimg(std::FILE * fp)
 		Resize(s);
 
 		// XXX: Use raw conversion without buffer to improve performance.
-		std::copy_n(ImageCodec::Convert(bitmap).GetBufferPtr(),
+		std::copy_n(CompactPixmap(bitmap).GetBufferPtr(),
 			s.Width * s.Height, sbuf.GetBufferPtr());
 		return grOk;
 	}
@@ -368,7 +368,7 @@ IMAGE::getimage(HBitmap&& bitmap)
 		Resize(s);
 
 		// XXX: Use raw conversion without buffer to improve performance.
-		std::copy_n(ImageCodec::Convert(bitmap).GetBufferPtr(),
+		std::copy_n(CompactPixmap(bitmap).GetBufferPtr(),
 			s.Width * s.Height, sbuf.GetBufferPtr());
 		return grOk;
 	}
@@ -398,7 +398,7 @@ IMAGE::getimage(const wchar_t* filename)
 	try
 	{
 		// XXX: URL unsupported.
-		return getimage(HBitmap(filename));
+		return getimage(HBitmap(reinterpret_cast<const char16_t*>(filename)));
 	}
 	catch(std::exception&)
 	{}
