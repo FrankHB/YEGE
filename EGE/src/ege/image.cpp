@@ -229,16 +229,8 @@ ERROR_BREAK:
 int
 IMAGE::saveimage(const char* filename)
 {
-	if(std::FILE* fp = std::fopen(filename, "wb"))
-	{
-		const int ret(saveimagetofile(this, fp));
-
-		std::fclose(fp);
-		return ret;
-	}
-	return grIOerror;
+	return saveimage(platform_ex::MBCSToWCS(filename).c_str());
 }
-
 int
 IMAGE::saveimage(const wchar_t* filename)
 {
@@ -249,7 +241,6 @@ IMAGE::saveimage(const wchar_t* filename)
 		std::fclose(fp);
 		return ret;
 	}
-
 	return grIOerror;
 }
 
