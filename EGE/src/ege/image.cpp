@@ -390,13 +390,7 @@ IMAGE::getimage(ystdex::octet* p, size_t l)
 graphics_errors
 IMAGE::getimage(const char* filename)
 {
-	if(getimage_pngfile(this, filename) == 0)
-		return grOk;
-
-	wchar_t wszPath[MAX_PATH * 2 + 1];
-
-	::MultiByteToWideChar(CP_ACP, 0, filename, -1, wszPath, MAX_PATH * 2);
-	return getimage(wszPath);
+	return getimage(platform_ex::MBCSToWCS(filename).c_str());
 }
 graphics_errors
 IMAGE::getimage(const wchar_t* filename)
