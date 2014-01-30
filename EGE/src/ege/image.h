@@ -84,8 +84,9 @@ public:
 	::DWORD*
 	getbuffer() const
 	{
-		static_assert(sizeof( ::DWORD) == sizeof(YSLib::Drawing::PixelType), "");
-		static_assert(yalignof( ::DWORD) == yalignof(YSLib::Drawing::PixelType), "");
+		static_assert(sizeof(::DWORD) == sizeof(YSLib::Drawing::PixelType), "");
+		static_assert(yalignof(::DWORD) == yalignof(YSLib::Drawing::PixelType),
+			"");
 
 		return reinterpret_cast<::DWORD*>(sbuf.GetBufferPtr());
 	}
@@ -114,15 +115,16 @@ public:
 	getimage(IMAGE*, int, int, int, int);
 
 	void
-	putimage(int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;
+	putimage(int, int, ::DWORD = SRCCOPY) const;
 	void
-	putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop = SRCCOPY) const;
+	putimage(int, int, int, int, int, int, ::DWORD = SRCCOPY) const;
 	void
-	putimage(IMAGE* pDstImg, int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;
+	putimage(IMAGE*, int, int, ::DWORD = SRCCOPY) const;
 	void
-	putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop = SRCCOPY) const;
+	putimage(IMAGE*, int, int, int, int, int, int, ::DWORD = SRCCOPY) const;
 	void
-	putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop = SRCCOPY) const;
+	putimage(IMAGE*, int, int, int, int, int, int, int, int, ::DWORD = SRCCOPY)
+		const;
 
 	int
 	saveimage(const char*  filename);
@@ -230,8 +232,8 @@ public:
 		float centerx,
 		float centery,
 		float radian,
-		int btransparent = 0,           // transparent (1) or not (0)
-		int alpha = -1,                  // in range[0, 256], alpha== -1 means no alpha
+		int btransparent = 0, // transparent (1) or not (0)
+		int alpha = -1, // in range[0, 256], alpha== -1 means no alpha
 		int smooth = 0
 	);
 
@@ -243,8 +245,8 @@ public:
 		float centery,
 		float radian,
 		float zoom,
-		int btransparent = 0,           // transparent (1) or not (0)
-		int alpha = -1,                  // in range[0, 256], alpha== -1 means no alpha
+		int btransparent = 0, // transparent (1) or not (0)
+		int alpha = -1, // in range[0, 256], alpha== -1 means no alpha
 		int smooth = 0
 	);
 };

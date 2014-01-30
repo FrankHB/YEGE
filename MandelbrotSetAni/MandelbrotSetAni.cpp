@@ -333,9 +333,10 @@ void setinitcolor(int* color, int len, int h1, int h2, float s = 0.8f)
 	int i;
 	for(i = 0; i < len / 2; i++)
 	{
-		color[i]       = HSLtoRGB((float)h1, s, i * 2.0f / len * 0.8f + 0.1f);
+		color[i] = HSLtoRGB((float)h1, s, i * 2.0f / len * 0.8f + 0.1f);
 		fixcolor(&color[i]);
-		color[len - 1 - i] = HSLtoRGB((float)h2, s, i * 2.0f / len * 0.8f + 0.1f);
+		color[len - 1 - i] = HSLtoRGB((float)h2, s,
+			i * 2.0f / len * 0.8f + 0.1f);
 		fixcolor(&color[len - 1 - i]);
 	}
 }
@@ -856,7 +857,8 @@ main()
 			//g_iters = ITERATIONS;
 
 			unsigned last_min = 0;
-			for(unsigned m = 0, t = std::clock(); g_udlist.nLen > 0 && m < mend; ++m)
+			for(unsigned m = 0, t = std::clock(); g_udlist.nLen > 0 && m < mend;
+				++m)
 			{
 				g_b_update_mark = 0;
 				g_min_iter_last = 0x7FFFFFFF;
@@ -927,7 +929,8 @@ main()
 
 				getimage(mimage, 0, 0, SC_W, SC_H);
 				std::sprintf(str, "snap%06d.bmp", ncnt);
-				putimage_alphatransparent(mimage, img_logo, 2, SC_H - 26, 0, 0x80);
+				putimage_alphatransparent(mimage, img_logo, 2, SC_H - 26, 0,
+					0x80);
 				saveimage(mimage, str);
 			}
 		}
