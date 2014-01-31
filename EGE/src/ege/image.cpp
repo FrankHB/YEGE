@@ -180,19 +180,19 @@ IMAGE::putimage(int dstX, int dstY, ::DWORD dwRop) const
 }
 
 int
-IMAGE::saveimage(const char* filename)
+IMAGE::saveimage(const char* filename, ImageFormat fmt)
 {
-	return saveimage(platform_ex::MBCSToWCS(filename).c_str());
+	return saveimage(platform_ex::MBCSToWCS(filename).c_str(), fmt);
 }
 int
-IMAGE::saveimage(const wchar_t* filename)
+IMAGE::saveimage(const wchar_t* filename, ImageFormat fmt)
 {
 	const Size s(GetSize());
 
 	try
 	{
 		if(HBitmap(sbuf.GetBufferPtr(), sbuf.GetSize()).SaveTo(
-			reinterpret_cast<const char16_t*>(filename)))
+			reinterpret_cast<const char16_t*>(filename), fmt))
 			return grOk;
 	}
 	catch(std::exception&)

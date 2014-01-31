@@ -127,9 +127,9 @@ public:
 		const;
 
 	int
-	saveimage(const char*  filename);
+	saveimage(const char* filename, ImageFormat = ImageFormat::BMP);
 	int
-	saveimage(const wchar_t* filename);
+	saveimage(const wchar_t* filename, ImageFormat = ImageFormat::BMP);
 	int
 	getpngimg(std::FILE* fp);
 	int
