@@ -7,42 +7,53 @@
 namespace ege
 {
 
+// 从图片文件获取图像(bmp/jpg/gif/emf/wmf)
 EGEAPI int
-getimage(IMAGE* pDstImg, const char* pImgFile, int zoomWidth = 0, int zoomHeight = 0); // 从图片文件获取图像(bmp/jpg/gif/emf/wmf)
+getimage(IMAGE*, const char*, int = 0, int = 0);
+// 从图片文件获取图像(bmp/jpg/gif/emf/wmf)
 EGEAPI int
-getimage(IMAGE* pDstImg, const wchar_t* pImgFile, int zoomWidth = 0, int zoomHeight = 0); // 从图片文件获取图像(bmp/jpg/gif/emf/wmf)
+getimage(IMAGE*, const wchar_t*, int = 0, int = 0);
+// 从资源文件获取图像(bmp/jpg/gif/emf/wmf)
 EGEAPI int
-getimage(IMAGE* pDstImg, const char* pResType, const char* pResName, int zoomWidth = 0, int zoomHeight = 0);   // 从资源文件获取图像(bmp/jpg/gif/emf/wmf)
+getimage(IMAGE*, const char*, const char*, int = 0, int = 0);
+// 从资源文件获取图像(bmp/jpg/gif/emf/wmf)
 EGEAPI int
-getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName, int zoomWidth = 0, int zoomHeight = 0);   // 从资源文件获取图像(bmp/jpg/gif/emf/wmf)
+getimage(IMAGE*, const wchar_t*, const wchar_t*, int = 0, int = 0);
 
+// 绘制图像到屏幕
 EGEAPI void
-putimage(int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop = SRCCOPY); // 绘制图像到屏幕
+putimage(int, int, IMAGE*, ::DWORD = SRCCOPY);
+// 绘制图像到屏幕(指定宽高)
 EGEAPI void
-putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg, int srcX, int srcY, ::DWORD dwRop = SRCCOPY);    // 绘制图像到屏幕(指定宽高)
+putimage(int, int, int, int, IMAGE*, int, int, ::DWORD = SRCCOPY);
+// 绘制图像到屏幕(指定源宽高和目标宽高进行拉伸)
 EGEAPI void
-putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop = SRCCOPY);   // 绘制图像到屏幕(指定源宽高和目标宽高进行拉伸)
+putimage(int, int, int, int, IMAGE*, int, int, int, int, ::DWORD = SRCCOPY);
+// 绘制图像到另一图像中
 EGEAPI void
-putimage(IMAGE* pDstImg, int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop = SRCCOPY); // 绘制图像到另一图像中
+putimage(IMAGE*, int, int, IMAGE*, ::DWORD = SRCCOPY);
+// 绘制图像到另一图像中(指定宽高)
 EGEAPI void
-putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg, int srcX, int srcY, ::DWORD dwRop = SRCCOPY);    // 绘制图像到另一图像中(指定宽高)
+putimage(IMAGE*, int, int, int, int, IMAGE*, int, int, ::DWORD = SRCCOPY);
+// 绘制图像到另一图像中(指定源宽高和目标宽高进行拉伸)
 EGEAPI void
-putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop = SRCCOPY);   // 绘制图像到另一图像中(指定源宽高和目标宽高进行拉伸)
+putimage(IMAGE*, int, int, int, int, IMAGE*, int, int, int, int,
+	::DWORD = SRCCOPY);
 
 EGEAPI int
-saveimage(IMAGE* pimg, const char*  filename);
+saveimage(IMAGE*, const char*);
 EGEAPI int
-saveimage(IMAGE* pimg, const wchar_t* filename);
+saveimage(IMAGE*, const wchar_t*);
 
 EGEAPI int
-savepng(IMAGE* pimg, const char*  filename, int bAlpha = 0);
+savepng(IMAGE*, const char*, int = 0);
 EGEAPI int
-savepng(IMAGE* pimg, const wchar_t* filename, int bAlpha = 0);
+savepng(IMAGE*, const wchar_t*, int = 0);
 
 EGEAPI int
-getimage_pngfile(IMAGE* pimg, const char*  filename);
+getimage_pngfile(IMAGE*, const char*);
 EGEAPI int
-getimage_pngfile(IMAGE* pimg, const wchar_t* filename);
+getimage_pngfile(IMAGE*, const wchar_t*);
 
 }
 
