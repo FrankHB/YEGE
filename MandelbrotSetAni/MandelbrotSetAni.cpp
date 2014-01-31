@@ -5,7 +5,6 @@
 #include <cstdio>
 #include <algorithm>
 #include <cstdio>
-#include <io.h> // for ::access;
 
 //using namespace std;
 
@@ -820,27 +819,7 @@ main()
 #endif
 			delay(0);
 		}
-		int calc = 1;
-		if(ncnt < nbeg)
-		{
-			calc = 0;
-		}
-		else
-		{
-			char str[30];
-			std::sprintf(str, "snap%06d.bmp", ncnt);
-			if(::access(str, 0) == 0)
-				calc = 0;
-			else
-			{
-				std::FILE* fp = std::fopen(str, "w");
-				if(fp)
-					std::fclose(fp);
-				else
-					calc = 0;
-			}
-		}
-		if(calc)
+		if(ncnt >= nbeg)
 		{
 			bar(0, 0, SC_W, SC_H);
 			delay(0);

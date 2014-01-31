@@ -1,6 +1,7 @@
 #include "graphics.h"
 //#include <complex>
 #include <ctime>
+#include <cstdio>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #include <gmpxx.h>
@@ -748,9 +749,6 @@ void setgprec(Float f)
 	g_prec = t;
 }
 
-#include <cstdio>
-#include <io.h>
-
 // Ö÷º¯Êý
 
 int
@@ -827,28 +825,7 @@ main()
 			outtextxy(0, SC_H + 12 * 3, str);
 			delay(0);
 		}
-		int calc = 1;
-		if(ncnt < nbeg)
-		{
-			calc = 0;
-		}
-		else
-		{
-			char str[30];
-			std::sprintf(str, "snap%06d.bmp", ncnt);
-			if(::access(str, 0) == 0)
-				calc = 0;
-			else
-			{
-				std::FILE* fp = std::fopen(str, "w");
-
-				if(fp)
-					std::fclose(fp);
-				else
-					calc = 0;
-			}
-		}
-		if(calc)
+		if(ncnt >= nbeg)
 		{
 			bar(0, 0, SC_W, SC_H);
 			//delay(0);
