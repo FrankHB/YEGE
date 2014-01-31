@@ -23,7 +23,6 @@
 					<Add library="FreeImage" />
 					<Add library="freetype" />
 					<Add library="YBased" />
-					<Add library="png16" />
 					<Add library="z" />
 					<Add library="shlwapi" />
 					<Add library="gdi32" />
@@ -51,7 +50,6 @@
 					<Add library="FreeImage" />
 					<Add library="freetype" />
 					<Add library="YBase" />
-					<Add library="png16" />
 					<Add library="z" />
 					<Add library="shlwapi" />
 					<Add library="gdi32" />

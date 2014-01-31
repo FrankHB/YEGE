@@ -50,7 +50,6 @@
 					<Add library="FreeImage" />
 					<Add library="freetype" />
 					<Add library="YBased" />
-					<Add library="png16" />
 					<Add library="z" />
 					<Add library="shlwapi" />
 					<Add library="gdi32" />
@@ -78,7 +77,6 @@
 					<Add library="FreeImage" />
 					<Add library="freetype" />
 					<Add library="YBase" />
-					<Add library="png16" />
 					<Add library="z" />
 					<Add library="shlwapi" />
 					<Add library="gdi32" />
@@ -155,13 +153,6 @@
 		<Unit filename="src/ege/time.cpp" />
 		<Unit filename="src/ege/viewport.cpp" />
 		<Unit filename="src/ege/windows.cpp" />
-		<Unit filename="src/libpng/png.h" />
-		<Unit filename="src/libpng/pngconf.h" />
-		<Unit filename="src/libpng/pngdebug.h" />
-		<Unit filename="src/libpng/pnginfo.h" />
-		<Unit filename="src/libpng/pnglibconf.h" />
-		<Unit filename="src/libpng/pngpriv.h" />
-		<Unit filename="src/libpng/pngstruct.h" />
 		<Unit filename="src/zlib/crc32.h" />
 		<Unit filename="src/zlib/deflate.h" />
 		<Unit filename="src/zlib/gzguts.h" />
