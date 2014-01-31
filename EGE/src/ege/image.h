@@ -256,6 +256,26 @@ CONVERT_IMAGE(IMAGE*);
 IMAGE*
 CONVERT_IMAGE_CONST(IMAGE*);
 
+inline IMAGE&
+convert_image_ref(IMAGE* pimg)
+{
+	const auto img(CONVERT_IMAGE(pimg));
+
+	yassume(img);
+
+	return *img;
+}
+
+inline IMAGE&
+convert_image_ref_c(IMAGE* pimg)
+{
+	const auto img(CONVERT_IMAGE_CONST(pimg));
+
+	yassume(img);
+
+	return *img;
+}
+
 } // namespace ege;
 
 #endif

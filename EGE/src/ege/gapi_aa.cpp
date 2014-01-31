@@ -13,11 +13,7 @@ using std::unique_ptr;
 void
 ege_enable_aa(bool enable, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
-
-	img->m_aa = enable;
+	convert_image_ref(pimg).m_aa = enable;
 }
 
 

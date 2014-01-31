@@ -67,14 +67,8 @@ delimage(IMAGE* pimg)
 void*
 getbuffer(IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	yassume(img);
-
-	return img->getbuffer();
+	return convert_image_ref_c(pimg).getbuffer();
 }
-
-
 
 int
 resize(IMAGE* pDstImg, int width, int height)

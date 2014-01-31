@@ -9,58 +9,51 @@ void
 getviewport(int* pleft, int* ptop, int* pright, int* pbottom, int* pclip,
 	IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref_c(pimg));
 
 	if(pleft)
-		*pleft = img->m_vpt.left;
+		*pleft = img.m_vpt.left;
 	if(ptop)
-		*ptop = img->m_vpt.top;
+		*ptop = img.m_vpt.top;
 	if(pright)
-		*pright = img->m_vpt.right;
+		*pright = img.m_vpt.right;
 	if(pbottom)
-		*pbottom = img->m_vpt.bottom;
+		*pbottom = img.m_vpt.bottom;
 	if(pclip)
-		*pclip = img->m_vpt.clipflag;
+		*pclip = img.m_vpt.clipflag;
 }
 
 void
 setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
+	auto& img(convert_image_ref(pimg));
 
-	yassume(img);
-
-	::SetViewportOrgEx(img->getdc(), 0, 0, {});
-
-	img->m_vpt.left     = left;
-	img->m_vpt.top      = top;
-	img->m_vpt.right    = right;
-	img->m_vpt.bottom   = bottom;
-	img->m_vpt.clipflag = clip;
-
-	if(img->m_vpt.left < 0)
-		img->m_vpt.left = 0;
-	if(img->m_vpt.top < 0)
-		img->m_vpt.top = 0;
-	if(img->m_vpt.right > img->GetWidth())
-		img->m_vpt.right = img->GetWidth();
-	if(img->m_vpt.bottom > img->GetHeight())
-		img->m_vpt.bottom = img->GetHeight();
+	::SetViewportOrgEx(img.getdc(), 0, 0, {});
+	img.m_vpt.left = left;
+	img.m_vpt.top = top;
+	img.m_vpt.right = right;
+	img.m_vpt.bottom = bottom;
+	img.m_vpt.clipflag = clip;
+	if(img.m_vpt.left < 0)
+		img.m_vpt.left = 0;
+	if(img.m_vpt.top < 0)
+		img.m_vpt.top = 0;
+	if(img.m_vpt.right > img.GetWidth())
+		img.m_vpt.right = img.GetWidth();
+	if(img.m_vpt.bottom > img.GetHeight())
+		img.m_vpt.bottom = img.GetHeight();
 
 	::HRGN rgn = {};
 
-	if(img->m_vpt.clipflag)
-		rgn = ::CreateRectRgn(img->m_vpt.left, img->m_vpt.top, img->m_vpt.right,
-			img->m_vpt.bottom);
+	if(img.m_vpt.clipflag)
+		rgn = ::CreateRectRgn(img.m_vpt.left, img.m_vpt.top, img.m_vpt.right,
+			img.m_vpt.bottom);
 	else
-		rgn = ::CreateRectRgn(0, 0, img->GetWidth(),img->GetHeight());
-	::SelectClipRgn(img->getdc(), rgn);
+		rgn = ::CreateRectRgn(0, 0, img.GetWidth(), img.GetHeight());
+	::SelectClipRgn(img.getdc(), rgn);
 	::DeleteObject(rgn);
-
-	//OffsetViewportOrgEx(img->getdc(), img->m_vpt.left, img->m_vpt.top, {});
-	::SetViewportOrgEx(img->getdc(), img->m_vpt.left, img->m_vpt.top, {});
+	//OffsetViewportOrgEx(img.getdc(), img.m_vpt.left, img.m_vpt.top, {});
+	::SetViewportOrgEx(img.getdc(), img.m_vpt.left, img.m_vpt.top, {});
 }
 
 void

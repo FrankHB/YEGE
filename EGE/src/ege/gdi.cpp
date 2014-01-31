@@ -6,6 +6,26 @@
 namespace ege
 {
 
+namespace
+{
+
+int
+getimage_common(IMAGE* pimg, std::FILE* fp) ynothrow
+{
+	if(fp)
+	{
+		yconstraint(pimg);
+
+		const auto ret(pimg->getpngimg(fp));
+
+		std::fclose(fp);
+		return ret;
+	}
+	return grFileNotFound;
+}
+
+} // unnamed namespace;
+
 int
 getimage(IMAGE* pDstImg, const char* pImgFile, int, int)
 {
@@ -87,7 +107,6 @@ putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
 		srcWidth, srcHeight, dwRop);
 }
 
-
 int
 saveimage(IMAGE* pimg, const char* filename)
 {
@@ -95,7 +114,6 @@ saveimage(IMAGE* pimg, const char* filename)
 		return img->saveimage(filename);
 	return 0;
 }
-
 int
 saveimage(IMAGE* pimg, const wchar_t* filename)
 {
@@ -123,30 +141,12 @@ savepng(IMAGE* pimg, const wchar_t* filename, int)
 int
 getimage_pngfile(IMAGE* pimg, const char* filename)
 {
-	if(std::FILE* fp = std::fopen(filename, "rb"))
-	{
-		yconstraint(pimg);
-
-		const int ret(pimg->getpngimg(fp));
-
-		std::fclose(fp);
-		return ret;
-	}
-	return grFileNotFound;
+	return getimage_common(pimg, std::fopen(filename, "rb"));
 }
 int
 getimage_pngfile(IMAGE* pimg, const wchar_t* filename)
 {
-	if(std::FILE* fp = ::_wfopen(filename, L"rb"))
-	{
-		yconstraint(pimg);
-
-		const int ret(pimg->getpngimg(fp));
-
-		std::fclose(fp);
-		return ret;
-	}
-	return grFileNotFound;
+	return getimage_common(pimg, ::_wfopen(filename, L"rb"));
 }
 
 } // namespace ege;

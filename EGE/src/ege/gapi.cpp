@@ -98,33 +98,28 @@ void
 getlinestyle(int* plinestyle, unsigned short* pupattern, int* pthickness,
 	IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref_c(pimg));
 
 	if(plinestyle)
-		*plinestyle = img->m_linestyle.linestyle;
+		*plinestyle = img.m_linestyle.linestyle;
 	if(pupattern)
-		*pupattern = img->m_linestyle.upattern;
+		*pupattern = img.m_linestyle.upattern;
 	if(pthickness)
-		*pthickness = img->m_linestyle.thickness;
+		*pthickness = img.m_linestyle.thickness;
 }
 
 void
 setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref_c(pimg));
 
 	::LOGPEN lpen{0, ::POINT(), COLORREF()};
 
 	lpen.lopnColor = RGBTOBGR(getcolor(pimg));
-	img->m_linestyle.thickness = thickness;
-	img->m_linewidth = float(thickness);
-	img->m_linestyle.linestyle = linestyle;
-	img->m_linestyle.upattern = upattern;
-
+	img.m_linestyle.thickness = thickness;
+	img.m_linewidth = float(thickness);
+	img.m_linestyle.linestyle = linestyle;
+	img.m_linestyle.upattern = upattern;
 	lpen.lopnWidth.x = thickness;
 	lpen.lopnStyle   = linestyle;
 
@@ -169,32 +164,28 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 	else
 		hpen = ::CreatePenIndirect(&lpen);
 	if(hpen)
-		::DeleteObject(::SelectObject(img->getdc(), hpen));
+		::DeleteObject(::SelectObject(img.getdc(), hpen));
 }
 
 void
 setlinewidth(float width, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
+	auto& img(convert_image_ref_c(pimg));
 
-	yassume(img);
-
-	img->m_linestyle.thickness = int(width);
-	img->m_linewidth = width;
+	img.m_linestyle.thickness = int(width);
+	img.m_linewidth = width;
 }
 
 void
 setfillstyle(int pattern, color_t color, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref_c(pimg));
 
 	::LOGBRUSH lbr{0, COLORREF(), ::UINT_PTR()};
 
-	img->m_fillcolor = color;
+	img.m_fillcolor = color;
 	lbr.lbColor = RGBTOBGR(color);
-	//::SetBkColor(img->getdc(), color);
+	//::SetBkColor(img.getdc(), color);
 	if(pattern < SOLID_FILL)
 		lbr.lbHatch = BS_NULL;
 	else if(pattern == SOLID_FILL)
@@ -220,17 +211,13 @@ setfillstyle(int pattern, color_t color, IMAGE* pimg)
 	else
 		lbr.lbHatch = BS_SOLID;
 	if(::HBRUSH hbr = ::CreateBrushIndirect(&lbr))
-		::DeleteObject(::SelectObject(img->getdc(), hbr));
+		::DeleteObject(::SelectObject(img.getdc(), hbr));
 }
 
 void
 setwritemode(int mode, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	yassume(img);
-
-	::SetROP2(img->getdc(), mode);
+	::SetROP2(convert_image_ref_c(pimg).getdc(), mode);
 }
 
 
@@ -331,19 +318,17 @@ setcolor(color_t color, IMAGE* pimg)
 void
 setfillcolor(color_t color, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref_c(pimg));
 
 	::LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
 
-	img->m_fillcolor = color;
+	img.m_fillcolor = color;
 	color = RGBTOBGR(color);
 	lbr.lbColor = color;
 	lbr.lbHatch = BS_SOLID;
 	::HBRUSH hbr = ::CreateBrushIndirect(&lbr);
 	if(hbr)
-		::DeleteObject(::SelectObject(img->getdc(), hbr));
+		::DeleteObject(::SelectObject(img.getdc(), hbr));
 }
 
 void
@@ -397,64 +382,53 @@ setbkmode(int iBkMode, IMAGE* pimg)
 color_t
 getpixel(int x, int y, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
+	auto& img(convert_image_ref_c(pimg));
 
-	yassume(img);
-
-	x += img->m_vpt.left;
-	y += img->m_vpt.top;
-	return color_t(x < 0 || y < 0 || x >= img->GetWidth()
-		|| y >= img->GetHeight() ? 0
-		: img->getbuffer()[y * img->GetWidth() + x]);
+	x += img.m_vpt.left;
+	y += img.m_vpt.top;
+	return color_t(x < 0 || y < 0 || x >= img.GetWidth()
+		|| y >= img.GetHeight() ? 0
+		: img.getbuffer()[y * img.GetWidth() + x]);
 }
 
 void
 putpixel(int x, int y, color_t color, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
+	auto& img(convert_image_ref(pimg));
 
-	yassume(img);
-
-	x += img->m_vpt.left;
-	y += img->m_vpt.top;
-	if(!(x < 0 || y < 0 || x >= img->m_vpt.right || y >= img->m_vpt.bottom))
-		img->getbuffer()[y * img->GetWidth() + x] = color;
+	x += img.m_vpt.left;
+	y += img.m_vpt.top;
+	if(!(x < 0 || y < 0 || x >= img.m_vpt.right || y >= img.m_vpt.bottom))
+		img.getbuffer()[y * img.GetWidth() + x] = color;
 }
 
 color_t
 getpixel_f(int x, int y, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
+	auto& img(convert_image_ref_c(pimg));
 
-	yassume(img);
-
-	color_t col = img->getbuffer()[y * img->GetWidth() + x];
-	return col;
+	return img.getbuffer()[y * img.GetWidth() + x];
 }
 
 void
 putpixel_f(int x, int y, color_t color, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
+	auto& img(convert_image_ref(pimg));
 
-	yassume(img);
-
-	img->getbuffer()[y * img->GetWidth() + x] = color;
+	img.getbuffer()[y * img.GetWidth() + x] = color;
 }
 
 void
 putpixels(int nPoint, int* pPoints, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref(pimg));
 
 	int x, y, c;
 	::DWORD* pb
-		= &img->getbuffer()[img->m_vpt.top * img->GetWidth() + img->m_vpt.left];
-	int w = img->m_vpt.right - img->m_vpt.left, h = img->m_vpt.bottom
-		- img->m_vpt.top;
-	int tw = img->GetWidth();
+		= &img.getbuffer()[img.m_vpt.top * img.GetWidth() + img.m_vpt.left];
+	int w = img.m_vpt.right - img.m_vpt.left, h = img.m_vpt.bottom
+		- img.m_vpt.top;
+	int tw = img.GetWidth();
 
 	for(int n = 0; n < nPoint; ++n, pPoints += 3)
 	{
@@ -467,75 +441,58 @@ putpixels(int nPoint, int* pPoints, IMAGE* pimg)
 void
 putpixels_f(int nPoint, int* pPoints, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
-
-	const int tw(img->GetWidth());
+	auto& img(convert_image_ref(pimg));
+	const int tw(img.GetWidth());
 
 	for(int n = 0; n < nPoint; ++n, pPoints += 3)
-		img->getbuffer()[pPoints[1] * tw + pPoints[0]] = RGBTOBGR(pPoints[2]);
+		img.getbuffer()[pPoints[1] * tw + pPoints[0]] = RGBTOBGR(pPoints[2]);
 }
 
 
 void
 moveto(int x, int y, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
-
-	MoveToEx(img->getdc(), x, y, {});
+	MoveToEx(convert_image_ref(pimg).getdc(), x, y, {});
 }
 
 void
 moverel(int dx, int dy, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref(pimg));
 
 	::POINT pt;
-	::GetCurrentPositionEx(img->getdc(), &pt);
+	::GetCurrentPositionEx(img.getdc(), &pt);
 	dx += pt.x;
 	dy += pt.y;
-	MoveToEx(img->getdc(), dx, dy, {});
+	MoveToEx(img.getdc(), dx, dy, {});
 }
 
 
 void
 line(int x1, int y1, int x2, int y2, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
+	auto& img(convert_image_ref(pimg));
 
-	yassume(img);
-
-	::MoveToEx(img->getdc(), x1, y1, {});
-	::LineTo(img->getdc(), x2, y2);
+	::MoveToEx(img.getdc(), x1, y1, {});
+	::LineTo(img.getdc(), x2, y2);
 }
 
 void
 linerel(int dx, int dy, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref(pimg));
 
 	::POINT pt;
-	::GetCurrentPositionEx(img->getdc(), &pt);
+	::GetCurrentPositionEx(img.getdc(), &pt);
 	dx += pt.x;
 	dy += pt.y;
-	LineTo(img->getdc(), dx, dy);
+	LineTo(img.getdc(), dx, dy);
 }
 
 void
 lineto(int x, int y, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
-
-	LineTo(img->getdc(), x, y);
+	LineTo(convert_image_ref(pimg).getdc(), x, y);
 }
 
 namespace
@@ -670,49 +627,41 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 void
 line_f(float x1, float y1, float x2, float y2, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	line_base(x1, y1, x2, y2, img);
+	line_base(x1, y1, x2, y2, &convert_image_ref(pimg));
 }
 
 void
 linerel_f(float dx, float dy, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref(pimg));
 
 	::POINT pt;
 
-	::GetCurrentPositionEx(img->getdc(), &pt);
+	::GetCurrentPositionEx(img.getdc(), &pt);
 	line_base(float(pt.x), float(pt.y), float(pt.x) + dx, float(pt.y) + dy,
-		img);
+		&img);
 }
 
 void
 lineto_f(float x, float y, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref(pimg));
 
 	::POINT pt;
 
-	::GetCurrentPositionEx(img->getdc(), &pt);
-	line_base(float(pt.x), float(pt.y), x, y, img);
+	::GetCurrentPositionEx(img.getdc(), &pt);
+	line_base(float(pt.x), float(pt.y), x, y, &img);
 }
 
 
 void rectangle(int left, int top, int right, int bottom, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
+	auto& img(convert_image_ref(pimg));
 
-	yassume(img);
-
-	if(_save_brush(img, 1))
+	if(_save_brush(&img, 1))
 	{
-		Rectangle(img->getdc(), left, top, right, bottom);
-		_save_brush(img, 0);
+		Rectangle(img.getdc(), left, top, right, bottom);
+		_save_brush(&img, 0);
 	}
 }
 

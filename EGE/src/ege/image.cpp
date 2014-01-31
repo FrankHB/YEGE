@@ -150,10 +150,8 @@ void
 IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	int srcX, int srcY, ::DWORD dwRop) const
 {
-	const auto img = CONVERT_IMAGE(pDstImg);
-
-	::BitBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC, srcX, srcY,
-		dwRop);
+	::BitBlt(convert_image_ref(pDstImg).m_hDC, dstX, dstY, dstWidth, dstHeight,
+		m_hDC, srcX, srcY, dwRop);
 }
 
 void
@@ -297,12 +295,8 @@ void
 IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
 	if(Resize(srcWidth, srcHeight) == 0)
-	{
-		const auto img = CONVERT_IMAGE_CONST(pSrcImg);
-
-		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight, img->m_hDC, srcX, srcY,
-			SRCCOPY);
-	}
+		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight,
+			convert_image_ref_c(pSrcImg).m_hDC, srcX, srcY, SRCCOPY);
 }
 
 void
