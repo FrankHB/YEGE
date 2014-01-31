@@ -106,33 +106,18 @@ saveimage(IMAGE* pimg, const wchar_t* filename)
 
 
 int
-savepng(IMAGE* pimg, const char* filename, int bAlpha)
+savepng(IMAGE* pimg, const char* filename, int)
 {
-	if(std::FILE* fp = std::fopen(filename, "wb"))
-	{
-		yconstraint(pimg);
-
-		const int ret(pimg->savepngimg(fp, bAlpha));
-
-		std::fclose(fp);
-		return ret;
-	}
-	return grFileNotFound;
-
+	if(const auto img = CONVERT_IMAGE(pimg))
+		return img->saveimage(filename, ImageFormat::PNG);
+	return 0;
 }
 int
-savepng(IMAGE* pimg, const wchar_t* filename, int bAlpha)
+savepng(IMAGE* pimg, const wchar_t* filename, int)
 {
-	if(std::FILE* fp = ::_wfopen(filename, L"wb"))
-	{
-		yconstraint(pimg);
-
-		const int ret(pimg->savepngimg(fp, bAlpha));
-
-		std::fclose(fp);
-		return ret;
-	}
-	return grFileNotFound;
+	if(const auto img = CONVERT_IMAGE(pimg))
+		return img->saveimage(filename, ImageFormat::PNG);
+	return 0;
 }
 
 int
