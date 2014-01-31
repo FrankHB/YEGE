@@ -180,52 +180,6 @@ IMAGE::putimage(int dstX, int dstY, ::DWORD dwRop) const
 	putimage(CONVERT_IMAGE(nullptr), dstX, dstY, dwRop);
 }
 
-namespace
-{
-
-int
-saveimagetofile(IMAGE* img, std::FILE * fp)
-{
-	auto bmpfHead = ::BITMAPFILEHEADER();
-	auto bmpinfo = ::BITMAPINFOHEADER();
-	int pitch = img->GetWidth() * 3, addbit, y, x, zero = 0;
-
-	addbit = 4 - (pitch & 3);
-	if(pitch & 3)
-		pitch = ((pitch + 4) & ~3);
-	else addbit = 0;
-	bmpfHead.bfType = *(reinterpret_cast<const WORD*>("BM"));
-	bmpfHead.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
-	bmpfHead.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER)
-		+ pitch * img->GetHeight();
-	bmpinfo.biSize = sizeof(BITMAPINFOHEADER);
-	bmpinfo.biBitCount = 24;
-	bmpinfo.biHeight = img->GetHeight();
-	bmpinfo.biWidth = img->GetWidth();
-	bmpinfo.biPlanes = 1;
-	bmpinfo.biSizeImage = pitch * img->GetHeight();
-	//bmpinfo.biXPelsPerMeter
-	std::fwrite(&bmpfHead, sizeof(bmpfHead), 1, fp);
-	std::fwrite(&bmpinfo, sizeof(bmpinfo), 1, fp);
-	for(y = img->GetHeight() - 1; y >= 0; --y)
-	{
-		for(x = 0; x < img->GetWidth(); ++x)
-		{
-			::DWORD col = img->getbuffer()[y * img->GetWidth() + x];
-			//col = RGBTOBGR(col);
-			if(std::fwrite(&col, 3, 1, fp) < 1)
-				goto ERROR_BREAK;
-		}
-		if(addbit > 0)
-			std::fwrite(&zero, addbit, 1, fp);
-	}
-	return 0;
-ERROR_BREAK:
-	return grIOerror;
-}
-
-} // unnamed namespace;
-
 int
 IMAGE::saveimage(const char* filename)
 {
@@ -234,13 +188,16 @@ IMAGE::saveimage(const char* filename)
 int
 IMAGE::saveimage(const wchar_t* filename)
 {
-	if(std::FILE* fp = ::_wfopen(filename, L"wb"))
-	{
-		const int ret(saveimagetofile(this, fp));
+	const Size s(GetSize());
 
-		std::fclose(fp);
-		return ret;
+	try
+	{
+		if(HBitmap(sbuf.GetBufferPtr(), sbuf.GetSize()).SaveTo(
+			reinterpret_cast<const char16_t*>(filename)))
+			return grOk;
 	}
+	catch(std::exception&)
+	{}
 	return grIOerror;
 }
 

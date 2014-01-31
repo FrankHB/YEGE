@@ -39,6 +39,7 @@ typedef 类型名 color_t 从 unsigned int 改为 YSLib::Drawing::PixelType 。
 使用 YCLib 提供的 YSLib::Drawing::MonoType 表示颜色分量。
 使用 YSLib::Drawing::PixelType::Integer 表示颜色对应的整数类型。
 宏 RGBTOBGR 、EGERGB 、EGERGBA 、EGEARGB 、EGEACOLOR 、EGECOLORA 、EGEGET_R 、EGEGET_G 、EGEGET_B 、EGEGET_A 、EGEGRAY 、EGEGRAYA 和 EGEAGRAY 变更为 ege 命名空间内的函数。
+ BMP 默认保存为 YSLib 指定的默认 32 位而不是 24 位格式。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
@@ -84,6 +85,7 @@ CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入
 使用 YSLib::Drawing 实现函数 rgb2hsv 和 hsv2rgb ，不保证精度完全一致。
 使用 YSLib::Adaptor::Image 模块提供的接口代替 OLE 和 libpng 实现图像读取操作。
 使用 YCLib::YCommon 模块提供的接口和 std::unique_ptr 简化编码转换并提供异常安全。
+使用 YSLib::Drawing::HBitmap 实现 BMP 图像保存。
 
 实现质量(QoI)
 ----
