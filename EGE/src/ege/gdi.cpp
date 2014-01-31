@@ -9,21 +9,21 @@ namespace ege
 int
 getimage(IMAGE* pDstImg, const char* pImgFile, int, int)
 {
-	yassume(pDstImg);
+	yconstraint(pDstImg);
 
 	return pDstImg->getimage(pImgFile);
 }
 int
 getimage(IMAGE* pDstImg, const wchar_t* pImgFile, int, int)
 {
-	yassume(pDstImg);
+	yconstraint(pDstImg);
 
 	return pDstImg->getimage(pImgFile);
 }
 int
 getimage(IMAGE* pDstImg, const char* pResType, const char* pResName, int, int)
 {
-	yassume(pDstImg);
+	yconstraint(pDstImg);
 
 	return pDstImg->getimage(pResType, pResName);
 }
@@ -31,7 +31,7 @@ int
 getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName, int,
 	int)
 {
-	yassume(pDstImg);
+	yconstraint(pDstImg);
 
 	return pDstImg->getimage(pResType, pResName);
 }
@@ -39,7 +39,7 @@ getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName, int,
 void
 putimage(int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
 {
-	yassume(pSrcImg);
+	yconstraint(pSrcImg);
 
 	pSrcImg->putimage(dstX, dstY, dwRop);
 }
@@ -47,14 +47,14 @@ void
 putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
 	int srcX, int srcY, ::DWORD dwRop)
 {
-	yassume(pSrcImg);
+	yconstraint(pSrcImg);
 
 	pSrcImg->putimage(dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
 }
 void
 putimage(IMAGE* pDstImg, int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
 {
-	yassume(pSrcImg);
+	yconstraint(pSrcImg);
 
 	pSrcImg->putimage(pDstImg, dstX, dstY, dwRop);
 }
@@ -62,7 +62,7 @@ void
 putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	IMAGE* pSrcImg, int srcX, int srcY, ::DWORD dwRop)
 {
-	yassume(pSrcImg);
+	yconstraint(pSrcImg);
 
 	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
 		dwRop);
@@ -72,7 +72,7 @@ putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight,
 	::DWORD dwRop)
 {
-	yassume(pSrcImg);
+	yconstraint(pSrcImg);
 
 	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
 		srcWidth, srcHeight, dwRop);
@@ -81,7 +81,7 @@ void
 putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
 	int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
 {
-	yassume(pSrcImg);
+	yconstraint(pSrcImg);
 
 	pSrcImg->putimage({}, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
 		srcWidth, srcHeight, dwRop);
