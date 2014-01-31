@@ -191,7 +191,7 @@ IMAGE::saveimage(const wchar_t* filename, ImageFormat fmt)
 
 	try
 	{
-		if(HBitmap(sbuf.GetBufferPtr(), sbuf.GetSize()).SaveTo(
+		if(HBitmap(HBitmap(sbuf.GetBufferPtr(), sbuf.GetSize()), 24).SaveTo(
 			reinterpret_cast<const char16_t*>(filename), fmt))
 			return grOk;
 	}
