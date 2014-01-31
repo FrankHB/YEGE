@@ -907,10 +907,10 @@ main()
 				char str[30];
 
 				getimage(mimage, 0, 0, SC_W, SC_H);
-				std::sprintf(str, "snap%06d.bmp", ncnt);
+				std::sprintf(str, "snap%06d.png", ncnt);
 				putimage_alphatransparent(mimage, img_logo, 2, SC_H - 26, 0,
 					0x80);
-				saveimage(mimage, str);
+				savepng(mimage, str);
 			}
 		}
 		delay(0);
