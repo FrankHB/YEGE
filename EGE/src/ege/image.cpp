@@ -3,7 +3,6 @@
 #include <cstring>
 #include <cfloat> // for FLT_EPSILON;
 #include <utility> // for std::swap;
-#include <olectl.h>
 #include "../libpng/png.h"
 #include "../libpng/pngstruct.h"
 #include "../libpng/pnginfo.h"
