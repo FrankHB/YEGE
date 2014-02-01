@@ -83,10 +83,10 @@ public:
 		if(message == WM_CTLCOLOREDIT)
 		{
 			const auto dc = ::HDC(wParam);
-			const auto br(::CreateSolidBrush(RGBTOBGR(m_bgcolor)));
+			const auto br(::CreateSolidBrush(m_bgcolor));
 
-			::SetBkColor(dc, RGBTOBGR(m_bgcolor));
-			::SetTextColor(dc, RGBTOBGR(m_color));
+			::SetBkColor(dc, m_bgcolor);
+			::SetTextColor(dc, m_color);
 			::DeleteObject(m_hBrush);
 			m_hBrush = br;
 			return ::LRESULT(br);

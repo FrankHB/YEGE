@@ -39,6 +39,7 @@ Code::Blocks 。
 typedef 类型名 color_t 从 unsigned int 改为 YSLib::Drawing::PixelType 。
 使用 YCLib 提供的 YSLib::Drawing::MonoType 表示颜色分量。
 使用 YSLib::Drawing::PixelType::Integer 表示颜色对应的整数类型。
+	* 注意布局同 ::COLORREF ，相对原有实现红色和蓝色分量交换，修复了 <wingdi.h> 中 RGB 等宏的参数红色和蓝色分量相反的问题。
 宏 RGBTOBGR 、EGERGB 、EGERGBA 、EGEARGB 、EGEACOLOR 、EGECOLORA 、EGEGET_R 、EGEGET_G 、EGEGET_B 、EGEGET_A 、EGEGRAY 、EGEGRAYA 和 EGEAGRAY 变更为 ege 命名空间内的函数。
 函数 savepng 的表示是否使用 alpha 的参数被忽略。
 

@@ -20,7 +20,7 @@ RGBTOBGR(YSLib::Drawing::MonoType color)
 yconstfn color_t::Trait::IntegerType
 EGERGB(YSLib::Drawing::MonoType r, YSLib::Drawing::MonoType g, YSLib::Drawing::MonoType b)
 {
-	return (r << 16) | (g << 8) | b;
+	return (b << 16) | (g << 8) | r;
 }
 
 yconstfn color_t::Trait::IntegerType

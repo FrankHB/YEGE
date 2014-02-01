@@ -115,7 +115,7 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 
 	::LOGPEN lpen{0, ::POINT(), COLORREF()};
 
-	lpen.lopnColor = RGBTOBGR(getcolor(pimg));
+	lpen.lopnColor = getcolor(pimg);
 	img.m_linestyle.thickness = thickness;
 	img.m_linewidth = float(thickness);
 	img.m_linestyle.linestyle = linestyle;
@@ -184,7 +184,7 @@ setfillstyle(int pattern, color_t color, IMAGE* pimg)
 	::LOGBRUSH lbr{0, COLORREF(), ::UINT_PTR()};
 
 	img.m_fillcolor = color;
-	lbr.lbColor = RGBTOBGR(color);
+	lbr.lbColor = color;
 	//::SetBkColor(img.getdc(), color);
 	if(pattern < SOLID_FILL)
 		lbr.lbHatch = BS_NULL;
@@ -266,7 +266,6 @@ setcolor(color_t color, IMAGE* pimg)
 			::HPEN hpen;
 
 			img->m_color = color;
-			color = RGBTOBGR(color);
 			lPen.lopnColor = color;
 			lPen.lopnStyle = img->m_linestyle.linestyle;
 			lPen.lopnWidth.x = img->m_linestyle.thickness;
@@ -323,7 +322,6 @@ setfillcolor(color_t color, IMAGE* pimg)
 	::LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
 
 	img.m_fillcolor = color;
-	color = RGBTOBGR(color);
 	lbr.lbColor = color;
 	lbr.lbHatch = BS_SOLID;
 	::HBRUSH hbr = ::CreateBrushIndirect(&lbr);
@@ -342,7 +340,7 @@ setbkcolor(color_t color, IMAGE* pimg)
 			color_t col = img->m_bk_color;
 
 			img->m_bk_color = color;
-			::SetBkColor(img->getdc(), RGBTOBGR(color));
+			::SetBkColor(img->getdc(), color);
 			for(int n = 0; n < size; n++, p++)
 				if(*p == col)
 					*p = color;
@@ -358,7 +356,7 @@ setbkcolor_f(color_t color, IMAGE* pimg)
 		if(img->getdc())
 		{
 			img->m_bk_color = color;
-			::SetBkColor(img->getdc(), RGBTOBGR(color));
+			::SetBkColor(img->getdc(), color);
 		}
 }
 
@@ -367,7 +365,7 @@ setfontbkcolor(color_t color, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
 		if(img->getdc())
-			::SetBkColor(img->getdc(), RGBTOBGR(color));
+			::SetBkColor(img->getdc(), color);
 }
 
 void
@@ -434,7 +432,7 @@ putpixels(int nPoint, int* pPoints, IMAGE* pimg)
 	{
 		x = pPoints[0], y = pPoints[1], c = pPoints[2];
 		if(!(x < 0 || y < 0 || x >= w || y >= h))
-			pb[y * tw + x] = RGBTOBGR(c);
+			pb[y * tw + x] = c;
 	}
 }
 
@@ -445,7 +443,7 @@ putpixels_f(int nPoint, int* pPoints, IMAGE* pimg)
 	const int tw(img.GetWidth());
 
 	for(int n = 0; n < nPoint; ++n, pPoints += 3)
-		img.getbuffer()[pPoints[1] * tw + pPoints[0]] = RGBTOBGR(pPoints[2]);
+		img.getbuffer()[pPoints[1] * tw + pPoints[0]] = pPoints[2];
 }
 
 
@@ -893,15 +891,14 @@ void
 floodfill(int x, int y, int border, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
-		::FloodFill(img->getdc(), x, y, RGBTOBGR(border));
+		::FloodFill(img->getdc(), x, y, border);
 }
 
 void
 floodfillsurface(int x, int y, color_t areacolor, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
-		::ExtFloodFill(img->getdc(), x, y, RGBTOBGR(areacolor),
-			FLOODFILLSURFACE);
+		::ExtFloodFill(img->getdc(), x, y, areacolor, FLOODFILLSURFACE);
 }
 
 } // namespace ege;
