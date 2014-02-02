@@ -2,6 +2,8 @@
 #include "ege/ctl.h"
 #include "ege/viewport.h"
 #include "global.h"
+#include <thread>
+#include <chrono>
 
 namespace ege
 {
@@ -44,22 +46,8 @@ double delay_fps_dwLast;
 void
 ege_sleep(long ms)
 {
-	if(ms <= 0)
-		return;
-
-	static ::HANDLE hTimer = ::CreateWaitableTimer({}, TRUE, {});
-
-	if(hTimer)
-	{
-		::LARGE_INTEGER liDueTime;
-
-		liDueTime.QuadPart = ms * ::LONGLONG(-10000);
-		if(::SetWaitableTimer(hTimer, &liDueTime, 0, {}, {}, {}))
-			::WaitForSingleObject(hTimer, INFINITE); // != WAIT_OBJECT_0;
-		//::CloseHandle(hTimer);
-	}
-	else
-		::Sleep(ms);
+	if(ms > 0)
+		std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
 void

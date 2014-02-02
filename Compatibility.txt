@@ -88,6 +88,7 @@ CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入
 使用 YSLib::Adaptor::Image 模块提供的接口代替 OLE 和 libpng 实现图像读取操作。
 使用 YCLib::YCommon 模块提供的接口和 std::unique_ptr 简化编码转换并提供异常安全。
 使用 YSLib::Drawing::HBitmap 实现 BMP 和 PNG 图像保存。
+使用 C++11 标准库 <thread> 提供的 std::this_thread::sleep_for 代替 ::HTIMER 和 ::Sleep 实现延时。
 
 实现质量(QoI)
 ----

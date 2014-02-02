@@ -492,11 +492,8 @@ int main()
 				int ir = (int)((c.re - (-1.9)) / (0.5 - (-1.9)) * BF_W);
 				int im = (int)((c.im - (-1.2)) / (1.2 - (-1.2)) * BF_H);
 				if(g_mi[im][ir] >= 16)
-				{
 					break;
-				}
-			}
-			while(1);
+			}while(1);
 			init_st(g_w, g_h);
 			n_update = 0;
 			if(fclock() - ftime < 3)
