@@ -50,6 +50,7 @@ delay_fps 和 delay_jfps 仅保留 double 重载版本。
 绘图环境设置、控件和音乐 API 补充遗漏的 EGEAPI 以便作为 DLL 使用，但 fps 类仅头文件实现而例外。
 控件基类 egeControlBase 的析构函数保证为 virtual 。
 宏 EGEAPI 支持显式导入和导出。
+函数 ege_sleep 和 delay 支持多线程环境下使用。（实际原有实现可在多线程下使用但未在头文件中明确。）
 
 兼容接口和实现调整
 ----
