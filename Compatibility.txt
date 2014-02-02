@@ -84,7 +84,7 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 、LPCWSTR 、PVOI
 CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入除空指针值外返回原值。
 命名空间作用域静态函数和对象去除 static 并使用未命名命名空间代替。
 移除不符合标准的保留名称 _RGBtoHSL 和 _HSLtoRGB 的使用。
-使用 YSLib::Drawing 实现函数 rgb2hsv 和 hsv2rgb ，不保证精度完全一致。
+使用 YSLib::Drawing 实现函数 rgb2hsl 和 hsl2rgb ，不保证精度完全一致。
 使用 YSLib::Adaptor::Image 模块提供的接口代替 OLE 和 libpng 实现图像读取操作。
 使用 YCLib::YCommon 模块提供的接口和 std::unique_ptr 简化编码转换并提供异常安全。
 使用 YSLib::Drawing::HBitmap 实现 BMP 和 PNG 图像保存。
