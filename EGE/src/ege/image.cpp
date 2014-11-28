@@ -186,9 +186,9 @@ IMAGE::saveimage(const wchar_t* filename, ImageFormat fmt)
 
 	try
 	{
-		if(HBitmap(HBitmap(sbuf.GetBufferPtr(), sbuf.GetSize()), 24).SaveTo(
-			reinterpret_cast<const char16_t*>(filename), fmt))
-			return grOk;
+		HBitmap(HBitmap(sbuf.GetBufferPtr(), sbuf.GetSize()), 24).SaveTo(
+			reinterpret_cast<const char16_t*>(filename), fmt);
+		return grOk;
 	}
 	catch(std::exception&)
 	{}
@@ -324,7 +324,7 @@ fix_rect_1size(IMAGE* pdest, IMAGE* psrc,
 	int* nHeightSrc      // height of source rectangle
 )
 {
-	viewporttype _vpt{0, 0, pdest->GetWidth(), pdest->GetHeight(), 0};
+	viewporttype _vpt{0, 0, int(pdest->GetWidth()), int(pdest->GetHeight()), 0};
 	/* default value proc */
 	if(*nWidthSrc == 0)
 	{
@@ -332,12 +332,12 @@ fix_rect_1size(IMAGE* pdest, IMAGE* psrc,
 		*nHeightSrc = psrc->GetHeight();
 	}
 	/* fix src rect */
-	if(*nWidthSrc > psrc->GetWidth())
+	if(*nWidthSrc > int(psrc->GetWidth()))
 	{
 		*nWidthSrc -= *nWidthSrc - psrc->GetWidth();
 		*nWidthSrc = psrc->GetWidth();
 	}
-	if(*nHeightSrc > psrc->GetHeight())
+	if(*nHeightSrc > int(psrc->GetHeight()))
 	{
 		*nHeightSrc -= *nHeightSrc - psrc->GetHeight();
 		*nHeightSrc = psrc->GetHeight();
@@ -694,10 +694,7 @@ fix_rect_0size(IMAGE* pdest,
 			   int* nHeightDest      // height of destination rectangle
 			  )
 {
-	viewporttype _vpt
-	{
-		0, 0, pdest->GetWidth(), pdest->GetHeight(), 0
-	};
+	viewporttype _vpt{0, 0, int(pdest->GetWidth()), int(pdest->GetHeight()), 0};
 
 	if(*nWidthDest == 0)
 		*nWidthDest = pdest->GetWidth();

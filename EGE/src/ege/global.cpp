@@ -8,7 +8,7 @@
 #include <functional> // for std::bind;
 #include <mutex> // for std::once_flag, std::call_once;
 #include "head.h"
-#include YFM_Helper_Host
+#include YFM_Helper_Environment
 #include YFM_Helper_HostedUI
 
 #ifdef _WIN64
@@ -423,7 +423,7 @@ _graph_setting::_init_graph_x()
 			mouse_show = {};
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
 			if(!use_force_exit)
-				FetchGUIApplicationInstance().GetHost()
+				FetchGUIApplicationInstance().GetEnvironment()
 					.ExitOnAllWindowThreadCompleted = {};
 			init_finish = true;
 

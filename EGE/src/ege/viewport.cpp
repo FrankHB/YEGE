@@ -38,9 +38,9 @@ setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 		img.m_vpt.left = 0;
 	if(img.m_vpt.top < 0)
 		img.m_vpt.top = 0;
-	if(img.m_vpt.right > img.GetWidth())
+	if(img.m_vpt.right > int(img.GetWidth()))
 		img.m_vpt.right = img.GetWidth();
-	if(img.m_vpt.bottom > img.GetHeight())
+	if(img.m_vpt.bottom > int(img.GetHeight()))
 		img.m_vpt.bottom = img.GetHeight();
 
 	::HRGN rgn = {};
