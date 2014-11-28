@@ -20,12 +20,6 @@ delay_jfps(double fps); // 平均延迟1000/fps毫秒，用于稳定逻辑帧率
 EGEAPI void
 ege_sleep(long ms);     // 至少延迟ms毫秒
 
-EGEAPI void
-delay(long ms);         // 至少延迟ms毫秒
-
-EGEAPI void
-api_sleep(long dwMilliseconds);
-
 EGEAPI double
 fclock(); // 获取以秒为单位的浮点时间，只用于计时用，精度0.01秒，
 

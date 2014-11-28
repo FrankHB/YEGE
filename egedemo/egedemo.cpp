@@ -847,7 +847,7 @@ public:
 \n		fillellipse(80, 20 * i + 30, 9, 9);\
 \n		fillellipse(80, 20 * (i + 1) + 30, 9, 9);\
 \n	}\
-\n	delay(500);\
+\n	ege_sleep(500);\
 \n}\
 \nint main()\
 \n{\

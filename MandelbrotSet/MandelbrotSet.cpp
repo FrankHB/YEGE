@@ -365,7 +365,7 @@ Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 			}
 			if(std::clock() - t > 50)
 			{
-				delay(0);
+				ege_sleep(0);
 				t = std::clock();
 			}
 		}
@@ -384,7 +384,7 @@ Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 			}
 			if(std::clock() - t > 100)
 			{
-				delay(0);
+				ege_sleep(0);
 				t = std::clock();
 			}
 		}

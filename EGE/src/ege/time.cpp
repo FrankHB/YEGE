@@ -51,12 +51,6 @@ ege_sleep(long ms)
 }
 
 void
-delay(long ms)
-{
-	ege_sleep(ms);
-}
-
-void
 delay_ms(long ms)
 {
 	if(ms == 0)
@@ -186,13 +180,6 @@ delay_jfps(double fps)
 		else
 			delay_fps_dwLast += delay_time;
 	}
-}
-
-void
-api_sleep(long dwMilliseconds)
-{
-	if(dwMilliseconds >= 0)
-		::Sleep(dwMilliseconds);
 }
 
 double

@@ -13,7 +13,7 @@ int main()
 		int view_x = 100, view_w = 200; //设置可见区的位置和大小（只要x方向）
 		int t = std::clock(), roll_time = 10000; //记录下起始时间，和滚动完所需要的时间
 		setrendermode(RENDER_MANUAL);
-		for(; ; delay(0))
+		for(; ; ege_sleep(0))
 		{
 			int nt = std::clock(); //取得当前时间，nt-t就是时间差，(nt-t) / roll_time 就是当前时间应该滚动的比例
 			cleardevice();

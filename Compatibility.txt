@@ -10,6 +10,7 @@ Code::Blocks 。
 限 MinGW G++ 4.8.0 或以上，需要 -std=c++11 支持。使用了 std::thread ，需要 POSIX 线程模型。
 （其它版本未测试，但至少需要 -std=c++0x 的 auto 、nullptr 、lambda 表达式和初始化列表等 C++11 特性支持，且若在 Code::Blocks 项目使用，需要去除 debug 的 -Og 选项。）
 只测试 MinGW-W64 。未测试 MinGW.org 的运行时。
+使用同 YSLib 项目相同的 MSYS2 基础环境。
 
 依赖项更改
 ----
@@ -42,6 +43,8 @@ typedef 类型名 color_t 从 unsigned int 改为 YSLib::Drawing::PixelType 。
 	* 注意布局同 ::COLORREF ，相对原有实现红色和蓝色分量交换，修复了 <wingdi.h> 中 RGB 等宏的参数红色和蓝色分量相反的问题。
 宏 RGBTOBGR 、EGERGB 、EGERGBA 、EGEARGB 、EGEACOLOR 、EGECOLORA 、EGEGET_R 、EGEGET_G 、EGEGET_B 、EGEGET_A 、EGEGRAY 、EGEGRAYA 和 EGEAGRAY 变更为 ege 命名空间内的函数。
 函数 savepng 的表示是否使用 alpha 的参数被忽略。
+移除函数 api_sleep 。使用 ::Sleep 函数代替。
+移除函数 delay 。使用 ege_sleep 函数代替。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----

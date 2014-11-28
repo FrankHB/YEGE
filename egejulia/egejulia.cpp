@@ -359,7 +359,7 @@ int JDrawA(COMPLEX c, double, double, double, double)
 			/*
 			if(std::clock() - tt > 10)
 			{
-				delay(1);
+				ege_sleep(1);
 				tt = std::clock();
 				if(0 && kbmouhit())
 				{
@@ -435,7 +435,7 @@ int main()
 			ret = JDrawA(c, z.re - r * d, z.im - r, z.re + r * d, z.im + r);
 			if(std::clock() - t > 30)
 			{
-				delay(1);
+				ege_sleep(1);
 				t = std::clock();
 			}
 		}
@@ -456,7 +456,7 @@ int main()
 
 			if(g_mi[0][0] == 0)
 			{
-				delay(1);
+				ege_sleep(1);
 				std::memset(pMap, 0, BF_W * BF_H * sizeof(state));
 				g_udlist.clear();
 				for(int i = 0; i < BF_W; ++i)
@@ -499,7 +499,7 @@ int main()
 			if(fclock() - ftime < 3)
 				delay_ms((int)((3 - (fclock() - ftime)) * 1000));
 			else
-				delay(1);
+				ege_sleep(1);
 			ftime = fclock();
 		}
 	}

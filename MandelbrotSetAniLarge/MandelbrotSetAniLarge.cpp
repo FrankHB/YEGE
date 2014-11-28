@@ -667,7 +667,7 @@ DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int = 0)
 				if(std::clock() - t > 5000)
 				{
 					if(keystate('J') && keystate('N')) return 1;
-					delay(0);
+					ege_sleep(0);
 					t = std::clock();
 				}
 			}
@@ -710,7 +710,7 @@ DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int = 0)
 				if(std::clock() - t > 5000)
 				{
 					if(keystate('J') && keystate('N')) return 1;
-					delay(0);
+					ege_sleep(0);
 					t = std::clock();
 				}
 			}
@@ -823,12 +823,12 @@ main()
 			outtextxy(0, SC_H + 12 * 2, str);
 			gmp_sprintf(str, "%-6d %4d", mpf_get_prec(y.get_mpf_t()), ncnt);;
 			outtextxy(0, SC_H + 12 * 3, str);
-			delay(0);
+			ege_sleep(0);
 		}
 		if(ncnt >= nbeg)
 		{
 			bar(0, 0, SC_W, SC_H);
-			//delay(0);
+			//ege_sleep(0);
 			g_max_iter_last = 16;
 			//Draw(from.re, from.im, to.re, to.im, mode);
 			int mend = 0xFFFFFFF;
@@ -871,7 +871,7 @@ main()
 							rect.bottom + _dh - rect.top,
 							TRUE);
 					}
-					delay(0);
+					ege_sleep(0);
 				}
 				if(DrawEx(from.re, from.im, to.re, to.im, mode)) break;
 				if(g_b_update_mark + addmark > minmark)
@@ -921,7 +921,7 @@ main()
 				saveimage(mimage, str);
 			}
 		}
-		delay(0);
+		ege_sleep(0);
 	}
 	closegraph();
 	return 0;

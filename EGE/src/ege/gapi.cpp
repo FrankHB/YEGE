@@ -384,8 +384,8 @@ getpixel(int x, int y, IMAGE* pimg)
 
 	x += img.m_vpt.left;
 	y += img.m_vpt.top;
-	return color_t(x < 0 || y < 0 || x >= img.GetWidth()
-		|| y >= img.GetHeight() ? 0
+	return color_t(x < 0 || y < 0 || x >= int(img.GetWidth())
+		|| y >= int(img.GetHeight()) ? 0
 		: img.getbuffer()[y * img.GetWidth() + x]);
 }
 
