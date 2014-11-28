@@ -8,7 +8,6 @@ int
 main()
 {
 	initgraph(640, 480);
-	setrendermode(RENDER_MANUAL);
 
 	double r = 0;
 	fps f;

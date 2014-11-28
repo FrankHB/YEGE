@@ -138,30 +138,21 @@ int main()
 		initgraph(width, height);
 		width  = getmaxx();
 		height = getmaxy();
-		setrendermode(RENDER_MANUAL);
 	}
 	//多边形对象初始化
 	for(i = 0; i < n_polys; ++i)
-	{
 		initpolys(&p[i], n_poly[i], n_points[i]);
-	}
 	fps ui_fps;
 	//主循环
 	for(; is_run(); delay_fps(60))
 	{
 		if(kbhit() > 0)  //有按键按下就退出
-		{
 			break;
-		}
 		for(i = 0; i < n_polys; ++i)
-		{
 			movepoly(p[i].p);
-		}
 		cleardevice();
 		for(i = 0; i < n_polys; ++i)
-		{
 			draw_poly(p[i].p);
-		}
 		//imagefilter_blurring({}, 0xff, 0x100);
 	}
 	closegraph();

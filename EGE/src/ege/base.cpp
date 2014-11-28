@@ -4,10 +4,5 @@
 namespace ege
 {
 
-void
-setrendermode(rendermode_e)
-{
-}
-
 }
 

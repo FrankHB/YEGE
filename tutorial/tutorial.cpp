@@ -163,7 +163,6 @@ private:
 int main()
 {
 	initgraph(320, 240);
-	ege::setrendermode(ege::RENDER_MANUAL);
 	randomize();
 
 	input w[3];
@@ -270,7 +269,6 @@ private:
 int main()
 {
 	ege::initgraph(640, 480);
-	ege::setrendermode(ege::RENDER_MANUAL);
 	ege::randomize();
 
 	ege::fps f;
@@ -359,10 +357,8 @@ int main(int argc, char* argv[])
 	}
 	// 绘制星空，按任意键或移动鼠标退出
 	setfont(12, 6, "宋体");
-	setrendermode(RENDER_MANUAL);
 	dtime = fclock();
 	while(kbmsg()) getkey();
-
 	for(; !exitflag && is_run() && kbmsg() == 0; delay_fps(fps))        //每秒画120帧，kbhit(1)是获取键盘任意键的消息，详见pdf
 	{
 		// 如果有鼠标消息

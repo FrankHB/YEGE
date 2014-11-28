@@ -7,7 +7,6 @@
 int main()
 {
 	initgraph(640, 480);
-	setrendermode(RENDER_MANUAL);
 	IMAGE* img = newimage();
 	getimage(img, "bg.jpg");
 	double r = 0;

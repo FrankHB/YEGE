@@ -449,8 +449,6 @@ _graph_setting::_init_graph_x()
 
 		static egeControlBase _egeControlBase;
 
-		if(_g_initoption & INIT_RENDERMANUAL)
-			setrendermode(RENDER_MANUAL);
 		mouse_show = true;
 	});
 	window_setviewport(0, 0, dc_w, dc_h);

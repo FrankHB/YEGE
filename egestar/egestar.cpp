@@ -74,7 +74,6 @@ int main(int argc, char* argv[])
 	}
 	// 绘制星空，按任意键或移动鼠标退出
 	setfont(12, 6, "宋体");
-	setrendermode(RENDER_MANUAL);
 	dtime = fclock();
 	while(kbmsg()) getkey();
 

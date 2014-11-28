@@ -45,6 +45,7 @@ typedef 类型名 color_t 从 unsigned int 改为 YSLib::Drawing::PixelType 。
 函数 savepng 的表示是否使用 alpha 的参数被忽略。
 移除函数 api_sleep 。使用 ::Sleep 函数代替。
 移除函数 delay 。使用 ege_sleep 函数代替。
+使用 RENDER_AUTO 和 RENDER_MANUAL 渲染的效果相同，都不闪烁。移除函数 setrendermode 和枚举 rendermode_e 。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----

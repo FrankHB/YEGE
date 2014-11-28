@@ -169,14 +169,6 @@ enum music_state_flag
 	MUSIC_MODE_SEEK = 0x210,
 };
 
-
-enum rendermode_e
-{
-	RENDER_AUTO,
-	RENDER_MANUAL,
-};
-
-
 enum pattern_type_e
 {
 	pattern_none            = 0,
@@ -221,9 +213,6 @@ struct ege_rect
 
 
 class IMAGE;
-
-
-EGEAPI void setrendermode(rendermode_e mode);
 
 }
 

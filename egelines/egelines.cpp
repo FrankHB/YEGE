@@ -151,7 +151,6 @@ int main()
 		initgraph(-1, -1);
 		width  = getmaxx();
 		height = getmaxy();
-		setrendermode(RENDER_MANUAL);
 	}
 	//多边形对象初始化
 	for(i = 0; i < n_polys; ++i)
