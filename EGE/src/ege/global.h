@@ -37,8 +37,8 @@ _set_initmode(int, int, int);
 // 定义ege全局状态对象
 struct _graph_setting
 {
-	static const ::TCHAR window_class_name[32];
-	static const ::TCHAR window_caption[128];
+	static const wchar_t window_class_name[32];
+	static const wchar_t window_caption[128];
 
 private:
 	::HWND hwnd;

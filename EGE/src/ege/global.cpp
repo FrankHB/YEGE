@@ -12,16 +12,16 @@
 #include YFM_Helper_HostedUI
 
 #ifdef _WIN64
-#define ARCH "x64"
+#define ARCH L"x64"
 #else
-#define ARCH "x86"
+#define ARCH L"x86"
 #endif
 
 #define TOSTRING_(x) #x
 #define TOSTRING(x) TOSTRING_(x)
-#define GCC_VER TEXT(TOSTRING(__GNUC__)) TEXT(".") TEXT(TOSTRING(__GNUC_MINOR__)) TEXT(".") TEXT(TOSTRING(__GNUC_PATCHLEVEL__))
+#define GCC_VER TOSTRING(__GNUC__) L"." TOSTRING(__GNUC_MINOR__) L"." TOSTRING(__GNUC_PATCHLEVEL__)
 
-#define EGE_TITLE TEXT("yEGE13.04 ") TEXT("GCC") GCC_VER TEXT(ARCH)
+#define EGE_TITLE L"yEGE13.04 GCC" GCC_VER ARCH
 
 namespace ege
 {
@@ -104,9 +104,9 @@ _set_initmode(int mode, int x, int y)
 }
 
 
-const ::TCHAR _graph_setting::window_class_name[32]
-	{TEXT("Easy Graphics Engine")};
-const ::TCHAR _graph_setting::window_caption[128]{EGE_TITLE};
+const wchar_t _graph_setting::window_class_name[32]
+	{L"Easy Graphics Engine"};
+const wchar_t _graph_setting::window_caption[128]{EGE_TITLE};
 
 _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 {
@@ -119,7 +119,7 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 
 		Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, {});
 
-		static ::WNDCLASSEX wcex;
+		static ::WNDCLASSEXW wcex;
 
 		wcex.cbSize = sizeof(wcex);
 		wcex.style = CS_HREDRAW | CS_VREDRAW;
@@ -150,7 +150,7 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 			if(load(RT_ICON))
 				break;
 		}while(0);
-		::RegisterClassEx(&wcex);
+		::RegisterClassExW(&wcex);
 	});
 
 	assert(gdriver_n);
@@ -404,12 +404,12 @@ _graph_setting::_init_graph_x()
 
 		ui_thread = std::thread([this, native_ys_window, &init_finish]{
 			//执行应用程序初始化
-			::SetWindowText(native_ys_window, window_caption),
+			::SetWindowTextW(native_ys_window, window_caption),
 		//	ys_window->Move(Point(_g_windowpos_x, _g_windowpos_y)),
 			ys_window->Resize(Size(dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
 				dc_h + ::GetSystemMetrics(SM_CYFRAME)
 				+ ::GetSystemMetrics(SM_CYCAPTION) * 2));
-			hwnd = ::CreateWindowEx(0, window_class_name, window_caption,
+			hwnd = ::CreateWindowExW(0, window_class_name, window_caption,
 				WS_CHILD, _g_windowpos_x, _g_windowpos_y,
 				dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
 				dc_h + ::GetSystemMetrics(SM_CYFRAME)
