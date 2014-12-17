@@ -505,21 +505,6 @@ _graph_setting::_on_destroy()
 }
 
 void
-_graph_setting::_on_ime_control(::HWND hwnd, ::WPARAM wparam, ::LPARAM lparam)
-{
-	if(wparam == IMC_SETSTATUSWINDOWPOS)
-	{
-		::HIMC hImc = ImmGetContext(hwnd);
-
-		COMPOSITIONFORM cpf{0, ::POINT(), ::RECT()};
-
-		cpf.dwStyle = CFS_POINT;
-		cpf.ptCurrentPos = *reinterpret_cast<::POINT*>(lparam);
-		::ImmSetCompositionWindow(hImc, &cpf);
-	}
-}
-
-void
 _graph_setting::_on_key(::UINT message, unsigned long keycode, ::LPARAM keyflag)
 {
 	if(message == WM_KEYDOWN && keycode < MAX_KEY_VCODE)

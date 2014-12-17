@@ -134,9 +134,6 @@ public:
 	void
 	_on_destroy();
 
-	static void
-	_on_ime_control(::HWND, ::WPARAM, ::LPARAM);
-
 	void
 	_on_key(::UINT, unsigned long, ::LPARAM);
 
