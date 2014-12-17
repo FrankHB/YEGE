@@ -16,7 +16,6 @@ int main()
 	ege::initgraph(800, 600);
 	ege::getch();
 	ege::closegraph();
-	return 0;
 }
 
 #elif _TUTORIAL_ == 1
@@ -177,7 +176,6 @@ int main()
 		f.zorderup();
 		cleardevice();
 	}
-	return 0;
 }
 
 #elif _TUTORIAL_ == 53
@@ -278,7 +276,6 @@ int main()
 		f.zorderup();
 		ege::cleardevice();
 	}
-	return 0;
 }
 #elif _TUTORIAL_ == 60
 // 星空屏保程序，请生成为scr后缀，或者手工改后缀，不要直接运行exe
@@ -394,7 +391,6 @@ int main(int argc, char* argv[])
 		}
 	}
 	closegraph(); // 关闭图形窗口
-	return 0;
 }
 
 
@@ -451,7 +447,6 @@ int main()
 		xyprintf(200, 200, "%d", 100);
 	}
 	closegraph();
-	return 0;
 }
 
 #elif _TUTORIAL_ == 62

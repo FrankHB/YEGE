@@ -31,6 +31,5 @@ main()
 			fillpoly(5, pt);
 		}(300, 200, 100, r);
 	}
-	return 0;
 }
 

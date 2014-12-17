@@ -96,7 +96,7 @@ void gameScene(void)
 	}
 }
 
-int main(void)
+int main()
 {
 	setinitmode(INIT_ANIMATION);
 	initgraph(640, 480);
@@ -104,6 +104,5 @@ int main(void)
 	randomize();
 	gameInit();
 	gameScene();
-	return 0;
 }
 

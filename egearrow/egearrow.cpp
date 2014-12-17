@@ -22,6 +22,5 @@ main()
 		ege_fillpoly(3, points);
 	}(100.0F, 100.0F, 300.0F, 150.0F, PI / 8, 0.2F);
 	getch();
-	return 0;
 }
 

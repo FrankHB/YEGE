@@ -1074,6 +1074,5 @@ int main()
 	}
 //    EndBatchDraw();
 	closegraph();
-	return 0;
 }
 

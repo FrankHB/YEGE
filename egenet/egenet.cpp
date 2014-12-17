@@ -312,7 +312,7 @@ void getmouse(int* x, int* y, int* key)
 
 struct net g_net;
 
-int main(int, char*[])
+int main()
 {
 	char str[100] = "";
 	int basepoint = 20;
@@ -347,6 +347,5 @@ int main(int, char*[])
 		}
 	}
 	closegraph();
-	return 0;
 }
 

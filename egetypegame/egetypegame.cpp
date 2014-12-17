@@ -78,6 +78,5 @@ int main()
 			drawchar(ct + i);
 		}
 	}
-	return 0;
 }
 
