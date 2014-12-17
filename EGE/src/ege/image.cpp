@@ -718,7 +718,7 @@ IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 {
 	std::unique_ptr<::DWORD[]> buff(new ::DWORD[8 << 10]);
 	int x2, y2, ix, iy;
-	PixelType lsum;
+	Pixel lsum;
 	::DWORD sumRB, sumG;
 	int ddx, dldx;
 	int centerintensity;

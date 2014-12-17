@@ -64,7 +64,7 @@ public:
 	IMAGE&
 	operator=(IMAGE) ynothrow;
 
-	DefGetterMem(const ynothrow, PixelType*, BufferPtr, sbuf)
+	DefGetterMem(const ynothrow, Pixel*, BufferPtr, sbuf)
 	DefGetter(const ynothrow, SDst, Height, GetSize().Height)
 	DefGetterMem(const ynothrow, const Size&, Size, sbuf)
 	DefGetter(const ynothrow, SDst, Width, GetSize().Width)
@@ -84,9 +84,8 @@ public:
 	::DWORD*
 	getbuffer() const
 	{
-		static_assert(sizeof(::DWORD) == sizeof(YSLib::Drawing::PixelType), "");
-		static_assert(yalignof(::DWORD) == yalignof(YSLib::Drawing::PixelType),
-			"");
+		static_assert(sizeof(::DWORD) == sizeof(YSLib::Drawing::Pixel), "");
+		static_assert(yalignof(::DWORD) == yalignof(YSLib::Drawing::Pixel), "");
 
 		return reinterpret_cast<::DWORD*>(sbuf.GetBufferPtr());
 	}
