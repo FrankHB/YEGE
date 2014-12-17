@@ -179,7 +179,6 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 _graph_setting::~_graph_setting()
 {
 	yassume(!ys_thrd.joinable());
-
 	ys_pnl.reset();
 }
 
@@ -775,6 +774,17 @@ _graph_setting::_update()
 			SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 	}
 	return grOk;
+}
+
+void
+_graph_setting::_uninit()
+{
+	::ShowWindow(_get_hwnd(), SW_HIDE);
+	YSLib::PostQuitMessage(0);
+	if(ui_thread.joinable())
+		ui_thread.join();
+	if(ys_thrd.joinable())
+		ys_thrd.join();
 }
 
 void

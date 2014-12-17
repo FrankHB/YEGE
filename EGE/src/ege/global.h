@@ -167,6 +167,9 @@ public:
 	int
 	_show_mouse(bool);
 
+	void
+	_uninit();
+
 	int
 	_update();
 

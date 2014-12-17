@@ -27,7 +27,7 @@ initgraph(int width, int height, int flag)
 void
 closegraph()
 {
-	::ShowWindow(get_global_state()._get_hwnd(), SW_HIDE);
+	get_global_state()._uninit();
 }
 
 bool
