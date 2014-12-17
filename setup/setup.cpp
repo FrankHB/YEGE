@@ -260,7 +260,6 @@ int main()
 
 	setup();
 	closegraph();
-	return 0;
 }
 
 

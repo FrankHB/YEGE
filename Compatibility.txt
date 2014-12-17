@@ -88,6 +88,7 @@ EGE 库中加入 -Wall -Wextra -Wmissing-include-dirs -Wzero-as-null-pointer-con
 指针和空指针的相等比较用 ! 操作符代替，不等比较使用 bool 转换代替。
 尽可能使用 {} 代替 NULL 或其它形式的空指针常量；无法使用 {} 的用 nullptr 代替。
 字面量 false 尽可能用 {} 代替。
+主函数不使用冗余形参和返回语句。
 
 标准库使用
 ----

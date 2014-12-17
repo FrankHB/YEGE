@@ -165,6 +165,5 @@ int main()
 		//imagefilter_blurring({}, 0xff, 0x100);
 	}
 	closegraph();
-	return 0;
 }
 

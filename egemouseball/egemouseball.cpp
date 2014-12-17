@@ -169,7 +169,7 @@ void dealMouse(BALL* ball)
 	}
 }
 
-int main(void)
+int main()
 {
 	setinitmode(INIT_ANIMATION);
 	initgraph(LEN, WID);
@@ -192,6 +192,5 @@ int main(void)
 
 	}
 	closegraph();
-	return 0;
 }
 

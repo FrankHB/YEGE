@@ -33,5 +33,4 @@ int main()
 		setfillcolor(RGB(0, 0, 0xff));
 		paintstar(300, 200, 100, r);
 	}
-	return 0;
 }

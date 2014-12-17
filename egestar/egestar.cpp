@@ -113,6 +113,5 @@ int main(int argc, char* argv[])
 		}
 	}
 	closegraph(); // ¹Ø±ÕÍ¼ÐÎ´°¿Ú
-	return 0;
 }
 

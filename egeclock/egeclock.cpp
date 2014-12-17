@@ -94,7 +94,6 @@ int main()
 	mainloop();
 	// 关闭绘图设备
 	ege::closegraph();
-	return 0;
 }
 
 

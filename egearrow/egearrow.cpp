@@ -20,7 +20,7 @@ void draw_arrow(float sx, float sy,
 	ege_fillpoly(3, points);
 }
 
-int main(void)
+int main()
 {
 	initgraph(640, 480);
 	ege_enable_aa(true);
@@ -30,6 +30,5 @@ int main(void)
 	draw_arrow(100.0f, 100.0f, 300.0f, 150.0f,
 			   (float)(PI / 8), 0.2f);
 	getch();
-	return 0;
 }
 
