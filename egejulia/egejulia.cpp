@@ -57,8 +57,8 @@ void InitColor()
 	int h1 = 240, h2 = 30;
 	for(int i = 0; i < MAXCOLOR / 2; i++)
 	{
-		Color[i] = HSLtoRGB((float)h1, 1.0f, i * 2.0f / MAXCOLOR);
-		Color[MAXCOLOR - 1 - i] = HSLtoRGB((float)h2, 1.0f, i * 2.0f / MAXCOLOR);
+		Color[i] = hsl2rgb((float)h1, 1.0f, i * 2.0f / MAXCOLOR);
+		Color[MAXCOLOR - 1 - i] = hsl2rgb((float)h2, 1.0f, i * 2.0f / MAXCOLOR);
 	}
 }
 

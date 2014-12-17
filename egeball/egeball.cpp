@@ -45,7 +45,7 @@ public:
 			}while(goon);
 			obj[i].vx = obj[i].vy = 0.F;
 			obj[i].color = EGEAGRAY(0xFF,
-				HSVtoRGB(random(10000) * 360.F / 10000, 1.F, 1.F));
+				hsv2rgb(random(10000) * 360.F / 10000, 1.F, 1.F));
 		}
 	}
 

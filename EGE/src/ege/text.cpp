@@ -601,7 +601,7 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf,
 			setfillcolor(EGERGB(0, 0, 0xA0), &window);
 			for(int dy = 1; dy < 24; dy++)
 			{
-				setcolor(HSLtoRGB(240.0f, 1.0f,
+				setcolor(hsl2rgb(240.0f, 1.0f,
 					0.5f + float(dy / 24.0 * 0.3)), &window);
 				line(1, dy, w - 1, dy, &window);
 			}

@@ -92,13 +92,6 @@ EGEAGRAY(YSLib::Drawing::MonoType a, color_t::Trait::IntegerType gray)
 	return EGEGRAY(gray) | (a << 24);
 }
 
-// 兼容宏
-#define RGBtoGRAY   rgb2gray
-#define RGBtoHSL    rgb2hsl
-#define RGBtoHSV    rgb2hsv
-#define HSLtoRGB    hsl2rgb
-#define HSVtoRGB    hsv2rgb
-
 } // namespace ege;
 
 #endif

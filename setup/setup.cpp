@@ -77,7 +77,7 @@ public:
 	int render(int _x, int _y)
 	{
 		imagefilter_blurring(pmira, 0x30, 0x100);
-		int color = HSVtoRGB((float)m_cr, 1.0f, 1.0f);
+		int color = hsv2rgb((float)m_cr, 1.0f, 1.0f);
 		int e = 1;
 		for(int y = -e; y <= e; ++y)
 		{

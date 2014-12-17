@@ -33,9 +33,9 @@ public:
 			p[i].y = y;
 			p[i].vx = 1.0f - myrand(2.0f);
 			p[i].vy = 1.0f - myrand(2.0f);
-			p[i].color = HSVtoRGB(myrand(360.0f), 1.0f, 1.0f);
+			p[i].color = hsv2rgb(myrand(360.0f), 1.0f, 1.0f);
 		}
-		color = HSVtoRGB(myrand(360.0f), 1.0f, 1.0f);
+		color = hsv2rgb(myrand(360.0f), 1.0f, 1.0f);
 		start = rand() % 300;
 		cnt = 0;
 	}

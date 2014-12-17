@@ -11,8 +11,8 @@ void InitColor(float h1 = 240, float h2 = 320)
 {
 	for(std::size_t i = 0; i < MAXCOLOR / 2; ++i)
 	{
-		Color[i] = HSLtoRGB(h1, 1.0F, i * 2.0F / MAXCOLOR);
-		Color[MAXCOLOR - i - 1] = HSLtoRGB(h2, 1.0F, i * 2.0F / MAXCOLOR);
+		Color[i] = hsl2rgb(h1, 1.0F, i * 2.0F / MAXCOLOR);
+		Color[MAXCOLOR - i - 1] = hsl2rgb(h2, 1.0F, i * 2.0F / MAXCOLOR);
 	}
 }
 

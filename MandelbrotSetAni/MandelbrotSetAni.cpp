@@ -332,9 +332,9 @@ void setinitcolor(int* color, int len, int h1, int h2, float s = 0.8f)
 	int i;
 	for(i = 0; i < len / 2; i++)
 	{
-		color[i] = HSLtoRGB((float)h1, s, i * 2.0f / len * 0.8f + 0.1f);
+		color[i] = hsl2rgb((float)h1, s, i * 2.0f / len * 0.8f + 0.1f);
 		fixcolor(&color[i]);
-		color[len - 1 - i] = HSLtoRGB((float)h2, s,
+		color[len - 1 - i] = hsl2rgb((float)h2, s,
 			i * 2.0f / len * 0.8f + 0.1f);
 		fixcolor(&color[len - 1 - i]);
 	}

@@ -69,7 +69,7 @@ void movepolys(struct polys* p) //移动多边形队列，包含时间检测，颜色计算
 	if(--(p->time) <= 0)
 	{
 		p->prevcolor = p->color;
-		p->nextcolor = HSVtoRGB((float)random(360), 1.0f, (float)rand_float(0.5, 0.5));
+		p->nextcolor = hsv2rgb((float)random(360), 1.0f, (float)rand_float(0.5, 0.5));
 		p->time = random(1000);
 		p->chtime = random(1000) + 60;
 		p->nowtime = 0;
@@ -96,7 +96,7 @@ void initpolys(struct polys* p, int npoly, int npoint) //初始化多边形队列组
 	p->color = 0;
 	p->time = 1000;
 	p->prevcolor = p->color;
-	p->nextcolor = HSVtoRGB((float)random(360), 1.0f, 0.5f);
+	p->nextcolor = hsv2rgb((float)random(360), 1.0f, 0.5f);
 	p->chtime = 1000;
 	p->nowtime = 0;
 	j = 0;
