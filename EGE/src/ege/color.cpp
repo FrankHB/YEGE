@@ -1,6 +1,4 @@
 ﻿#include "ege/colorbase.h"
-#include <cmath>
-#include <algorithm> // for std::min, std::max;
 #include "head.h"
 
 namespace ege
@@ -9,14 +7,8 @@ namespace ege
 color_t
 rgb2gray(color_t color)
 {
-	double c;
-	color_t r;
-
-	c = ((color >> 16) & 0xFF) * 0.299;
-	c += ((color >> 8) & 0xFF) * 0.587;
-	c += ((color) & 0xFF) * 0.114;
-	r = color_t::Trait::IntegerType(c);
-	return MakeGray(r);
+	return MakeGray(color_t::Trait::IntegerType(((color >> 16) & 0xFF) * 0.299
+		+ ((color >> 8) & 0xFF) * 0.587 + ((color) & 0xFF) * 0.114));
 }
 
 void
