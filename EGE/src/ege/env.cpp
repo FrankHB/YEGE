@@ -2,7 +2,7 @@
 #include "ege/base.h"
 #include "ege/windows.h"
 #include "global.h"
-
+#include "head.h"
 
 namespace ege
 {
@@ -10,9 +10,7 @@ namespace ege
 void
 initgraph(int* gdriver, int* gmode, char*)
 {
-	assert(gdriver);
-
-	get_global_state(*gdriver, gmode)._init_graph_x();
+	get_global_state(Deref(gdriver), gmode)._init_graph_x();
 }
 void
 initgraph(int width, int height, int flag)

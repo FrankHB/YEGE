@@ -36,7 +36,9 @@ IMAGE::IMAGE(::HDC hdc, int width, int height)
 	: IMAGE(hdc, ToSize(width, height))
 {}
 IMAGE::IMAGE(::HDC hdc, const Size& size)
-	: sbuf(size), m_hDC([hdc]{assert(hdc); return ::CreateCompatibleDC(hdc);}())
+	: sbuf(size), m_hDC([hdc]{
+		return ::CreateCompatibleDC(Nonnull(hdc));
+	}())
 {
 	if(m_hDC)
 	{

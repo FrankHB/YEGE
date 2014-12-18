@@ -1,6 +1,7 @@
 ﻿#include "global.h"
 #include "ege/base.h"
 #include "ege/input.h"
+#include "head.h"
 
 namespace ege
 {
@@ -70,11 +71,8 @@ showmouse(bool bShow)
 int
 mousepos(int* x, int* y)
 {
-	assert(x),
-	assert(y);
-
-	*x = get_global_state().mouse_last_x;
-	*y = get_global_state().mouse_last_y;
+	yunseq(Deref(x) = get_global_state().mouse_last_x,
+		Deref(y) = get_global_state().mouse_last_y);
 	return 0;
 }
 

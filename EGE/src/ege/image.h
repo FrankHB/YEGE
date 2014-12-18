@@ -258,21 +258,13 @@ CONVERT_IMAGE_CONST(IMAGE*);
 inline IMAGE&
 convert_image_ref(IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
-
-	return *img;
+	return Deref(CONVERT_IMAGE(pimg));
 }
 
 inline IMAGE&
 convert_image_ref_c(IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	yassume(img);
-
-	return *img;
+	return Deref(CONVERT_IMAGE_CONST(pimg));
 }
 
 } // namespace ege;

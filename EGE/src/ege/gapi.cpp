@@ -499,10 +499,8 @@ namespace
 void
 line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 {
-	yconstraint(img);
-
 	int bswap = 2;
-	auto col(getcolor(img));
+	auto col(getcolor(Nonnull(img)));
 	color_t endp(0);
 	auto pBuffer(reinterpret_cast<color_t*>(img->getbuffer()));
 	int rw = img->GetWidth();

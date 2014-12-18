@@ -153,15 +153,14 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 		::RegisterClassExW(&wcex);
 	});
 
-	assert(gdriver_n);
+	assert(gdriver_n != 0);
 
 	if(gdriver_n == TRUECOLORSIZE)
 	{
-		assert(gmode);
 		::RECT rect;
 
 		::GetWindowRect(GetDesktopWindow(), &rect);
-		dc_w = short(*gmode & 0xFFFF);
+		dc_w = short(Deref(gmode) & 0xFFFF);
 		dc_h = short(unsigned(*gmode >> 16));
 		if(dc_w < 0)
 			dc_w = rect.right;
@@ -386,11 +385,7 @@ _graph_setting::_init_graph_x()
 {
 	static std::once_flag init_flag;
 
-	yassume(ys_window);
-
-	const auto native_ys_window(ys_window->GetNativeHandle());
-
-	yassume(ys_window->GetNativeHandle());
+	const auto native_ys_window(Deref(ys_window).GetNativeHandle());
 
 	std::call_once(init_flag, [this, native_ys_window]{
 		ys_thrd = std::thread([&]{
@@ -403,7 +398,7 @@ _graph_setting::_init_graph_x()
 
 		ui_thread = std::thread([this, native_ys_window, &init_finish]{
 			//执行应用程序初始化
-			::SetWindowTextW(native_ys_window, window_caption),
+			::SetWindowTextW(Nonnull(native_ys_window), window_caption),
 		//	ys_window->Move(Point(_g_windowpos_x, _g_windowpos_y)),
 			ys_window->Resize(Size(dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
 				dc_h + ::GetSystemMetrics(SM_CYFRAME)
@@ -489,7 +484,7 @@ _graph_setting::_mousemsg()
 void
 _graph_setting::_on_destroy()
 {
-	assert(_is_run());
+	yassume(_is_run());
 
 	if(get_pages().active_dc)
 		::ReleaseDC(hwnd, window_dc);
@@ -535,7 +530,7 @@ _graph_setting::_on_mouse_button_up(::HWND h_wnd, ::UINT msg, ::WPARAM w_param,
 		vk = VK_RBUTTON;
 		break;
 	default:
-		assert(false);
+		yassume(false);
 		return;
 	}
 	mouse_lastup_x = short(l_param & 0xFFFF);

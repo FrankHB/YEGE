@@ -14,9 +14,7 @@ getimage_common(IMAGE* pimg, std::FILE* fp) ynothrow
 {
 	if(fp)
 	{
-		yconstraint(pimg);
-
-		const auto ret(pimg->getpngimg(fp));
+		const auto ret(Deref(pimg).getpngimg(fp));
 
 		std::fclose(fp);
 		return ret;
@@ -29,81 +27,61 @@ getimage_common(IMAGE* pimg, std::FILE* fp) ynothrow
 int
 getimage(IMAGE* pDstImg, const char* pImgFile, int, int)
 {
-	yconstraint(pDstImg);
-
-	return pDstImg->getimage(pImgFile);
+	return Deref(pDstImg).getimage(pImgFile);
 }
 int
 getimage(IMAGE* pDstImg, const wchar_t* pImgFile, int, int)
 {
-	yconstraint(pDstImg);
-
-	return pDstImg->getimage(pImgFile);
+	return Deref(pDstImg).getimage(pImgFile);
 }
 int
 getimage(IMAGE* pDstImg, const char* pResType, const char* pResName, int, int)
 {
-	yconstraint(pDstImg);
-
-	return pDstImg->getimage(pResType, pResName);
+	return Deref(pDstImg).getimage(pResType, pResName);
 }
 int
 getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName, int,
 	int)
 {
-	yconstraint(pDstImg);
-
-	return pDstImg->getimage(pResType, pResName);
+	return Deref(pDstImg).getimage(pResType, pResName);
 }
 
 void
 putimage(int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
 {
-	yconstraint(pSrcImg);
-
-	pSrcImg->putimage(dstX, dstY, dwRop);
+	Deref(pSrcImg).putimage(dstX, dstY, dwRop);
 }
 void
 putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
 	int srcX, int srcY, ::DWORD dwRop)
 {
-	yconstraint(pSrcImg);
-
-	pSrcImg->putimage(dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
+	Deref(pSrcImg).putimage(dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
 }
 void
 putimage(IMAGE* pDstImg, int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
 {
-	yconstraint(pSrcImg);
-
-	pSrcImg->putimage(pDstImg, dstX, dstY, dwRop);
+	Deref(pSrcImg).putimage(pDstImg, dstX, dstY, dwRop);
 }
 void
 putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	IMAGE* pSrcImg, int srcX, int srcY, ::DWORD dwRop)
 {
-	yconstraint(pSrcImg);
-
-	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
-		dwRop);
+	Deref(pSrcImg).putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX,
+		srcY, dwRop);
 }
 void
 putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight,
 	::DWORD dwRop)
 {
-	yconstraint(pSrcImg);
-
-	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
-		srcWidth, srcHeight, dwRop);
+	Deref(pSrcImg).putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX,
+		srcY, srcWidth, srcHeight, dwRop);
 }
 void
 putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
 	int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
 {
-	yconstraint(pSrcImg);
-
-	pSrcImg->putimage({}, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
+	Deref(pSrcImg).putimage({}, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
 		srcWidth, srcHeight, dwRop);
 }
 
