@@ -348,8 +348,8 @@ void egeControlBase::update()
 		m_h = getheight();
 	}
 	if(auto& cmap = reinterpret_cast<egectlmap*&>(m_childmap))
-		for(egectlmap::iterator it = cmap->begin() ; it != cmap->end(); ++it)
-			(*it)->update();
+		for(auto&& x : *cmap)
+			x->update();
 	PushTarget _target;
 	settarget(buf());
 	onUpdate();
@@ -372,8 +372,8 @@ void egeControlBase::draw(IMAGE* pimg)
 		auto& cvec = reinterpret_cast<egectlvec*&>(m_childzorder);
 
 		yunused(cmap);
-		for(egectlvec::iterator it = cvec->begin() ; it != cvec->end(); it++)
-			(*it)->draw(pmain);
+		for(auto&& x : *cvec)
+			x->draw(pmain);
 	}
 	if(!m_bDirectDraw && m_bVisable)
 	{
