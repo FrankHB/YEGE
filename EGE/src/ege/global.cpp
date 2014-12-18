@@ -178,7 +178,7 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 
 _graph_setting::~_graph_setting()
 {
-	yassume(!ys_thrd.joinable());
+	_uninit();
 	ys_pnl.reset();
 }
 
