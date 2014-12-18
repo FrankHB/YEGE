@@ -21,7 +21,7 @@ EGEAPI void
 ege_sleep(long ms);     // 至少延迟ms毫秒
 
 EGEAPI double
-fclock(); // 获取以秒为单位的浮点时间，只用于计时用，精度0.01秒，
+fclock(); // 获取以秒为单位的浮点时间，只用于计时用
 
 }
 

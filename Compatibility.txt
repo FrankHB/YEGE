@@ -57,6 +57,7 @@ delay_fps 和 delay_jfps 仅保留 double 重载版本。
 控件基类 egeControlBase 的析构函数保证为 virtual 。
 宏 EGEAPI 支持显式导入和导出。
 函数 ege_sleep 支持多线程环境下使用。（实际原有实现可在多线程下使用但未在头文件中明确。）
+提升 fclock 函数的精度。
 
 兼容接口和实现调整
 ----
@@ -96,6 +97,7 @@ CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入
 使用 YCLib::YCommon 模块提供的接口和 std::unique_ptr 简化编码转换并提供异常安全。
 使用 YSLib::Drawing::HBitmap 实现 BMP 和 PNG 图像保存。
 使用 C++11 标准库 <thread> 提供的 std::this_thread::sleep_for 代替 ::HTIMER 和 ::Sleep 实现延时。
+使用 C++11 标准库 <chrono> 和 YSLib 提供的包装接口实现其它时间操作。
 
 实现质量(QoI)
 ----
