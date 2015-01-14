@@ -35,6 +35,104 @@ const wchar_t window_caption[128]{EGE_TITLE};
 
 int _g_initoption(INIT_DEFAULT);
 
+::LRESULT CALLBACK
+wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
+{
+	auto& app(FetchEGEApplication());
+
+	switch(message)
+	{
+	case WM_PAINT:
+		app._on_paint(hWnd);
+		break;
+	case WM_CLOSE:
+		if(app.callback_close)
+			app.callback_close();
+		else
+			return ::DefWindowProc(hWnd, message, wParam, lParam);
+		break;
+	case WM_DESTROY:
+		app._on_destroy();
+		break;
+	case WM_ERASEBKGND:
+		return TRUE;
+	case WM_KEYDOWN:
+	case WM_KEYUP:
+	case WM_CHAR:
+	//	if(hWnd == app.hwnd)
+		app._on_key(message, static_cast<unsigned long>(wParam), lParam);
+		break;
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONDBLCLK:
+		app.mouse_lastclick_x = short(lParam & 0xFFFF);
+		app.mouse_lastclick_y = short(::UINT(lParam) >> 16);
+		app.keystatemap[VK_LBUTTON] = 1;
+		::SetCapture(hWnd);
+		app.mouse_state_l = 1;
+		if(hWnd == app._get_hwnd())
+			app._push_mouse_msg( message, wParam, lParam);
+		break;
+	case WM_MBUTTONDOWN:
+	case WM_MBUTTONDBLCLK:
+		app.mouse_lastclick_x = short(lParam & 0xFFFF);
+		app.mouse_lastclick_y = short(::UINT(lParam) >> 16);
+		app.keystatemap[VK_MBUTTON] = 1;
+		::SetCapture(hWnd);
+		app.mouse_state_m = 1;
+		if(hWnd == app._get_hwnd())
+			app._push_mouse_msg(message, wParam, lParam);
+		break;
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONDBLCLK:
+		app.mouse_lastclick_x = short(lParam & 0xFFFF);
+		app.mouse_lastclick_y = short(::UINT(lParam) >> 16);
+		app.keystatemap[VK_RBUTTON] = 1;
+		::SetCapture(hWnd);
+		app.mouse_state_r = 1;
+		if(hWnd == app._get_hwnd())
+			app._push_mouse_msg( message, wParam, lParam);
+		break;
+	case WM_LBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONUP:
+		app._on_mouse_button_up(hWnd, message, wParam, lParam);
+		break;
+	case WM_MOUSEMOVE:
+		app.mouse_last_x = short(lParam & 0xFFFF);
+		app.mouse_last_y = short(::UINT(lParam) >> 16);
+		if(hWnd == app._get_hwnd() && (app.mouse_lastup_x
+			!= app.mouse_last_x || app.mouse_lastup_y
+			!= app.mouse_last_y))
+			app._push_mouse_msg(message, wParam, lParam);
+		break;
+	case WM_MOUSEWHEEL:
+		{
+			::POINT pt{short(lParam & 0xFFFF), short(::UINT(lParam) >> 16)};
+
+			::ScreenToClient(app._get_hwnd(), &pt);
+			app.mouse_last_x = pt.x;
+			app.mouse_last_y = pt.y;
+			lParam = static_cast<unsigned short>(short(app.mouse_last_y))
+				<< 16 | static_cast<unsigned short>(short(app.mouse_last_x));
+		}
+		if(hWnd == app._get_hwnd())
+			app._push_mouse_msg(message, wParam, lParam);
+		break;
+	case WM_SETCURSOR:
+		app._on_setcursor(hWnd);
+		return TRUE;
+	case WM_USER + 1:
+		EGEApplication::_window_handle_wm_user_1(lParam, wParam);
+		break;
+	case WM_USER + 2:
+		::SetFocus(::HWND(lParam));
+		break;
+	default:
+		return ::DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}
+
 } // unnamed namespace;
 
 
@@ -110,7 +208,7 @@ EGEApplication::EGEApplication(int gdriver_n, int* gmode)
 
 		wcex.cbSize = sizeof(wcex);
 		wcex.style = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc = getProcfunc();
+		wcex.lpfnWndProc = wndproc;
 		wcex.cbClsExtra = 0;
 		wcex.cbWndExtra = 0;
 		wcex.hInstance = GetInstance();

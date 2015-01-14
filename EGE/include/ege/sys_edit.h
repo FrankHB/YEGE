@@ -8,6 +8,10 @@ namespace ege
 
 class EGEAPI sys_edit : public egeControlBase
 {
+private:
+	static ::WNDPROC
+	GetSysEditWndProc();
+
 public:
 	CTL_PREINIT(sys_edit, egeControlBase)
 	{
@@ -47,7 +51,8 @@ public:
 		m_bgcolor = 0xFFFFFF;
 		::SetWindowLongPtrW(m_hwnd, GWLP_USERDATA, ::LONG_PTR(this));
 		m_callback = ::GetWindowLongPtrW(m_hwnd, GWLP_WNDPROC);
-		::SetWindowLongPtrW(m_hwnd, GWLP_WNDPROC, ::LONG_PTR(getProcfunc()));
+		::SetWindowLongPtrW(m_hwnd, GWLP_WNDPROC,
+			::LONG_PTR(GetSysEditWndProc()));
 
 		char fontname[]{'\xcb', '\xce', '\xcc', '\xe5', 0, 0};
 
