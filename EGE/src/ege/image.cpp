@@ -274,7 +274,7 @@ IMAGE::getimage(const wchar_t* filename)
 graphics_errors
 IMAGE::getimage(const char* pResType, const char* pResName)
 {
-	if(const auto hrsrc = ::FindResourceA(_graph_setting::get_instance(),
+	if(const auto hrsrc = ::FindResourceA(EGEApplication::GetInstance(),
 		pResName, pResType))
 		if(const auto hg = ::LoadResource({}, hrsrc))
 			if(const auto pvRes = ::LockResource(hg))
@@ -285,7 +285,7 @@ IMAGE::getimage(const char* pResType, const char* pResName)
 graphics_errors
 IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName)
 {
-	if(const auto hrsrc = ::FindResourceW(_graph_setting::get_instance(),
+	if(const auto hrsrc = ::FindResourceW(EGEApplication::GetInstance(),
 		pResName, pResType))
 		if(const auto hg = ::LoadResource({}, hrsrc))
 			if(const auto pvRes = ::LockResource(hg))

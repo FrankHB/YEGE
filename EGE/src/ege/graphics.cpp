@@ -16,9 +16,9 @@ namespace
 ::LRESULT CALLBACK
 wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 {
-	auto& gstate(get_global_state());
+	auto& gstate(FetchEGEApplication());
 	//int wmId, wmEvent;
-	const auto pg_w(reinterpret_cast<_graph_setting*>(
+	const auto pg_w(reinterpret_cast<EGEApplication*>(
 		::GetWindowLongPtrW(hWnd, GWLP_USERDATA)));
 
 	if(!pg_w)
@@ -116,18 +116,7 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		}
 		break;
 	case WM_USER + 1:
-		{
-			const auto p(reinterpret_cast<msg_createwindow*>(lParam));
-
-			yassume(p);
-
-			auto& msg(*p);
-
-			if(wParam != 0)
-				_graph_setting::_window_create(msg);
-			else
-				_graph_setting::_window_destroy(msg);
-		}
+		EGEApplication::_window_handle_wm_user_1(lParam, wParam);
 		break;
 	case WM_USER + 2:
 		::SetFocus(::HWND(lParam));

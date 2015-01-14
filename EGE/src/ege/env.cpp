@@ -10,7 +10,7 @@ namespace ege
 void
 initgraph(int* gdriver, int* gmode, char*)
 {
-	get_global_state(Deref(gdriver), gmode)._init_graph_x();
+	FetchEGEApplication(Deref(gdriver), gmode)._init_graph_x();
 }
 void
 initgraph(int width, int height, int flag)
@@ -25,13 +25,13 @@ initgraph(int width, int height, int flag)
 void
 closegraph()
 {
-	get_global_state()._uninit();
+	FetchEGEApplication()._uninit();
 }
 
 bool
 is_run()
 {
-	return get_global_state()._is_run();
+	return FetchEGEApplication()._is_run();
 }
 
 } // namespace ege;

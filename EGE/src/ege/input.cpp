@@ -9,70 +9,70 @@ namespace ege
 int
 kbmsg()
 {
-	return get_global_state()._kbmsg();
+	return FetchEGEApplication()._kbmsg();
 }
 
 key_msg
 getkey()
 {
-	return get_global_state()._getkey();
+	return FetchEGEApplication()._getkey();
 }
 
 int
 keystate(int key)
 {
-	return get_global_state()._keystate(key);
+	return FetchEGEApplication()._keystate(key);
 }
 
 void
 flushkey()
 {
-	get_global_state()._flushkey();
+	FetchEGEApplication()._flushkey();
 }
 
 int
 getch()
 {
-	return get_global_state()._getch();
+	return FetchEGEApplication()._getch();
 }
 
 int
 kbhit()
 {
-	return get_global_state()._kbhit();
+	return FetchEGEApplication()._kbhit();
 }
 
 
 bool
 mousemsg()
 {
-	return get_global_state()._mousemsg();
+	return FetchEGEApplication()._mousemsg();
 }
 
 mouse_msg
 getmouse()
 {
-	return get_global_state()._getmouse();
+	return FetchEGEApplication()._getmouse();
 }
 
 void
 flushmouse()
 {
-	get_global_state()._flushmouse();
+	FetchEGEApplication()._flushmouse();
 }
 
 bool
 showmouse(bool bShow)
 {
-	return get_global_state()._show_mouse(bShow);
+	return FetchEGEApplication()._show_mouse(bShow);
 }
 
 
 int
 mousepos(int* x, int* y)
 {
-	yunseq(Deref(x) = get_global_state().mouse_last_x,
-		Deref(y) = get_global_state().mouse_last_y);
+	yunseq(Deref(x) = FetchEGEApplication().mouse_last_x,
+		Deref(y) = FetchEGEApplication().mouse_last_y);
 	return 0;
 }
 

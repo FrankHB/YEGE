@@ -107,7 +107,7 @@ void
 window_setviewport(int left, int top, int right, int bottom)
 {
 	auto& pages(get_pages());
-	auto& gstate(get_global_state());
+	auto& gstate(FetchEGEApplication());
 	const auto hwnd(gstate._get_hwnd());
 	const bool same_xy(pages.base_x == left && pages.base_y == top),
 		same_wh(pages.base_w == bottom - top && pages.base_h == right - left);

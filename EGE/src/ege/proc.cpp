@@ -8,7 +8,7 @@ namespace ege
 int
 SetCloseHandler(CALLBACK_PROC* func)
 {
-	get_global_state().callback_close = func;
+	FetchEGEApplication().callback_close = func;
 	return grOk;
 }
 

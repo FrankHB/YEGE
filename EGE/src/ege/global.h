@@ -8,6 +8,8 @@
 #include "ege/base.h"
 #include <thread>
 #include "thread_queue.h"
+#include YFM_Helper_HostedUI
+#include YFM_Helper_Environment
 
 #define BITMAP_PAGE_SIZE 4
 #define MAX_KEY_VCODE 256
@@ -21,7 +23,6 @@ class egeControlBase;
 struct msg_createwindow;
 
 
-extern int _g_initoption;
 extern bool _g_initcall;
 
 extern int update_mark_count; //更新标记
@@ -34,13 +35,13 @@ void
 _set_initmode(int, int, int);
 
 
-// 定义ege全局状态对象
-struct _graph_setting
+// EGE 全局状态
+class EGEApplication : public YSLib::GUIApplication
 {
-	static const wchar_t window_class_name[32];
-	static const wchar_t window_caption[128];
-
 private:
+	YSLib::unique_ptr<YSLib::UI::Panel> ys_pnl;
+	std::thread ys_thrd;
+	YSLib::Host::Window* ys_window;
 	::HWND hwnd;
 	::HDC window_dc;
 	int dc_w = 640, dc_h = 480;
@@ -49,21 +50,21 @@ private:
 	std::thread ui_thread;
 
 public:
-	/*鼠标状态记录*/
+	// 鼠标状态
 	int mouse_state_l, mouse_state_m, mouse_state_r;
 	int mouse_last_x, mouse_last_y;
 	int mouse_lastclick_x, mouse_lastclick_y;
 	int mouse_lastup_x, mouse_lastup_y;
 	bool mouse_show;
-
 	CALLBACK_PROC* callback_close;
-
-	/* 键盘状态记录 */
+	// 键盘状态
 	int keystatemap[MAX_KEY_VCODE];
 
-	_graph_setting(int, int*);
-	_graph_setting(const _graph_setting&) = delete;
-	~_graph_setting();
+	EGEApplication(int, int*);
+	EGEApplication(const EGEApplication&) = delete;
+	~EGEApplication();
+
+	static DefGetter(ynothrow, ::HINSTANCE, Instance, ::GetModuleHandleW({}))
 
 	bool
 	_is_run() const;
@@ -180,22 +181,13 @@ public:
 	_waitdealmessage();
 
 	static void
-	_window_create(msg_createwindow&);
-
-	static void
-	_window_destroy(msg_createwindow&);
-
-	static ::HINSTANCE
-	get_instance()
-	{
-		return ::GetModuleHandleW({});
-	}
+	_window_handle_wm_user_1(::LPARAM, ::WPARAM);
 };
 
 
 struct _pages
 {
-	_graph_setting& gstate;
+	EGEApplication& gstate;
 	::HDC active_dc;
 	int active_page = 0;
 	int visual_page = 0;
@@ -241,8 +233,8 @@ struct _pages
 };
 
 
-_graph_setting&
-get_global_state(int = VGA, int* = {});
+EGEApplication&
+FetchEGEApplication(int = VGA, int* = {});
 
 _pages&
 get_pages();

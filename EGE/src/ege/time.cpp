@@ -51,7 +51,7 @@ delay_ms(long ms)
 		{
 			ege_sleep(1);
 			egectrl_root->draw({});
-			get_global_state()._update();
+			FetchEGEApplication()._update();
 			egectrl_root->update();
 
 			int l, t, r, b, c;
@@ -79,16 +79,16 @@ delay_ms(long ms)
 		{
 			if(f <= 0 || update_mark_count < UPDATE_MAX_CALL)
 			{
-				get_global_state()._update();
+				FetchEGEApplication()._update();
 				f = 256;
 			}
 			else
 				ege_sleep_(dw + delay_time - _get_highfeq_time_ls());
 			--f;
 		}
-		get_global_state()._update();
+		FetchEGEApplication()._update();
 		dw = _get_highfeq_time_ls();
-		get_global_state()._update_GUI();
+		FetchEGEApplication()._update_GUI();
 		egectrl_root->update();
 		if(delay_ms_dwLast + dw_t(200) <= dw || delay_ms_dwLast > dw)
 			delay_ms_dwLast = dw;
@@ -118,9 +118,9 @@ delay_fps(double fps)
 			{
 				ege_sleep_(dw + delay_time - _get_highfeq_time_ls());
 			}while(dw + delay_time >= _get_highfeq_time_ls());
-		get_global_state()._update();
+		FetchEGEApplication()._update();
 		dw = _get_highfeq_time_ls();
-		get_global_state()._update_GUI();
+		FetchEGEApplication()._update_GUI();
 		egectrl_root->update();
 		if(delay_fps_dwLast + delay_time + avg_max_time <= dw
 			|| delay_fps_dwLast > dw)
@@ -153,11 +153,11 @@ delay_jfps(double fps)
 			bSleep = 1;
 		}
 		if(bSleep)
-			get_global_state()._update();
+			FetchEGEApplication()._update();
 		else
 			_get_FPS(-0x100);
 		dw = _get_highfeq_time_ls();
-		get_global_state()._update_GUI();
+		FetchEGEApplication()._update_GUI();
 		egectrl_root->update();
 		if(delay_fps_dwLast + delay_time + avg_max_time <= dw
 			|| delay_fps_dwLast > dw)
