@@ -36,6 +36,7 @@ Code::Blocks 。
 移除函数 setrendermode 和枚举 rendermode_e 。默认状态等价于 setrendermode(RENDER_MANUAL) 。
 移除类型 LPCALLBACK_PROC 、LPMSG_KEY_PROC 、LPMSG_MOUSE_PROC 、MSG_KEY_PROC 和 MSG_MOUSE_PROC ，其中 LPCALLBACK_PROC 可用 CALLBACK_PROC* 代替，
 添加 linestyletype 和 EGEMSG 的构造函数，只支持默认构造和提供所有成员的初始化。
+移除枚举 graphics_modes 。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
