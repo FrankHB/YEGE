@@ -784,6 +784,11 @@ _pages::_pages()
 	imgtarget = img_page[active_page];
 	update_mark_count = 0;
 }
+_pages::~_pages()
+{
+	for(const auto& p : img_page)
+		delete p;
+}
 
 void
 _pages::check_page(int page) const

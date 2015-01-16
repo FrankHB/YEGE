@@ -207,6 +207,7 @@ struct _pages
 	int base_x = 0, base_y = 0, base_w = 0, base_h = 0;
 
 	_pages();
+	~_pages();
 
 	void
 	check_page(int) const;
