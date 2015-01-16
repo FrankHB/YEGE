@@ -54,6 +54,7 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别
 修正错误实现
 ----
 修正退出时遗漏清理 GDI+ 。
+修正初始化图形时设置背景读取未初始化的存储。
 
 实现注记
 ----
