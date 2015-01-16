@@ -35,7 +35,7 @@ Code::Blocks 。
 移除函数 attachHWND 以避免潜在的死锁。
 函数 setrendermode 无效，默认状态统一为 setrendermode(RENDER_MANUAL) ；仅为兼容性保留。
 移除类型 LPCALLBACK_PROC 、LPMSG_KEY_PROC 、LPMSG_MOUSE_PROC 、MSG_KEY_PROC 和 MSG_MOUSE_PROC ，其中 LPCALLBACK_PROC 可用 CALLBACK_PROC* 代替，
-添加 linestyletype 的构造函数，只支持默认构造和提供所有成员的初始化。
+添加 linestyletype 和 EGEMSG 的构造函数，只支持默认构造和提供所有成员的初始化。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
@@ -44,7 +44,7 @@ delay_fps 和 delay_jfps 仅保留 double 重载版本。
 绘图环境设置、控件和音乐 API 补充遗漏的 EGEAPI 以便作为 DLL 使用，但 fps 类仅头文件实现而例外。
 控件基类 egeControlBase 的析构函数保证为 virtual 。
 宏 EGEAPI 支持显式导入和导出。
-linestyletype 默认初始化所有成员。
+linestyletype 和 EGEMSG 默认初始化所有成员。
 
 兼容接口和实现调整
 ----
@@ -59,6 +59,7 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别
 修正初始化图形时设置背景读取未初始化的缓冲区。
 修正初始化图形时未初始化 linestyletype 被读取。
 修正图像页面未初始化存储被 ege::window_setviewport 读取。
+修正未初始化的消息成员被读取。
 
 实现注记
 ----
