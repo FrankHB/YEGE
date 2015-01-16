@@ -46,6 +46,7 @@ delay_fps 和 delay_jfps 仅保留 double 重载版本。
 控件基类 egeControlBase 的析构函数保证为 virtual 。
 宏 EGEAPI 支持显式导入和导出。
 linestyletype 和 EGEMSG 默认初始化所有成员。
+随机数函数第一次调用时自动初始化随机数种子，不需要事先调用 randomize 函数。
 
 兼容接口和实现调整
 ----

@@ -10,20 +10,20 @@ namespace
 
 std::random_device rd;
 
-std::unique_ptr<std::mt19937>
-rand_p()
+std::mt19937&
+get_mt()
 {
-	return std::unique_ptr<std::mt19937>(new std::mt19937(rd()));
-}
+	static std::mt19937 mt(rd());
 
-std::unique_ptr<std::mt19937> p_mt(rand_p());
+	return mt;
+}
 
 } // unnamed namespace;
 
 void
 randomize()
 {
-	p_mt = rand_p();
+	get_mt() = std::mt19937(rd());
 }
 
 unsigned
@@ -31,7 +31,7 @@ random(unsigned n)
 {
 	std::uniform_int_distribution<unsigned> d(0, n);
 
-	return d(*p_mt);
+	return d(get_mt());
 }
 
 double
@@ -39,7 +39,7 @@ randomf()
 {
 	std::uniform_real_distribution<float> d;
 
-	return d(*p_mt);
+	return d(get_mt());
 }
 
 } // namespace ege;
