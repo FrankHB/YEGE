@@ -204,7 +204,7 @@ struct _pages
 	IMAGE* imgtarget_set = {};
 	mutable IMAGE* img_page[BITMAP_PAGE_SIZE] = {};
 	IMAGE* imgtarget = {};
-	int base_x, base_y, base_w, base_h;
+	int base_x = 0, base_y = 0, base_w = 0, base_h = 0;
 
 	_pages();
 
