@@ -52,16 +52,16 @@ private:
 
 public:
 	/*鼠标状态记录*/
-	int mouse_state_l, mouse_state_m, mouse_state_r;
-	int mouse_last_x, mouse_last_y;
-	int mouse_lastclick_x, mouse_lastclick_y;
-	int mouse_lastup_x, mouse_lastup_y;
-	bool mouse_show;
+	int mouse_state_l = 0, mouse_state_m = 0, mouse_state_r = 0;
+	int mouse_last_x = 0, mouse_last_y = 0;
+	int mouse_lastclick_x = 0, mouse_lastclick_y = 0;
+	int mouse_lastup_x = 0, mouse_lastup_y = 0;
+	bool mouse_show = {};
 
-	CALLBACK_PROC* callback_close;
+	CALLBACK_PROC* callback_close = {};
 
 	/* 键盘状态记录 */
-	int keystatemap[MAX_KEY_VCODE];
+	int keystatemap[MAX_KEY_VCODE]{};
 
 	_graph_setting(int, int*);
 	_graph_setting(const _graph_setting&) = delete;
