@@ -54,6 +54,8 @@ EnumResNameProc(::HMODULE hModule, ::LPCTSTR, ::LPTSTR lpszName,
 	return true;
 }
 
+::ULONG_PTR g_gdiplusToken;
+
 } // unnamed namespace;
 
 float
@@ -92,7 +94,6 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 	static std::once_flag init_flag;
 
 	std::call_once(init_flag, [this]{
-		static ::ULONG_PTR g_gdiplusToken;
 		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 
 		Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, {});
@@ -149,6 +150,7 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 }
 _graph_setting::~_graph_setting()
 {
+	Gdiplus::GdiplusShutdown(g_gdiplusToken);
 }
 
 bool

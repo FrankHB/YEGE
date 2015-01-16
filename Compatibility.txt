@@ -51,6 +51,10 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 和 LPCWSTR 分别
 宏 EGEAPI 调整至返回值前；移除函数形参中不必要的 const 。
 移除宏 EGE_DEPRECATED 。
 
+修正错误实现
+----
+修正退出时遗漏清理 GDI+ 。
+
 实现注记
 ----
 随机数改用 C++11 标准库 <random> 实现。
