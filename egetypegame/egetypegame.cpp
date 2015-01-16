@@ -47,7 +47,6 @@ int main()
 	setfont(36, 0, "宋体");
 	setcolor(WHITE);
 	setbkmode(TRANSPARENT);
-	setrendermode(RENDER_MANUAL);
 	for(; kbhit() != -1; delay_fps(60))
 	{
 		int bnew = 0, i;

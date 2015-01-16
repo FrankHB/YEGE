@@ -33,7 +33,7 @@ Code::Blocks 。
 函数 showmouse 和 mousemsg 的参数/返回值使用 bool 代替 int 。
 宏 CTL_* 的定义不再被默认包含。若需使用，另行包含 <ege/mac.h> 或 <ege/ctl.h> 等。
 移除函数 attachHWND 以避免潜在的死锁。
-函数 setrendermode 无效，默认状态统一为 setrendermode(RENDER_MANUAL) ；仅为兼容性保留。
+移除函数 setrendermode 和枚举 rendermode_e 。默认状态等价于 setrendermode(RENDER_MANUAL) 。
 移除类型 LPCALLBACK_PROC 、LPMSG_KEY_PROC 、LPMSG_MOUSE_PROC 、MSG_KEY_PROC 和 MSG_MOUSE_PROC ，其中 LPCALLBACK_PROC 可用 CALLBACK_PROC* 代替，
 添加 linestyletype 和 EGEMSG 的构造函数，只支持默认构造和提供所有成员的初始化。
 

@@ -151,13 +151,10 @@ int main()
 		initgraph(-1, -1);
 		width  = getmaxx();
 		height = getmaxy();
-		setrendermode(RENDER_MANUAL);
 	}
 	//多边形对象初始化
 	for(i = 0; i < n_polys; ++i)
-	{
 		initpolys(&p[i], n_poly[i], n_points[i]);
-	}
 	setfont(12, 6, "宋体");
 	fps ui_fps;
 	//主循环

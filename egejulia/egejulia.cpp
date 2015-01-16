@@ -410,7 +410,6 @@ int main()
 	col_ab = randomf() * dca;
 	rotate = randomf() * 360;
 	sr = sin(rotate), cr = cos(rotate);
-	setrendermode(RENDER_MANUAL);
 	for(int loop = 1; kbmouhit() == 0; ++loop)
 	{
 		int ret;

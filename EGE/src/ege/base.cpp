@@ -1,13 +1,5 @@
-﻿#include "ege/base.h"
-#include "global.h"
-
-namespace ege
+﻿namespace ege
 {
-
-void
-setrendermode(rendermode_e)
-{
-}
 
 }
 

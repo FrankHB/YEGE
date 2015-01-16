@@ -86,19 +86,13 @@ int main()
 	AniObj obj[MAXOBJ]; //定义对象数组
 	int n;
 
-	setrendermode(RENDER_MANUAL);
 	for(; kbhit() == 0; delay_fps(60))
 	{
 		for(n = 0; n < MAXOBJ; ++n)
-		{
 			obj[n].updateobj(); //更新位置
-		}
-
 		imagefilter_blurring({}, 0x4F, 0x100);
 		for(n = 0; n < MAXOBJ; ++n)
-		{
 			obj[n].drawobj(); //绘画
-		}
 	}
 
 	closegraph();

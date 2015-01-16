@@ -18,12 +18,10 @@ void paintstar(double x, double y, double r, double a)
 int main()
 {
 	initgraph(640, 480);
-	setrendermode(RENDER_MANUAL);
 
-	double r = 0;
 	fps f;
 
-	for(; is_run(); delay_fps(100000))
+	for(double r = 0; is_run(); delay_fps(100000))
 	{
 		r += 0.02;
 		if(r > PI * 2) r -= PI * 2;

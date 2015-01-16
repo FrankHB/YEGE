@@ -220,7 +220,9 @@ _HSLtoRGB(float _h, float _s, float _l)
 			}
 		}
 	}
-	return EGERGB(::DWORD(r * 255), ::DWORD(g * 255), ::DWORD(b * 255));
+	return EGERGB(static_cast<unsigned long>(r * 255),
+		static_cast<unsigned long>(g * 255),
+		static_cast<unsigned long>(b * 255));
 }
 
 void

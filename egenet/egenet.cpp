@@ -292,7 +292,6 @@ main()
 	char str[100] = "";
 	fps fps_obj;
 
-	setrendermode(RENDER_MANUAL);
 	for(; kbhit() == 0; delay_fps(60))
 	{
 		cleardevice();

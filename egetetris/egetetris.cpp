@@ -508,12 +508,11 @@ int main()
 
 	fps ui_fps;
 	Game game(10, 20, 24, 24);
+
 	game.m_base_x = 20;
 	game.m_base_y = 20;
 	game.m_droptime = nfps / 2;
 	game.m_movxtime = 10;
-
-	setrendermode(RENDER_MANUAL);
 	for(; is_run(); delay_fps(nfps))
 	{
 		game.update();

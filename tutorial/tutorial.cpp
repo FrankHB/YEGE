@@ -162,7 +162,6 @@ private:
 int main()
 {
 	initgraph(320, 240);
-	ege::setrendermode(ege::RENDER_MANUAL);
 	randomize();
 
 	input w[3];
@@ -268,7 +267,6 @@ private:
 int main()
 {
 	ege::initgraph(640, 480);
-	ege::setrendermode(ege::RENDER_MANUAL);
 	ege::randomize();
 
 	ege::fps f;
@@ -356,7 +354,6 @@ int main(int argc, char* argv[])
 	}
 	// 绘制星空，按任意键或移动鼠标退出
 	setfont(12, 6, "宋体");
-	setrendermode(RENDER_MANUAL);
 	dtime = fclock();
 	while(kbmsg()) getkey();
 
