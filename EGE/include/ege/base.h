@@ -198,9 +198,14 @@ struct textsettingstype
 
 struct linestyletype
 {
-	int linestyle;
-	unsigned short upattern;
-	int thickness;
+	int linestyle = 0;
+	unsigned short upattern = 0;
+	int thickness = 0;
+
+	linestyletype() = default;
+	linestyletype(int l, unsigned short u, int t)
+		: linestyle(l), upattern(u), thickness(t)
+	{}
 };
 
 
