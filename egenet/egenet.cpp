@@ -19,31 +19,31 @@ double g_k = 0.03; /* 劲度系数，不能大于等于0.5 */
 
 struct vector_t
 {
-	double dx;
-	double dy;
+	double dx = 0;
+	double dy = 0;
 };
 
 struct point_t
 {
-	double x;
-	double y;
-	double vx;
-	double vy;
-	double ax;
-	double ay;
-	struct vector_t vt[2];
+	double x = 0;
+	double y = 0;
+	double vx = 0;
+	double vy = 0;
+	double ax = 0;
+	double ay = 0;
+	struct vector_t vt[2]{};
 };
 
 struct net
 {
-	struct point_t pt[2][NET_H][NET_W];
-	int layer;
-	int w;
-	int h;
-	double dtw;
-	double dth;
-	double dmw;
-	double dmh;
+	struct point_t pt[2][NET_H][NET_W]{};
+	int layer = 0;
+	int w = 0;
+	int h = 0;
+	double dtw = 0;
+	double dth = 0;
+	double dmw = 0;
+	double dmh = 0;
 };
 
 double s_sqrt(double d)
@@ -55,52 +55,36 @@ double s_sqrt(double d)
 	return sqrt(d);
 }
 
-double s_pow(double a, double p)
+double
+s_pow(double a, double p)
 {
 	if(fabs(a) < 1)
-	{
 		return 0;
-	}
-	else if(a < 0)
-	{
+	if(a < 0)
 		return -pow(-a, p);
-	}
 	return pow(a, p);
 }
 
-double s_minus(double a, double b)
+double
+s_minus(double a, double b)
 {
 	if(b >= 0)
 	{
 		if(a >= b)
-		{
 			return a - b;
-		}
-		else if(a <= -b)
-		{
+		if(a <= -b)
 			return a + b;
-		}
-		else
-		{
-			return 0;
-		}
+		return 0;
 	}
 	else
-	{
-		if(a >= 0)
-		{
-			return a - b;
-		}
-		else
-		{
-			return a + b;
-		}
-	}
+		return a >= 0 ? a - b : a + b;
 }
 
-struct vector_t get_power(struct point_t* p, double x, double y)    /*, double minx=0, double miny=0*/
+vector_t
+get_power(struct point_t* p, double x, double y) // double minx=0, double miny=0
 {
-	struct vector_t vt;
+	vector_t vt;
+
 	vt.dx = x - p->x;
 	vt.dy = y - p->y;
 	//vt.dx = s_minus(vt.dx, minx);
