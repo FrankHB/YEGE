@@ -44,7 +44,7 @@ IMAGE::IMAGE(::HDC hdc, const Size& size)
 	{
 		Resize(size);
 		setcolor(LIGHTGRAY, this);
-		setbkcolor(BLACK, this);
+		setbkcolor_f(BLACK, this);
 		::SetBkMode(hdc, OPAQUE); //TRANSPARENT);
 		setfillstyle(SOLID_FILL, 0, this);
 		setlinestyle(PS_SOLID, 0, 1, this);

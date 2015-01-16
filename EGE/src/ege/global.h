@@ -51,14 +51,14 @@ private:
 
 public:
 	// 鼠标状态
-	int mouse_state_l, mouse_state_m, mouse_state_r;
-	int mouse_last_x, mouse_last_y;
-	int mouse_lastclick_x, mouse_lastclick_y;
-	int mouse_lastup_x, mouse_lastup_y;
-	bool mouse_show;
-	CALLBACK_PROC* callback_close;
+	int mouse_state_l = 0, mouse_state_m = 0, mouse_state_r = 0;
+	int mouse_last_x = 0, mouse_last_y = 0;
+	int mouse_lastclick_x = 0, mouse_lastclick_y = 0;
+	int mouse_lastup_x = 0, mouse_lastup_y = 0;
+	bool mouse_show = {};
+	CALLBACK_PROC* callback_close = {};
 	// 键盘状态
-	int keystatemap[MAX_KEY_VCODE];
+	int keystatemap[MAX_KEY_VCODE]{};
 
 	EGEApplication(int, int*);
 	EGEApplication(const EGEApplication&) = delete;
@@ -194,9 +194,10 @@ struct _pages
 	IMAGE* imgtarget_set = {};
 	mutable IMAGE* img_page[BITMAP_PAGE_SIZE] = {};
 	IMAGE* imgtarget = {};
-	int base_x, base_y, base_w, base_h;
+	int base_x = 0, base_y = 0, base_w = 0, base_h = 0;
 
 	_pages();
+	~_pages();
 
 	void
 	check_page(int) const;

@@ -37,6 +37,7 @@ Code::Blocks 。
 移除函数 attachHWND 以避免潜在的死锁。
 函数 setrendermode 无效，默认状态统一为 setrendermode(RENDER_MANUAL) ；仅为兼容性保留。
 移除类型 LPCALLBACK_PROC 、LPMSG_KEY_PROC 、LPMSG_MOUSE_PROC 、MSG_KEY_PROC 和 MSG_MOUSE_PROC ，其中 LPCALLBACK_PROC 可用 CALLBACK_PROC* 代替，
+添加 linestyletype 和 EGEMSG 的构造函数，只支持默认构造和提供所有成员的初始化。
 typedef 类型名 color_t 从 unsigned int 改为 YSLib::Drawing::PixelType 。
 使用 YCLib 提供的 YSLib::Drawing::MonoType 表示颜色分量。
 使用 YSLib::Drawing::PixelType::Integer 表示颜色对应的整数类型。
@@ -58,6 +59,7 @@ delay_fps 和 delay_jfps 仅保留 double 重载版本。
 绘图环境设置、控件和音乐 API 补充遗漏的 EGEAPI 以便作为 DLL 使用，但 fps 类仅头文件实现而例外。
 控件基类 egeControlBase 的析构函数保证为 virtual 。
 宏 EGEAPI 支持显式导入和导出。
+linestyletype 和 EGEMSG 默认初始化所有成员。
 函数 ege_sleep 支持多线程环境下使用。（实际原有实现可在多线程下使用但未在头文件中明确。）
 提升 fclock 函数的精度。
 
@@ -67,6 +69,16 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 、LPCWSTR 、PVOI
 所有同名 typedef 结构体名称或 typedef 匿名结构体调整为非 typedef 结构体类型名。
 宏 EGEAPI 调整至返回值前；移除函数形参中不必要的 const 。
 移除宏 EGE_DEPRECATED 。
+
+修正错误实现
+----
+修正退出时遗漏清理 GDI+ 。
+修正初始化图形时设置背景读取未初始化的缓冲区。
+修正初始化图形时未初始化 linestyletype 被读取。
+修正图像页面未初始化存储被 ege::window_setviewport 读取。
+修正未初始化的消息成员被读取。
+修正未初始化的全局状态被读取。
+修正退出时遗漏清理图像页面。
 
 实现注记
 ----

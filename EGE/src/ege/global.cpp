@@ -163,6 +163,8 @@ EnumResNameProc(::HMODULE hModule, ::LPCTSTR, ::LPTSTR lpszName,
 	return true;
 }
 
+::ULONG_PTR g_gdiplusToken;
+
 } // unnamed namespace;
 
 float
@@ -262,6 +264,7 @@ EGEApplication::~EGEApplication()
 {
 	_uninit();
 	ys_pnl.reset();
+	Gdiplus::GdiplusShutdown(g_gdiplusToken);
 }
 
 bool
@@ -911,6 +914,11 @@ _pages::_pages()
 	active_dc = img_page[0]->getdc();
 	imgtarget = img_page[active_page];
 	update_mark_count = 0;
+}
+_pages::~_pages()
+{
+	for(const auto& p : img_page)
+		delete p;
 }
 
 void
