@@ -760,7 +760,6 @@ main()
 	int w = SC_W, h = SC_H, dh = 48;
 	setinitmode(0);
 	initgraph(w, h + dh);
-	randomize();
 	InitColor();
 //	setfillstyle(0x0);
 	setfont(12, 0, "ËÎÌו");

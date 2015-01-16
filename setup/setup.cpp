@@ -221,44 +221,47 @@ int setup_scene()
 
 void setup()
 {
-	int ret, i;
-	ret = info_scene();
 
-	for(i = 0; i < 60 * 3; ++i)
-	{
-		imagefilter_blurring({}, 0xF0, 0x100);
-		delay_fps(60);
-	}
-	if(ret != 'y' && ret != 'Y') return;
-
-	ret = getpath_scene();
-
-	for(i = 0; i < 60 * 1; ++i)
-	{
-		imagefilter_blurring({}, 0xF0, 0x100);
-		delay_fps(60);
-	}
-	if(ret != 'y' && ret != 'Y') return;
-
-	setup_scene();
-
-	for(i = 0; i < 60 * 1; ++i)
-	{
-		imagefilter_blurring({}, 0xF0, 0x100);
-		delay_fps(60);
-	}
-	//for( ; kbhit() != -1; delay_fps(60))
-	{
-	}
 
 }
 
 int main()
 {
 	initgraph(640, 480);
-	randomize();
 
-	setup();
+	int ret = info_scene(), i;
+
+	for(i = 0; i < 60 * 3; ++i)
+	{
+		imagefilter_blurring({}, 0xF0, 0x100);
+		delay_fps(60);
+	}
+	do
+	{
+		if(ret != 'y' && ret != 'Y')
+			break;
+
+		ret = getpath_scene();
+
+		for(i = 0; i < 60 * 1; ++i)
+		{
+			imagefilter_blurring({}, 0xF0, 0x100);
+			delay_fps(60);
+		}
+		if(ret != 'y' && ret != 'Y')
+			return 0;
+
+		setup_scene();
+
+		for(i = 0; i < 60 * 1; ++i)
+		{
+			imagefilter_blurring({}, 0xF0, 0x100);
+			delay_fps(60);
+		}
+		//for( ; kbhit() != -1; delay_fps(60))
+		{
+		}
+	}while(0);
 	closegraph();
 }
 

@@ -40,10 +40,11 @@ void movechars(int* nobj, chartarget* ct, int bnew)
 int main()
 {
 	initgraph(400, 400);
-	randomize();
+
 	chartarget ct[256];
 	int nobj = 0;
 	int t = 1000;
+
 	setfont(36, 0, "宋体");
 	setcolor(WHITE);
 	setbkmode(TRANSPARENT);

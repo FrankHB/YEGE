@@ -138,7 +138,6 @@ private:
 int main()
 {
 	initgraph(800, 600);
-	randomize();
 
 	Window2 w[3];
 

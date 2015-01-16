@@ -89,7 +89,6 @@ int main()
 {
 	ege::setinitmode(ege::INIT_ANIMATION);
 	ege::initgraph(400, 480);
-	ege::randomize();
 	// 程序主循环
 	mainloop();
 	// 关闭绘图设备

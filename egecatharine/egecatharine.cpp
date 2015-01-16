@@ -81,7 +81,6 @@ private:
 int main()
 {
 	initgraph(640, 480);
-	randomize(); //初始化随机种子
 
 	AniObj obj[MAXOBJ]; //定义对象数组
 	int n;

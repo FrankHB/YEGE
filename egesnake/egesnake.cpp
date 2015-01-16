@@ -101,7 +101,6 @@ int main()
 	setinitmode(INIT_ANIMATION);
 	initgraph(640, 480);
 	gw = getwidth() / MAP_W, gh = getheight() / MAP_H;
-	randomize();
 	gameInit();
 	gameScene();
 }

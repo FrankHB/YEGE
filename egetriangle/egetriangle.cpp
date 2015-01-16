@@ -131,7 +131,6 @@ int main()
 	int n_poly[10]{1, 1, 1, 1, 1};
 	int n_polys = 3, i;
 
-	randomize();
 	//Õº–Œ≥ı ºªØ
 	{
 		setinitmode(INIT_ANIMATION);

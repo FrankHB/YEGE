@@ -59,7 +59,6 @@ int main(int argc, char* argv[])
 	int mode = preinit(argc, argv);   // 记录初始化模式
 	if(mode < 0) return 0;
 
-	randomize(); // 初始化随机种子
 	initgraph(-1, -1);   // 打开图形窗口，以全屏模式
 
 	showmouse(mode);

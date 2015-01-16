@@ -144,7 +144,6 @@ int main()
 	int n_poly[10]{80, 40, 10, 5, 1};
 	int n_polys = 2, i;
 
-	randomize();
 	//Õº–Œ≥ı ºªØ
 	{
 		setinitmode(1, 0, 0);
