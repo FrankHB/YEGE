@@ -5,54 +5,12 @@
 #include <cmath>
 #include <ctime>
 #include <cstdio>
-
-#define NET_W  256
-#define NET_H  256
-
-int g_width = 800;
-int g_height = 600;
-int g_mod_show = 3;
-
-double g_d_friction = 0.001;
-double g_d_min_a = 0.001;
-double g_k = 0.03; /* 劲度系数，不能大于等于0.5 */
-
-struct vector_t
-{
-	double dx = 0;
-	double dy = 0;
-};
-
-struct point_t
-{
-	double x = 0;
-	double y = 0;
-	double vx = 0;
-	double vy = 0;
-	double ax = 0;
-	double ay = 0;
-	struct vector_t vt[2]{};
-};
-
-struct net
-{
-	struct point_t pt[2][NET_H][NET_W]{};
-	int layer = 0;
-	int w = 0;
-	int h = 0;
-	double dtw = 0;
-	double dth = 0;
-	double dmw = 0;
-	double dmh = 0;
-};
+#include <vector>
+#include <array>
 
 double s_sqrt(double d)
 {
-	if(d < 0)
-	{
-		return -sqrt(-d);
-	}
-	return sqrt(d);
+	return d < 0 ? -sqrt(-d) : sqrt(d);
 }
 
 double
@@ -80,256 +38,275 @@ s_minus(double a, double b)
 		return a >= 0 ? a - b : a + b;
 }
 
-vector_t
-get_power(struct point_t* p, double x, double y) // double minx=0, double miny=0
-{
-	vector_t vt;
+const int g_mod_show = 3;
+const double g_d_friction = 0.001;
+const double g_k = 0.03; /* 劲度系数，不能大于等于0.5 */
 
-	vt.dx = x - p->x;
-	vt.dy = y - p->y;
-	//vt.dx = s_minus(vt.dx, minx);
-	//vt.dy = s_minus(vt.dy, miny);
-	vt.dx *= g_k;
-	vt.dy *= g_k;
-	//vt.dx *= fabs(vt.dx);
-	//vt.dy *= fabs(vt.dy);
-	return vt;
-}
-
-void move_point(struct net* pnet, int x, int y)
+struct vector_t
 {
+	double dx = 0;
+	double dy = 0;
+};
+
+struct point_t
+{
+	double x = 0;
+	double y = 0;
+	double vx = 0;
+	double vy = 0;
 	double ax = 0;
 	double ay = 0;
-	struct vector_t vt;
-	int i;
-	int l = pnet->layer;
-	int dxy[8][2] =
-	{
-		{ 1, 0},
-		{ 0, 1},
-		{ -1, 0},
-		{ 0, -1},
-	};
-	struct point_t* op = &(pnet->pt[l][y][x]);
+	vector_t vt[2]{};
 
-	pnet->pt[l ^ 1][y][x] = *op;
-	for(i = 0; i < 2; ++i)
+	vector_t
+	get_power(double x, double y) // double minx=0, double miny=0
 	{
-		struct point_t* p = &pnet->pt[l][y + dxy[i][1]][x + dxy[i][0]];
-		vt = get_power(op, p->x - dxy[i][0] * pnet->dtw, p->y - dxy[i][1] * pnet->dth);
-		//vt = get_power( op, p->x, p->y, pnet->dtw, pnet->dth);
-		p->vt[i] = vt;
-		ax += vt.dx;
-		ay += vt.dy;
+		vector_t vt;
+
+		vt.dx = x - this->x;
+		vt.dy = y - this->y;
+		//vt.dx = s_minus(vt.dx, minx);
+		//vt.dy = s_minus(vt.dy, miny);
+		vt.dx *= g_k;
+		vt.dy *= g_k;
+		//vt.dx *= fabs(vt.dx);
+		//vt.dy *= fabs(vt.dy);
+		return vt;
 	}
-	ax -= op->vt[0].dx;
-	ay -= op->vt[0].dy;
-	ax -= op->vt[1].dx;
-	ay -= op->vt[1].dy;
+};
 
-	op = &(pnet->pt[l ^ 1][y][x]);
-	op->ax = ax;
-	op->ay = ay;
+using std::array;
+using std::vector;
 
-	op->vx += op->ax;
-	op->vy += op->ay;
+const int NET_W = 256;
+const int NET_H = 256;
 
-	op->x += op->vx;
-	op->y += op->vy;
-
-	op->vx *= 1 - g_d_friction;
-	op->vy *= 1 - g_d_friction;
-	//op->vx = s_minus(op->vx, g_d_friction);
-	//op->vy = s_minus(op->vy, g_d_friction);
-}
-
-void move_net(struct net* pnet)
+class net
 {
-	int x, y = 0, l = pnet->layer, i = 1;
-	struct vector_t vt;
-	for(x = 1; x <= pnet->w; ++x)
+private:
+	vector<array<array<point_t, NET_W>, NET_H>> pt;
+	int layer = 0;
+	int w = 0;
+	int h = 0;
+	double dtw = 0;
+	double dth = 0;
+	double dmw = 0;
+	double dmh = 0;
+
+public:
+	net(int b, int sw, int sh)
+		: net(b * 4, b * 3, sw, sh)
+	{}
+	net(int w, int h, int sw, int sh)
+		: pt(2)
 	{
-		struct point_t* p = &pnet->pt[l][y + 1][x + 0];
-		struct point_t* op = &(pnet->pt[l][y][x]);
-		vt = get_power(op, p->x, p->y - pnet->dth);
-		//vt = get_power( op, p->x, p->y, pnet->dtw, pnet->dth);
-		p->vt[i] = vt;
-	}
-	i = 0;
-	for(y = 1; y <= pnet->h; ++y)
-	{
-		x = 0;
-		{
-			struct point_t* p = &pnet->pt[l][y][x + 1];
-			struct point_t* op = &(pnet->pt[l][y][x]);
-			vt = get_power(op, p->x - pnet->dtw, p->y);
-			//vt = get_power( op, p->x, p->y, pnet->dtw, pnet->dth);
-			p->vt[i] = vt;
-			for(x = 1; x <= pnet->w; ++x)
-			{
-				move_point(pnet, x, y);
-			}
-		}
-	}
-	pnet->layer ^= 1;
-}
+		double dtw = sw / (double)(w - 1);
+		double dth = sh / (double)(h - 1);
+		int x, y, l;
+		point_t pt;
 
-void init_net(struct net* pnet, int w, int h, int sw, int sh)
-{
-	double dtw = sw / (double)(w - 1);
-	double dth = sh / (double)(h - 1);
-	int x, y, l;
-	struct point_t pt;
+		this->layer = 0;
+		this->w = w;
+		this->h = h;
+		this->dtw = dtw;
+		this->dth = dth;
 
-	pnet->layer = 0;
-	pnet->w = w;
-	pnet->h = h;
-	pnet->dtw = dtw;
-	pnet->dth = dth;
-
-	for(y = 0; y <= h + 1; ++y)
-		for(x = 0; x <= w + 1; ++x)
-			for(l = 0; l < 2; ++l)
-			{
-				pnet->pt[l][y][x] = pt;
-				pnet->pt[l][y][x].x = (dtw * (x - 1));
-				pnet->pt[l][y][x].y = (dth * (y - 1));
-			}
-}
-
-void draw_net(struct net* pnet)
-{
-	int x, y, l = pnet->layer;
-	::POINT pt[NET_W + NET_H];
-
-	for(y = 0; y <= pnet->h; ++y)
-	{
-		//if(y % g_mod_show == 0)
-		{
-			for(x = 0; x <= pnet->w + 1; ++x)
-			{
-				pt[x].x = (int)(pnet->pt[l][y][x].x + 0.5);
-				pt[x].y = (int)(pnet->pt[l][y][x].y + 0.5);
-				//line_f(pnet->pt[l][y][x].x, pnet->pt[l][y][x].y, pnet->pt[l][y][x+1].x, pnet->pt[l][y][x+1].y);
-			}
-			drawbezier(pnet->w + 2, (int*)pt);
-		}
-	}
-	for(x = 0; x <= pnet->w; ++x)
-	{
-		//if(x % g_mod_show == 0)
-		{
-			for(y = 0; y <= pnet->h + 1; ++y)
-			{
-				pt[y].x = (int)(pnet->pt[l][y][x].x + 0.5);
-				pt[y].y = (int)(pnet->pt[l][y][x].y + 0.5);
-				//line_f(pnet->pt[l][y][x].x, pnet->pt[l][y][x].y, pnet->pt[l][y+1][x].x, pnet->pt[l][y+1][x].y);
-			}
-			drawbezier(pnet->h + 2, (int*)pt);
-		}
-	}
-}
-
-void cap_pt(struct net* pnet, int px, int py, int op)
-{
-	static int cp_x, cp_y, b_cp = 0;
-
-	if(op)
-	{
-		int y, x, l = pnet->layer;
-		if(b_cp == 0)
-		{
-			int mx = 1, my = 1;
-			double mdis = 1e9, dis;
-			for(y = 1; y < pnet->h; ++y)
-			{
-				if(y % g_mod_show == 0)
-					continue;
-				for(x = 1; x < pnet->w; ++x)
+		for(y = 0; y <= h + 1; ++y)
+			for(x = 0; x <= w + 1; ++x)
+				for(l = 0; l < 2; ++l)
 				{
-					if(x % g_mod_show == 0)
+					this->pt[l][y][x] = pt;
+					this->pt[l][y][x].x = (dtw * (x - 1));
+					this->pt[l][y][x].y = (dth * (y - 1));
+				}
+	}
+
+	void
+	move_point(int x, int y)
+	{
+		double ax = 0;
+		double ay = 0;
+		vector_t vt;
+		int i;
+		int l = this->layer;
+		int dxy[8][2] =
+		{
+			{ 1, 0},
+			{ 0, 1},
+			{ -1, 0},
+			{ 0, -1},
+		};
+		point_t* op = &(this->pt[l][y][x]);
+
+		this->pt[l ^ 1][y][x] = *op;
+		for(i = 0; i < 2; ++i)
+		{
+			point_t* p = &this->pt[l][y + dxy[i][1]][x + dxy[i][0]];
+			vt = op->get_power(p->x - dxy[i][0] * this->dtw, p->y - dxy[i][1] * this->dth);
+			p->vt[i] = vt;
+			ax += vt.dx;
+			ay += vt.dy;
+		}
+		ax -= op->vt[0].dx;
+		ay -= op->vt[0].dy;
+		ax -= op->vt[1].dx;
+		ay -= op->vt[1].dy;
+
+		op = &(this->pt[l ^ 1][y][x]);
+		op->ax = ax;
+		op->ay = ay;
+
+		op->vx += op->ax;
+		op->vy += op->ay;
+
+		op->x += op->vx;
+		op->y += op->vy;
+
+		op->vx *= 1 - g_d_friction;
+		op->vy *= 1 - g_d_friction;
+		//op->vx = s_minus(op->vx, g_d_friction);
+		//op->vy = s_minus(op->vy, g_d_friction);
+	}
+
+	void
+	move_net()
+	{
+		int x, y = 0, l = this->layer, i = 1;
+		vector_t vt;
+
+		for(x = 1; x <= this->w; ++x)
+		{
+			point_t* p = &this->pt[l][y + 1][x + 0];
+
+			vt = this->pt[l][y][x].get_power(p->x, p->y - this->dth);
+			p->vt[i] = vt;
+		}
+		i = 0;
+		for(y = 1; y <= this->h; ++y)
+		{
+			x = 0;
+			{
+				point_t* p = &this->pt[l][y][x + 1];
+
+				vt = this->pt[l][y][x].get_power(p->x - this->dtw, p->y);
+				p->vt[i] = vt;
+				for(x = 1; x <= this->w; ++x)
+					move_point(x, y);
+			}
+		}
+		this->layer ^= 1;
+	}
+
+
+	void
+	draw_net()
+	{
+		int x, y, l = this->layer;
+		::POINT pt[NET_W + NET_H];
+
+		for(y = 0; y <= this->h; ++y)
+		{
+			//if(y % g_mod_show == 0)
+			{
+				for(x = 0; x <= this->w + 1; ++x)
+				{
+					pt[x].x = (int)(this->pt[l][y][x].x + 0.5);
+					pt[x].y = (int)(this->pt[l][y][x].y + 0.5);
+					//line_f(this->pt[l][y][x].x, this->pt[l][y][x].y, this->pt[l][y][x+1].x, this->pt[l][y][x+1].y);
+				}
+				drawbezier(this->w + 2, (int*)pt);
+			}
+		}
+		for(x = 0; x <= this->w; ++x)
+			//if(x % g_mod_show == 0)
+			{
+				for(y = 0; y <= this->h + 1; ++y)
+				{
+					pt[y].x = (int)(this->pt[l][y][x].x + 0.5);
+					pt[y].y = (int)(this->pt[l][y][x].y + 0.5);
+					//line_f(this->pt[l][y][x].x, this->pt[l][y][x].y, this->pt[l][y+1][x].x, this->pt[l][y+1][x].y);
+				}
+				drawbezier(this->h + 2, (int*)pt);
+			}
+	}
+
+	int cp_x = 0, cp_y = 0, b_cp = 0;
+
+	void
+	cap_pt(int px, int py, bool op)
+	{
+		if(op)
+		{
+			int y, x, l = this->layer;
+			if(b_cp == 0)
+			{
+				int mx = 1, my = 1;
+				double mdis = 1e9, dis;
+				for(y = 1; y < this->h; ++y)
+				{
+					if(y % g_mod_show == 0)
 						continue;
-					dis = fabs(px - pnet->pt[l][y][x].x) + fabs(py - pnet->pt[l][y][x].y);
-					if(dis < mdis)
+					for(x = 1; x < this->w; ++x)
 					{
-						mx = x;
-						my = y;
-						mdis = dis;
+						if(x % g_mod_show == 0)
+							continue;
+						dis = fabs(px - this->pt[l][y][x].x) + fabs(py - this->pt[l][y][x].y);
+						if(dis < mdis)
+						{
+							mx = x;
+							my = y;
+							mdis = dis;
+						}
 					}
 				}
+				cp_x = mx;
+				cp_y = my;
+				this->pt[l][cp_y][cp_x].x = px;
+				this->pt[l][cp_y][cp_x].y = py;
+				b_cp = 1;
 			}
-			cp_x = mx;
-			cp_y = my;
-			pnet->pt[l][cp_y][cp_x].x = px;
-			pnet->pt[l][cp_y][cp_x].y = py;
-			b_cp = 1;
+			else
+			{
+				this->pt[l][cp_y][cp_x].x = px;
+				this->pt[l][cp_y][cp_x].y = py;
+			}
+			this->pt[l][cp_y][cp_x].vx = 0;
+			this->pt[l][cp_y][cp_x].vy = 0;
 		}
 		else
-		{
-			pnet->pt[l][cp_y][cp_x].x = px;
-			pnet->pt[l][cp_y][cp_x].y = py;
-		}
-		pnet->pt[l][cp_y][cp_x].vx = 0;
-		pnet->pt[l][cp_y][cp_x].vy = 0;
+			b_cp = 0;
 	}
-	else
-	{
-		b_cp = 0;
-	}
-}
+};
 
-void init()
+int
+main()
 {
 //	int g = TRUECOLORSIZE, m = (g_height << 16) | g_width;
+
 //	initgraph(&g, &m, "碧波荡漾");
 //	setinitmode(3);
 	initgraph(640, 480);
-	g_width = getwidth();
-	g_height = getheight();
-}
-
-void getmouse(int* x, int* y, int* key)
-{
-	mousepos(x, y);
-	*key = keystate(key_mouse_l);
-}
-
-struct net g_net;
-
-int main()
-{
-	char str[100] = "";
-	int basepoint = 20;
-
-	init();
-	init_net(&g_net, basepoint * 4, basepoint * 3, g_width, g_height);
 	setbkmode(TRANSPARENT);
 
+	net g_net(20, getwidth(), getheight());
+	char str[100] = "";
 	fps fps_obj;
+
 	setrendermode(RENDER_MANUAL);
 	for(; kbhit() == 0; delay_fps(60))
 	{
 		cleardevice();
 		setcolor(0x8000);
-		draw_net(&g_net);
-
+		g_net.draw_net();
 		setcolor(0xFFFFFF);
 		outtextxy(0, 0, str);
+		g_net.move_net();
+		g_net.move_net();
 
-		move_net(&g_net);
-		move_net(&g_net);
-		{
-			int x, y, k;
-			getmouse(&x, &y, &k);
-			if(k)
-			{
-				cap_pt(&g_net, x, y, 1);
-			}
-			else
-			{
-				cap_pt(&g_net, x, y, 0);
-			}
-		}
+		int x, y;
+
+		mousepos(&x, &y);
+		g_net.cap_pt(x, y, keystate(key_mouse_l) != 0);
 	}
 	closegraph();
 }
