@@ -20,7 +20,7 @@ private:
 	::HBITMAP m_hBmp;
 	int m_width;
 	int m_height;
-	::DWORD* m_pBuffer;
+	unsigned long* m_pBuffer;
 
 public:
 	color_t m_color;
@@ -68,7 +68,7 @@ public:
 		return m_height;
 	}
 
-	::DWORD*
+	unsigned long*
 	getbuffer() const
 	{
 		return m_pBuffer;
@@ -91,15 +91,15 @@ public:
 	getimage(void* pMem, long size);
 
 	void
-	putimage(int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;
+	putimage(int dstX, int dstY, unsigned long dwRop = SRCCOPY) const;
 	void
-	putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop = SRCCOPY) const;
+	putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, unsigned long dwRop = SRCCOPY) const;
 	void
-	putimage(IMAGE* pDstImg, int dstX, int dstY, ::DWORD dwRop = SRCCOPY) const;
+	putimage(IMAGE* pDstImg, int dstX, int dstY, unsigned long dwRop = SRCCOPY) const;
 	void
-	putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, ::DWORD dwRop = SRCCOPY) const;
+	putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, unsigned long dwRop = SRCCOPY) const;
 	void
-	putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop = SRCCOPY) const;
+	putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, int srcWidth, int srcHeight, unsigned long dwRop = SRCCOPY) const;
 
 	int
 	saveimage(const char*  filename);

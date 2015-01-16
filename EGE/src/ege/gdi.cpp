@@ -38,7 +38,7 @@ getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName,
 }
 
 void
-putimage(int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
+putimage(int dstX, int dstY, IMAGE* pSrcImg, unsigned long dwRop)
 {
 	yassume(pSrcImg);
 
@@ -46,14 +46,14 @@ putimage(int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
 }
 void
 putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
-	int srcX, int srcY, ::DWORD dwRop)
+	int srcX, int srcY, unsigned long dwRop)
 {
 	yassume(pSrcImg);
 
 	pSrcImg->putimage(dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
 }
 void
-putimage(IMAGE* pDstImg, int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
+putimage(IMAGE* pDstImg, int dstX, int dstY, IMAGE* pSrcImg, unsigned long dwRop)
 {
 	yassume(pSrcImg);
 
@@ -61,7 +61,7 @@ putimage(IMAGE* pDstImg, int dstX, int dstY, IMAGE* pSrcImg, ::DWORD dwRop)
 }
 void
 putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
-	IMAGE* pSrcImg, int srcX, int srcY, ::DWORD dwRop)
+	IMAGE* pSrcImg, int srcX, int srcY, unsigned long dwRop)
 {
 	yassume(pSrcImg);
 
@@ -71,7 +71,7 @@ putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 void
 putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight,
-	::DWORD dwRop)
+	unsigned long dwRop)
 {
 	yassume(pSrcImg);
 
@@ -80,7 +80,7 @@ putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 }
 void
 putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
-	int srcX, int srcY, int srcWidth, int srcHeight, ::DWORD dwRop)
+	int srcX, int srcY, int srcWidth, int srcHeight, unsigned long dwRop)
 {
 	yassume(pSrcImg);
 

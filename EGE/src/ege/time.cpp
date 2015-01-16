@@ -213,7 +213,7 @@ api_sleep(long dwMilliseconds)
 double
 fclock()
 {
-	static ::DWORD fclock_start;
+	static unsigned long fclock_start;
 
 	if(fclock_start == 0)
 		fclock_start = ::GetTickCount();

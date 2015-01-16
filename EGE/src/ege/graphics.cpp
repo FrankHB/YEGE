@@ -14,7 +14,7 @@ namespace
 {
 
 LRESULT CALLBACK
-wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
+wndproc(::HWND hWnd, unsigned message, ::WPARAM wParam, ::LPARAM lParam)
 {
 	auto& gstate(get_global_state());
 	//int wmId, wmEvent;
@@ -53,8 +53,8 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		break;
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONDBLCLK:
-		gstate.mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
-		gstate.mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
+		gstate.mouse_lastclick_x = (short int)((unsigned)lParam & 0xFFFF);
+		gstate.mouse_lastclick_y = (short int)((unsigned)lParam >> 16);
 		gstate.keystatemap[VK_LBUTTON] = 1;
 		::SetCapture(hWnd);
 		gstate.mouse_state_l = 1;
@@ -63,8 +63,8 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		break;
 	case WM_MBUTTONDOWN:
 	case WM_MBUTTONDBLCLK:
-		gstate.mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
-		gstate.mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
+		gstate.mouse_lastclick_x = (short int)((unsigned)lParam & 0xFFFF);
+		gstate.mouse_lastclick_y = (short int)((unsigned)lParam >> 16);
 		gstate.keystatemap[VK_MBUTTON] = 1;
 		::SetCapture(hWnd);
 		gstate.mouse_state_m = 1;
@@ -73,8 +73,8 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		break;
 	case WM_RBUTTONDOWN:
 	case WM_RBUTTONDBLCLK:
-		gstate.mouse_lastclick_x = (short int)((::UINT)lParam & 0xFFFF);
-		gstate.mouse_lastclick_y = (short int)((::UINT)lParam >> 16);
+		gstate.mouse_lastclick_x = (short int)((unsigned)lParam & 0xFFFF);
+		gstate.mouse_lastclick_y = (short int)((unsigned)lParam >> 16);
 		gstate.keystatemap[VK_RBUTTON] = 1;
 		::SetCapture(hWnd);
 		gstate.mouse_state_r = 1;
@@ -87,8 +87,8 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		gstate._on_mouse_button_up(hWnd, message, wParam, lParam);
 		break;
 	case WM_MOUSEMOVE:
-		gstate.mouse_last_x = (short int)((::UINT)lParam & 0xFFFF);
-		gstate.mouse_last_y = (short int)((::UINT)lParam >> 16);
+		gstate.mouse_last_x = (short int)((unsigned)lParam & 0xFFFF);
+		gstate.mouse_last_y = (short int)((unsigned)lParam >> 16);
 		if(hWnd == gstate._get_hwnd() && (gstate.mouse_lastup_x
 			!= gstate.mouse_last_x || gstate.mouse_lastup_y
 			!= gstate.mouse_last_y))
@@ -96,8 +96,8 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		break;
 	case WM_MOUSEWHEEL:
 		{
-			::POINT pt{(short int)(::UINT(lParam) & 0xFFFF),
-				(short int)(::UINT(lParam) >> 16)};
+			::POINT pt{(short int)(unsigned(lParam) & 0xFFFF),
+				(short int)(unsigned(lParam) >> 16)};
 
 			::ScreenToClient(gstate._get_hwnd(), &pt);
 			gstate.mouse_last_x = pt.x;

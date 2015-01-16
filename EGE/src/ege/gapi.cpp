@@ -20,7 +20,7 @@ _save_brush(IMAGE* img, int save)
 
 	if(save)
 	{
-		::LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
+		::LOGBRUSH lbr{0, COLORREF(), 0U};
 
 		lbr.lbColor = 0;
 		lbr.lbStyle = BS_NULL;
@@ -132,7 +132,7 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 
 	if(linestyle == PS_USERSTYLE)
 	{
-		::DWORD style[20]{0};
+		unsigned long style[20]{0};
 		::LOGBRUSH lbr;
 		int n, bn = 0, len = 1, st = 0;
 		lbr.lbColor = lpen.lopnColor;
@@ -190,7 +190,7 @@ setfillstyle(int pattern, color_t color, IMAGE* pimg)
 
 	yassume(img);
 
-	::LOGBRUSH lbr{0, COLORREF(), ::UINT_PTR()};
+	::LOGBRUSH lbr{0, COLORREF(), 0UL};
 
 	img->m_fillcolor = color;
 	lbr.lbColor = RGBTOBGR(color);
@@ -286,7 +286,7 @@ setcolor(color_t color, IMAGE* pimg)
 			::SetTextColor(img->getdc(), color);
 			if(lPen.lopnStyle == PS_USERSTYLE)
 			{
-				::DWORD style[20]{};
+				unsigned long style[20]{};
 				::LOGBRUSH lbr;
 				unsigned short upattern = img->m_linestyle.upattern;
 				int n, bn = 0, len = 1, st = 0;
@@ -352,7 +352,7 @@ setbkcolor(color_t color, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE(pimg))
 		if(img->getdc())
 		{
-			::DWORD* p = img->getbuffer();
+			unsigned long* p = img->getbuffer();
 			int size = img->getwidth() * img->getheight();
 			color_t col = img->m_bk_color;
 
@@ -449,7 +449,7 @@ putpixels(int nPoint, int* pPoints, IMAGE* pimg)
 	yassume(img);
 
 	int x, y, c;
-	::DWORD* pb = &img->getbuffer()[img->m_vpt.top * img->getwidth() + img->m_vpt.left];
+	unsigned long* pb = &img->getbuffer()[img->m_vpt.top * img->getwidth() + img->m_vpt.left];
 	int w = img->m_vpt.right - img->m_vpt.left, h = img->m_vpt.bottom - img->m_vpt.top;
 	int tw = img->getwidth();
 
@@ -872,7 +872,7 @@ drawlines(int numlines, const int* polypoints, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
-		::DWORD* pl = (::DWORD*) malloc(sizeof(::DWORD) * numlines);
+		unsigned long* pl = (unsigned long*) malloc(sizeof(unsigned long) * numlines);
 		for(int i = 0; i < numlines; ++i) pl[i] = 2;
 		::PolyPolyline(img->getdc(), (::POINT*)polypoints, pl, numlines);
 		free(pl);

@@ -16,7 +16,7 @@ namespace
 unsigned int
 private_gettextmode(IMAGE* img)
 {
-	::UINT fMode(TA_NOUPDATECP); //TA_UPDATECP;
+	unsigned fMode(TA_NOUPDATECP); //TA_UPDATECP;
 
 	if(img->m_texttype.horiz == RIGHT_TEXT)
 		fMode |= TA_RIGHT;
@@ -33,7 +33,7 @@ private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz, int
 {
 	if(horiz >= 0 && vert >= 0)
 	{
-		::UINT fMode = TA_NOUPDATECP; //TA_UPDATECP;
+		unsigned fMode = TA_NOUPDATECP; //TA_UPDATECP;
 
 		img->m_texttype.horiz = horiz;
 		img->m_texttype.vert = vert;
@@ -65,7 +65,7 @@ private_textout(IMAGE* img, const wchar_t* textstring, int x, int y, int horiz,
 {
 	if(horiz >= 0 && vert >= 0)
 	{
-		::UINT fMode = TA_NOUPDATECP; //TA_UPDATECP;
+		unsigned fMode = TA_NOUPDATECP; //TA_UPDATECP;
 
 		img->m_texttype.horiz = horiz;
 		img->m_texttype.vert = vert;

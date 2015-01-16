@@ -79,7 +79,7 @@ public:
 		}
 		return 0;
 	}
-	LRESULT onMessage(::UINT message, ::WPARAM wParam, ::LPARAM lParam)
+	LRESULT onMessage(unsigned message, ::WPARAM wParam, ::LPARAM lParam)
 	{
 		if(message == WM_CTLCOLOREDIT)
 		{
@@ -99,7 +99,7 @@ public:
 		}
 		else
 		{
-			return ((LRESULT(CALLBACK*)(::HWND, ::UINT, ::WPARAM, ::LPARAM))m_callback)(m_hwnd, message, wParam, lParam);
+			return ((LRESULT(CALLBACK*)(::HWND, unsigned, ::WPARAM, ::LPARAM))m_callback)(m_hwnd, message, wParam, lParam);
 		}
 		//return 0;
 	}

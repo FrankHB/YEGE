@@ -140,10 +140,10 @@ public:
 	_on_ime_control(::HWND, ::WPARAM, ::LPARAM);
 
 	void
-	_on_key(::UINT, unsigned long, ::LPARAM);
+	_on_key(unsigned, unsigned long, ::LPARAM);
 
 	void
-	_on_mouse_button_up(::HWND, ::UINT, ::WPARAM, ::LPARAM);
+	_on_mouse_button_up(::HWND, unsigned, ::WPARAM, ::LPARAM);
 
 	void
 	_on_paint(::HWND);
@@ -164,7 +164,7 @@ public:
 	_process_ui_msg(EGEMSG&);
 
 	void
-	_push_mouse_msg(::UINT, ::WPARAM, ::LPARAM);
+	_push_mouse_msg(unsigned, ::WPARAM, ::LPARAM);
 
 	int
 	_show_mouse(bool);
