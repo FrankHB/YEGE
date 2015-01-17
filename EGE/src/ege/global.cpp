@@ -196,30 +196,14 @@ _graph_setting::_getch()
 {
 	if(_is_window_exit())
 		return grNoInitGraph;
+	do
 	{
-		int key;
-		EGEMSG msg;
-		unsigned long dw = GetTickCount();
-		do
-		{
-			key = _kbhit();
-			if(key < 0)
-				break;
-			if(key > 0)
-				if((key = _getkey_p()))
-				{
-					msg = msgkey_queue.last();
-					if(dw < msg.time + 1000)
-					{
-						if(((key & KEYMSG_DOWN) && (msg.wParam >= 0x70
-							&& msg.wParam < 0x80)) || (msg.wParam > ' '
-							&& msg.wParam < '0'))
-							key |= 0x100;
-						return key & 0xFFFF;
-					}
-				}
-		} while(_is_run() && _waitdealmessage());
-	}
+		int key = _kbhit();
+		if(key < 0)
+			break;
+		if(key > 0)
+			key = _getkey_p();
+	} while(_is_run() && _waitdealmessage());
 	return 0;
 }
 
