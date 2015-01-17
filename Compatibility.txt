@@ -78,6 +78,7 @@ DWORD_PTR → ::ULONG_PTR 。
 修正未初始化的消息成员被读取。
 修正未初始化的全局状态被读取。
 修正退出时遗漏清理图像页面。
+修正 flushkey 和 flushmouse 函数调用过程中可能被中断导致队列非空。
 
 实现注记
 ----
@@ -104,6 +105,7 @@ DWORD_PTR → ::ULONG_PTR 。
 CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入除空指针值外返回原值。
 命名空间作用域静态函数和对象去除 static 并使用未命名命名空间代替。
 thread_queue 类模板使用标准库的同步设施实现。
+提升 flushkey 和 flushmouse 函数的性能。
 
 实现质量(QoI)
 ----

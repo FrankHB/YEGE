@@ -170,25 +170,17 @@ _graph_setting::_is_window_exit() const
 void
 _graph_setting::_flushkey()
 {
-	EGEMSG msg;
-
 	if(msgkey_queue.empty())
 		_update_if_necessary();
-	if(!msgkey_queue.empty())
-		while(msgkey_queue.pop(msg))
-			;
+	msgkey_queue.clear();
 }
 
 void
 _graph_setting::_flushmouse()
 {
-	EGEMSG msg;
-
 	if(msgmouse_queue.empty())
 		_update_if_necessary();
-	if(!msgmouse_queue.empty())
-		while(msgmouse_queue.pop(msg))
-			;
+	msgmouse_queue.clear();
 }
 
 int
