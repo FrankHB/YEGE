@@ -37,6 +37,7 @@ Code::Blocks 。
 移除类型 LPCALLBACK_PROC 、LPMSG_KEY_PROC 、LPMSG_MOUSE_PROC 、MSG_KEY_PROC 和 MSG_MOUSE_PROC ，其中 LPCALLBACK_PROC 可用 CALLBACK_PROC* 代替，
 添加 linestyletype 和 EGEMSG 的构造函数，只支持默认构造和提供所有成员的初始化。
 移除枚举 graphics_modes 。
+移除类 Lock ，使用 std::lock_guard 等代替。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
@@ -57,10 +58,11 @@ LPSTR → char* 。
 LPCSTR → const char* 。
 LPWSTR → const wchar_t* 。
 LPCWSTR → const wchar_t* 。
+VOID → void 。
 PVOID → void* 。
 LPVOID → void* 。
-VOID → void 。
 DWORD → unsigned long 。
+PDWORD → unsigned long*。
 DWORD_PTR → ::ULONG_PTR 。
 所有同名 typedef 结构体名称或 typedef 匿名结构体调整为非 typedef 结构体类型名。
 宏 EGEAPI 调整至返回值前；移除函数形参中不必要的 const 。
@@ -97,10 +99,10 @@ DWORD_PTR → ::ULONG_PTR 。
 移除 CONVERT_IMAGE_END 、CONVERT_IMAGE_F 和 CONVERT_IMAGE_F_CONST 宏。
 移除 setrendermode 实现所需的计时器例程；主窗口消息循环不响应 WM_TIMER 。
 取消手动设置 exit_window 状态，改用 UI 线程状态表示；移除无用的 exit_flag 。
-类型 PDWORD 用 DWORD* 代替。
 类 IMAGE ：修复复制构造；新增交换、转移构造和统一赋值操作；移除成员初始化检查；封装部分成员保证不可在外部修改。
 CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入除空指针值外返回原值。
 命名空间作用域静态函数和对象去除 static 并使用未命名命名空间代替。
+thread_queue 类模板使用标准库的同步设施实现。
 
 实现质量(QoI)
 ----
