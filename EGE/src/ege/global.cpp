@@ -150,6 +150,8 @@ _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 }
 _graph_setting::~_graph_setting()
 {
+	if(ui_thread.joinable())
+		ui_thread.join();
 	Gdiplus::GdiplusShutdown(g_gdiplusToken);
 }
 
