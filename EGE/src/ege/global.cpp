@@ -535,17 +535,18 @@ _graph_setting::_peekkey()
 {
 	while(!msgkey_queue.empty())
 	{
-		const auto msg(msgkey_queue.top());
+		const auto& msg(msgkey_queue.top());
 
-		msgkey_queue.pop();
 		if(msg.message == WM_CHAR || msg.message == WM_KEYDOWN)
 		{
 			if(msg.message == WM_KEYDOWN)
 				if(msg.wParam <= key_space || (msg.wParam >= key_0
 					&& msg.wParam < key_f1) || (msg.wParam >= key_semicolon
 					&& msg.wParam <= key_quote))
+				{
+					msgkey_queue.pop();
 					continue;
-			msgkey_queue.unpop();
+				}
 			if(msg.message == WM_CHAR)
 				return KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF);
 			if(msg.message == WM_KEYDOWN)
@@ -557,6 +558,8 @@ _graph_setting::_peekkey()
 			else if(msg.message == WM_KEYUP)
 				return KEYMSG_UP | (int(msg.wParam) & 0xFFFF);
 		}
+		else
+			msgkey_queue.pop();
 	}
 	return 0;
 }
@@ -566,14 +569,12 @@ _graph_setting::_peekallkey(int flag)
 {
 	while(!msgkey_queue.empty())
 	{
-		const auto msg(msgkey_queue.top());
+		const auto& msg(msgkey_queue.top());
 
-		msgkey_queue.pop();
 		if((msg.message == WM_CHAR && (flag & KEYMSG_CHAR_FLAG)) ||
 			(msg.message == WM_KEYUP && (flag & KEYMSG_UP_FLAG)) ||
 			(msg.message == WM_KEYDOWN && (flag & KEYMSG_DOWN_FLAG)))
 		{
-			msgkey_queue.unpop();
 			if(msg.message == WM_CHAR)
 				return (KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF));
 			else if(msg.message == WM_KEYDOWN)
@@ -582,6 +583,8 @@ _graph_setting::_peekallkey(int flag)
 			else if(msg.message == WM_KEYUP)
 				return KEYMSG_UP | (int(msg.wParam) & 0xFFFF);
 		}
+		else
+			msgkey_queue.pop();
 	}
 	return 0;
 }
