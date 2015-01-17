@@ -38,7 +38,7 @@ Code::Blocks 。
 添加 linestyletype 和 EGEMSG 的构造函数，只支持默认构造和提供所有成员的初始化。
 移除枚举 graphics_modes 。
 移除类 Lock ，使用 std::lock_guard 等代替。
-移除类模板 thread_queue 的 last 和 unpop 函数。，提供标准库风格的 clear 、empty 、pop 和 top 函数。
+移除类模板 thread_queue 的 last 和 unpop 函数。。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
@@ -49,6 +49,7 @@ delay_fps 和 delay_jfps 仅保留 double 重载版本。
 宏 EGEAPI 支持显式导入和导出。
 linestyletype 和 EGEMSG 默认初始化所有成员。
 随机数函数第一次调用时自动初始化随机数种子，不需要事先调用 randomize 函数。
+移除 thread_queue 类模板提供标准库风格的 clear 、empty 、pop 和 top 函数，且 process 函数改为支持函数对象的模板。
 
 兼容接口和实现调整
 ----
@@ -104,7 +105,7 @@ DWORD_PTR → ::ULONG_PTR 。
 类 IMAGE ：修复复制构造；新增交换、转移构造和统一赋值操作；移除成员初始化检查；封装部分成员保证不可在外部修改。
 CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入除空指针值外返回原值。
 命名空间作用域静态函数和对象去除 static 并使用未命名命名空间代替。
-thread_queue 类模板使用标准库的同步设施实现。
+thread_queue 类模板使用 std::mutex 、std::lock_guard 和 std::deque 实现。
 提升 flushkey 和 flushmouse 函数的性能。
 
 实现质量(QoI)

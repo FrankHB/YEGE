@@ -292,6 +292,10 @@ main()
 	char str[100] = "";
 	fps fps_obj;
 
+	signal(SIGABRT, [](int){
+		;
+	});
+
 	for(; kbhit() == 0; delay_fps(60))
 	{
 		cleardevice();

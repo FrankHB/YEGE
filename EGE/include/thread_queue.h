@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include <mutex>
+#include <deque>
 
 #define QUEUE_LEN 1024
 
@@ -14,8 +15,7 @@ class thread_queue
 {
 private:
 	mutable std::mutex mtx;
-	T _queue[QUEUE_LEN];
-	int _r = 0, _w = 0;
+	std::deque<T> _queue;
 
 public:
 	void
@@ -23,7 +23,7 @@ public:
 	{
 		std::lock_guard<std::mutex> lck(mtx);
 
-		_r = _w = 0;
+		_queue.clear();
 	}
 
 	bool
@@ -31,7 +31,7 @@ public:
 	{
 		std::lock_guard<std::mutex> lck(mtx);
 
-		return _r == _w;
+		return _queue.empty();
 	}
 
 	void
@@ -39,8 +39,8 @@ public:
 	{
 		std::lock_guard<std::mutex> lck(mtx);
 
-		assert(_w != _r);
-		_r = (_r + 1) % QUEUE_LEN;
+		assert(!_queue.empty());
+		_queue.pop_front();
 	}
 
 	void
@@ -48,11 +48,9 @@ public:
 	{
 		std::lock_guard<std::mutex> lck(mtx);
 
-		int w = (_w + 1) % QUEUE_LEN;
-		_queue[w] = d_;
-		if(w == _r)
-			_r = (_r + 1) % QUEUE_LEN;
-		_w = w;
+		_queue.push_back(d_);
+		if(_queue.size() > QUEUE_LEN)
+			_queue.pop_front();
 	}
 
 	T&
@@ -60,36 +58,26 @@ public:
 	{
 		std::lock_guard<std::mutex> lck(mtx);
 
-		assert(_w != _r);
-		return _queue[_r];
+		assert(!_queue.empty());
+		return _queue.front();
 	}
 	T&
 	top() const
 	{
 		std::lock_guard<std::mutex> lck(mtx);
 
-		assert(_w != _r);
-		return _queue[_r];
+		assert(!_queue.empty());
+		return _queue.front();
 	}
 
 	template<typename F>
 	void
-	process(F&& process_func)
+	process(F f)
 	{
 		std::lock_guard<std::mutex> lck(mtx);
-		int r = _r;
-		int w = _w;
 
-		if(r != w)
-		{
-			if(w < r) w += QUEUE_LEN;
-
-			for(; r <= w; r++)
-			{
-				int pos = r % QUEUE_LEN;
-				process_func(_queue[pos]);
-			}
-		}
+		for(auto& e : _queue)
+			f(e);
 	}
 };
 
