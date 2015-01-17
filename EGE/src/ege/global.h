@@ -36,12 +36,17 @@ void
 _set_initmode(int, int, int);
 
 
+enum class get_input_op
+{
+	getch,
+	kbhit,
+	kbmsg
+};
+
+
 // 定义ege全局状态对象
 struct _graph_setting
 {
-	static const ::TCHAR window_class_name[32];
-	static const ::TCHAR window_caption[128];
-
 private:
 	::HWND hwnd;
 	::HDC window_dc;
@@ -74,10 +79,7 @@ public:
 	_is_window_exit() const;
 
 	void
-	_flushkey();
-
-	void
-	_flushmouse();
+	_flush_key_mouse(bool);
 
 	int
 	_get_dc_w() const
@@ -97,14 +99,14 @@ public:
 		return hwnd;
 	}
 
+	int
+	_get_input(get_input_op);
+
 	::HDC
 	_get_window_dc() const
 	{
 		return window_dc;
 	}
-
-	int
-	_getch();
 
 	int
 	_getflush();
@@ -120,12 +122,6 @@ public:
 
 	void
 	_init_graph_x();
-
-	int
-	_kbhit();
-
-	int
-	_kbmsg();
 
 	int
 	_keystate(int);
@@ -169,7 +165,7 @@ public:
 	int
 	_show_mouse(bool);
 
-	int
+	void
 	_update();
 
 	void
@@ -178,7 +174,7 @@ public:
 	void
 	_update_if_necessary();
 
-	int
+	bool
 	_waitdealmessage();
 
 	static void

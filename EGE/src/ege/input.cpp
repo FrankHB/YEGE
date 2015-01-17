@@ -8,7 +8,7 @@ namespace ege
 int
 kbmsg()
 {
-	return get_global_state()._kbmsg();
+	return get_global_state()._get_input(get_input_op::kbmsg);
 }
 
 key_msg
@@ -26,19 +26,19 @@ keystate(int key)
 void
 flushkey()
 {
-	get_global_state()._flushkey();
+	get_global_state()._flush_key_mouse(true);
 }
 
 int
 getch()
 {
-	return get_global_state()._getch();
+	return get_global_state()._get_input(get_input_op::getch);
 }
 
 int
 kbhit()
 {
-	return get_global_state()._kbhit();
+	return get_global_state()._get_input(get_input_op::kbhit);
 }
 
 
@@ -57,7 +57,7 @@ getmouse()
 void
 flushmouse()
 {
-	get_global_state()._flushmouse();
+	get_global_state()._flush_key_mouse({});
 }
 
 bool

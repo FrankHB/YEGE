@@ -36,6 +36,9 @@ egeControlBase* egectrl_focus;
 namespace
 {
 
+const ::TCHAR window_class_name[]{TEXT("Easy Graphics Engine")};
+const ::TCHAR window_caption[]{EGE_TITLE};
+
 unsigned long g_windowstyle(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
 	| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE);
 unsigned long g_windowexstyle(WS_EX_LEFT | WS_EX_LTRREADING);
@@ -84,10 +87,6 @@ _set_initmode(int mode, int x, int y)
 	_g_windowpos_y = y;
 }
 
-
-const ::TCHAR _graph_setting::window_class_name[32]
-	{TEXT("Easy Graphics Engine")};
-const ::TCHAR _graph_setting::window_caption[128]{EGE_TITLE};
 
 _graph_setting::_graph_setting(int gdriver_n, int* gmode)
 {
@@ -168,34 +167,37 @@ _graph_setting::_is_window_exit() const
 }
 
 void
-_graph_setting::_flushkey()
+_graph_setting::_flush_key_mouse(bool key)
 {
-	if(msgkey_queue.empty())
-		_update_if_necessary();
-	msgkey_queue.clear();
-}
+	auto& q(key ? msgkey_queue : msgmouse_queue);
 
-void
-_graph_setting::_flushmouse()
-{
-	if(msgmouse_queue.empty())
+	if(q.empty())
 		_update_if_necessary();
-	msgmouse_queue.clear();
+	q.clear();
 }
 
 int
-_graph_setting::_getch()
+_graph_setting::_get_input(get_input_op op)
 {
 	if(_is_window_exit())
 		return grNoInitGraph;
-	do
+	switch(op)
 	{
-		int key = _kbhit();
-		if(key < 0)
-			break;
-		if(key > 0)
-			key = _getkey_p();
-	} while(_is_run() && _waitdealmessage());
+	case get_input_op::getch:
+		do
+		{
+			int key = _peekkey();
+			if(key < 0)
+				break;
+			if(key > 0)
+				key = _getkey_p();
+		} while(_is_run() && _waitdealmessage());
+		break;
+	case get_input_op::kbhit:
+		return _peekkey();
+	case get_input_op::kbmsg:
+		return _peekallkey(1);
+	}
 	return 0;
 }
 
@@ -253,7 +255,6 @@ _graph_setting::_getkey()
 int
 _graph_setting::_getkey_p()
 {
-
 	while(!msgkey_queue.empty())
 	{
 		const auto msg(msgkey_queue.top());
@@ -397,18 +398,6 @@ _graph_setting::_init_graph_x()
 	if(g_windowexstyle & WS_EX_TOPMOST)
 		::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
 			SWP_NOSIZE | SWP_NOMOVE);
-}
-
-int
-_graph_setting::_kbhit()
-{
-	return _is_window_exit() ? int(grNoInitGraph) : int(_peekkey());
-}
-
-int
-_graph_setting::_kbmsg()
-{
-	return _is_window_exit() ? int(grNoInitGraph) : int(_peekallkey(1));
 }
 
 int
@@ -670,47 +659,42 @@ _graph_setting::_show_mouse(bool bShow)
 	return bShow;
 }
 
-int
+void
 _graph_setting::_update()
 {
-	if(_is_window_exit())
-		return grNoInitGraph;
-
-	if(IsWindowVisible(hwnd))
+	if(!_is_window_exit())
 	{
-		if(!window_dc)
-			return grNullPointer;
-		get_pages().update();
-	}
-	update_mark_count = UPDATE_MAX_CALL;
-	_get_FPS(0x100);
+		if(IsWindowVisible(hwnd) && window_dc)
+			get_pages().update();
+		update_mark_count = UPDATE_MAX_CALL;
+		_get_FPS(0x100);
 
-	::RECT crect;
+		::RECT crect;
 
-	::GetClientRect(hwnd, &crect);
+		::GetClientRect(hwnd, &crect);
 
-	int _dw = dc_w - (crect.right - crect.left),
-		_dh = dc_h - (crect.bottom - crect.top);
-	if(_dw != 0 || _dh != 0)
-	{
-		::RECT rect;
-
-		::GetWindowRect(hwnd, &rect);
-		if(::HWND h_parent_wnd = ::GetParent(hwnd))
+		int _dw = dc_w - (crect.right - crect.left),
+			_dh = dc_h - (crect.bottom - crect.top);
+		if(_dw != 0 || _dh != 0)
 		{
-			::POINT pt{0, 0};
+			::RECT rect;
 
-			::ClientToScreen(h_parent_wnd, &pt);
-			rect.left -= pt.x;
-			rect.top -= pt.y;
-			rect.right -= pt.x;
-			rect.bottom -= pt.y;
+			::GetWindowRect(hwnd, &rect);
+			if(::HWND h_parent_wnd = ::GetParent(hwnd))
+			{
+				::POINT pt{0, 0};
+
+				::ClientToScreen(h_parent_wnd, &pt);
+				rect.left -= pt.x;
+				rect.top -= pt.y;
+				rect.right -= pt.x;
+				rect.bottom -= pt.y;
+			}
+			::SetWindowPos(hwnd, {}, 0, 0, rect.right  + _dw - rect.left,
+				rect.bottom + _dh - rect.top, SWP_NOACTIVATE | SWP_NOMOVE
+				| SWP_NOOWNERZORDER | SWP_NOZORDER);
 		}
-		::SetWindowPos(hwnd, {}, 0, 0, rect.right  + _dw - rect.left,
-			rect.bottom + _dh - rect.top,
-			SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 	}
-	return grOk;
 }
 
 void
@@ -730,7 +714,7 @@ _graph_setting::_update_GUI()
 	msgmouse_queue.process(bind(&_graph_setting::_process_ui_msg, this, _1));
 }
 
-int
+bool
 _graph_setting::_waitdealmessage()
 {
 	if(update_mark_count < UPDATE_MAX_CALL)
