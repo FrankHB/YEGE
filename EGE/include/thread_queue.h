@@ -13,12 +13,39 @@ template<typename T>
 class thread_queue
 {
 private:
-	std::mutex mtx;
+	mutable std::mutex mtx;
 	T _queue[QUEUE_LEN];
-	T _last;
 	int _r = 0, _w = 0;
 
 public:
+	void
+	clear()
+	{
+		std::lock_guard<std::mutex> lck(mtx);
+
+		_r = _w = 0;
+	}
+
+	bool
+	empty() const
+	{
+		std::lock_guard<std::mutex> lck(mtx);
+
+		return _r == _w;
+	}
+
+	int
+	pop(T& d_)
+	{
+		std::lock_guard<std::mutex> lck(mtx);
+
+		if(_w == _r)
+			return 0;
+		d_ = _queue[_r];
+		_r = (_r + 1) % QUEUE_LEN;
+		return 1;
+	}
+
 	void
 	push(const T& d_)
 	{
@@ -31,17 +58,21 @@ public:
 		_w = w;
 	}
 
-	int
-	pop(T& d_)
+	T&
+	top()
 	{
 		std::lock_guard<std::mutex> lck(mtx);
 
-		if(_w == _r)
-			return 0;
-		d_ = _queue[_r];
-		_last = d_;
-		_r = (_r + 1) % QUEUE_LEN;
-		return 1;
+		assert(_w != _r);
+		return _queue[_r];
+	}
+	T&
+	top() const
+	{
+		std::lock_guard<std::mutex> lck(mtx);
+
+		assert(_w != _r);
+		return _queue[_r];
 	}
 
 	int
@@ -53,12 +84,6 @@ public:
 			return 0;
 		_r = (_r + QUEUE_LEN - 1) % QUEUE_LEN;
 		return 1;
-	}
-
-	T
-	last()
-	{
-		return _last;
 	}
 
 	template<typename F>
@@ -79,14 +104,6 @@ public:
 				process_func(_queue[pos]);
 			}
 		}
-	}
-
-	bool
-	empty()
-	{
-		std::lock_guard<std::mutex> lck(mtx);
-
-		return _r == _w;
 	}
 };
 
