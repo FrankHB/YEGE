@@ -72,17 +72,6 @@ public:
 		return _queue[_r];
 	}
 
-	int
-	unpop()
-	{
-		std::lock_guard<std::mutex> lck(mtx);
-
-		if(_r == (_w + 1) % QUEUE_LEN)
-			return 0;
-		_r = (_r + QUEUE_LEN - 1) % QUEUE_LEN;
-		return 1;
-	}
-
 	template<typename F>
 	void
 	process(F&& process_func)

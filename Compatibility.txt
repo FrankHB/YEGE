@@ -38,7 +38,7 @@ Code::Blocks 。
 添加 linestyletype 和 EGEMSG 的构造函数，只支持默认构造和提供所有成员的初始化。
 移除枚举 graphics_modes 。
 移除类 Lock ，使用 std::lock_guard 等代替。
-移除 thread_queue 类模板的 last 函数，提供标准库风格的 clear 、empty 、pop 和 top 函数。
+移除类模板 thread_queue 的 last 和 unpop 函数。，提供标准库风格的 clear 、empty 、pop 和 top 函数。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
