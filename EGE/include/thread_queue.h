@@ -34,16 +34,13 @@ public:
 		return _r == _w;
 	}
 
-	int
-	pop(T& d_)
+	void
+	pop()
 	{
 		std::lock_guard<std::mutex> lck(mtx);
 
-		if(_w == _r)
-			return 0;
-		d_ = _queue[_r];
+		assert(_w != _r);
 		_r = (_r + 1) % QUEUE_LEN;
-		return 1;
 	}
 
 	void

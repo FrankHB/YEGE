@@ -202,15 +202,18 @@ _graph_setting::_getch()
 int
 _graph_setting::_getflush()
 {
-	EGEMSG msg;
 	int lastkey = 0;
 
 	if(msgkey_queue.empty())
 		_update_if_necessary();
-	if(!msgkey_queue.empty())
-		while(msgkey_queue.pop(msg))
-			if(msg.message == WM_CHAR)
-				lastkey = int(msg.wParam);
+	while(!msgkey_queue.empty())
+	{
+		const auto& msg(msgkey_queue.top());
+
+		if(msg.message == WM_CHAR)
+			lastkey = int(msg.wParam);
+		msgkey_queue.pop();
+	}
 	return lastkey;
 }
 
@@ -250,9 +253,12 @@ _graph_setting::_getkey()
 int
 _graph_setting::_getkey_p()
 {
-	EGEMSG msg;
 
-	while(msgkey_queue.pop(msg))
+	while(!msgkey_queue.empty())
+	{
+		const auto msg(msgkey_queue.top());
+
+		msgkey_queue.pop();
 		switch(msg.message)
 		{
 		case WM_CHAR:
@@ -265,6 +271,7 @@ _graph_setting::_getkey_p()
 		default:
 			break;
 		}
+	}
 	return 0;
 }
 
@@ -280,7 +287,11 @@ _graph_setting::_getmouse()
 
 	do
 	{
-		msgmouse_queue.pop(msg);
+		if(!msgmouse_queue.empty())
+		{
+			msg = msgkey_queue.top();
+			msgkey_queue.pop();
+		}
 		if(msg.hwnd)
 		{
 			mmsg.flags |= ((msg.wParam & MK_CONTROL) != 0
@@ -522,10 +533,11 @@ _graph_setting::_on_setcursor(::HWND hwnd)
 int
 _graph_setting::_peekkey()
 {
-	EGEMSG msg;
-
-	while(msgkey_queue.pop(msg))
+	while(!msgkey_queue.empty())
 	{
+		const auto msg(msgkey_queue.top());
+
+		msgkey_queue.pop();
 		if(msg.message == WM_CHAR || msg.message == WM_KEYDOWN)
 		{
 			if(msg.message == WM_KEYDOWN)
@@ -552,10 +564,11 @@ _graph_setting::_peekkey()
 int
 _graph_setting::_peekallkey(int flag)
 {
-	EGEMSG msg;
-
-	while(msgkey_queue.pop(msg))
+	while(!msgkey_queue.empty())
 	{
+		const auto msg(msgkey_queue.top());
+
+		msgkey_queue.pop();
 		if((msg.message == WM_CHAR && (flag & KEYMSG_CHAR_FLAG)) ||
 			(msg.message == WM_KEYUP && (flag & KEYMSG_UP_FLAG)) ||
 			(msg.message == WM_KEYDOWN && (flag & KEYMSG_DOWN_FLAG)))
@@ -576,16 +589,11 @@ _graph_setting::_peekallkey(int flag)
 EGEMSG
 _graph_setting::_peekmouse()
 {
-	auto msg = EGEMSG();
-
 	if(msgmouse_queue.empty())
 		_update_if_necessary();
-	while(msgmouse_queue.pop(msg))
-	{
-		msgmouse_queue.unpop();
-		return msg;
-	}
-	return msg;
+	if(!msgmouse_queue.empty())
+		return msgmouse_queue.top();
+	return {};
 }
 
 void
