@@ -191,19 +191,23 @@ public:
 };
 
 
-struct _pages
+class _pages
 {
+public:
 	_graph_setting& gstate;
 	::HDC active_dc;
+
+private:
 	int active_page = 0;
 	int visual_page = 0;
 	IMAGE* imgtarget_set = {};
-	mutable IMAGE* img_page[BITMAP_PAGE_SIZE] = {};
-	IMAGE* imgtarget = {};
+	mutable unique_ptr<IMAGE> img_page[BITMAP_PAGE_SIZE];
+
+public:
 	int base_x = 0, base_y = 0, base_w = 0, base_h = 0;
+	IMAGE* imgtarget = {};
 
 	_pages();
-	~_pages();
 
 	void
 	check_page(int) const;

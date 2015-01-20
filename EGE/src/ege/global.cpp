@@ -752,13 +752,8 @@ _pages::_pages()
 {
 	check_page(0);
 	active_dc = img_page[0]->getdc();
-	imgtarget = img_page[active_page];
+	imgtarget = img_page[active_page].get();
 	update_mark_count = 0;
-}
-_pages::~_pages()
-{
-	for(const auto& p : img_page)
-		delete p;
 }
 
 void
@@ -769,7 +764,7 @@ _pages::check_page(int page) const
 		const int dc_w(gstate._get_dc_w());
 		const int dc_h(gstate._get_dc_h());
 
-		img_page[page] = new IMAGE(active_dc, dc_w, dc_h);
+		img_page[page].reset(new IMAGE(active_dc, dc_w, dc_h));
 	}
 }
 
@@ -817,7 +812,7 @@ int
 _pages::set_target(IMAGE* pbuf)
 {
 	imgtarget_set = pbuf;
-	imgtarget = pbuf ? pbuf : img_page[active_page];
+	imgtarget = pbuf ? pbuf : img_page[active_page].get();
 	return 0;
 }
 
