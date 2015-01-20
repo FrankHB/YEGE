@@ -394,8 +394,6 @@ IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 	::png_structp pic_ptr;
 	::png_infop info_ptr;
 	::png_colorp palette;
-	::png_byte* image;
-	::png_bytep* row_pointers;
 	pic_ptr = ::png_create_write_struct(PNG_LIBPNG_VER_STRING, {}, {}, {});
 	std::uint32_t pixelsize = bAlpha ? 4 : 3;
 	std::uint32_t width = m_width, height = m_height;
@@ -417,41 +415,40 @@ IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 	}// */
 
 	::png_init_io(pic_ptr, fp);
-	::png_set_IHDR(pic_ptr, info_ptr, width, height, 8, bAlpha ? PNG_COLOR_TYPE_RGBA : PNG_COLOR_TYPE_RGB,
-		PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-	palette = (::png_colorp)::png_malloc(pic_ptr, PNG_MAX_PALETTE_LENGTH * sizeof(::png_color));
+	::png_set_IHDR(pic_ptr, info_ptr, width, height, 8, bAlpha
+		? PNG_COLOR_TYPE_RGBA : PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+		PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+	palette = ::png_colorp(::png_malloc(pic_ptr, PNG_MAX_PALETTE_LENGTH
+		* sizeof(::png_color)));
 	::png_set_PLTE(pic_ptr, info_ptr, palette, PNG_MAX_PALETTE_LENGTH);
 	::png_write_info(pic_ptr, info_ptr);
 	::png_set_packing(pic_ptr);
-	image = (::png_byte*)malloc(width * height * pixelsize * sizeof(::png_byte) + 4);
-	if(!image)
+	try
+	{
+		const unique_ptr<::png_byte[]> p_image(new
+			png_byte[width * height * pixelsize * sizeof(::png_byte) + 4]);
+		const unique_ptr<::png_bytep[]> p_row_pointers(new png_bytep[height]);
+		const auto image(&p_image[0]);
+		const auto row_pointers(&p_row_pointers[0]);
+
+		for(i = 0; i < height; i++)
+		{
+			for(j = 0; j < width; ++j)
+				reinterpret_cast<unsigned long&>(image[(i * width  + j)
+					* pixelsize]) = RGBTOBGR(m_pBuffer[i * width + j]);
+			row_pointers[i] = (::png_bytep)image + i * width * pixelsize;
+		}
+		::png_write_image(pic_ptr, row_pointers);
+		::png_write_end(pic_ptr, info_ptr);
+		::png_free(pic_ptr, palette);
+		palette = {};
+		::png_destroy_write_struct(&pic_ptr, &info_ptr);
+	}
+	catch(std::bad_alloc&)
 	{
 		::png_destroy_write_struct(&pic_ptr, &info_ptr);
 		return -1;
 	}
-	row_pointers = (::png_bytep*)malloc(height * sizeof(::png_bytep));
-	if(!row_pointers)
-	{
-		::png_destroy_write_struct(&pic_ptr, &info_ptr);
-		free(image);
-		image = {};
-		return -1;
-	}
-	for(i = 0; i < height; i++)
-	{
-		for(j = 0; j < width; ++j)\
-			(unsigned long&)image[(i * width  + j) * pixelsize] = RGBTOBGR(m_pBuffer[i * width + j]);
-		row_pointers[i] = (::png_bytep)image + i * width * pixelsize;
-	}
-	::png_write_image(pic_ptr, row_pointers);
-	::png_write_end(pic_ptr, info_ptr);
-	::png_free(pic_ptr, palette);
-	palette = {};
-	::png_destroy_write_struct(&pic_ptr, &info_ptr);
-	free(row_pointers);
-	row_pointers = {};
-	free(image);
-	image = {};
 	return 0;
 }
 

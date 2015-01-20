@@ -27,6 +27,7 @@ Code::Blocks 。
 ----
 入口统一为 ::main 。
 编译为 DLL 无需定义宏。
+移除 EGE_DEPRECATED 宏。
 移除 SHOW_CONSOLE 宏。若需要控制台，在 Code::Blocks 选项内选择，或确保编译命令行无 -mwindows 。
 无 Logo 显示。
 移除所有标记为 deprecated 的接口。
@@ -75,7 +76,6 @@ PDWORD → unsigned long*。
 DWORD_PTR → ::ULONG_PTR 。
 所有同名 typedef 结构体名称或 typedef 匿名结构体调整为非 typedef 结构体类型名。
 宏 EGEAPI 调整至返回值前；移除函数形参中不必要的 const 。
-移除宏 EGE_DEPRECATED 。
 
 修正错误实现
 ----
@@ -114,6 +114,7 @@ CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入
 命名空间作用域静态函数和对象去除 static 并使用未命名命名空间代替。
 thread_queue 类模板使用 std::mutex 、std::lock_guard 和 std::deque 实现。
 提升 flushkey 和 flushmouse 函数的性能。
+避免直接使用 malloc 和 free 。
 
 实现质量(QoI)
 ----
