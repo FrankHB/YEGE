@@ -872,10 +872,10 @@ drawlines(int numlines, const int* polypoints, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
-		unsigned long* pl = (unsigned long*) malloc(sizeof(unsigned long) * numlines);
-		for(int i = 0; i < numlines; ++i) pl[i] = 2;
-		::PolyPolyline(img->getdc(), (::POINT*)polypoints, pl, numlines);
-		free(pl);
+		const auto pl(make_unique<unsigned long[]>(numlines));
+		for(int i = 0; i < numlines; ++i)
+			pl[i] = 2;
+		::PolyPolyline(img->getdc(), (::POINT*)polypoints, &pl[0], numlines);
 	}
 }
 
@@ -900,40 +900,31 @@ fillpoly(int numpoints, const int* polypoints, IMAGE* pimg)
 void
 fillpoly_gradient(int numpoints, const ege_colpoint* polypoints, IMAGE* pimg)
 {
-	if(numpoints < 3)
-		return;
-	if(const auto img = CONVERT_IMAGE(pimg))
-	{
-		TRIVERTEX* vert = (TRIVERTEX*)malloc(sizeof(TRIVERTEX) * numpoints);
-		if(vert)
+	if(numpoints >= 3)
+		if(const auto img = CONVERT_IMAGE(pimg))
 		{
-			if(::GRADIENT_TRIANGLE* tri
-				= (::GRADIENT_TRIANGLE*)malloc(sizeof(::GRADIENT_TRIANGLE)
-				* (numpoints - 2)))
+			auto vert(make_unique<::TRIVERTEX[]>(numpoints));
+			auto tri(make_unique<::GRADIENT_TRIANGLE[]>(numpoints - 2));
+
+			for(int i = 0; i < numpoints; ++i)
 			{
-				for(int i = 0; i < numpoints; ++i)
-				{
-					vert[i].x = (long)polypoints[i].x;
-					vert[i].y = (long)polypoints[i].y;
-					vert[i].Red     = EGEGET_R(polypoints[i].color) << 8;
-					vert[i].Green   = EGEGET_G(polypoints[i].color) << 8;
-					vert[i].Blue    = EGEGET_B(polypoints[i].color) << 8;
-					//vert[i].Alpha   = EGEGET_A(polypoints[i].color) << 8;
-					vert[i].Alpha   = 0;
-				}
-				for(int j = 0; j < numpoints - 2; ++j)
-				{
-					tri[j].Vertex1 = j;
-					tri[j].Vertex2 = j + 1;
-					tri[j].Vertex3 = j + 2;
-				}
-				::GradientFill(img->getdc(), vert, numpoints, tri,
-					numpoints - 2, GRADIENT_FILL_TRIANGLE);
-				free(tri);
+				vert[i].x = long(polypoints[i].x);
+				vert[i].y = long(polypoints[i].y);
+				vert[i].Red = EGEGET_R(polypoints[i].color) << 8;
+				vert[i].Green = EGEGET_G(polypoints[i].color) << 8;
+				vert[i].Blue = EGEGET_B(polypoints[i].color) << 8;
+				//vert[i].Alpha = EGEGET_A(polypoints[i].color) << 8;
+				vert[i].Alpha = 0;
 			}
-			free(vert);
+			for(int j = 0; j < numpoints - 2; ++j)
+			{
+				tri[j].Vertex1 = j;
+				tri[j].Vertex2 = j + 1;
+				tri[j].Vertex3 = j + 2;
+			}
+			::GradientFill(img->getdc(), &vert[0], numpoints, &tri[0],
+				numpoints - 2, GRADIENT_FILL_TRIANGLE);
 		}
-	}
 }
 
 void
@@ -947,7 +938,8 @@ void
 floodfillsurface(int x, int y, color_t areacolor, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
-		::ExtFloodFill(img->getdc(), x, y, RGBTOBGR(areacolor), FLOODFILLSURFACE);
+		::ExtFloodFill(img->getdc(), x, y, RGBTOBGR(areacolor),
+			FLOODFILLSURFACE);
 }
 
 } // namespace ege;

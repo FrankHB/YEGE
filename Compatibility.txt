@@ -40,6 +40,7 @@ Code::Blocks 。
 移除类 Lock ，使用 std::lock_guard 等代替。
 移除类模板 thread_queue 的 last 和 unpop 函数。。
 在 ege 命名空间使用 using 引入智能指针类型和相关操作的声明，并提供 std::make_unique 的替代实现。
+函数 drawlines 和 fillpoly_gradient 在分配存储失败时抛出 std::bad_alloc 异常。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
