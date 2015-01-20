@@ -2,6 +2,8 @@
 #define Inc_ege_base_h_
 
 #include <cmath>
+#include <type_traits>
+#include <memory>
 #include "ege/def.h"
 #include "ege/colorbase.h"
 
@@ -9,6 +11,38 @@ namespace ege
 {
 
 const double PI = 3.14159265358979323;
+
+using std::size_t;
+using std::bad_weak_ptr;
+using std::const_pointer_cast;
+using std::dynamic_pointer_cast;
+using std::enable_shared_from_this;
+using std::get_deleter;
+using std::make_shared;
+using std::owner_less;
+using std::shared_ptr;
+using std::static_pointer_cast;
+using std::unique_ptr;
+using std::weak_ptr;
+
+template<typename _type, typename... _tParams>
+inline typename
+	std::enable_if<!std::is_array<_type>::value, unique_ptr<_type>>::type
+make_unique(_tParams&&... args)
+{
+	return unique_ptr<_type>(new _type(yforward(args)...));
+}
+template<typename _type, typename... _tParams>
+inline typename std::enable_if<std::is_array<_type>::value
+	&& std::extent<_type>::value == 0, unique_ptr<_type>>::type
+make_unique(size_t size)
+{
+	return std::unique_ptr<_type>(new
+		typename std::remove_extent<_type>::type[size]());
+}
+template<typename _type,  typename... _tParams>
+typename std::enable_if<std::extent<_type>::value != 0>::type
+make_unique(_tParams&&...) = delete;
 
 enum graphics_drivers /* define graphics drivers */
 {
