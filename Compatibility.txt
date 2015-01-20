@@ -17,7 +17,13 @@ Code::Blocks 。
 移除 GDI+ 源代码，需要显式依赖 GDI+（默认 MinGW 已提供）；移除 EGE_GDIPLUS 宏。
 移除 zlib 和 libpng 源代码，需要显式依赖库 z 和 png16 。
 
-非向后兼容接口
+接口扩充
+----
+提供和 YSLib 兼容的伪关键字宏 yconstfn 、yconstexpr 和 ynothrow 分别替换为 constexpr 、constexpr 和 noexcept 。
+提供和 YSLib 兼容的伪关键字宏 yconstraint 和 yassume 替换 assert 。
+在 ege 命名空间使用 using 引入智能指针类型和相关操作的声明，并提供 std::make_unique 的替代实现。
+
+非向后兼容接口更改
 ----
 入口统一为 ::main 。
 编译为 DLL 无需定义宏。
@@ -39,7 +45,6 @@ Code::Blocks 。
 移除枚举 graphics_modes 。
 移除类 Lock ，使用 std::lock_guard 等代替。
 移除类模板 thread_queue 的 last 和 unpop 函数。。
-在 ege 命名空间使用 using 引入智能指针类型和相关操作的声明，并提供 std::make_unique 的替代实现。
 函数 drawlines 和 fillpoly_gradient 在分配存储失败时抛出 std::bad_alloc 异常。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
