@@ -541,23 +541,25 @@ draw_frame(IMAGE* img, int l, int t, int r, int b, color_t lc, color_t dc)
 int
 inputbox_getline(const char* title, const char* text, char* buf, int len)
 {
-	const auto _buf(static_cast<wchar_t*>(operator new(len * 2)));
+	yconstraint(buf);
+
+	const auto _buf(make_unique<wchar_t[]>(len));
 	wchar_t _title[256], _text[256];
 
 	::MultiByteToWideChar(CP_ACP, 0, title, -1, _title, 256);
 	::MultiByteToWideChar(CP_ACP, 0,  text, -1,  _text, 256);
 	buf[0] = 0;
 
-	const int ret(inputbox_getline(_title, _text, _buf, len));
+	const int ret(inputbox_getline(_title, _text, _buf.get(), len));
 
 	if(ret)
-		::WideCharToMultiByte(CP_ACP, 0, _buf, -1, buf, len, {}, {});
-	operator delete(_buf);
+		::WideCharToMultiByte(CP_ACP, 0, _buf.get(), -1, buf, len, {}, {});
 	return ret;
 }
 
 int
-inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf, int len)
+inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf,
+	int len)
 {
 	int w = 400, h = 300, x = (getwidth() - w) / 2, y = (getheight() - h) / 2;
 	int ret = 0;

@@ -46,7 +46,8 @@ Code::Blocks 。
 移除枚举 graphics_modes 。
 移除类 Lock ，使用 std::lock_guard 等代替。
 移除类模板 thread_queue 的 last 和 unpop 函数。。
-函数 drawlines 和 fillpoly_gradient 在分配存储失败时抛出 std::bad_alloc 异常。
+函数 drawlines 、fillpoly_gradient 和 inputbox_getline 在分配存储失败时抛出 std::bad_alloc 异常。
+函数 inputbox_getline 等加入断言。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
@@ -87,6 +88,7 @@ DWORD_PTR → ::ULONG_PTR 。
 修正未初始化的全局状态被读取。
 修正退出时遗漏清理图像页面。
 修正 flushkey 和 flushmouse 函数调用过程中可能被中断导致队列非空。
+修正 inputbox_getline 函数未检查分配存储失败。
 
 实现注记
 ----
