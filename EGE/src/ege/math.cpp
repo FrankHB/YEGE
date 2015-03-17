@@ -4,37 +4,43 @@
 namespace ege
 {
 
-void
-rotate_point3d_x(VECTOR3D* pt, float r)
-{
-	double sr = sin(r), cr = cos(r);
-	VECTOR3D t_pt = *pt;
+#undef Deref
+#define Deref *
 
-	t_pt.y = float(cr * pt->y - sr * pt->z);
-	t_pt.z = float(cr * pt->z + sr * pt->y);
-	*pt = t_pt;
+void
+rotate_point3d_x(VECTOR3D* p_pt, float r)
+{
+	auto& pt(Deref(p_pt));
+	auto t_pt(pt);
+	const auto sr(std::sin(r)), cr(std::cos(r));
+
+	t_pt.y = float(cr * pt.y - sr * pt.z);
+	t_pt.z = float(cr * pt.z + sr * pt.y);
+	pt = t_pt;
 }
 
 void
-rotate_point3d_y(VECTOR3D* pt, float r)
+rotate_point3d_y(VECTOR3D* p_pt, float r)
 {
-	double sr = sin(r), cr = cos(r);
-	VECTOR3D t_pt = *pt;
+	auto& pt(Deref(p_pt));
+	auto t_pt(pt);
+	const auto sr(std::sin(r)), cr(std::cos(r));
 
-	t_pt.z = float(cr * pt->z - sr * pt->x);
-	t_pt.x = float(cr * pt->x + sr * pt->z);
-	*pt = t_pt;
+	t_pt.z = float(cr * pt.z - sr * pt.x);
+	t_pt.x = float(cr * pt.x + sr * pt.z);
+	pt = t_pt;
 }
 
 void
-rotate_point3d_z(VECTOR3D* pt, float r)
+rotate_point3d_z(VECTOR3D* p_pt, float r)
 {
-	double sr = sin(r), cr = cos(r);
-	VECTOR3D t_pt = *pt;
+	auto& pt(Deref(p_pt));
+	auto t_pt(pt);
+	const auto sr(std::sin(r)), cr(std::cos(r));
 
-	t_pt.x = (float)(cr * pt->x - sr * pt->y);
-	t_pt.y = (float)(cr * pt->y + sr * pt->x);
-	*pt = t_pt;
+	t_pt.x = float(cr * pt.x - sr * pt.y);
+	t_pt.y = float(cr * pt.y + sr * pt.x);
+	pt = t_pt;
 }
 
 VECTOR3D&
@@ -124,7 +130,7 @@ VECTOR3D&
 VECTOR3D::Rotate(float rad, const VECTOR3D& v)
 {
 	VECTOR3D p = *this, a = v, b;
-	float cr = (float)cos(rad), sr = (float)sin(rad);
+	float cr = float(std::cos(rad)), sr = float(std::sin(rad));
 
 	a.SetModule(1.0f);
 	*this = p * cr;

@@ -6,7 +6,7 @@
 namespace ege
 {
 
-typedef void CALLBACK_PROC();
+using CALLBACK_PROC = void();
 
 EGEAPI int
 SetCloseHandler(CALLBACK_PROC* func);

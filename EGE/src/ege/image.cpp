@@ -104,7 +104,7 @@ void
 IMAGE::gentexture(bool gen)
 {
 	m_texture.reset(gen ? new Gdiplus::Bitmap(getwidth(), getheight(),
-		getwidth() * 4, PixelFormat32bppARGB, (BYTE*)getbuffer()) : nullptr);
+		getwidth() * 4, PixelFormat32bppARGB, (::BYTE*)getbuffer()) : nullptr);
 }
 
 int
@@ -607,8 +607,8 @@ IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 
 	if(img)
 	{
-		SetStretchBltMode(img->m_hDC, COLORONCOLOR);
-		StretchBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC,
+		::SetStretchBltMode(img->m_hDC, COLORONCOLOR);
+		::StretchBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC,
 			srcX, srcY, srcWidth, srcHeight, dwRop);
 	}
 }

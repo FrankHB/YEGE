@@ -4,7 +4,9 @@
 namespace ege
 {
 
-double
+using namespace std::chrono;
+
+duration<double>
 _get_highfeq_time_ls();
 
 float
@@ -12,21 +14,21 @@ _get_FPS(int add)
 {
 	static int fps = 0;
 	static int fps_inv = 0;
-	static double time = 0;
+	static duration<double> time;
 	static float flret = 0;
 	static float fret = 0;
 	static float fret_inv = 0;
+	auto cur(_get_highfeq_time_ls());
 
-	double cur = _get_highfeq_time_ls();
 	if(add == 0x100)
 		++fps;
 	else if(add == -0x100)
 		++fps, ++fps_inv;
-	if(cur - time >= 0.5)
+	if(cur - time >= duration<double>(0.5))
 	{
 		flret = fret;
-		fret = (float)(fps / (cur - time));
-		fret_inv = (float)((fps - fps_inv) / (cur - time));
+		fret = float(fps / (cur - time).count());
+		fret_inv = float((fps - fps_inv) / (cur - time).count());
 		fps = 0;
 		fps_inv = 0;
 		time = cur;

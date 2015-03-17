@@ -1,10 +1,12 @@
 #include "graphics.h"
 //#include <complex>
 #include <ctime>
+#include <cstdio>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #include <gmpxx.h>
 #pragma GCC diagnostic pop
+#include <Windows.h>
 
 //using namespace std;
 
@@ -22,7 +24,7 @@
 // 定义复数及乘、加运算
 
 
-/*
+#if 0
 // 定义复数
 template <class TFLOAT>
 struct complex
@@ -43,10 +45,10 @@ struct complex
 	}
 };
 
-typedef complex<double> COMPLEX;
-//*/
+using COMPLEX = complex<double>;
+#endif
 
-typedef mpf_class Float;
+using Float = mpf_class;
 struct COMPLEXI
 {
 	int re;
@@ -164,7 +166,7 @@ bool abs4(const COMPLEX& c)
 	//return {};
 }
 
-//typedef complex<double> COMPLEX;
+//using COMPLEX = complex<double>;
 
 struct PIXEL
 {
@@ -297,9 +299,9 @@ void setinitcolor(int* color, int len, int h1, int h2, float s = 0.8f)
 	int i;
 	for(i = 0; i < len / 2; i++)
 	{
-		color[i] = HSLtoRGB((float)h1, s, i * 2.0f / len * 0.8f + 0.1f);
+		color[i] = hsl2rgb((float)h1, s, i * 2.0f / len * 0.8f + 0.1f);
 		fixcolor(&color[i]);
-		color[len - 1 - i] = HSLtoRGB((float)h2, s, i * 2.0f
+		color[len - 1 - i] = hsl2rgb((float)h2, s, i * 2.0f
 			/ len * 0.8f + 0.1f);
 		fixcolor(&color[len - 1 - i]);
 	}
@@ -666,7 +668,7 @@ DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int = 0)
 				if(std::clock() - t > 5000)
 				{
 					if(keystate('J') && keystate('N')) return 1;
-					delay(0);
+					ege_sleep(0);
 					t = std::clock();
 				}
 			}
@@ -709,7 +711,7 @@ DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int = 0)
 				if(std::clock() - t > 5000)
 				{
 					if(keystate('J') && keystate('N')) return 1;
-					delay(0);
+					ege_sleep(0);
 					t = std::clock();
 				}
 			}
@@ -747,9 +749,6 @@ void setgprec(Float f)
 	t *= 32;
 	g_prec = t;
 }
-
-#include <cstdio>
-#include <io.h>
 
 // 主函数
 
@@ -824,33 +823,12 @@ main()
 			outtextxy(0, SC_H + 12 * 2, str);
 			gmp_sprintf(str, "%-6d %4d", mpf_get_prec(y.get_mpf_t()), ncnt);;
 			outtextxy(0, SC_H + 12 * 3, str);
-			delay(0);
+			ege_sleep(0);
 		}
-		int calc = 1;
-		if(ncnt < nbeg)
-		{
-			calc = 0;
-		}
-		else
-		{
-			char str[30];
-			std::sprintf(str, "snap%06d.bmp", ncnt);
-			if(::access(str, 0) == 0)
-				calc = 0;
-			else
-			{
-				std::FILE* fp = std::fopen(str, "w");
-
-				if(fp)
-					std::fclose(fp);
-				else
-					calc = 0;
-			}
-		}
-		if(calc)
+		if(ncnt >= nbeg)
 		{
 			bar(0, 0, SC_W, SC_H);
-			//delay(0);
+			//ege_sleep(0);
 			g_max_iter_last = 16;
 			//Draw(from.re, from.im, to.re, to.im, mode);
 			int mend = 0xFFFFFFF;
@@ -893,7 +871,7 @@ main()
 							rect.bottom + _dh - rect.top,
 							TRUE);
 					}
-					delay(0);
+					ege_sleep(0);
 				}
 				if(DrawEx(from.re, from.im, to.re, to.im, mode)) break;
 				if(g_b_update_mark + addmark > minmark)
@@ -943,7 +921,7 @@ main()
 				saveimage(mimage, str);
 			}
 		}
-		delay(0);
+		ege_sleep(0);
 	}
 	closegraph();
 	return 0;

@@ -504,6 +504,7 @@ private:
 int main()
 {
 	int nfps = 120;
+
 	initgr();
 
 	fps ui_fps;

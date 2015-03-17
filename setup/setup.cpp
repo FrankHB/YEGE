@@ -1,5 +1,7 @@
 #include "graphics.h"
 #include <cstdio>
+#include <cstring>
+#include <Windows.h>
 
 char installpath[8][MAX_PATH];
 char g_output[1024 * 16];
@@ -22,7 +24,8 @@ public:
 	Mira(int w, int h)
 	{
 		m_a = 0.1 + random(10000) / 10000.0 * 1.6 - 0.8, m_b = 0.99;
-		m_da = 0.0002 * ((int)random(2) * 2 - 1), m_db = 0.0000061 * ((int)random(2) * 2 - 1);
+		m_da = 0.0002 * ((int)random(2) * 2 - 1), m_db = 0.0000061
+			* (int(random(2)) * 2 - 1);
 		m_cr = 0.0;
 		m_tt = random(10000) / 10000.0 * 16.0 + 4;
 		m_zoom = 0.7 / m_tt;
@@ -76,7 +79,7 @@ public:
 	int render(int _x, int _y)
 	{
 		imagefilter_blurring(pmira, 0x30, 0x100);
-		int color = HSVtoRGB((float)m_cr, 1.0f, 1.0f);
+		int color = hsv2rgb((float)m_cr, 1.0f, 1.0f);
 		int e = 1;
 		for(int y = -e; y <= e; ++y)
 		{
@@ -142,13 +145,13 @@ int getpath_scene()
 	for(it = 0; ver[it][0]; ++it)
 	{
 		std::sprintf(strpath, "%s%s", strbasepath, ver[it]);
-		if(::RegOpenKeyEx(HKEY_LOCAL_MACHINE, strpath, 0, KEY_READ, &key) == ERROR_SUCCESS)
+		if(::RegOpenKeyExA(HKEY_LOCAL_MACHINE, strpath, 0, KEY_READ, &key) == ERROR_SUCCESS)
 		{
-			unsigned long dwtype = REG_SZ;
-			unsigned long dwsize = MAX_PATH;
-			if(::RegQueryValueEx(key, "ProductDir", {}, &dwtype, (BYTE*)(installpath[it]), &dwsize))
+			::DWORD dwtype = REG_SZ;
+			::DWORD dwsize = MAX_PATH;
+			if(::RegQueryValueExA(key, "ProductDir", {}, &dwtype, (unsigned char*)(installpath[it]), &dwsize))
 			{
-				::RegQueryValueEx(key, "InstallDir", {}, &dwtype, (BYTE*)(installpath[it]), &dwsize);
+				::RegQueryValueExA(key, "InstallDir", {}, &dwtype, (unsigned char*)(installpath[it]), &dwsize);
 				strcat(installpath[it], "\\mingw");
 			}
 			::RegCloseKey(key);
@@ -167,16 +170,16 @@ copyfile(const char* path1, char* pathnew,
 {
 	char strpath1[MAX_PATH];
 	char strpath2[MAX_PATH];
-	if(path1[strlen(path1) - 1] == '\\')
+	if(path1[std::strlen(path1) - 1] == '\\')
 		std::sprintf(strpath1, "%s%s\\%s", path1, dir, file);
 	else
 		std::sprintf(strpath1, "%s\\%s\\%s", path1, dir, file);
-	if(pathnew[strlen(pathnew) - 1] == '\\')
+	if(pathnew[std::strlen(pathnew) - 1] == '\\')
 		std::sprintf(strpath2, "%s%s\\%s", pathnew, dir, file);
 	else
 		std::sprintf(strpath2, "%s\\%s\\%s", pathnew, dir, file);
 
-	int ret = ::CopyFile(strpath1, strpath2, {});
+	int ret = ::CopyFileA(strpath1, strpath2, {});
 	if(ret == 0)
 	{
 		std::sprintf(strpath1, "Copy %s ERROR\n", strpath2);
@@ -221,47 +224,44 @@ int setup_scene()
 
 void setup()
 {
-
-
-}
-
-int main()
-{
-	initgraph(640, 480);
-
-	int ret = info_scene(), i;
+	int ret, i;
+	ret = info_scene();
 
 	for(i = 0; i < 60 * 3; ++i)
 	{
 		imagefilter_blurring({}, 0xF0, 0x100);
 		delay_fps(60);
 	}
-	do
+	if(ret != 'y' && ret != 'Y') return;
+
+	ret = getpath_scene();
+
+	for(i = 0; i < 60 * 1; ++i)
 	{
-		if(ret != 'y' && ret != 'Y')
-			break;
+		imagefilter_blurring({}, 0xF0, 0x100);
+		delay_fps(60);
+	}
+	if(ret != 'y' && ret != 'Y') return;
 
-		ret = getpath_scene();
+	setup_scene();
 
-		for(i = 0; i < 60 * 1; ++i)
-		{
-			imagefilter_blurring({}, 0xF0, 0x100);
-			delay_fps(60);
-		}
-		if(ret != 'y' && ret != 'Y')
-			return 0;
+	for(i = 0; i < 60 * 1; ++i)
+	{
+		imagefilter_blurring({}, 0xF0, 0x100);
+		delay_fps(60);
+	}
+	//for( ; kbhit() != -1; delay_fps(60))
+	{
+	}
 
-		setup_scene();
+}
 
-		for(i = 0; i < 60 * 1; ++i)
-		{
-			imagefilter_blurring({}, 0xF0, 0x100);
-			delay_fps(60);
-		}
-		//for( ; kbhit() != -1; delay_fps(60))
-		{
-		}
-	}while(0);
+int main()
+{
+	initgraph(640, 480);
+	randomize();
+
+	setup();
 	closegraph();
 }
 

@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <algorithm>
 #include <cstdio>
-#include <io.h> // for ::access;
+#include <Windows.h>
 
 //using namespace std;
 
@@ -25,7 +25,7 @@
 // 定义复数及乘、加运算
 
 
-/*
+#if 0
 // 定义复数
 template <class TFLOAT>
 struct complex
@@ -46,13 +46,13 @@ struct complex
 	}
 };
 
-typedef complex<double> COMPLEX;
-//*/
+using COMPLEX = complex<double>;
+#endif
 
 #ifdef USINGDOUBLE
-typedef double Float;
+using Float = double;
 #else
-typedef mpf_class Float;
+using Float = mpf_class;
 #endif
 
 struct COMPLEXI
@@ -67,7 +67,7 @@ Float& str2float(Float& f, const char str[])
 	sscanf(str, "%lf", &f);
 	return f;
 }
-typedef int mp_bitcnt_t;
+using mp_bitcnt_t = int;
 #endif
 
 mp_bitcnt_t g_prec = 64;
@@ -199,7 +199,7 @@ bool abs4(const COMPLEX& c)
 #endif
 }
 
-//typedef complex<double> COMPLEX;
+//using COMPLEX = complex<double>;
 
 struct PIXEL
 {
@@ -333,9 +333,10 @@ void setinitcolor(int* color, int len, int h1, int h2, float s = 0.8f)
 	int i;
 	for(i = 0; i < len / 2; i++)
 	{
-		color[i]       = HSLtoRGB((float)h1, s, i * 2.0f / len * 0.8f + 0.1f);
+		color[i] = hsl2rgb((float)h1, s, i * 2.0f / len * 0.8f + 0.1f);
 		fixcolor(&color[i]);
-		color[len - 1 - i] = HSLtoRGB((float)h2, s, i * 2.0f / len * 0.8f + 0.1f);
+		color[len - 1 - i] = hsl2rgb((float)h2, s,
+			i * 2.0f / len * 0.8f + 0.1f);
 		fixcolor(&color[len - 1 - i]);
 	}
 }
@@ -685,7 +686,7 @@ int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy)
 			{
 				//	if(keystate('J') && keystate('N'))
 				return 1;
-				delay(0);
+				ege_sleep(0);
 				t = std::clock();
 			}
 		}
@@ -816,32 +817,12 @@ main()
 			std::sprintf(str, "%-6d %4d", 32, ncnt);;
 			outtextxy(0, SC_H + 12 * 3, str);
 #endif
-			delay(0);
+			ege_sleep(0);
 		}
-		int calc = 1;
-		if(ncnt < nbeg)
-		{
-			calc = 0;
-		}
-		else
-		{
-			char str[30];
-			std::sprintf(str, "snap%06d.bmp", ncnt);
-			if(::access(str, 0) == 0)
-				calc = 0;
-			else
-			{
-				std::FILE* fp = std::fopen(str, "w");
-				if(fp)
-					std::fclose(fp);
-				else
-					calc = 0;
-			}
-		}
-		if(calc)
+		if(ncnt >= nbeg)
 		{
 			bar(0, 0, SC_W, SC_H);
-			delay(0);
+			ege_sleep(0);
 			g_max_iter_last = 16;
 			//Draw(from.re, from.im, to.re, to.im);
 			unsigned mend = 0xFFFFFFF;
@@ -855,7 +836,8 @@ main()
 			//g_iters = ITERATIONS;
 
 			unsigned last_min = 0;
-			for(unsigned m = 0, t = std::clock(); g_udlist.nLen > 0 && m < mend; ++m)
+			for(unsigned m = 0, t = std::clock(); g_udlist.nLen > 0 && m < mend;
+				++m)
 			{
 				g_b_update_mark = 0;
 				g_min_iter_last = 0x7FFFFFFF;
@@ -880,7 +862,7 @@ main()
 						rect.right  + _dw - rect.left,
 						rect.bottom + _dh - rect.top,
 						TRUE);
-					delay(0);
+					ege_sleep(0);
 					t = std::clock();
 				}
 				if(DrawEx(from.re, from.im, to.re, to.im))
@@ -925,12 +907,13 @@ main()
 				char str[30];
 
 				getimage(mimage, 0, 0, SC_W, SC_H);
-				std::sprintf(str, "snap%06d.bmp", ncnt);
-				putimage_alphatransparent(mimage, img_logo, 2, SC_H - 26, 0, 0x80);
-				saveimage(mimage, str);
+				std::sprintf(str, "snap%06d.png", ncnt);
+				putimage_alphatransparent(mimage, img_logo, 2, SC_H - 26, 0,
+					0x80);
+				savepng(mimage, str);
 			}
 		}
-		delay(0);
+		ege_sleep(0);
 	}
 	closegraph();
 	return 0;

@@ -141,10 +141,11 @@ int main()
 	//多边形对象初始化
 	for(i = 0; i < n_polys; ++i)
 		initpolys(&p[i], n_poly[i], n_points[i]);
-
 	fps ui_fps;
 	for(; is_run() && kbhit() <= 0; delay_fps(60)) //有按键按下就退出
 	{
+		if(kbhit() > 0)  //有按键按下就退出
+			break;
 		for(i = 0; i < n_polys; ++i)
 			movepoly(p[i].p);
 		cleardevice();

@@ -8,8 +8,8 @@
 namespace ege
 {
 
-typedef std::set<egeControlBase*> egectlmap;
-typedef std::vector<egeControlBase*> egectlvec;
+using egectlmap = std::set<egeControlBase*>;
+using egectlvec = std::vector<egeControlBase*>;
 
 int egeControlBase::s_maxchildid = 1024;
 
@@ -54,7 +54,7 @@ egeControlBase::~egeControlBase()
 	if(m_parent)
 	{
 		m_parent->delchild(this);
-		if(const auto cmap = (egectlmap*)m_childmap)
+		if(const auto cmap = static_cast<egectlmap*>(m_childmap))
 			for(auto p_ctl : *cmap)
 				m_parent->addchild(p_ctl);
 	}
@@ -132,14 +132,15 @@ bool ctlcmp(const egeControlBase* pa, const egeControlBase* pb)
 
 void egeControlBase::sortzorder()
 {
-	if(const auto cvec = (egectlvec*)m_childzorder)
+	if(const auto cvec = static_cast<egectlvec*>(m_childzorder))
 		std::sort(cvec->begin(), cvec->end(), ctlcmp);
 }
 
 int egeControlBase::addchild(egeControlBase* pChild)
 {
-	egectlmap*& cmap = (egectlmap*&)m_childmap;
-	egectlvec*& cvec = (egectlvec*&)m_childzorder;
+	auto& cmap(reinterpret_cast<egectlmap*&>(m_childmap));
+	auto& cvec(reinterpret_cast<egectlvec*&>(m_childzorder));
+
 	if(!cmap)
 	{
 		cmap = new egectlmap;
@@ -159,13 +160,13 @@ int egeControlBase::addchild(egeControlBase* pChild)
 
 int egeControlBase::delchild(egeControlBase* pChild)
 {
-	auto& cmap = (egectlmap*&)m_childmap;
+	auto& cmap(reinterpret_cast<egectlmap*&>(m_childmap));
 
 	if(!cmap)
 		return 0;
 
-	auto& cvec = (egectlvec*&)m_childzorder;
-	auto it = cmap->find(pChild);
+	auto& cvec(reinterpret_cast<egectlvec*&>(m_childzorder));
+	const auto it(cmap->find(pChild));
 
 	if(it != cmap->end())
 	{
@@ -188,10 +189,10 @@ int egeControlBase::delchild(egeControlBase* pChild)
 
 void egeControlBase::fixzorder()
 {
-	if(const auto cmap = (egectlmap*)m_childmap)
+	if(const auto cmap = static_cast<egectlmap*>(m_childmap))
 	{
-		egectlvec*& cvec = (egectlvec*&)m_childzorder;
-		int z = 1;
+		auto& cvec(reinterpret_cast<egectlvec*&>(m_childzorder));
+		int z(1);
 
 		for(auto p_ctl : *cvec)
 			p_ctl->m_zOrder = z++;
@@ -226,15 +227,19 @@ egeControlBase::mouse(int x, int y, int flag)
 	int ret = 0;
 
 	x -= m_x, y -= m_y;
+
 	PushTarget _target;
+
 	settarget(buf());
 	ret = onMouse(x, y, flag);
 	if(ret == 0)
 	{
-		egectlmap*& cmap = (egectlmap*&)m_childmap;
-		egectlvec*& cvec = (egectlvec*&)m_childzorder;
-		if(cmap)
+		auto& cvec(reinterpret_cast<egectlvec*&>(m_childzorder));
+
+		if(auto& cmap = reinterpret_cast<egectlmap*&>(m_childmap))
 		{
+			yunused(cmap);
+
 			egectlvec vec = *cvec;
 			auto it = vec.rbegin();
 
@@ -257,28 +262,21 @@ egeControlBase::mouse(int x, int y, int flag)
 						|| getpixel(x - pc->getx(), y - pc->gety(),
 						pc->filter()))
 					{
-						if((flag & mouse_msg_down))
+						if((flag & mouse_msg_down) && pc->onGetFocus() == 0)
 						{
-							int ret = pc->onGetFocus();
-
-							if(ret == 0)
-							{
-								pc->capture(true);
-								pc->m_zOrder = allocZorder();
-								sortzorder();
-								if(egectrl_focus && egectrl_focus != pc
-									&& egectrl_focus != pc->parent())
+							pc->capture(true);
+							pc->m_zOrder = allocZorder();
+							sortzorder();
+							if(egectrl_focus && egectrl_focus != pc
+								&& egectrl_focus != pc->parent())
+								for(egeControlBase* pcb = egectrl_focus;
+									pcb != pc && pcb->parent();
+									pcb = pcb->parent())
 								{
-									for(egeControlBase* pcb = egectrl_focus;
-										pcb != pc && pcb->parent();
-										pcb = pcb->parent())
-									{
-										pcb->onLostFocus();
-										pcb->capture({});
-									}
+									pcb->onLostFocus();
+									pcb->capture({});
 								}
-								egectrl_focus = pc;
-							}
+							egectrl_focus = pc;
 						}
 						pc->mouse(x, y, flag);
 						break;
@@ -293,94 +291,65 @@ egeControlBase::mouse(int x, int y, int flag)
 
 void egeControlBase::keymsgdown(unsigned key, int flag)
 {
-	int ret = 0;
-	{
-		PushTarget _target;
-		settarget(buf());
-		ret = onKeyDown((int)key, flag);
-	}
-	if(ret == 0)
-	{
-		egectlmap*& cmap = (egectlmap*&)m_childmap;
-		if(cmap)
-		{
-			for(egectlmap::reverse_iterator it = cmap->rbegin() ; it != cmap->rend(); ++it)
+	PushTarget _target;
+
+	settarget(buf());
+
+	if(onKeyDown(int(key), flag) == 0)
+		if(auto& cmap = reinterpret_cast<egectlmap*&>(m_childmap))
+			for(auto it(cmap->rbegin()); it != cmap->rend(); ++it)
 			{
-				if(!(*it)->isvisable() || !(*it)->isenable()) continue;
+				if(!(*it)->isvisable() || !(*it)->isenable())
+					continue;
 				if((*it)->iscapture())
-				{
 					(*it)->keymsgdown(key, flag);
-				}
 			}
-		}
-	}
 }
 
 void egeControlBase::keymsgup(unsigned key, int flag)
 {
-	int ret = 0;
-	{
-		PushTarget _target;
-		settarget(buf());
-		onKeyUp((int)key, flag);
-	}
-	if(ret == 0)
-	{
-		egectlmap*& cmap = (egectlmap*&)m_childmap;
-		if(cmap)
+	PushTarget _target;
+
+	settarget(buf());
+	onKeyUp(int(key), flag);
+
+	if(auto& cmap = reinterpret_cast<egectlmap*&>(m_childmap))
+		for(auto it = cmap->rbegin(); it != cmap->rend(); ++it)
 		{
-			for(egectlmap::reverse_iterator it = cmap->rbegin() ; it != cmap->rend(); ++it)
-			{
-				if(!(*it)->isvisable() || !(*it)->isenable()) continue;
-				if((*it)->iscapture())
-				{
-					(*it)->keymsgup(key, flag);
-				}
-			}
+			if(!(*it)->isvisable() || !(*it)->isenable())
+				continue;
+			if((*it)->iscapture())
+				(*it)->keymsgup(key, flag);
 		}
-	}
 }
 
 void egeControlBase::keymsgchar(unsigned key, int flag)
 {
-	int ret = 0;
-	{
-		PushTarget _target;
-		settarget(buf());
-		onKeyChar((int)key, flag);
-	}
-	if(ret == 0)
-	{
-		egectlmap*& cmap = (egectlmap*&)m_childmap;
-		if(cmap)
+	PushTarget _target;
+
+	settarget(buf());
+	onKeyChar(int(key), flag);
+
+	if(auto& cmap = reinterpret_cast<egectlmap*&>(m_childmap))
+		for(egectlmap::reverse_iterator it = cmap->rbegin();
+			it != cmap->rend(); ++it)
 		{
-			for(egectlmap::reverse_iterator it = cmap->rbegin() ; it != cmap->rend(); ++it)
-			{
-				if(!(*it)->isvisable() || !(*it)->isenable()) continue;
-				if((*it)->iscapture())
-				{
-					(*it)->keymsgchar(key, flag);
-				}
-			}
+			if(!(*it)->isvisable() || !(*it)->isenable()) continue;
+			if((*it)->iscapture())
+				(*it)->keymsgchar(key, flag);
 		}
-	}
 }
 
 void egeControlBase::update()
 {
-	egectlmap*& cmap = (egectlmap*&)m_childmap;
 	if(!m_parent)
 	{
 		m_w = getwidth();
 		m_h = getheight();
 	}
-	if(cmap)
-	{
-		for(egectlmap::iterator it = cmap->begin() ; it != cmap->end(); ++it)
-		{
-			(*it)->update();
-		}
-	}
+	if(auto& cmap = reinterpret_cast<egectlmap*&>(m_childmap))
+		for(auto&& x : *cmap)
+			x->update();
 	PushTarget _target;
 	settarget(buf());
 	onUpdate();
@@ -396,11 +365,16 @@ void egeControlBase::draw(IMAGE* pimg)
 		settarget(pmain);
 		onDraw(pmain);
 	}
-	egectlmap*& cmap = (egectlmap*&)m_childmap;
-	egectlvec*& cvec = (egectlvec*&)m_childzorder;
-	if(cmap)
-		for(egectlvec::iterator it = cvec->begin() ; it != cvec->end(); it++)
-			(*it)->draw(pmain);
+
+
+	if(auto& cmap = reinterpret_cast<egectlmap*&>(m_childmap))
+	{
+		auto& cvec = reinterpret_cast<egectlvec*&>(m_childzorder);
+
+		yunused(cmap);
+		for(auto&& x : *cvec)
+			x->draw(pmain);
+	}
 	if(!m_bDirectDraw && m_bVisable)
 	{
 		if(m_AlphablendMode == SOLIDCOPY)

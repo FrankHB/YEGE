@@ -73,7 +73,7 @@ public:
 	{
 		CTL_INIT;
 		blendmode(1);
-		m_col = HSVtoRGB(float(randomf() * 360), 1.0f, 0.2f);
+		m_col = hsv2rgb(float(randomf() * 360), 1.0f, 0.2f);
 		m_capmouse = 0;
 	}
 	int onMouse(int x, int y, int flag)
@@ -138,6 +138,7 @@ private:
 int main()
 {
 	initgraph(800, 600);
+	randomize();
 
 	Window2 w[3];
 

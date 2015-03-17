@@ -369,7 +369,7 @@ public:
 		int y;
 		for(y = 0; y < 360; ++y)
 		{
-			setcolor(HSVtoRGB((float)y, 1.0f, 1.0f));
+			setcolor(hsv2rgb((float)y, 1.0f, 1.0f));
 			line(0, y, 200, y);
 		}
 		info();
@@ -384,7 +384,7 @@ public:
 \n		int y;\
 \n		for(y = 0; y < 360; ++y)\
 \n		{\
-\n			setcolor(HSVtoRGB((float)y, 1.0f, 1.0f));\
+\n			setcolor(hsv2rgb((float)y, 1.0f, 1.0f));\
 \n			line(0, y, 200, y);\
 \n		}\
 \n	}\n	getch();\n	return 0;\n}";
@@ -436,7 +436,7 @@ public:
 			color += 1;
 			if(color >= 360)
 				color = 0;
-			setcolor(HSVtoRGB((float)color, 1.0f, 1.0f));
+			setcolor(hsv2rgb((float)color, 1.0f, 1.0f));
 			circle(x, 100, 100);
 			info();
 		}
@@ -465,7 +465,7 @@ public:
 \n			color = 0;\
 \n		//使用HSV方式指定颜色\
 \n		//关于HSV的介绍见图形库文档或者Google\
-\n		setcolor(HSVtoRGB((float)color, 1.0f, 1.0f));\
+\n		setcolor(hsv2rgb((float)color, 1.0f, 1.0f));\
 \n		circle(x, 100, 100);\n	}\n	getch();\n	return 0;\n}";
 			img = newimage(320, 480);
 			setfont(12, 0, "宋体", img);
@@ -580,7 +580,7 @@ public:
 		for(int n = 0; n < 320; n++)
 		{
 			double x = ((double)n - 160) / 20;
-			double y = sin(x);
+			double y = std::sin(x);
 			y = -y * 80 + 240;
 			putpixel(n, (int)y, WHITE);
 		}
@@ -595,7 +595,7 @@ public:
 \n		//映射到-8到8的浮点数范围\
 \n		double x = ((double)n - 160) / 20;\
 \n		//计算对应的y\
-\n		double y = sin(x);\
+\n		double y = std::sin(x);\
 \n		//把y映射回屏幕坐标\
 \n		y = -y * 80 + 240;\
 \n		//画出这个点\
@@ -785,12 +785,12 @@ public:
 		for(a = 0; a < n; ++a)
 		{
 			setcolor(WHITE);
-		//	setfillstyle(HSLtoRGB(120.0f, 1.0f, (float)(arr[a] / 32.0)));
+		//	setfillstyle(hsl2rgb(120.0f, 1.0f, (float)(arr[a] / 32.0)));
 			fillellipse(100, 20 * a + 30, 9, 9);
 		}
 		if(i >= 0)
 		{
-		//	setfillstyle(HSLtoRGB(120.0f, 1.0f, 1.0f));
+		//	setfillstyle(hsl2rgb(120.0f, 1.0f, 1.0f));
 			fillellipse(80, 20 * i + 30, 9, 9);
 			fillellipse(80, 20 * (i + 1) + 30, 9, 9);
 		}
@@ -838,16 +838,16 @@ public:
 \n	for(a = 0; a < n; ++a)\
 \n	{\
 \n		setcolor(WHITE);\
-\n		setfillstyle(HSLtoRGB(120.0f, 1.0f, (float)(arr[a] / 32.0)));\
+\n		setfillstyle(hsl2rgb(120.0f, 1.0f, (float)(arr[a] / 32.0)));\
 \n		fillellipse(100, 20 * a, 9, 9);\
 \n	}\
 \n	if(i >= 0)\
 \n	{\
-\n		setfillstyle(HSLtoRGB(120.0f, 1.0f, 1.0f)));\
+\n		setfillstyle(hsl2rgb(120.0f, 1.0f, 1.0f)));\
 \n		fillellipse(80, 20 * i + 30, 9, 9);\
 \n		fillellipse(80, 20 * (i + 1) + 30, 9, 9);\
 \n	}\
-\n	delay(500);\
+\n	ege_sleep(500);\
 \n}\
 \nint main()\
 \n{\

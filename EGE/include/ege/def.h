@@ -12,6 +12,8 @@
 #define yconstraint assert
 #define yassume assert
 
+#define yunused(...) static_cast<void>(__VA_ARGS__)
+
 #define EGEAPI
 
 #endif

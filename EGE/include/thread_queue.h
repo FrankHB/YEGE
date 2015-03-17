@@ -1,7 +1,6 @@
 ﻿#ifndef INC_thread_queue_h_
 #define INC_thread_queue_h_
 
-#include <windows.h>
 #include <mutex>
 #include <deque>
 

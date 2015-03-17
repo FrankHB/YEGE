@@ -162,6 +162,7 @@ private:
 int main()
 {
 	initgraph(320, 240);
+	randomize();
 
 	input w[3];
 	input2 w2;
@@ -267,6 +268,7 @@ private:
 int main()
 {
 	ege::initgraph(640, 480);
+	ege::randomize();
 
 	ege::fps f;
 	alphafilter a;
@@ -329,6 +331,7 @@ int preinit(int, char* [])
 }
 
 // 主函数
+int main(int argc, char* argv[])
 int
 main(int argc, char* argv[])
 {
@@ -355,7 +358,6 @@ main(int argc, char* argv[])
 	setfont(12, 6, "宋体");
 	dtime = fclock();
 	while(kbmsg()) getkey();
-
 	for(; !exitflag && is_run() && kbmsg() == 0; delay_fps(fps))        //每秒画120帧，kbhit(1)是获取键盘任意键的消息，详见pdf
 	{
 		// 如果有鼠标消息
@@ -409,7 +411,7 @@ int main()
 		char str[1024];
 		inputbox_getline("aaa", "bbb", str, sizeof(str));
 		//inputbox_getline("aaa", "bbb", str, sizeof(str));
-		int a = strlen(str);
+		int a = std::strlen(str);
 	}//*/
 	label lb;
 	//button bt;
@@ -457,9 +459,11 @@ template <typename str_t>
 class IniParser
 {
 public:
-	typedef std::map<str_t, str_t>* key_val_ptr;
+	using key_val_ptr = std::map<str_t, str_t>*;
+
 	IniParser(){}
-	virtual ~IniParser(){}
+	virtual
+	~IniParser(){}
 
 	void
 	clear()

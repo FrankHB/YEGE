@@ -41,6 +41,7 @@ int main()
 {
 	initgraph(400, 400);
 
+
 	chartarget ct[256];
 	int nobj = 0;
 	int t = 1000;

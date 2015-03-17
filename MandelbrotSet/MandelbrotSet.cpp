@@ -67,7 +67,7 @@ setgprec(Float f)
 }
 #endif
 
-//typedef complex<double> COMPLEX;
+//using COMPLEX = complex<double>;
 
 #define W_B 10
 #define WIDTH (1<<W_B)
@@ -228,9 +228,9 @@ void setinitcolor(int* color, int len, int h1, int)
 	int i;
 	for(i = 0; i < len / 2; i++)
 	{
-		color[i] = HSLtoRGB((float)h1, 0.9f, i * 2.0f / len * 0.7f + 0.15f);
+		color[i] = hsl2rgb((float)h1, 0.9f, i * 2.0f / len * 0.7f + 0.15f);
 		fixcolor(&color[i]);
-		color[len - 1 - i] = HSLtoRGB((float)h1, 0.9f, i * 2.0f / len * 0.7f + 0.15f);
+		color[len - 1 - i] = hsl2rgb((float)h1, 0.9f, i * 2.0f / len * 0.7f + 0.15f);
 		fixcolor(&color[len - 1 - i]);
 	}
 }
@@ -365,7 +365,7 @@ Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 			}
 			if(std::clock() - t > 50)
 			{
-				delay(0);
+				ege_sleep(0);
 				t = std::clock();
 			}
 		}
@@ -384,7 +384,7 @@ Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 			}
 			if(std::clock() - t > 100)
 			{
-				delay(0);
+				ege_sleep(0);
 				t = std::clock();
 			}
 		}
@@ -539,15 +539,15 @@ main()
 			setprec(to);
 
 			fgets(str, 1000, fp);
-			str[strlen(str) - 1] = 0;
+			str[std::strlen(str) - 1] = 0;
 			printf("%s\n", str);
 			center.real(stoi(str));
 			fgets(str, 1000, fp);
-			str[strlen(str) - 1] = 0;
+			str[std::strlen(str) - 1] = 0;
 			printf("%s\n", str);
 			center.imag(stoi(str));
 			fgets(str, 1000, fp);
-			str[strlen(str) - 1] = 0;
+			str[std::strlen(str) - 1] = 0;
 			printf("%s\n", str);
 			delta.real() = str;
 			std::fclose(fp);

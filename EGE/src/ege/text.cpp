@@ -358,11 +358,11 @@ setfont(
 	int bItalic,
 	int bUnderline,
 	int bStrikeOut,
-	BYTE fbCharSet,
-	BYTE fbOutPrecision,
-	BYTE fbClipPrecision,
-	BYTE fbQuality,
-	BYTE fbPitchAndFamily,
+	::BYTE fbCharSet,
+	::BYTE fbOutPrecision,
+	::BYTE fbClipPrecision,
+	::BYTE fbQuality,
+	::BYTE fbPitchAndFamily,
 	IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
@@ -388,11 +388,11 @@ setfont(
 	int bItalic,
 	int bUnderline,
 	int bStrikeOut,
-	BYTE fbCharSet,
-	BYTE fbOutPrecision,
-	BYTE fbClipPrecision,
-	BYTE fbQuality,
-	BYTE fbPitchAndFamily,
+	::BYTE fbCharSet,
+	::BYTE fbOutPrecision,
+	::BYTE fbClipPrecision,
+	::BYTE fbQuality,
+	::BYTE fbPitchAndFamily,
 	IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))

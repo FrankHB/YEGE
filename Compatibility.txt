@@ -10,6 +10,7 @@ Code::Blocks 。
 限 MinGW G++ 4.8.0 或以上，需要 -std=c++11 支持。使用了 std::thread ，需要 POSIX 线程模型。
 （其它版本未测试，但至少需要 -std=c++0x 的 auto 、nullptr 、lambda 表达式和初始化列表等 C++11 特性支持，且若在 Code::Blocks 项目使用，需要去除 debug 的 -Og 选项。）
 只测试 MinGW-W64 。未测试 MinGW.org 的运行时。
+使用同 YSLib 项目相同的 MSYS2 基础环境。
 
 依赖项更改
 ----
@@ -21,6 +22,7 @@ Code::Blocks 。
 ----
 提供和 YSLib 兼容的伪关键字宏 yconstfn 、yconstexpr 和 ynothrow 分别替换为 constexpr 、constexpr 和 noexcept 。
 提供和 YSLib 兼容的伪关键字宏 yconstraint 和 yassume 替换 assert 。
+提供和 YSLib 一致实现的伪关键字宏 yunused 。
 在 ege 命名空间使用 using 引入智能指针类型和相关操作的声明，并提供 std::make_unique 的替代实现。
 
 非向后兼容接口更改
@@ -48,6 +50,7 @@ Code::Blocks 。
 移除类模板 thread_queue 的 last 和 unpop 函数。。
 函数 drawlines 、fillpoly_gradient 和 inputbox_getline 在分配存储失败时抛出 std::bad_alloc 异常。
 函数 inputbox_getline 等加入断言。
+头文件中不保证包含 <Windows.h> 或其它系统头文件。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
@@ -57,6 +60,8 @@ delay_fps 和 delay_jfps 仅保留 double 重载版本。
 控件基类 egeControlBase 的析构函数保证为 virtual 。
 宏 EGEAPI 支持显式导入和导出。
 linestyletype 和 EGEMSG 默认初始化所有成员。
+函数 ege_sleep 支持多线程环境下使用。（实际原有实现可在多线程下使用但未在头文件中明确。）
+提升 fclock 函数的精度。
 随机数函数第一次调用时自动初始化随机数种子，不需要事先调用 randomize 函数。
 移除 thread_queue 类模板提供标准库风格的 clear 、empty 、pop 和 top 函数，且 process 函数改为支持函数对象的模板。
 
@@ -77,6 +82,7 @@ PDWORD → unsigned long*。
 DWORD_PTR → ::ULONG_PTR 。
 所有同名 typedef 结构体名称或 typedef 匿名结构体调整为非 typedef 结构体类型名。
 宏 EGEAPI 调整至返回值前；移除函数形参中不必要的 const 。
+移除宏 EGE_DEPRECATED 。
 
 修正错误实现
 ----
@@ -111,12 +117,14 @@ DWORD_PTR → ::ULONG_PTR 。
 移除 CONVERT_IMAGE_END 、CONVERT_IMAGE_F 和 CONVERT_IMAGE_F_CONST 宏。
 移除 setrendermode 实现所需的计时器例程；主窗口消息循环不响应 WM_TIMER 。
 取消手动设置 exit_window 状态，改用 UI 线程状态表示；移除无用的 exit_flag 。
+类型 PDWORD 用 DWORD* 代替。
 类 IMAGE ：修复复制构造；新增交换、转移构造和统一赋值操作；移除成员初始化检查；封装部分成员保证不可在外部修改。
 CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入除空指针值外返回原值。
 命名空间作用域静态函数和对象去除 static 并使用未命名命名空间代替。
 thread_queue 类模板使用 std::mutex 、std::lock_guard 和 std::deque 实现。
 提升 flushkey 和 flushmouse 函数的性能。
 避免直接使用 malloc 和 free 。
+使用 C++11 标准库 <chrono> 和 YSLib 提供的包装接口实现其它时间操作。
 
 实现质量(QoI)
 ----
@@ -172,6 +180,7 @@ HGLOBAL
 HDC
 HICON
 HINSTANCE
+HME
 HMOD
 HPE
 HRGN
@@ -182,6 +191,7 @@ LOGFONT
 LOGPE
 LONG
 LPARAM
+LRES
 LoadCu
 LoadI
 LoadRes
@@ -207,12 +217,15 @@ SetB
 SetCa
 SetCursor
 SetE
+SetStretch
 SetT
 SetVi
 SetW
 ShowWindow
 Sleep
+Stretch
 TCHA
+TRIVE
 Trans
 UINT
 ULONG
@@ -225,8 +238,8 @@ png_
 wsprintfW
 
 以下所列外部依赖项全局名称在使用时前缀 :: 。
+BYTE
 GRADIENT_TRIANGLE
 HWND
 MSG
-access
 
