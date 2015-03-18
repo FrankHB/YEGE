@@ -28,8 +28,9 @@ struct COLORRGB
 
 namespace
 {
+
 COLORHSL
-_RGBtoHSL(int _col)
+rgb2hsl_impl(int _col)
 {
 	COLORHSL _crCol;
 	float r, g, b;
@@ -126,7 +127,7 @@ _RGBtoHSL(int _col)
 }
 
 int
-_HSLtoRGB(float _h, float _s, float _l)
+hsl2rgb_impl(float _h, float _s, float _l)
 {
 	float r, g, b;
 
@@ -338,7 +339,7 @@ rgb2gray(color_t color)
 void
 rgb2hsl(color_t rgb, float* H, float* S, float* L)
 {
-	COLORHSL hsl = _RGBtoHSL(int(rgb));
+	COLORHSL hsl = rgb2hsl_impl(int(rgb));
 
 	*H = hsl.h * 360.0f;
 	*S = hsl.s;
@@ -348,7 +349,7 @@ rgb2hsl(color_t rgb, float* H, float* S, float* L)
 color_t
 hsl2rgb(float H, float S, float L)
 {
-	return _HSLtoRGB(H / 360.0f, S, L);
+	return hsl2rgb_impl(H / 360.0f, S, L);
 }
 
 void
