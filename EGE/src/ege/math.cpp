@@ -4,9 +4,6 @@
 namespace ege
 {
 
-#undef Deref
-#define Deref *
-
 void
 rotate_point3d_x(VECTOR3D* p_pt, float r)
 {

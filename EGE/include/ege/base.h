@@ -44,6 +44,15 @@ template<typename _type,  typename... _tParams>
 typename std::enable_if<std::extent<_type>::value != 0>::type
 make_unique(_tParams&&...) = delete;
 
+
+template<typename _type>
+yconstfn auto
+Deref(_type&& p) -> decltype(*p)
+{
+	return *std::forward<_type&&>(p);
+}
+
+
 enum graphics_drivers /* define graphics drivers */
 {
 	DETECT, /* requests autodetection */

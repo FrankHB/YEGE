@@ -23,6 +23,7 @@ Code::Blocks 。
 提供和 YSLib 兼容的伪关键字宏 yconstfn 、yconstexpr 和 ynothrow 分别替换为 constexpr 、constexpr 和 noexcept 。
 提供和 YSLib 兼容的伪关键字宏 yconstraint 和 yassume 替换 assert 。
 提供和 YSLib 一致实现的伪关键字宏 yunused 。
+提供和 YSLib 的 platform::Deref 兼容的模板。
 在 ege 命名空间使用 using 引入智能指针类型和相关操作的声明，并提供 std::make_unique 的替代实现。
 
 非向后兼容接口更改
