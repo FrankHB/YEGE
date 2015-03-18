@@ -503,7 +503,7 @@ EGEApplication::_init_graph_x()
 			mouse_show = {};
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
 			if(!use_force_exit)
-				GetEnvironment().ExitOnAllWindowThreadCompleted = {};
+				FetchEnvironment().ExitOnAllWindowThreadCompleted = {};
 			init_finish = true;
 
 			::MSG msg;

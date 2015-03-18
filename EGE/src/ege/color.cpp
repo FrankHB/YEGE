@@ -14,7 +14,7 @@ rgb2gray(color_t color)
 void
 rgb2hsl(color_t rgb, float* h, float* s, float* l)
 {
-	HSL hsl(rgb);
+	HSL hsl{Color(rgb)};
 
 	yunseq(Deref(h) = hsl.GetH(), Deref(s) = hsl.GetS(), Deref(l) = hsl.GetL());
 }
@@ -28,7 +28,7 @@ hsl2rgb(float h, float s, float l)
 void
 rgb2hsv(color_t rgb, float* h, float* s, float* v)
 {
-	HSV hsv(rgb);
+	HSV hsv{Color(rgb)};
 
 	yunseq(Deref(h) = hsv.GetH(), Deref(s) = hsv.GetS(), Deref(v) = hsv.GetV());
 }
