@@ -282,12 +282,12 @@ ege_setpattern_ellipsegradient(ege_point center, color_t centercolor,
 		path.AddEllipse(x, y, w, h);
 
 		const auto pbrush = new Gdiplus::PathGradientBrush(&path);
+		Gdiplus::Color c(color);
 		int count = 1;
 
 		pbrush->SetCenterColor(Gdiplus::Color(centercolor));
 		pbrush->SetCenterPoint(Gdiplus::PointF(center.x, center.y));
-		pbrush->SetSurroundColors(&reinterpret_cast<Gdiplus::Color&>(color),
-			&count);
+		pbrush->SetSurroundColors(&c, &count);
 		img->m_pattern.reset(pbrush);
 	}
 }
