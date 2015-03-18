@@ -147,8 +147,8 @@ int getpath_scene()
 		std::sprintf(strpath, "%s%s", strbasepath, ver[it]);
 		if(::RegOpenKeyExA(HKEY_LOCAL_MACHINE, strpath, 0, KEY_READ, &key) == ERROR_SUCCESS)
 		{
-			::DWORD dwtype = REG_SZ;
-			::DWORD dwsize = MAX_PATH;
+			unsigned long dwtype = REG_SZ;
+			unsigned long dwsize = MAX_PATH;
 			if(::RegQueryValueExA(key, "ProductDir", {}, &dwtype, (unsigned char*)(installpath[it]), &dwsize))
 			{
 				::RegQueryValueExA(key, "InstallDir", {}, &dwtype, (unsigned char*)(installpath[it]), &dwsize);

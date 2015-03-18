@@ -23,7 +23,7 @@ MUSIC::~MUSIC()
 
 // mciOpenFileA(const char* _szStr)
 // open a music file. szStr: Path of the file
-::DWORD
+unsigned long
 MUSIC::OpenFile(const char* _szStr)
 {
 	::MCIERROR mciERR = 0;
@@ -48,8 +48,7 @@ MUSIC::OpenFile(const char* _szStr)
 
 		// Set time format with milliseconds
 		{
-			::MCI_SET_PARMS mci_p{::DWORD_PTR(), MCI_FORMAT_MILLISECONDS,
-				::DWORD()};
+			::MCI_SET_PARMS mci_p{::DWORD_PTR(), MCI_FORMAT_MILLISECONDS, 0UL};
 
 			::mciSendCommandW(m_DID, MCI_SET, MCI_NOTIFY | MCI_SET_TIME_FORMAT,
 				::DWORD_PTR(&mci_p));
@@ -62,7 +61,7 @@ MUSIC::OpenFile(const char* _szStr)
 
 // mciOpenFile(const wchar_t* _szStr)
 // open a music file. szStr: Path of the file
-::DWORD
+unsigned long
 MUSIC::OpenFile(const wchar_t* _szStr)
 {
 	::MCIERROR mciERR  = 0;
@@ -85,23 +84,23 @@ MUSIC::OpenFile(const wchar_t* _szStr)
 		auto mci_p = ::MCI_SET_PARMS();
 
 		mci_p.dwTimeFormat = MCI_FORMAT_MILLISECONDS;
-		//::DWORD dw =
+		//unsigned long dw =
 		::mciSendCommandW(m_DID, MCI_SET, MCI_NOTIFY | MCI_SET_TIME_FORMAT,
 			::DWORD_PTR(&mci_p));
 	}
 	return mciERR;
 }
 
-// mciPlay(::DWORD dwFrom, ::DWORD dwTo, ::DWORD dwCallBack)
+// mciPlay(unsigned long dwFrom, unsigned long dwTo, unsigned long dwCallBack)
 // play the music stream.
-::DWORD
-MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
+unsigned long
+MUSIC::Play(unsigned long dwFrom, unsigned long dwTo)
 {
 	yconstraint(m_DID != MUSIC_ERROR);
 
 	::MCIERROR mciERR = 0;
 	auto mci_p = ::MCI_PLAY_PARMS();
-	::DWORD dwFlag = MCI_NOTIFY;
+	unsigned long dwFlag = MCI_NOTIFY;
 
 	mci_p.dwFrom = dwFrom;
 	mci_p.dwTo = dwTo;
@@ -118,7 +117,7 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 
 // mciPause()
 // pause the music stream.
-::DWORD MUSIC::Pause()
+unsigned long MUSIC::Pause()
 {
 	yconstraint(m_DID != MUSIC_ERROR);
 
@@ -134,7 +133,7 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 // mciStop()
 // stop the music stream.
 
-::DWORD MUSIC::Stop()
+unsigned long MUSIC::Stop()
 {
 	yconstraint(m_DID != MUSIC_ERROR);
 
@@ -146,7 +145,7 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 	return mciERR;
 }
 
-::DWORD MUSIC::SetVolume(float value)
+unsigned long MUSIC::SetVolume(float value)
 {
 	yconstraint(m_DID != MUSIC_ERROR);
 
@@ -154,15 +153,16 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 	auto mci_p = ::MCI_DGV_SETAUDIO_PARMSW();
 
 	mci_p.dwItem = MCI_DGV_SETAUDIO_VOLUME;
-	mci_p.dwValue = ::DWORD(value * 1000); //此处就是音量大小 (0--1000)
+	//此处就是音量大小 (0--1000)
+	mci_p.dwValue = static_cast<unsigned long>(value * 1000);
 	mciERR = ::mciSendCommandW(m_DID, MCI_SETAUDIO, MCI_DGV_SETAUDIO_VALUE
 		| MCI_DGV_SETAUDIO_ITEM, ::DWORD_PTR(&mci_p));
 	return mciERR;
 }
 
-// mciSeek(::DWORD dwTo)
+// mciSeek(unsigned long dwTo)
 // seek the music stream playposition to `dwTo`
-::DWORD MUSIC::Seek(::DWORD dwTo)
+unsigned long MUSIC::Seek(unsigned long dwTo)
 {
 	yconstraint(m_DID != MUSIC_ERROR);
 
@@ -179,7 +179,7 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 
 // mciClose()
 // close the music stream.
-::DWORD MUSIC::Close()
+unsigned long MUSIC::Close()
 {
 	if(m_DID != MUSIC_ERROR)
 	{
@@ -198,7 +198,8 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 
 // mciGetPosition()
 // get the playing position. return by milliseconds
-::DWORD MUSIC::GetPosition()
+unsigned long
+MUSIC::GetPosition()
 {
 	yconstraint(m_DID != MUSIC_ERROR);
 
@@ -208,12 +209,13 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 	mci_p.dwItem = MCI_STATUS_POSITION;
 	::mciSendCommandW(m_DID, MCI_STATUS, MCI_NOTIFY | MCI_STATUS_ITEM,
 		::DWORD_PTR(&mci_p));
-	return ::DWORD(mci_p.dwReturn);
+	return mci_p.dwReturn;
 }
 
 // mciGetLength()
 // get the length of the music stream. return by milliseconds
-::DWORD MUSIC::GetLength()
+unsigned long
+MUSIC::GetLength()
 {
 	yconstraint(m_DID != MUSIC_ERROR);
 
@@ -223,10 +225,11 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 	mci_p.dwItem = MCI_STATUS_LENGTH;
 	::mciSendCommandW(m_DID, MCI_STATUS, MCI_NOTIFY | MCI_STATUS_ITEM,
 		::DWORD_PTR(&mci_p));
-	return ::DWORD(mci_p.dwReturn);
+	return mci_p.dwReturn;
 }
 
-::DWORD MUSIC::GetPlayStatus()
+unsigned long
+MUSIC::GetPlayStatus()
 {
 	yconstraint(m_DID != MUSIC_ERROR);
 
@@ -236,7 +239,7 @@ MUSIC::Play(::DWORD dwFrom, ::DWORD dwTo)
 	mci_p.dwItem = MCI_STATUS_MODE;
 	::mciSendCommandW(m_DID, MCI_STATUS, MCI_NOTIFY | MCI_STATUS_ITEM,
 		::DWORD_PTR(&mci_p));
-	return ::DWORD(mci_p.dwReturn);
+	return mci_p.dwReturn;
 }
 
 } // namespace ege;

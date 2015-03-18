@@ -81,13 +81,13 @@ public:
 		return m_hDC;
 	}
 
-	::DWORD*
+	unsigned long*
 	getbuffer() const
 	{
-		static_assert(sizeof(::DWORD) == sizeof(YSLib::Drawing::Pixel), "");
-		static_assert(yalignof(::DWORD) == yalignof(YSLib::Drawing::Pixel), "");
+		static_assert(sizeof(unsigned long) == sizeof(YSLib::Drawing::Pixel), "");
+		static_assert(yalignof(unsigned long) == yalignof(YSLib::Drawing::Pixel), "");
 
-		return reinterpret_cast<::DWORD*>(sbuf.GetBufferPtr());
+		return reinterpret_cast<unsigned long*>(sbuf.GetBufferPtr());
 	}
 
 	int
@@ -114,15 +114,15 @@ public:
 	getimage(IMAGE*, int, int, int, int);
 
 	void
-	putimage(int, int, ::DWORD = SRCCOPY) const;
+	putimage(int, int, unsigned long = SRCCOPY) const;
 	void
-	putimage(int, int, int, int, int, int, ::DWORD = SRCCOPY) const;
+	putimage(int, int, int, int, int, int, unsigned long = SRCCOPY) const;
 	void
-	putimage(IMAGE*, int, int, ::DWORD = SRCCOPY) const;
+	putimage(IMAGE*, int, int, unsigned long = SRCCOPY) const;
 	void
-	putimage(IMAGE*, int, int, int, int, int, int, ::DWORD = SRCCOPY) const;
+	putimage(IMAGE*, int, int, int, int, int, int, unsigned long = SRCCOPY) const;
 	void
-	putimage(IMAGE*, int, int, int, int, int, int, int, int, ::DWORD = SRCCOPY)
+	putimage(IMAGE*, int, int, int, int, int, int, int, int, unsigned long = SRCCOPY)
 		const;
 
 	int

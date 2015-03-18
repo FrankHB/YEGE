@@ -335,7 +335,7 @@ setbkcolor(color_t color, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE(pimg))
 		if(img->getdc())
 		{
-			::DWORD* p = img->getbuffer();
+			unsigned long* p = img->getbuffer();
 			int size = img->GetWidth() * img->GetHeight();
 			color_t col = img->m_bk_color;
 
@@ -422,7 +422,7 @@ putpixels(int nPoint, int* pPoints, IMAGE* pimg)
 	auto& img(convert_image_ref(pimg));
 
 	int x, y, c;
-	::DWORD* pb
+	unsigned long* pb
 		= &img.getbuffer()[img.m_vpt.top * img.GetWidth() + img.m_vpt.left];
 	int w = img.m_vpt.right - img.m_vpt.left, h = img.m_vpt.bottom
 		- img.m_vpt.top;

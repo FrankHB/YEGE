@@ -68,7 +68,19 @@ linestyletype 和 EGEMSG 默认初始化所有成员。
 
 兼容接口和实现调整
 ----
-Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 、LPCWSTR 、PVOID 、LPVOID 和 LPPOINT 分别用 wchar_t 、char* 、const char* 、wchar_t* 、const wchar_t* 、void* 、void* 和 ::POINT* 代替。
+替换以下 Windows SDK 类型：
+CHAR → char 。
+WCHAR → wchar_t 。
+LPSTR → char* 。
+LPCSTR → const char* 。
+LPWSTR → const wchar_t* 。
+LPCWSTR → const wchar_t* 。
+VOID → void 。
+PVOID → void* 。
+LPVOID → void* 。
+DWORD → unsigned long 。
+PDWORD → unsigned long*。
+DWORD_PTR → ::ULONG_PTR 。
 所有同名 typedef 结构体名称或 typedef 匿名结构体调整为非 typedef 结构体类型名。
 宏 EGEAPI 调整至返回值前；移除函数形参中不必要的 const 。
 

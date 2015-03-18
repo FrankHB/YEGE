@@ -146,9 +146,9 @@ egeControlBase* egectrl_focus;
 namespace
 {
 
-::DWORD g_windowstyle(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
+unsigned long g_windowstyle(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
 	| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE);
-::DWORD g_windowexstyle(WS_EX_LEFT | WS_EX_LTRREADING);
+unsigned long g_windowexstyle(WS_EX_LEFT | WS_EX_LTRREADING);
 int _g_windowpos_x(CW_USEDEFAULT), _g_windowpos_y(CW_USEDEFAULT);
 
 CALLBACK ::BOOL
@@ -469,7 +469,7 @@ EGEApplication::_init_graph_x()
 		});
 
 	//	::SECURITY_ATTRIBUTES sa{};
-	//	::DWORD pid;
+	//	unsigned long pid;
 		bool init_finish{};
 
 		ui_thread = std::thread([this, native_ys_window, &init_finish]{
@@ -486,7 +486,7 @@ EGEApplication::_init_graph_x()
 				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, native_ys_window,
 				{}, GetInstance(), {});
 			if(!hwnd)
-				return ::DWORD(0xFFFFFFFF);
+				return unsigned long(0xFFFFFFFF);
 			//图形初始化
 			window_dc = ::GetDC(hwnd);
 			//::ReleaseDC(hwnd, window_dc);
@@ -506,7 +506,7 @@ EGEApplication::_init_graph_x()
 				}
 				else
 					::Sleep(1);
-			return ::DWORD(0);
+			return 0UL;
 		});
 		while(!init_finish)
 			::Sleep(1);

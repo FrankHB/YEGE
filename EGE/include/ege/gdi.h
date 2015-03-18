@@ -23,23 +23,23 @@ getimage(IMAGE*, const wchar_t*, const wchar_t*, int = 0, int = 0);
 
 // 绘制图像到屏幕
 EGEAPI void
-putimage(int, int, IMAGE*, ::DWORD = SRCCOPY);
+putimage(int, int, IMAGE*, unsigned long = SRCCOPY);
 // 绘制图像到屏幕(指定宽高)
 EGEAPI void
-putimage(int, int, int, int, IMAGE*, int, int, ::DWORD = SRCCOPY);
+putimage(int, int, int, int, IMAGE*, int, int, unsigned long = SRCCOPY);
 // 绘制图像到屏幕(指定源宽高和目标宽高进行拉伸)
 EGEAPI void
-putimage(int, int, int, int, IMAGE*, int, int, int, int, ::DWORD = SRCCOPY);
+putimage(int, int, int, int, IMAGE*, int, int, int, int, unsigned long = SRCCOPY);
 // 绘制图像到另一图像中
 EGEAPI void
-putimage(IMAGE*, int, int, IMAGE*, ::DWORD = SRCCOPY);
+putimage(IMAGE*, int, int, IMAGE*, unsigned long = SRCCOPY);
 // 绘制图像到另一图像中(指定宽高)
 EGEAPI void
-putimage(IMAGE*, int, int, int, int, IMAGE*, int, int, ::DWORD = SRCCOPY);
+putimage(IMAGE*, int, int, int, int, IMAGE*, int, int, unsigned long = SRCCOPY);
 // 绘制图像到另一图像中(指定源宽高和目标宽高进行拉伸)
 EGEAPI void
 putimage(IMAGE*, int, int, int, int, IMAGE*, int, int, int, int,
-	::DWORD = SRCCOPY);
+	unsigned long = SRCCOPY);
 
 EGEAPI int
 saveimage(IMAGE*, const char*);
