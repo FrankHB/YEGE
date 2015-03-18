@@ -2,7 +2,7 @@
 #include "ege/base.h"
 #include "ege/windows.h"
 #include "global.h"
-
+#include "head.h"
 
 namespace ege
 {
@@ -10,9 +10,8 @@ namespace ege
 void
 initgraph(int* gdriver, int* gmode, char*)
 {
-	assert(gdriver);
-
-	FetchEGEApplication(*gdriver, gmode)._init_graph_x();
+	yconstraint(gdriver);
+	FetchEGEApplication(Deref(gdriver), gmode)._init_graph_x();
 }
 void
 initgraph(int width, int height, int flag)
@@ -27,7 +26,7 @@ initgraph(int width, int height, int flag)
 void
 closegraph()
 {
-	::ShowWindow(FetchEGEApplication()._get_hwnd(), SW_HIDE);
+	FetchEGEApplication()._uninit();
 }
 
 bool

@@ -34,8 +34,7 @@ _save_brush(IMAGE* img, int save)
 	}
 	else if(savebrush_hbr)
 	{
-		savebrush_hbr = (::HBRUSH)::SelectObject(img->getdc(), savebrush_hbr);
-		::DeleteObject(savebrush_hbr);
+		::DeleteObject(::HBRUSH(::SelectObject(img->getdc(), savebrush_hbr)));
 		savebrush_hbr = {};
 	}
 	return 0;
@@ -87,44 +86,40 @@ cleardevice(IMAGE* pimg)
 		{
 			color_t c = getbkcolor(img);
 
-			for(color_t* p = (color_t*)img->getbuffer(),
-				*e = (color_t*)&img->getbuffer()[
-					img->getwidth() * img->getheight()]; p != e; ++p)
+			for(color_t* p = reinterpret_cast<color_t*>(img->getbuffer()),
+				*e = reinterpret_cast<color_t*>(&img->getbuffer()[
+					img->GetWidth() * img->GetHeight()]); p != e; ++p)
 				*p = c;
 		}
 }
 
 
 void
-getlinestyle(int* plinestyle, unsigned short* pupattern, int* pthickness, IMAGE* pimg)
+getlinestyle(int* plinestyle, unsigned short* pupattern, int* pthickness,
+	IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref_c(pimg));
 
 	if(plinestyle)
-		*plinestyle = img->m_linestyle.linestyle;
+		*plinestyle = img.m_linestyle.linestyle;
 	if(pupattern)
-		*pupattern = img->m_linestyle.upattern;
+		*pupattern = img.m_linestyle.upattern;
 	if(pthickness)
-		*pthickness = img->m_linestyle.thickness;
+		*pthickness = img.m_linestyle.thickness;
 }
 
 void
 setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref_c(pimg));
 
 	::LOGPEN lpen{0, ::POINT(), COLORREF()};
 
-	lpen.lopnColor = RGBTOBGR(getcolor(pimg));
-	img->m_linestyle.thickness = thickness;
-	img->m_linewidth = (float)thickness;
-	img->m_linestyle.linestyle = linestyle;
-	img->m_linestyle.upattern = upattern;
-
+	lpen.lopnColor = getcolor(pimg);
+	img.m_linestyle.thickness = thickness;
+	img.m_linewidth = float(thickness);
+	img.m_linestyle.linestyle = linestyle;
+	img.m_linestyle.upattern = upattern;
 	lpen.lopnWidth.x = thickness;
 	lpen.lopnStyle   = linestyle;
 
@@ -169,32 +164,28 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 	else
 		hpen = ::CreatePenIndirect(&lpen);
 	if(hpen)
-		::DeleteObject(::SelectObject(img->getdc(), hpen));
+		::DeleteObject(::SelectObject(img.getdc(), hpen));
 }
 
 void
 setlinewidth(float width, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
+	auto& img(convert_image_ref_c(pimg));
 
-	yassume(img);
-
-	img->m_linestyle.thickness = (int)width;
-	img->m_linewidth = width;
+	img.m_linestyle.thickness = int(width);
+	img.m_linewidth = width;
 }
 
 void
 setfillstyle(int pattern, color_t color, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
+	auto& img(convert_image_ref_c(pimg));
 
-	yassume(img);
+	::LOGBRUSH lbr{0, COLORREF(), ::UINT_PTR()};
 
-	::LOGBRUSH lbr{0, COLORREF(), 0UL};
-
-	img->m_fillcolor = color;
-	lbr.lbColor = RGBTOBGR(color);
-	//::SetBkColor(img->getdc(), color);
+	img.m_fillcolor = color;
+	lbr.lbColor = color;
+	//::SetBkColor(img.getdc(), color);
 	if(pattern < SOLID_FILL)
 		lbr.lbHatch = BS_NULL;
 	else if(pattern == SOLID_FILL)
@@ -220,17 +211,13 @@ setfillstyle(int pattern, color_t color, IMAGE* pimg)
 	else
 		lbr.lbHatch = BS_SOLID;
 	if(::HBRUSH hbr = ::CreateBrushIndirect(&lbr))
-		::DeleteObject(::SelectObject(img->getdc(), hbr));
+		::DeleteObject(::SelectObject(img.getdc(), hbr));
 }
 
 void
 setwritemode(int mode, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	yassume(img);
-
-	::SetROP2(img->getdc(), mode);
+	::SetROP2(convert_image_ref_c(pimg).getdc(), mode);
 }
 
 
@@ -279,7 +266,6 @@ setcolor(color_t color, IMAGE* pimg)
 			::HPEN hpen;
 
 			img->m_color = color;
-			color = RGBTOBGR(color);
 			lPen.lopnColor = color;
 			lPen.lopnStyle = img->m_linestyle.linestyle;
 			lPen.lopnWidth.x = img->m_linestyle.thickness;
@@ -331,19 +317,16 @@ setcolor(color_t color, IMAGE* pimg)
 void
 setfillcolor(color_t color, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref_c(pimg));
 
 	::LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
 
-	img->m_fillcolor = color;
-	color = RGBTOBGR(color);
+	img.m_fillcolor = color;
 	lbr.lbColor = color;
 	lbr.lbHatch = BS_SOLID;
 	::HBRUSH hbr = ::CreateBrushIndirect(&lbr);
 	if(hbr)
-		::DeleteObject(::SelectObject(img->getdc(), hbr));
+		::DeleteObject(::SelectObject(img.getdc(), hbr));
 }
 
 void
@@ -353,11 +336,11 @@ setbkcolor(color_t color, IMAGE* pimg)
 		if(img->getdc())
 		{
 			unsigned long* p = img->getbuffer();
-			int size = img->getwidth() * img->getheight();
+			int size = img->GetWidth() * img->GetHeight();
 			color_t col = img->m_bk_color;
 
 			img->m_bk_color = color;
-			::SetBkColor(img->getdc(), RGBTOBGR(color));
+			::SetBkColor(img->getdc(), color);
 			for(int n = 0; n < size; n++, p++)
 				if(*p == col)
 					*p = color;
@@ -373,7 +356,7 @@ setbkcolor_f(color_t color, IMAGE* pimg)
 		if(img->getdc())
 		{
 			img->m_bk_color = color;
-			::SetBkColor(img->getdc(), RGBTOBGR(color));
+			::SetBkColor(img->getdc(), color);
 		}
 }
 
@@ -382,7 +365,7 @@ setfontbkcolor(color_t color, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
 		if(img->getdc())
-			::SetBkColor(img->getdc(), RGBTOBGR(color));
+			::SetBkColor(img->getdc(), color);
 }
 
 void
@@ -397,157 +380,138 @@ setbkmode(int iBkMode, IMAGE* pimg)
 color_t
 getpixel(int x, int y, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
+	auto& img(convert_image_ref_c(pimg));
 
-	yassume(img);
-
-	x += img->m_vpt.left;
-	y += img->m_vpt.top;
-	return (x < 0) || (y < 0) || (x >= img->getwidth()) || (y >= img->getheight()) ? 0
-		: color_t(img->getbuffer()[y * img->getwidth() + x]);
+	x += img.m_vpt.left;
+	y += img.m_vpt.top;
+	return color_t(x < 0 || y < 0 || x >= int(img.GetWidth())
+		|| y >= int(img.GetHeight()) ? 0
+		: img.getbuffer()[y * img.GetWidth() + x]);
 }
 
 void
 putpixel(int x, int y, color_t color, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
+	auto& img(convert_image_ref(pimg));
 
-	yassume(img);
-
-	x += img->m_vpt.left;
-	y += img->m_vpt.top;
-	if(!(x < 0 || y < 0 || x >= img->m_vpt.right || y >= img->m_vpt.bottom))
-		img->getbuffer()[y * img->getwidth() + x] = color;
+	x += img.m_vpt.left;
+	y += img.m_vpt.top;
+	if(!(x < 0 || y < 0 || x >= img.m_vpt.right || y >= img.m_vpt.bottom))
+		img.getbuffer()[y * img.GetWidth() + x] = color;
 }
 
 color_t
 getpixel_f(int x, int y, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
+	auto& img(convert_image_ref_c(pimg));
 
-	yassume(img);
-
-	color_t col = img->getbuffer()[y * img->getwidth() + x];
-	return col;
+	return img.getbuffer()[y * img.GetWidth() + x];
 }
 
 void
 putpixel_f(int x, int y, color_t color, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
+	auto& img(convert_image_ref(pimg));
 
-	yassume(img);
-
-	img->getbuffer()[y * img->getwidth() + x] = color;
+	img.getbuffer()[y * img.GetWidth() + x] = color;
 }
 
 void
 putpixels(int nPoint, int* pPoints, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref(pimg));
 
 	int x, y, c;
-	unsigned long* pb = &img->getbuffer()[img->m_vpt.top * img->getwidth() + img->m_vpt.left];
-	int w = img->m_vpt.right - img->m_vpt.left, h = img->m_vpt.bottom - img->m_vpt.top;
-	int tw = img->getwidth();
+	unsigned long* pb
+		= &img.getbuffer()[img.m_vpt.top * img.GetWidth() + img.m_vpt.left];
+	int w = img.m_vpt.right - img.m_vpt.left, h = img.m_vpt.bottom
+		- img.m_vpt.top;
+	int tw = img.GetWidth();
 
 	for(int n = 0; n < nPoint; ++n, pPoints += 3)
 	{
 		x = pPoints[0], y = pPoints[1], c = pPoints[2];
 		if(!(x < 0 || y < 0 || x >= w || y >= h))
-			pb[y * tw + x] = RGBTOBGR(c);
+			pb[y * tw + x] = c;
 	}
 }
 
 void
 putpixels_f(int nPoint, int* pPoints, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
-
-	const int tw(img->getwidth());
+	auto& img(convert_image_ref(pimg));
+	const int tw(img.GetWidth());
 
 	for(int n = 0; n < nPoint; ++n, pPoints += 3)
-		img->getbuffer()[pPoints[1] * tw + pPoints[0]] = RGBTOBGR(pPoints[2]);
+		img.getbuffer()[pPoints[1] * tw + pPoints[0]] = pPoints[2];
 }
 
 
 void
 moveto(int x, int y, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
-
-	MoveToEx(img->getdc(), x, y, {});
+	MoveToEx(convert_image_ref(pimg).getdc(), x, y, {});
 }
 
 void
 moverel(int dx, int dy, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref(pimg));
 
 	::POINT pt;
-	::GetCurrentPositionEx(img->getdc(), &pt);
+	::GetCurrentPositionEx(img.getdc(), &pt);
 	dx += pt.x;
 	dy += pt.y;
-	MoveToEx(img->getdc(), dx, dy, {});
+	MoveToEx(img.getdc(), dx, dy, {});
 }
 
 
 void
 line(int x1, int y1, int x2, int y2, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
+	auto& img(convert_image_ref(pimg));
 
-	yassume(img);
-
-	::MoveToEx(img->getdc(), x1, y1, {});
-	::LineTo(img->getdc(), x2, y2);
+	::MoveToEx(img.getdc(), x1, y1, {});
+	::LineTo(img.getdc(), x2, y2);
 }
 
 void
 linerel(int dx, int dy, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref(pimg));
 
 	::POINT pt;
-	::GetCurrentPositionEx(img->getdc(), &pt);
+	::GetCurrentPositionEx(img.getdc(), &pt);
 	dx += pt.x;
 	dy += pt.y;
-	LineTo(img->getdc(), dx, dy);
+	LineTo(img.getdc(), dx, dy);
 }
 
 void
 lineto(int x, int y, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
-
-	LineTo(img->getdc(), x, y);
+	LineTo(convert_image_ref(pimg).getdc(), x, y);
 }
 
 namespace
 {
 
+template<typename _type>
+inline _type&&
+Nonnull(_type&& p) ynothrow
+{
+	yconstraint(p);
+	return std::forward<decltype(p)>(p);
+}
+
 void
 line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 {
-	yconstraint(img);
-
 	int bswap = 2;
-	auto col = getcolor(img);
-	color_t endp = 0;
-	auto pBuffer = (color_t*)img->getbuffer();
-	int rw = img->getwidth();
+	auto col(getcolor(Nonnull(img)));
+	color_t endp(0);
+	auto pBuffer(reinterpret_cast<color_t*>(img->getbuffer()));
+	int rw = img->GetWidth();
 
 	if(x1 > x2)
 	{
@@ -564,7 +528,7 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 			return;
 		float d = (x2 - img->m_vpt.left) / (x2 - x1);
 		y1 = (y1 - y2) * d + y2;
-		x1 = (float)img->m_vpt.left;
+		x1 = float(img->m_vpt.left);
 		if(bswap == 1)
 			bswap = 0;
 	}
@@ -573,7 +537,7 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 		if(x2 - x1 < FLT_EPSILON) return;
 		float d = (img->m_vpt.right - x1) / (x2 - x1);
 		y2 = (y2 - y1) * d + y1;
-		x2 = (float)img->m_vpt.right;
+		x2 = float(img->m_vpt.right);
 		if(bswap == 2)
 			bswap = 0;
 	}
@@ -596,7 +560,7 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 		float d = (y2 - img->m_vpt.top) / (y2 - y1);
 
 		x1 = (x1 - x2) * d + x2;
-		y1 = (float)img->m_vpt.top;
+		y1 = float(img->m_vpt.top);
 		if(bswap == 1)
 			bswap = 0;
 	}
@@ -608,17 +572,17 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 		float d = (img->m_vpt.bottom - y1) / (y2 - y1);
 
 		x2 = (x2 - x1) * d + x1;
-		y2 = (float)img->m_vpt.bottom;
+		y2 = float(img->m_vpt.bottom);
 		if(bswap == 2)
 			bswap = 0;
 	}
 	if(bswap)
-		endp = pBuffer[bswap == 1 ? (int)y1 * rw + (int)x1
-			: (int)y2 * rw + (int)x2];
+		endp = pBuffer[bswap == 1 ? int(y1) * rw + int(x1)
+			: int(y2) * rw + int(x2)];
 	if(y2 - y1 > fabs(x2 - x1))
 	{
-		int y = (int)(y1 + 0.9f);
-		int ye = (int)(y2);
+		int y(y1 + 0.9f);
+		int ye(y2);
 		float x, dx;
 
 		if(y < y1)
@@ -630,7 +594,7 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 		if(ye < y2)
 			bswap = 0;
 		for(; y <= ye; ++y, x += dx)
-			pBuffer[y * rw + (int)x] = col;
+			pBuffer[y * rw + int(x)] = col;
 	}
 	else
 	{
@@ -642,8 +606,8 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 				bswap ^= 3;
 		}
 
-		int x = (int)(x1 + 0.9f);
-		int xe = (int)(x2);
+		int x(x1 + 0.9f);
+		int xe(x2);
 		float y, dy;
 
 		if(x < x1)
@@ -655,11 +619,11 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 		if(xe < x2)
 			bswap = 0;
 		for(; x <= xe; ++x, y += dy)
-			pBuffer[(int)y * rw + x] = col;
+			pBuffer[int(y) * rw + x] = col;
 	}
 	if(bswap)
-		pBuffer[bswap == 1 ? (int)y1 * rw + (int)x1
-			: (int)y2 * rw + (int)x2] = endp;
+		pBuffer[bswap == 1 ? int(y1) * rw + int(x1)
+			: int(y2) * rw + int(x2)] = endp;
 }
 
 } // unnamed namespace;
@@ -667,49 +631,41 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 void
 line_f(float x1, float y1, float x2, float y2, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	line_base(x1, y1, x2, y2, img);
+	line_base(x1, y1, x2, y2, &convert_image_ref(pimg));
 }
 
 void
 linerel_f(float dx, float dy, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref(pimg));
 
 	::POINT pt;
 
-	::GetCurrentPositionEx(img->getdc(), &pt);
+	::GetCurrentPositionEx(img.getdc(), &pt);
 	line_base(float(pt.x), float(pt.y), float(pt.x) + dx, float(pt.y) + dy,
-		img);
+		&img);
 }
 
 void
 lineto_f(float x, float y, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
-
-	yassume(img);
+	auto& img(convert_image_ref(pimg));
 
 	::POINT pt;
 
-	::GetCurrentPositionEx(img->getdc(), &pt);
-	line_base(float(pt.x), float(pt.y), x, y, img);
+	::GetCurrentPositionEx(img.getdc(), &pt);
+	line_base(float(pt.x), float(pt.y), x, y, &img);
 }
 
 
 void rectangle(int left, int top, int right, int bottom, IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE(pimg));
+	auto& img(convert_image_ref(pimg));
 
-	yassume(img);
-
-	if(_save_brush(img, 1))
+	if(_save_brush(&img, 1))
 	{
-		Rectangle(img->getdc(), left, top, right, bottom);
-		_save_brush(img, 0);
+		Rectangle(img.getdc(), left, top, right, bottom);
+		_save_brush(&img, 0);
 	}
 }
 
@@ -741,8 +697,8 @@ ellipse(int x, int y, int stangle, int endangle, int xradius, int yradius,
 		const auto sr(stangle / 180.0 * PI), er(endangle / 180.0 * PI);
 
 		::Arc(img->getdc(), x - xradius, y - yradius, x + xradius, y + yradius,
-			(int)(x + xradius * cos(sr)), (int)(y - yradius * sin(sr)),
-			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er)));
+			x + xradius * std::cos(sr), y - yradius * std::sin(sr),
+			x + xradius * std::cos(er), y - yradius * std::sin(er));
 	}
 }
 
@@ -762,8 +718,8 @@ sector(int x, int y, int stangle, int endangle, int xradius, int yradius,
 	{
 		const auto sr(stangle / 180.0 * PI), er(endangle / 180.0 * PI);
 		::Pie(img->getdc(), x - xradius, y - yradius, x + xradius, y + yradius,
-			(int)(x + xradius * cos(sr)), (int)(y - yradius * sin(sr)),
-			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er)));
+			x + xradius * std::cos(sr), y - yradius * std::sin(sr),
+			x + xradius * std::cos(er), y - yradius * std::sin(er));
 	}
 }
 
@@ -795,10 +751,9 @@ ellipsef(float x, float y, float stangle, float endangle, float xradius,
 	{
 		const auto sr(stangle / 180.0 * PI), er(endangle / 180.0 * PI);
 
-		::Arc(img->getdc(), (int)(x - xradius), (int)(y - yradius),
-			(int)(x + xradius), (int)(y + yradius),
-			(int)(x + xradius * cos(sr)), (int)(y - yradius * sin(sr)),
-			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er)));
+		::Arc(img->getdc(), x - xradius, y - yradius, x + xradius, y + yradius,
+			x + xradius * std::cos(sr), y - yradius * std::sin(sr),
+			x + xradius * std::cos(er), y - yradius * std::sin(er));
 	}
 }
 
@@ -806,8 +761,8 @@ void
 fillellipsef(float x, float y, float xradius, float yradius, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
-		::Ellipse(img->getdc(), (int)(x - xradius), (int)(y - yradius),
-			(int)(x + xradius), (int)(y + yradius));
+		::Ellipse(img->getdc(), x - xradius, y - yradius, x + xradius,
+			y + yradius);
 }
 
 void
@@ -818,10 +773,9 @@ sectorf(float x, float y, float stangle, float endangle, float xradius,
 	{
 		const auto sr(stangle / 180.0 * PI), er(endangle / 180.0 * PI);
 
-		::Pie(img->getdc(), (int)(x - xradius), (int)(y - yradius),
-			(int)(x + xradius), (int)(y + yradius),
-			(int)(x + xradius * cos(sr)), (int)(y - yradius * sin(sr)),
-			(int)(x + xradius * cos(er)), (int)(y - yradius * sin(er)));
+		::Pie(img->getdc(), x - xradius, y - yradius, x + xradius, y + yradius,
+			x + xradius * std::cos(sr), y - yradius * std::sin(sr),
+			x + xradius * std::cos(er), y - yradius * std::sin(er));
 	}
 }
 
@@ -829,12 +783,13 @@ sectorf(float x, float y, float stangle, float endangle, float xradius,
 void
 bar(int left, int top, int right, int bottom, IMAGE* pimg)
 {
-	const auto img = CONVERT_IMAGE(pimg);
-	::RECT rect{left, top, right, bottom};
-	::HBRUSH hbr_last = (::HBRUSH)::GetCurrentObject(img->getdc(), OBJ_BRUSH);
+	if(const auto img = CONVERT_IMAGE(pimg))
+	{
+		::RECT rect{left, top, right, bottom};
 
-	if(img)
-		::FillRect(img->getdc(), &rect, hbr_last);
+		::FillRect(img->getdc(), &rect,
+			::HBRUSH(::GetCurrentObject(img->getdc(), OBJ_BRUSH)));
+	}
 }
 
 void
@@ -864,7 +819,8 @@ void
 drawpoly(int numpoints, const int* polypoints, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
-		::Polyline(img->getdc(), (::POINT*)polypoints, numpoints);
+		::Polyline(img->getdc(), reinterpret_cast<const ::POINT*>(polypoints),
+			numpoints);
 }
 
 void
@@ -875,7 +831,7 @@ drawlines(int numlines, const int* polypoints, IMAGE* pimg)
 		const auto pl(make_unique<unsigned long[]>(numlines));
 		for(int i = 0; i < numlines; ++i)
 			pl[i] = 2;
-		::PolyPolyline(img->getdc(), (::POINT*)polypoints, &pl[0], numlines);
+		::PolyPolyline(img->getdc(), reinterpret_cast<const ::POINT*>(polypoints), &pl[0], numlines);
 	}
 }
 
@@ -886,7 +842,8 @@ drawbezier(int numpoints, const int* polypoints, IMAGE* pimg)
 	{
 		if(numpoints % 3 != 1)
 			numpoints = numpoints - (numpoints + 2) % 3;
-		::PolyBezier(img->getdc(), (::POINT*)polypoints, numpoints);
+		::PolyBezier(img->getdc(), reinterpret_cast<const ::POINT*>(polypoints),
+			numpoints);
 	}
 }
 
@@ -894,7 +851,8 @@ void
 fillpoly(int numpoints, const int* polypoints, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
-		::Polygon(img->getdc(), (::POINT*)polypoints, numpoints);
+		::Polygon(img->getdc(), reinterpret_cast<const ::POINT*>(polypoints),
+			numpoints);
 }
 
 void
@@ -931,15 +889,14 @@ void
 floodfill(int x, int y, int border, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
-		::FloodFill(img->getdc(), x, y, RGBTOBGR(border));
+		::FloodFill(img->getdc(), x, y, border);
 }
 
 void
 floodfillsurface(int x, int y, color_t areacolor, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
-		::ExtFloodFill(img->getdc(), x, y, RGBTOBGR(areacolor),
-			FLOODFILLSURFACE);
+		::ExtFloodFill(img->getdc(), x, y, areacolor, FLOODFILLSURFACE);
 }
 
 } // namespace ege;

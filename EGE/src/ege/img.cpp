@@ -10,7 +10,7 @@ getwidth(IMAGE* pimg)
 {
 	const auto img(CONVERT_IMAGE_CONST(pimg));
 
-	return img ? img->getwidth() : 0;
+	return img ? img->GetWidth() : 0;
 }
 
 int
@@ -18,7 +18,7 @@ getheight(IMAGE* pimg)
 {
 	const auto img(CONVERT_IMAGE_CONST(pimg));
 
-	return img ? img->getheight() : 0;
+	return img ? img->GetHeight() : 0;
 }
 
 int
@@ -67,37 +67,26 @@ delimage(IMAGE* pimg)
 void*
 getbuffer(IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	yassume(img);
-
-	return img->getbuffer();
+	return convert_image_ref_c(pimg).getbuffer();
 }
-
-
 
 int
 resize(IMAGE* pDstImg, int width, int height)
 {
-	yassume(pDstImg);
-
-	return pDstImg->resize(width, height);
+	return Deref(pDstImg).Resize(width, height);
 }
 
 void
 getimage(IMAGE* pDstImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
-	yassume(pDstImg);
-
-	pDstImg->getimage(get_pages().imgtarget, srcX, srcY, srcWidth, srcHeight);
+	Deref(pDstImg).getimage(get_pages().imgtarget, srcX, srcY, srcWidth,
+		srcHeight);
 }
 void
 getimage(IMAGE* pDstImg, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth,
 	int srcHeight)
 {
-	yassume(pDstImg);
-
-	pDstImg->getimage(pSrcImg, srcX, srcY, srcWidth, srcHeight);
+	Deref(pDstImg).getimage(pSrcImg, srcX, srcY, srcWidth, srcHeight);
 }
 
 
@@ -114,9 +103,7 @@ putimage_transparent(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	yassume(imgsrc);
-
-	return imgsrc->putimage_transparent(imgdest, nXOriginDest, nYOriginDest,
+	return Deref(imgsrc).putimage_transparent(imgdest, nXOriginDest, nYOriginDest,
 		crTransparent, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
 }
 
@@ -153,9 +140,7 @@ putimage_alphatransparent(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	yassume(imgsrc);
-
-	return imgsrc->putimage_alphatransparent(imgdest, nXOriginDest,
+	return Deref(imgsrc).putimage_alphatransparent(imgdest, nXOriginDest,
 		nYOriginDest, crTransparent, alpha, nXOriginSrc, nYOriginSrc, nWidthSrc,
 		nHeightSrc);
 }
@@ -172,9 +157,7 @@ putimage_withalpha(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	yassume(imgsrc);
-
-	return imgsrc->putimage_withalpha(imgdest, nXOriginDest, nYOriginDest,
+	return Deref(imgsrc).putimage_withalpha(imgdest, nXOriginDest, nYOriginDest,
 		nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
 }
 
@@ -190,10 +173,8 @@ imagefilter_blurring(
 )
 {
 	if(const auto img = CONVERT_IMAGE(imgdest))
-	{
 		return img->imagefilter_blurring(intensity, alpha, nXOriginDest,
 			nYOriginDest, nWidthDest, nHeightDest);
-	}
 	return 0;
 }
 

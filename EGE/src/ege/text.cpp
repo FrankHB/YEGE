@@ -6,6 +6,7 @@
 #include "ege/sys_edit.h"
 #include <cstdio>
 #include <cstdarg>
+#include <cstring>
 
 namespace ege
 {
@@ -55,7 +56,7 @@ private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz, int
 	{
 		if(img->m_texttype.vert == CENTER_TEXT)
 			y -= textheight(textstring, img) / 2;
-		TextOutA(img->getdc(), x, y, textstring, (int)strlen(textstring));
+		TextOutA(img->getdc(), x, y, textstring, std::strlen(textstring));
 	}
 }
 
@@ -86,7 +87,7 @@ private_textout(IMAGE* img, const wchar_t* textstring, int x, int y, int horiz,
 		{
 			y -= textheight(textstring, img) / 2;
 		}
-		TextOutW(img->getdc(), x, y, textstring, (int)::lstrlenW(textstring));
+		TextOutW(img->getdc(), x, y, textstring, ::lstrlenW(textstring));
 	}
 }
 
@@ -256,7 +257,7 @@ textwidth(const char* textstring, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
 	{
 		SIZE sz;
-		::GetTextExtentPoint32A(img->getdc(), textstring, (int)strlen(textstring),
+		::GetTextExtentPoint32A(img->getdc(), textstring, std::strlen(textstring),
 			&sz);
 		return sz.cx;
 	}
@@ -270,7 +271,7 @@ textwidth(const wchar_t* textstring, IMAGE* pimg)
 	{
 		SIZE sz;
 		::GetTextExtentPoint32W(img->getdc(), textstring,
-			(int)::lstrlenW(textstring), &sz);
+			::lstrlenW(textstring), &sz);
 		return sz.cx;
 	}
 	return 0;
@@ -299,8 +300,8 @@ textheight(const char* textstring, IMAGE* pimg)
 	{
 		SIZE sz;
 
-		::GetTextExtentPoint32A(img->getdc(), textstring, (int)strlen(textstring),
-			&sz);
+		::GetTextExtentPoint32A(img->getdc(), textstring,
+			std::strlen(textstring), &sz);
 		return sz.cy;
 	}
 	return 0;
@@ -314,7 +315,7 @@ textheight(const wchar_t* textstring, IMAGE* pimg)
 		SIZE sz;
 
 		::GetTextExtentPoint32W(img->getdc(), textstring,
-			(int)::lstrlenW(textstring), &sz);
+			::lstrlenW(textstring), &sz);
 		return sz.cy;
 	}
 	return 0;
@@ -509,7 +510,7 @@ void
 getfont(::LOGFONTA* font, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
-		::GetObjectA((::HFONT)::GetCurrentObject(img->getdc(), OBJ_FONT),
+		::GetObjectA(::HFONT(::GetCurrentObject(img->getdc(), OBJ_FONT)),
 			sizeof(::LOGFONTA), font);
 }
 
@@ -517,7 +518,7 @@ void
 getfont(::LOGFONTW* font, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
-		::GetObjectW((::HFONT)::GetCurrentObject(img->getdc(), OBJ_FONT),
+		::GetObjectW(::HFONT(::GetCurrentObject(img->getdc(), OBJ_FONT)),
 			sizeof(::LOGFONTA), font);
 }
 
@@ -591,7 +592,7 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf,
 					exit = true;
 					break;
 				}
-			} while(kbmsg());
+			}while(kbmsg());
 			if(exit)
 				break;
 		}
@@ -605,7 +606,7 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf,
 			setfillcolor(EGERGB(0, 0, 0xA0), &window);
 			for(int dy = 1; dy < 24; dy++)
 			{
-				setcolor(HSLtoRGB(240.0f, 1.0f,
+				setcolor(hsl2rgb(240.0f, 1.0f,
 					0.5f + float(dy / 24.0 * 0.3)), &window);
 				line(1, dy, w - 1, dy, &window);
 			}

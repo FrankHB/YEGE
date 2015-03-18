@@ -18,12 +18,13 @@
 namespace ege
 {
 
+using std::unique_ptr;
+
 class IMAGE;
 class egeControlBase;
 struct msg_createwindow;
 
 
-extern int _g_initoption;
 extern bool _g_initcall;
 
 extern int update_mark_count; //更新标记
@@ -56,16 +57,14 @@ private:
 	std::thread ui_thread;
 
 public:
-	/*鼠标状态记录*/
+	// 鼠标状态
 	int mouse_state_l = 0, mouse_state_m = 0, mouse_state_r = 0;
 	int mouse_last_x = 0, mouse_last_y = 0;
 	int mouse_lastclick_x = 0, mouse_lastclick_y = 0;
 	int mouse_lastup_x = 0, mouse_lastup_y = 0;
 	bool mouse_show = {};
-
 	CALLBACK_PROC* callback_close = {};
-
-	/* 键盘状态记录 */
+	// 键盘状态
 	int keystatemap[MAX_KEY_VCODE]{};
 
 	EGEApplication(int, int*);
@@ -164,6 +163,9 @@ public:
 
 	int
 	_show_mouse(bool);
+
+	void
+	_uninit();
 
 	void
 	_update();

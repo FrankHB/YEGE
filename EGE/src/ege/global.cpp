@@ -27,7 +27,6 @@ namespace ege
 
 int _g_initoption(INIT_DEFAULT);
 bool _g_initcall;
-
 int update_mark_count; //更新标记
 egeControlBase* egectrl_root;
 egeControlBase* egectrl_focus;
@@ -51,7 +50,7 @@ EnumResNameProc(::HMODULE hModule, ::LPCTSTR, ::LPTSTR lpszName,
 	if(const auto hico = ::HICON(::LoadImage(hModule, lpszName, IMAGE_ICON,
 		0, 0, LR_DEFAULTSIZE)))
 	{
-		*((::HICON*)lParam) = hico;
+		*(reinterpret_cast<::HICON*>(lParam)) = hico;
 		return {};
 	}
 	return true;
@@ -139,7 +138,7 @@ EGEApplication::EGEApplication(int gdriver_n, int* gmode)
 		::RECT rect;
 
 		::GetWindowRect(GetDesktopWindow(), &rect);
-		dc_w = short(*gmode & 0xFFFF);
+		dc_w = short(Deref(gmode) & 0xFFFF);
 		dc_h = short(unsigned(*gmode >> 16));
 		if(dc_w < 0)
 			dc_w = rect.right;
@@ -151,6 +150,7 @@ EGEApplication::~EGEApplication()
 {
 	if(ui_thread.joinable())
 		ui_thread.join();
+	_uninit();
 	Gdiplus::GdiplusShutdown(g_gdiplusToken);
 }
 
@@ -338,7 +338,7 @@ EGEApplication::_getmouse()
 			}
 			return mmsg;
 		}
-	} while(_is_run() && _waitdealmessage());
+	}while(_is_run() && _waitdealmessage());
 	return mmsg;
 }
 
@@ -419,7 +419,7 @@ EGEApplication::_mousemsg()
 void
 EGEApplication::_on_destroy()
 {
-	assert(_is_run());
+	yassume(_is_run());
 
 	if(get_pages().active_dc)
 		::ReleaseDC(hwnd, window_dc);
@@ -476,11 +476,11 @@ EGEApplication::_on_mouse_button_up(::HWND h_wnd, unsigned msg, ::WPARAM w_param
 		vk = VK_RBUTTON;
 		break;
 	default:
-		assert(false);
+		yassume(false);
 		return;
 	}
-	mouse_lastup_x = (short int)((unsigned)l_param & 0xFFFF);
-	mouse_lastup_y = (short int)((unsigned)l_param >> 16);
+	mouse_lastup_x = short(l_param & 0xFFFF);
+	mouse_lastup_y = short(::UINT(l_param) >> 16);
 	*l = 0;
 	keystatemap[vk] = 0;
 	if(mouse_state_l == 0 && mouse_state_m == 0
@@ -610,8 +610,8 @@ EGEApplication::_process_ui_msg(EGEMSG& qmsg)
 		}
 	else if(qmsg.message >= WM_MOUSEFIRST && qmsg.message <= WM_MOUSELAST)
 	{
-		int x = (short int)((unsigned)qmsg.lParam & 0xFFFF),
-			y = (short int)((unsigned)qmsg.lParam >> 16);
+		int x = short(qmsg.lParam & 0xFFFF),
+			y = short(unsigned(qmsg.lParam) >> 16);
 
 		switch(qmsg.message)
 		{
@@ -696,6 +696,10 @@ EGEApplication::_update()
 		}
 	}
 }
+
+void
+EGEApplication::_uninit()
+{}
 
 void
 EGEApplication::_update_if_necessary()
@@ -837,10 +841,9 @@ _pages::update()
 EGEApplication&
 FetchEGEApplication(int gdriver_n, int* gmode)
 {
-	static std::unique_ptr<EGEApplication>
-		p(new EGEApplication(gdriver_n, gmode));
+	static EGEApplication app(gdriver_n, gmode);
 
-	return *p;
+	return app;
 }
 
 _pages&

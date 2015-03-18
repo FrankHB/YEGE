@@ -1,6 +1,5 @@
 ﻿#include "ege/random.h"
 #include <random>
-#include <memory>
 
 namespace ege
 {

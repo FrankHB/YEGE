@@ -179,7 +179,6 @@ enum music_state_flag
 	MUSIC_MODE_SEEK = 0x210,
 };
 
-
 enum pattern_type_e
 {
 	pattern_none            = 0,

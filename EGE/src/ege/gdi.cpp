@@ -6,88 +6,84 @@
 namespace ege
 {
 
-int
-getimage(IMAGE* pDstImg, const char* pImgFile, int zoomWidth, int zoomHeight)
+namespace
 {
-	yassume(pDstImg);
 
-	return pDstImg->getimage(pImgFile, zoomWidth, zoomHeight);
+int
+getimage_common(IMAGE* pimg, std::FILE* fp) ynothrow
+{
+	if(fp)
+	{
+		const auto ret(Deref(pimg).getpngimg(fp));
+
+		std::fclose(fp);
+		return ret;
+	}
+	return grFileNotFound;
+}
+
+} // unnamed namespace;
+
+int
+getimage(IMAGE* pDstImg, const char* pImgFile, int, int)
+{
+	return Deref(pDstImg).getimage(pImgFile);
 }
 int
-getimage(IMAGE* pDstImg, const wchar_t* pImgFile, int zoomWidth, int zoomHeight)
+getimage(IMAGE* pDstImg, const wchar_t* pImgFile, int, int)
 {
-	yassume(pDstImg);
-
-	return pDstImg->getimage(pImgFile, zoomWidth, zoomHeight);
+	return Deref(pDstImg).getimage(pImgFile);
 }
 int
-getimage(IMAGE* pDstImg, const char* pResType, const char* pResName,
-	int zoomWidth, int zoomHeight)
+getimage(IMAGE* pDstImg, const char* pResType, const char* pResName, int, int)
 {
-	yassume(pDstImg);
-
-	return pDstImg->getimage(pResType, pResName, zoomWidth, zoomHeight);
+	return Deref(pDstImg).getimage(pResType, pResName);
 }
 int
-getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName,
-	int zoomWidth, int zoomHeight)
+getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName, int,
+	int)
 {
-	yassume(pDstImg);
-
-	return pDstImg->getimage(pResType, pResName, zoomWidth, zoomHeight);
+	return Deref(pDstImg).getimage(pResType, pResName);
 }
 
 void
 putimage(int dstX, int dstY, IMAGE* pSrcImg, unsigned long dwRop)
 {
-	yassume(pSrcImg);
-
-	pSrcImg->putimage(dstX, dstY, dwRop);
+	Deref(pSrcImg).putimage(dstX, dstY, dwRop);
 }
 void
 putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
 	int srcX, int srcY, unsigned long dwRop)
 {
-	yassume(pSrcImg);
-
-	pSrcImg->putimage(dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
+	Deref(pSrcImg).putimage(dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
 }
 void
 putimage(IMAGE* pDstImg, int dstX, int dstY, IMAGE* pSrcImg, unsigned long dwRop)
 {
-	yassume(pSrcImg);
-
-	pSrcImg->putimage(pDstImg, dstX, dstY, dwRop);
+	Deref(pSrcImg).putimage(pDstImg, dstX, dstY, dwRop);
 }
 void
 putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	IMAGE* pSrcImg, int srcX, int srcY, unsigned long dwRop)
 {
-	yassume(pSrcImg);
-
-	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
-		dwRop);
+	Deref(pSrcImg).putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX,
+		srcY, dwRop);
 }
 void
 putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight,
 	unsigned long dwRop)
 {
-	yassume(pSrcImg);
-
-	pSrcImg->putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
-		srcWidth, srcHeight, dwRop);
+	Deref(pSrcImg).putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX,
+		srcY, srcWidth, srcHeight, dwRop);
 }
 void
 putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
 	int srcX, int srcY, int srcWidth, int srcHeight, unsigned long dwRop)
 {
-	yassume(pSrcImg);
-
-	pSrcImg->putimage({}, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
+	Deref(pSrcImg).putimage({}, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
 		srcWidth, srcHeight, dwRop);
 }
-
 
 int
 saveimage(IMAGE* pimg, const char* filename)
@@ -96,7 +92,6 @@ saveimage(IMAGE* pimg, const char* filename)
 		return img->saveimage(filename);
 	return 0;
 }
-
 int
 saveimage(IMAGE* pimg, const wchar_t* filename)
 {
@@ -107,62 +102,29 @@ saveimage(IMAGE* pimg, const wchar_t* filename)
 
 
 int
-savepng(IMAGE* pimg, const char* filename, int bAlpha)
+savepng(IMAGE* pimg, const char* filename, int)
 {
-	if(std::FILE* fp = std::fopen(filename, "wb"))
-	{
-		yconstraint(pimg);
-
-		const int ret(pimg->savepngimg(fp, bAlpha));
-
-		std::fclose(fp);
-		return ret;
-	}
-	return grFileNotFound;
-
+	if(const auto img = CONVERT_IMAGE(pimg))
+		return img->saveimage(filename);
+	return 0;
 }
 int
-savepng(IMAGE* pimg, const wchar_t* filename, int bAlpha)
+savepng(IMAGE* pimg, const wchar_t* filename, int)
 {
-	if(std::FILE* fp = ::_wfopen(filename, L"wb"))
-	{
-		yconstraint(pimg);
-
-		const int ret(pimg->savepngimg(fp, bAlpha));
-
-		std::fclose(fp);
-		return ret;
-	}
-	return grFileNotFound;
+	if(const auto img = CONVERT_IMAGE(pimg))
+		return img->saveimage(filename);
+	return 0;
 }
 
 int
 getimage_pngfile(IMAGE* pimg, const char* filename)
 {
-	if(std::FILE* fp = std::fopen(filename, "rb"))
-	{
-		yconstraint(pimg);
-
-		const int ret(pimg->getpngimg(fp));
-
-		std::fclose(fp);
-		return ret;
-	}
-	return grFileNotFound;
+	return getimage_common(pimg, std::fopen(filename, "rb"));
 }
 int
 getimage_pngfile(IMAGE* pimg, const wchar_t* filename)
 {
-	if(std::FILE* fp = ::_wfopen(filename, L"rb"))
-	{
-		yconstraint(pimg);
-
-		const int ret(pimg->getpngimg(fp));
-
-		std::fclose(fp);
-		return ret;
-	}
-	return grFileNotFound;
+	return getimage_common(pimg, ::_wfopen(filename, L"rb"));
 }
 
 } // namespace ege;

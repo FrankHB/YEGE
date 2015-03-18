@@ -31,7 +31,6 @@ namespace
 IMAGE::IMAGE()
 	: IMAGE(1, 1)
 {}
-
 IMAGE::IMAGE(int width, int height)
 	: IMAGE(get_pages().get_image_context(), width, height)
 {}
@@ -41,7 +40,7 @@ IMAGE::IMAGE(::HDC hdc, int width, int height)
 {
 	if(m_hDC)
 	{
-		resize(width, height);
+		Resize(width, height);
 		setcolor(LIGHTGRAY, this);
 		setbkcolor_f(BLACK, this);
 		::SetBkMode(hdc, OPAQUE); //TRANSPARENT);
@@ -103,12 +102,12 @@ IMAGE::swap(IMAGE& img) ynothrow
 void
 IMAGE::gentexture(bool gen)
 {
-	m_texture.reset(gen ? new Gdiplus::Bitmap(getwidth(), getheight(),
-		getwidth() * 4, PixelFormat32bppARGB, (::BYTE*)getbuffer()) : nullptr);
+	m_texture.reset(gen ? new Gdiplus::Bitmap(GetWidth(), GetHeight(),
+		GetWidth() * 4, PixelFormat32bppARGB, (::BYTE*)getbuffer()) : nullptr);
 }
 
 int
-IMAGE::resize(int width, int height)
+IMAGE::Resize(int width, int height)
 {
 	std::memset(&m_vpt, 0, sizeof(m_vpt));
 
@@ -161,7 +160,7 @@ IMAGE::resize(int width, int height)
 void
 IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
-	if(resize(srcWidth, srcHeight) == 0)
+	if(Resize(srcWidth, srcHeight) == 0)
 	{
 		const auto img = CONVERT_IMAGE_CONST(pSrcImg);
 
@@ -219,7 +218,7 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 	pPicture->get_Height(&lHeight);
 	lHeightPixels
 		= ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-	resize(lWidthPixels, lHeightPixels);
+	Resize(lWidthPixels, lHeightPixels);
 	pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 		lWidth, -lHeight, {});
 	pPicture->Release();
@@ -265,7 +264,7 @@ saveimagetofile(IMAGE* img, std::FILE * fp)
 {
 	auto bmpfHead = ::BITMAPFILEHEADER();
 	auto bmpinfo = ::BITMAPINFOHEADER();
-	int pitch = img->getwidth() * 3, addbit, y, x, zero = 0;
+	int pitch = img->GetWidth() * 3, addbit, y, x, zero = 0;
 
 	addbit = 4 - (pitch & 3);
 	if(pitch & 3)
@@ -274,21 +273,21 @@ saveimagetofile(IMAGE* img, std::FILE * fp)
 	bmpfHead.bfType = *(WORD*)"BM";
 	bmpfHead.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 	bmpfHead.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER)
-		+ pitch * img->getheight();
+		+ pitch * img->GetHeight();
 	bmpinfo.biSize = sizeof(BITMAPINFOHEADER);
 	bmpinfo.biBitCount = 24;
-	bmpinfo.biHeight = img->getheight();
-	bmpinfo.biWidth = img->getwidth();
+	bmpinfo.biHeight = img->GetHeight();
+	bmpinfo.biWidth = img->GetWidth();
 	bmpinfo.biPlanes = 1;
-	bmpinfo.biSizeImage = pitch * img->getheight();
+	bmpinfo.biSizeImage = pitch * img->GetHeight();
 	//bmpinfo.biXPelsPerMeter
 	std::fwrite(&bmpfHead, sizeof(bmpfHead), 1, fp);
 	std::fwrite(&bmpinfo, sizeof(bmpinfo), 1, fp);
-	for(y = img->getheight() - 1; y >= 0; --y)
+	for(y = img->GetHeight() - 1; y >= 0; --y)
 	{
-		for(x = 0; x < img->getwidth(); ++x)
+		for(x = 0; x < img->GetWidth(); ++x)
 		{
-			unsigned long col = img->getbuffer()[y * img->getwidth() + x];
+			unsigned long col = img->getbuffer()[y * img->GetWidth() + x];
 			//col = RGBTOBGR(col);
 			if(std::fwrite(&col, 3, 1, fp) < 1)
 				goto ERROR_BREAK;
@@ -362,7 +361,7 @@ IMAGE::getpngimg(std::FILE * fp)
 	::png_read_png(pic_ptr, info_ptr, PNG_TRANSFORM_BGR | PNG_TRANSFORM_EXPAND, {});
 	::png_set_expand(pic_ptr);
 
-	resize((int)(info_ptr->width), (int)(info_ptr->height)); //::png_get_IHDR
+	Resize((int)(info_ptr->width), (int)(info_ptr->height)); //::png_get_IHDR
 	width = info_ptr->width;
 	height = info_ptr->height;
 	depth = info_ptr->pixel_depth;
@@ -490,7 +489,7 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 		pPicture->get_Height(&lHeight);
 		lHeightPixels = ::MulDiv(lHeight,
 			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-		resize(lWidthPixels, lHeightPixels);
+		Resize(lWidthPixels, lHeightPixels);
 		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 			lWidth, -lHeight, {});
 		pPicture->Release();
@@ -534,7 +533,7 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 		lWidthPixels = ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
 		lHeightPixels = ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-		resize(lWidthPixels, lHeightPixels);
+		Resize(lWidthPixels, lHeightPixels);
 		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 			lWidth, -lHeight, {});
 		pPicture->Release();
@@ -590,7 +589,7 @@ IMAGE::getimage(void * pMem, long size)
 		pPicture->get_Height(&lHeight);
 		lHeightPixels = ::MulDiv(lHeight,
 			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
-		resize(lWidthPixels, lHeightPixels);
+		Resize(lWidthPixels, lHeightPixels);
 		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 			lWidth, -lHeight, {});
 		pPicture->Release();
@@ -626,23 +625,23 @@ fix_rect_1size(IMAGE* pdest, IMAGE* psrc,
 	int* nHeightSrc      // height of source rectangle
 )
 {
-	viewporttype _vpt{0, 0, pdest->getwidth(), pdest->getheight(), 0};
+	viewporttype _vpt{0, 0, pdest->GetWidth(), pdest->GetHeight(), 0};
 	/* default value proc */
 	if(*nWidthSrc == 0)
 	{
-		*nWidthSrc  = psrc->getwidth();
-		*nHeightSrc = psrc->getheight();
+		*nWidthSrc  = psrc->GetWidth();
+		*nHeightSrc = psrc->GetHeight();
 	}
 	/* fix src rect */
-	if(*nWidthSrc > psrc->getwidth())
+	if(*nWidthSrc > psrc->GetWidth())
 	{
-		*nWidthSrc -= *nWidthSrc - psrc->getwidth();
-		*nWidthSrc = psrc->getwidth();
+		*nWidthSrc -= *nWidthSrc - psrc->GetWidth();
+		*nWidthSrc = psrc->GetWidth();
 	}
-	if(*nHeightSrc > psrc->getheight())
+	if(*nHeightSrc > psrc->GetHeight())
 	{
-		*nHeightSrc -= *nHeightSrc - psrc->getheight();
-		*nHeightSrc = psrc->getheight();
+		*nHeightSrc -= *nHeightSrc - psrc->GetHeight();
+		*nHeightSrc = psrc->GetHeight();
 	}
 	if(*nXOriginSrc < 0)
 	{
@@ -962,13 +961,13 @@ fix_rect_0size(IMAGE* pdest,
 {
 	viewporttype _vpt
 	{
-		0, 0, pdest->getwidth(), pdest->getheight(), 0
+		0, 0, pdest->GetWidth(), pdest->GetHeight(), 0
 	};
 
 	if(*nWidthDest == 0)
-		*nWidthDest = pdest->getwidth();
+		*nWidthDest = pdest->GetWidth();
 	if(*nHeightDest == 0)
-		*nHeightDest = pdest->getheight();
+		*nHeightDest = pdest->GetHeight();
 	if(*nXOriginDest < _vpt.left)
 		*nXOriginDest += _vpt.left - *nXOriginDest;
 	if(*nYOriginDest < _vpt.top)
@@ -1413,8 +1412,8 @@ draw_flat_scanline(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, const vec
 	int s = float2int((float)vt->p[0].x), e = float2int((float)vt->p[1].x), y = float2int((float)vt->p[0].y), w = e - s;
 	unsigned long* lp_dest_bmp_byte = (unsigned long*)dc_dest->getbuffer();
 	unsigned long* lp_src_bmp_byte = (unsigned long*)dc_src->getbuffer();
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	if(w > 0)
 	{
 		int i, bx = s;
@@ -1453,8 +1452,8 @@ draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_sr
 	unsigned long* lp_dest_bmp_byte = (unsigned long*)dc_dest->getbuffer();
 	unsigned long* lp_src_bmp_byte = (unsigned long*)dc_src->getbuffer();
 	unsigned long  col;
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	if(w > 0)
 	{
 		int i, bx = s;
@@ -1498,8 +1497,8 @@ draw_flat_scanline_alpha(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src, con
 	unsigned long* lp_src_bmp_byte = (unsigned long*)dc_src->getbuffer();
 	unsigned long sa = alpha, da = 0xFF - sa;
 
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	if(w > 0)
 	{
 		int i, bx = s;
@@ -1542,8 +1541,8 @@ draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src
 	unsigned long* lp_src_bmp_byte = (unsigned long*)dc_src->getbuffer();
 	unsigned long sa = alpha, da = 0xFF - sa;
 
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	if(w > 0)
 	{
 		int i, bx = s;
@@ -1614,8 +1613,8 @@ draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	unsigned long* lp_src_bmp_byte = (unsigned long*)dc_src->getbuffer();
 	unsigned long Trb, Tg, Brb, Bg, crb, cg;
 	unsigned long alphaA, alphaB;
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
 
 	if(w > 0)
@@ -1672,8 +1671,8 @@ draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt,
 	unsigned long* lp_src_bmp_byte = (unsigned long*)dc_src->getbuffer();
 	unsigned long Trb, Tg, Brb, Bg, crb, cg;
 	unsigned long alphaA, alphaB;
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
 
 	if(w > 0)
@@ -1735,8 +1734,8 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt, IMAGE* dc_src,
 	unsigned long alphaA, alphaB;
 	unsigned long sa = alpha, da = 0xFF - sa;
 
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
 
 	if(w > 0)
@@ -1802,8 +1801,8 @@ draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d * vt,
 	unsigned long alphaA, alphaB;
 	unsigned long sa = alpha, da = 0xFF - sa;
 
-	int dest_w = dc_dest->getwidth();
-	int src_w = dc_src->getwidth();
+	int dest_w = dc_dest->GetWidth();
+	int src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
 
 	if(w > 0)
@@ -2382,30 +2381,30 @@ putimage_trangle(
 	{
 		triangle2d _dt = *dt;
 		triangle2d _tt = *tt;
-		int x1 = 0, y1 = 0, x2 = dc_dest->getwidth(),
-			y2 = dc_dest->getheight(), i;
+		int x1 = 0, y1 = 0, x2 = dc_dest->GetWidth(),
+			y2 = dc_dest->GetHeight(), i;
 
 		if(smooth)
 		{
 			for(i = 0; i < 3; ++i)
 			{
 				_tt.p[i].x = (float)float2int((float)(_tt.p[i].x
-					* (dc_src->getwidth() - 2)));
+					* (dc_src->GetWidth() - 2)));
 				_tt.p[i].y = (float)float2int((float)(_tt.p[i].y
-					* (dc_src->getheight() - 2)));
+					* (dc_src->GetHeight() - 2)));
 			}
 		}
 		else
 			for(i = 0; i < 3; ++i)
 			{
 				_tt.p[i].x = (float)float2int((float)(_tt.p[i].x
-					* (dc_src->getwidth() - 1)));
+					* (dc_src->GetWidth() - 1)));
 				_tt.p[i].y = (float)float2int((float)(_tt.p[i].y
-					* (dc_src->getheight() - 1)));
+					* (dc_src->GetHeight() - 1)));
 			}
 		if(smooth)
 		{
-			if(dc_src->getwidth() > 1 && dc_src->getheight() > 1)
+			if(dc_src->GetWidth() > 1 && dc_src->GetHeight() > 1)
 				draw_flat_trangle_alpha_s(dc_dest, &_dt, dc_src, &_tt, x1, y1,
 					x2, y2, btransparent, alpha);
 		}
@@ -2448,9 +2447,9 @@ putimage_rotate(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 			for(i = 0; i < 3; ++i)
 			{
 				_dt[j].p[i].x = (_dt[j].p[i].x - centerx)
-					* (dc_src->getwidth());
+					* (dc_src->GetWidth());
 				_dt[j].p[i].y = (_dt[j].p[i].y - centery)
-					* (dc_src->getheight());
+					* (dc_src->GetHeight());
 				dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
 				dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
 				_dt[j].p[i].x = float(float2int(float((dx + nXOriginDest)
@@ -2496,8 +2495,8 @@ putimage_rotatezoom(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 		for(j = 0; j < 2; ++j)
 			for(i = 0; i < 3; ++i)
 			{
-				_dt[j].p[i].x = (_dt[j].p[i].x - centerx) * (dc_src->getwidth());
-				_dt[j].p[i].y = (_dt[j].p[i].y - centery) * (dc_src->getheight());
+				_dt[j].p[i].x = (_dt[j].p[i].x - centerx) * (dc_src->GetWidth());
+				_dt[j].p[i].y = (_dt[j].p[i].y - centery) * (dc_src->GetHeight());
 				dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
 				dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
 				_dt[j].p[i].x = float(float2int(float((dx * zoom + nXOriginDest) + FLT_EPSILON)));
@@ -2516,6 +2515,18 @@ putimage_rotatezoom(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 		);
 	}
 	return grOk;
+}
+
+IMAGE*
+CONVERT_IMAGE(IMAGE* pimg)
+{
+	return pimg ? pimg : (--update_mark_count, get_pages().imgtarget);
+}
+
+IMAGE*
+CONVERT_IMAGE_CONST(IMAGE* pimg)
+{
+	return pimg ? pimg : get_pages().imgtarget;
 }
 
 } // namespace ege;

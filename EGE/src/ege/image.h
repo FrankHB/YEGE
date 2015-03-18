@@ -57,13 +57,13 @@ public:
 	}
 
 	int
-	getwidth() const
+	GetWidth() const
 	{
 		return m_width;
 	}
 
 	int
-	getheight() const
+	GetHeight() const
 	{
 		return m_height;
 	}
@@ -75,7 +75,7 @@ public:
 	}
 
 	int
-	resize(int width, int height);
+	Resize(int, int);
 
 	void
 	getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);
@@ -91,18 +91,19 @@ public:
 	getimage(void* pMem, long size);
 
 	void
-	putimage(int dstX, int dstY, unsigned long dwRop = SRCCOPY) const;
+	putimage(int, int, unsigned long = SRCCOPY) const;
 	void
-	putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, unsigned long dwRop = SRCCOPY) const;
+	putimage(int, int, int, int, int, int, unsigned long = SRCCOPY) const;
 	void
-	putimage(IMAGE* pDstImg, int dstX, int dstY, unsigned long dwRop = SRCCOPY) const;
+	putimage(IMAGE*, int, int, unsigned long = SRCCOPY) const;
 	void
-	putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, unsigned long dwRop = SRCCOPY) const;
+	putimage(IMAGE*, int, int, int, int, int, int, unsigned long = SRCCOPY) const;
 	void
-	putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, int srcWidth, int srcHeight, unsigned long dwRop = SRCCOPY) const;
+	putimage(IMAGE*, int, int, int, int, int, int, int, int, unsigned long = SRCCOPY)
+		const;
 
 	int
-	saveimage(const char*  filename);
+	saveimage(const char* filename);
 	int
 	saveimage(const wchar_t* filename);
 	int
@@ -207,8 +208,8 @@ public:
 		float centerx,
 		float centery,
 		float radian,
-		int btransparent = 0,           // transparent (1) or not (0)
-		int alpha = -1,                  // in range[0, 256], alpha== -1 means no alpha
+		int btransparent = 0, // transparent (1) or not (0)
+		int alpha = -1, // in range[0, 256], alpha== -1 means no alpha
 		int smooth = 0
 	);
 
@@ -220,23 +221,29 @@ public:
 		float centery,
 		float radian,
 		float zoom,
-		int btransparent = 0,           // transparent (1) or not (0)
-		int alpha = -1,                  // in range[0, 256], alpha== -1 means no alpha
+		int btransparent = 0, // transparent (1) or not (0)
+		int alpha = -1, // in range[0, 256], alpha== -1 means no alpha
 		int smooth = 0
 	);
 };
 
 
-inline IMAGE*
-CONVERT_IMAGE(IMAGE* pimg)
+IMAGE*
+CONVERT_IMAGE(IMAGE*);
+
+IMAGE*
+CONVERT_IMAGE_CONST(IMAGE*);
+
+inline IMAGE&
+convert_image_ref(IMAGE* pimg)
 {
-	return pimg ? pimg : (--update_mark_count, get_pages().imgtarget);
+	return Deref(CONVERT_IMAGE(pimg));
 }
 
-inline IMAGE*
-CONVERT_IMAGE_CONST(IMAGE* pimg)
+inline IMAGE&
+convert_image_ref_c(IMAGE* pimg)
 {
-	return pimg ? pimg : get_pages().imgtarget;
+	return Deref(CONVERT_IMAGE_CONST(pimg));
 }
 
 } // namespace ege;
