@@ -54,7 +54,7 @@ gettarget()
 void
 swappage()
 {
-	auto pg = &get_global_state();
+	auto pg = &FetchEGEApplication();
 	setvisualpage(pg->active_page);
 	setactivepage(1 - pg->active_page);
 }

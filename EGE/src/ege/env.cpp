@@ -12,7 +12,7 @@ initgraph(int* gdriver, int* gmode, char*)
 {
 	assert(gdriver);
 
-	get_global_state(*gdriver, gmode)._init_graph_x();
+	FetchEGEApplication(*gdriver, gmode)._init_graph_x();
 }
 void
 initgraph(int width, int height, int flag)
@@ -27,13 +27,13 @@ initgraph(int width, int height, int flag)
 void
 closegraph()
 {
-	::ShowWindow(get_global_state()._get_hwnd(), SW_HIDE);
+	::ShowWindow(FetchEGEApplication()._get_hwnd(), SW_HIDE);
 }
 
 bool
 is_run()
 {
-	return get_global_state()._is_run();
+	return FetchEGEApplication()._is_run();
 }
 
 } // namespace ege;

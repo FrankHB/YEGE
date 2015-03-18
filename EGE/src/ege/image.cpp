@@ -455,7 +455,7 @@ IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 int
 IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 {
-	if(const auto hrsrc = ::FindResourceA(_graph_setting::get_instance(),
+	if(const auto hrsrc = ::FindResourceA(EGEApplication::GetInstance(),
 		pResName, pResType))
 	{
 		auto hg(::LoadResource({}, hrsrc));
@@ -501,7 +501,7 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 int
 IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 {
-	if(const auto hrsrc = ::FindResourceW(_graph_setting::get_instance(),
+	if(const auto hrsrc = ::FindResourceW(EGEApplication::GetInstance(),
 		pResName, pResType))
 	{
 		auto hg = ::LoadResource({}, hrsrc);

@@ -8,62 +8,62 @@ namespace ege
 int
 kbmsg()
 {
-	return get_global_state()._get_input(get_input_op::kbmsg);
+	return FetchEGEApplication()._get_input(get_input_op::kbmsg);
 }
 
 key_msg
 getkey()
 {
-	return get_global_state()._getkey();
+	return FetchEGEApplication()._getkey();
 }
 
 int
 keystate(int key)
 {
-	return get_global_state()._keystate(key);
+	return FetchEGEApplication()._keystate(key);
 }
 
 void
 flushkey()
 {
-	get_global_state()._flush_key_mouse(true);
+	FetchEGEApplication()._flush_key_mouse(true);
 }
 
 int
 getch()
 {
-	return get_global_state()._get_input(get_input_op::getch);
+	return FetchEGEApplication()._get_input(get_input_op::getch);
 }
 
 int
 kbhit()
 {
-	return get_global_state()._get_input(get_input_op::kbhit);
+	return FetchEGEApplication()._get_input(get_input_op::kbhit);
 }
 
 
 bool
 mousemsg()
 {
-	return get_global_state()._mousemsg();
+	return FetchEGEApplication()._mousemsg();
 }
 
 mouse_msg
 getmouse()
 {
-	return get_global_state()._getmouse();
+	return FetchEGEApplication()._getmouse();
 }
 
 void
 flushmouse()
 {
-	get_global_state()._flush_key_mouse({});
+	FetchEGEApplication()._flush_key_mouse({});
 }
 
 bool
 showmouse(bool bShow)
 {
-	return get_global_state()._show_mouse(bShow);
+	return FetchEGEApplication()._show_mouse(bShow);
 }
 
 
@@ -73,8 +73,8 @@ mousepos(int* x, int* y)
 	assert(x),
 	assert(y);
 
-	*x = get_global_state().mouse_last_x;
-	*y = get_global_state().mouse_last_y;
+	*x = FetchEGEApplication().mouse_last_x;
+	*y = FetchEGEApplication().mouse_last_y;
 	return 0;
 }
 

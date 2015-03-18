@@ -45,7 +45,7 @@ enum class get_input_op
 
 
 // 定义ege全局状态对象
-struct _graph_setting
+struct EGEApplication
 {
 private:
 	::HWND hwnd;
@@ -68,9 +68,9 @@ public:
 	/* 键盘状态记录 */
 	int keystatemap[MAX_KEY_VCODE]{};
 
-	_graph_setting(int, int*);
-	_graph_setting(const _graph_setting&) = delete;
-	~_graph_setting();
+	EGEApplication(int, int*);
+	EGEApplication(const EGEApplication&) = delete;
+	~EGEApplication();
 
 	bool
 	_is_run() const;
@@ -184,7 +184,7 @@ public:
 	_window_destroy(msg_createwindow&);
 
 	static ::HINSTANCE
-	get_instance()
+	GetInstance()
 	{
 		return ::GetModuleHandleW({});
 	}
@@ -194,7 +194,7 @@ public:
 class _pages
 {
 public:
-	_graph_setting& gstate;
+	EGEApplication& gstate;
 	::HDC active_dc;
 
 private:
@@ -244,8 +244,8 @@ public:
 };
 
 
-_graph_setting&
-get_global_state(int = VGA, int* = {});
+EGEApplication&
+FetchEGEApplication(int = VGA, int* = {});
 
 _pages&
 get_pages();

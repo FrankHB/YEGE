@@ -196,7 +196,7 @@ xyprintf(int x, int y, const char*  fmt, ...)
 	const std::unique_ptr<char[]> buf(new char[8 << 12]);
 	const auto buff(&buf[0]);
 
-	get_global_state();
+	FetchEGEApplication();
 	va_list v;
 	va_start(v, fmt);
 	std::vsprintf(buff, fmt, v);
@@ -210,7 +210,7 @@ xyprintf(int x, int y, const wchar_t* fmt, ...)
 	const std::unique_ptr<wchar_t[]> buf(new wchar_t[8 << 11]);
 	const auto buff(&buf[0]);
 
-	get_global_state();
+	FetchEGEApplication();
 	va_list v;
 	va_start(v, fmt);
 	std::vswprintf(buff, fmt, v);
@@ -224,7 +224,7 @@ rectprintf(int x, int y, int w, int h, const char*  fmt, ...)
 	const std::unique_ptr<char[]> buf(new char[8 << 12]);
 	const auto buff(&buf[0]);
 
-	get_global_state();
+	FetchEGEApplication();
 
 	va_list v;
 
@@ -240,7 +240,7 @@ rectprintf(int x, int y, int w, int h, const wchar_t* fmt, ...)
 	const std::unique_ptr<wchar_t[]> buf(new wchar_t[8 << 11]);
 	const auto buff(&buf[0]);
 
-	get_global_state();
+	FetchEGEApplication();
 
 	va_list v;
 
@@ -629,7 +629,7 @@ inputbox_getline(const wchar_t* title, const wchar_t* text, wchar_t* buf,
 		buf[--len] = 0;
 	ret = len;
 	putimage(0, 0, &bg);
-	get_global_state()._getflush();
+	FetchEGEApplication()._getflush();
 	return ret;
 }
 
