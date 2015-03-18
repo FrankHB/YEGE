@@ -6,6 +6,7 @@
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #include <gmpxx.h>
 #pragma GCC diagnostic pop
+#include <Windows.h>
 
 //using namespace std;
 
@@ -758,7 +759,6 @@ main()
 	int w = SC_W, h = SC_H, dh = 48;
 	setinitmode(0);
 	initgraph(w, h + dh);
-	randomize();
 	InitColor();
 //	setfillstyle(0x0);
 	setfont(12, 0, "ËÎÌו");

@@ -1,5 +1,7 @@
 #include "graphics.h"
 #include <cstdio>
+#include <cstring>
+#include <Windows.h>
 
 char installpath[8][MAX_PATH];
 char g_output[1024 * 16];
@@ -147,9 +149,9 @@ int getpath_scene()
 		{
 			::DWORD dwtype = REG_SZ;
 			::DWORD dwsize = MAX_PATH;
-			if(::RegQueryValueExA(key, "ProductDir", {}, &dwtype, (ystdex::byte*)(installpath[it]), &dwsize))
+			if(::RegQueryValueExA(key, "ProductDir", {}, &dwtype, (unsigned char*)(installpath[it]), &dwsize))
 			{
-				::RegQueryValueExA(key, "InstallDir", {}, &dwtype, (ystdex::byte*)(installpath[it]), &dwsize);
+				::RegQueryValueExA(key, "InstallDir", {}, &dwtype, (unsigned char*)(installpath[it]), &dwsize);
 				strcat(installpath[it], "\\mingw");
 			}
 			::RegCloseKey(key);

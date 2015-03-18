@@ -854,7 +854,6 @@ public:
 \n	int arr[20];\
 \n	int a, b;\
 \n	initgraph(640, 480);\
-\n	randomize();\
 \n	for(a = 0; a < 20; ++a)\
 \n	{\
 \n		arr[a] = random(32);\

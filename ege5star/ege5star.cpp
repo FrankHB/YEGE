@@ -9,10 +9,9 @@ main()
 {
 	initgraph(640, 480);
 
-	double r = 0;
 	fps f;
 
-	for(; is_run(); delay_fps(100000))
+	for(double r = 0; is_run(); delay_fps(100000))
 	{
 		r += 0.02;
 		if(r > PI * 2)

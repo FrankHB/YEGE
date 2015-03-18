@@ -2,6 +2,7 @@
 #include <mmsystem.h>
 #include <Digitalv.h>
 #include <ystdex/cassert.h>
+#include <synchapi.h>
 
 namespace ege
 {

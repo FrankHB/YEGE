@@ -131,7 +131,6 @@ int main()
 	int n_poly[10]{1, 1, 1, 1, 1};
 	int n_polys = 3, i;
 
-	randomize();
 	//图形初始化
 	{
 		setinitmode(INIT_ANIMATION);
@@ -143,8 +142,7 @@ int main()
 	for(i = 0; i < n_polys; ++i)
 		initpolys(&p[i], n_poly[i], n_points[i]);
 	fps ui_fps;
-	//主循环
-	for(; is_run(); delay_fps(60))
+	for(; is_run() && kbhit() <= 0; delay_fps(60)) //有按键按下就退出
 	{
 		if(kbhit() > 0)  //有按键按下就退出
 			break;

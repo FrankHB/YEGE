@@ -2,14 +2,16 @@
 #ifndef Inc_ege_global_h_
 #define Inc_ege_global_h_
 
+#include "msg.h"
 #include "ege/proc.h"
 #include "ege/input.h"
-#include "msg.h"
+#include "ege/env.h"
 #include "ege/base.h"
 #include <thread>
 #include "thread_queue.h"
 #include YFM_Helper_HostedUI
 #include YFM_Helper_Environment
+#include <memory>
 
 #define BITMAP_PAGE_SIZE 4
 #define MAX_KEY_VCODE 256
@@ -17,6 +19,8 @@
 
 namespace ege
 {
+
+using std::unique_ptr;
 
 class IMAGE;
 class egeControlBase;
@@ -33,6 +37,14 @@ extern egeControlBase* egectrl_focus;
 
 void
 _set_initmode(int, int, int);
+
+
+enum class get_input_op
+{
+	getch,
+	kbhit,
+	kbmsg
+};
 
 
 // EGE 全局状态
@@ -73,10 +85,7 @@ public:
 	_is_window_exit() const;
 
 	void
-	_flushkey();
-
-	void
-	_flushmouse();
+	_flush_key_mouse(bool);
 
 	int
 	_get_dc_w() const
@@ -96,14 +105,14 @@ public:
 		return hwnd;
 	}
 
+	int
+	_get_input(get_input_op);
+
 	::HDC
 	_get_window_dc() const
 	{
 		return window_dc;
 	}
-
-	int
-	_getch();
 
 	int
 	_getflush();
@@ -121,12 +130,6 @@ public:
 	_init_graph_x();
 
 	int
-	_kbhit();
-
-	int
-	_kbmsg();
-
-	int
 	_keystate(int);
 
 	bool
@@ -135,11 +138,14 @@ public:
 	void
 	_on_destroy();
 
-	void
-	_on_key(::UINT, unsigned long, ::LPARAM);
+	static void
+	_on_ime_control(::HWND, ::WPARAM, ::LPARAM);
 
 	void
-	_on_mouse_button_up(::HWND, ::UINT, ::WPARAM, ::LPARAM);
+	_on_key(unsigned, unsigned long, ::LPARAM);
+
+	void
+	_on_mouse_button_up(::HWND, unsigned, ::WPARAM, ::LPARAM);
 
 	void
 	_on_paint(::HWND);
@@ -160,7 +166,7 @@ public:
 	_process_ui_msg(EGEMSG&);
 
 	void
-	_push_mouse_msg(::UINT, ::WPARAM, ::LPARAM);
+	_push_mouse_msg(unsigned, ::WPARAM, ::LPARAM);
 
 	int
 	_show_mouse(bool);
@@ -168,7 +174,7 @@ public:
 	void
 	_uninit();
 
-	int
+	void
 	_update();
 
 	void
@@ -177,7 +183,7 @@ public:
 	void
 	_update_if_necessary();
 
-	int
+	bool
 	_waitdealmessage();
 
 	static void
@@ -185,19 +191,23 @@ public:
 };
 
 
-struct _pages
+class _pages
 {
+public:
 	EGEApplication& gstate;
 	::HDC active_dc;
+
+private:
 	int active_page = 0;
 	int visual_page = 0;
 	IMAGE* imgtarget_set = {};
-	mutable IMAGE* img_page[BITMAP_PAGE_SIZE] = {};
-	IMAGE* imgtarget = {};
+	mutable unique_ptr<IMAGE> img_page[BITMAP_PAGE_SIZE];
+
+public:
 	int base_x = 0, base_y = 0, base_w = 0, base_h = 0;
+	IMAGE* imgtarget = {};
 
 	_pages();
-	~_pages();
 
 	void
 	check_page(int) const;

@@ -21,17 +21,13 @@ randomize()
 unsigned
 random(unsigned n)
 {
-	std::uniform_int_distribution<unsigned> d(0, n);
-
-	return d(mt);
+	return std::uniform_int_distribution<unsigned>(0, n)(mt);
 }
 
 double
 randomf()
 {
-	std::uniform_real_distribution<float> d;
-
-	return d(mt);
+	return std::uniform_real_distribution<float>()(mt);
 }
 
 } // namespace ege;

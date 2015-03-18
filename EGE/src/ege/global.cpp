@@ -2,6 +2,7 @@
 #include "image.h" // for IMAGE;
 #include "ege/time.h" // for delay_ms;
 #include "ege/ctl.h"
+#include "ege.h"
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
 #include <gdiplus.h>
 #include <memory> // for std::unique_ptr;
@@ -280,57 +281,36 @@ EGEApplication::_is_window_exit() const
 }
 
 void
-EGEApplication::_flushkey()
+EGEApplication::_flush_key_mouse(bool key)
 {
-	EGEMSG msg;
+	auto& q(key ? msgkey_queue : msgmouse_queue);
 
-	if(msgkey_queue.empty())
+	if(q.empty())
 		_update_if_necessary();
-	if(!msgkey_queue.empty())
-		while(msgkey_queue.pop(msg))
-			;
-}
-
-void
-EGEApplication::_flushmouse()
-{
-	EGEMSG msg;
-
-	if(msgmouse_queue.empty())
-		_update_if_necessary();
-	if(!msgmouse_queue.empty())
-		while(msgmouse_queue.pop(msg))
-			;
+	q.clear();
 }
 
 int
-EGEApplication::_getch()
+EGEApplication::_get_input(get_input_op op)
 {
 	if(_is_window_exit())
 		return grNoInitGraph;
+	switch(op)
 	{
-		int key;
-		EGEMSG msg;
-		::DWORD dw = GetTickCount();
+	case get_input_op::getch:
 		do
 		{
-			key = _kbhit();
+			int key = _peekkey();
 			if(key < 0)
 				break;
 			if(key > 0)
-				if((key = _getkey_p()))
-				{
-					msg = msgkey_queue.last();
-					if(dw < msg.time + 1000)
-					{
-						if(((key & KEYMSG_DOWN) && (msg.wParam >= 0x70
-							&& msg.wParam < 0x80)) || (msg.wParam > ' '
-							&& msg.wParam < '0'))
-							key |= 0x100;
-						return key & 0xFFFF;
-					}
-				}
-		}while(_is_run() && _waitdealmessage());
+				key = _getkey_p();
+		} while(_is_run() && _waitdealmessage());
+		break;
+	case get_input_op::kbhit:
+		return _peekkey();
+	case get_input_op::kbmsg:
+		return _peekallkey(1);
 	}
 	return 0;
 }
@@ -338,15 +318,18 @@ EGEApplication::_getch()
 int
 EGEApplication::_getflush()
 {
-	EGEMSG msg;
 	int lastkey = 0;
 
 	if(msgkey_queue.empty())
 		_update_if_necessary();
-	if(!msgkey_queue.empty())
-		while(msgkey_queue.pop(msg))
-			if(msg.message == WM_CHAR)
-				lastkey = int(msg.wParam);
+	while(!msgkey_queue.empty())
+	{
+		const auto& msg(msgkey_queue.top());
+
+		if(msg.message == WM_CHAR)
+			lastkey = int(msg.wParam);
+		msgkey_queue.pop();
+	}
 	return lastkey;
 }
 
@@ -378,7 +361,7 @@ EGEApplication::_getkey()
 					msg.flags |= key_flag_shift;
 				return msg;
 			}
-		}while(_is_run() && _waitdealmessage());
+		} while(_is_run() && _waitdealmessage());
 	}
 	return ret;
 }
@@ -386,9 +369,11 @@ EGEApplication::_getkey()
 int
 EGEApplication::_getkey_p()
 {
-	EGEMSG msg;
+	while(!msgkey_queue.empty())
+	{
+		const auto msg(msgkey_queue.top());
 
-	while(msgkey_queue.pop(msg))
+		msgkey_queue.pop();
 		switch(msg.message)
 		{
 		case WM_CHAR:
@@ -401,6 +386,7 @@ EGEApplication::_getkey_p()
 		default:
 			break;
 		}
+	}
 	return 0;
 }
 
@@ -416,7 +402,11 @@ EGEApplication::_getmouse()
 
 	do
 	{
-		msgmouse_queue.pop(msg);
+		if(!msgmouse_queue.empty())
+		{
+			msg = msgkey_queue.top();
+			msgkey_queue.pop();
+		}
 		if(msg.hwnd)
 		{
 			mmsg.flags |= ((msg.wParam & MK_CONTROL) != 0
@@ -539,18 +529,6 @@ EGEApplication::_init_graph_x()
 }
 
 int
-EGEApplication::_kbhit()
-{
-	return _is_window_exit() ? int(grNoInitGraph) : int(_peekkey());
-}
-
-int
-EGEApplication::_kbmsg()
-{
-	return _is_window_exit() ? int(grNoInitGraph) : int(_peekallkey(1));
-}
-
-int
 EGEApplication::_keystate(int key)
 {
 	if(key < 0 || key >= MAX_KEY_VCODE)
@@ -587,7 +565,22 @@ EGEApplication::_on_destroy()
 }
 
 void
-EGEApplication::_on_key(::UINT message, unsigned long keycode, ::LPARAM keyflag)
+EGEApplication::_on_ime_control(::HWND hwnd, ::WPARAM wparam, ::LPARAM lparam)
+{
+	if(wparam == IMC_SETSTATUSWINDOWPOS)
+	{
+		::HIMC hImc = ImmGetContext(hwnd);
+
+		COMPOSITIONFORM cpf{0, ::POINT(), ::RECT()};
+
+		cpf.dwStyle = CFS_POINT;
+		cpf.ptCurrentPos = *(LPPOINT)lparam;
+		::ImmSetCompositionWindow(hImc, &cpf);
+	}
+}
+
+void
+EGEApplication::_on_key(unsigned message, unsigned long keycode, ::LPARAM keyflag)
 {
 	if(message == WM_KEYDOWN && keycode < MAX_KEY_VCODE)
 		keystatemap[keycode] = 1;
@@ -598,7 +591,7 @@ EGEApplication::_on_key(::UINT message, unsigned long keycode, ::LPARAM keyflag)
 }
 
 void
-EGEApplication::_on_mouse_button_up(::HWND h_wnd, ::UINT msg, ::WPARAM w_param,
+EGEApplication::_on_mouse_button_up(::HWND h_wnd, unsigned msg, ::WPARAM w_param,
 	::LPARAM l_param)
 {
 	auto* l = &mouse_state_l;
@@ -663,18 +656,20 @@ EGEApplication::_on_setcursor(::HWND hwnd)
 int
 EGEApplication::_peekkey()
 {
-	EGEMSG msg;
-
-	while(msgkey_queue.pop(msg))
+	while(!msgkey_queue.empty())
 	{
+		const auto& msg(msgkey_queue.top());
+
 		if(msg.message == WM_CHAR || msg.message == WM_KEYDOWN)
 		{
 			if(msg.message == WM_KEYDOWN)
 				if(msg.wParam <= key_space || (msg.wParam >= key_0
 					&& msg.wParam < key_f1) || (msg.wParam >= key_semicolon
 					&& msg.wParam <= key_quote))
+				{
+					msgkey_queue.pop();
 					continue;
-			msgkey_queue.unpop();
+				}
 			if(msg.message == WM_CHAR)
 				return KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF);
 			if(msg.message == WM_KEYDOWN)
@@ -686,6 +681,8 @@ EGEApplication::_peekkey()
 			else if(msg.message == WM_KEYUP)
 				return KEYMSG_UP | (int(msg.wParam) & 0xFFFF);
 		}
+		else
+			msgkey_queue.pop();
 	}
 	return 0;
 }
@@ -693,15 +690,14 @@ EGEApplication::_peekkey()
 int
 EGEApplication::_peekallkey(int flag)
 {
-	EGEMSG msg;
-
-	while(msgkey_queue.pop(msg))
+	while(!msgkey_queue.empty())
 	{
+		const auto& msg(msgkey_queue.top());
+
 		if((msg.message == WM_CHAR && (flag & KEYMSG_CHAR_FLAG)) ||
 			(msg.message == WM_KEYUP && (flag & KEYMSG_UP_FLAG)) ||
 			(msg.message == WM_KEYDOWN && (flag & KEYMSG_DOWN_FLAG)))
 		{
-			msgkey_queue.unpop();
 			if(msg.message == WM_CHAR)
 				return (KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF));
 			else if(msg.message == WM_KEYDOWN)
@@ -710,6 +706,8 @@ EGEApplication::_peekallkey(int flag)
 			else if(msg.message == WM_KEYUP)
 				return KEYMSG_UP | (int(msg.wParam) & 0xFFFF);
 		}
+		else
+			msgkey_queue.pop();
 	}
 	return 0;
 }
@@ -717,16 +715,11 @@ EGEApplication::_peekallkey(int flag)
 EGEMSG
 EGEApplication::_peekmouse()
 {
-	auto msg = EGEMSG();
-
 	if(msgmouse_queue.empty())
 		_update_if_necessary();
-	while(msgmouse_queue.pop(msg))
-	{
-		msgmouse_queue.unpop();
-		return msg;
-	}
-	return msg;
+	if(!msgmouse_queue.empty())
+		return msgmouse_queue.top();
+	return {};
 }
 
 void
@@ -752,7 +745,7 @@ EGEApplication::_process_ui_msg(EGEMSG& qmsg)
 	else if(qmsg.message >= WM_MOUSEFIRST && qmsg.message <= WM_MOUSELAST)
 	{
 		int x = short(qmsg.lParam & 0xFFFF),
-			y = short(::UINT(qmsg.lParam) >> 16);
+			y = short(unsigned(qmsg.lParam) >> 16);
 
 		switch(qmsg.message)
 		{
@@ -785,12 +778,12 @@ EGEApplication::_process_ui_msg(EGEMSG& qmsg)
 }
 
 void
-EGEApplication::_push_mouse_msg(::UINT message, ::WPARAM wparam,
+EGEApplication::_push_mouse_msg(unsigned message, ::WPARAM wparam,
 	::LPARAM lparam)
 {
 	msgmouse_queue.push(EGEMSG{hwnd, message, wparam, lparam, ::GetTickCount(),
-		::UINT(mouse_state_m << 2 | mouse_state_r << 1 | mouse_state_l << 0),
-		::UINT()});
+		unsigned(mouse_state_m << 2 | mouse_state_r << 1 | mouse_state_l << 0),
+		unsigned()});
 }
 
 int
@@ -800,47 +793,42 @@ EGEApplication::_show_mouse(bool bShow)
 	return bShow;
 }
 
-int
+void
 EGEApplication::_update()
 {
-	if(_is_window_exit())
-		return grNoInitGraph;
-
-	if(IsWindowVisible(hwnd))
+	if(!_is_window_exit())
 	{
-		if(!window_dc)
-			return grNullPointer;
-		get_pages().update();
-	}
-	update_mark_count = UPDATE_MAX_CALL;
-	_get_FPS(0x100);
+		if(IsWindowVisible(hwnd) && window_dc)
+			get_pages().update();
+		update_mark_count = UPDATE_MAX_CALL;
+		_get_FPS(0x100);
 
-	::RECT crect;
+		::RECT crect;
 
-	::GetClientRect(hwnd, &crect);
+		::GetClientRect(hwnd, &crect);
 
-	int _dw = dc_w - (crect.right - crect.left),
-		_dh = dc_h - (crect.bottom - crect.top);
-	if(_dw != 0 || _dh != 0)
-	{
-		::RECT rect;
-
-		::GetWindowRect(hwnd, &rect);
-		if(::HWND h_parent_wnd = ::GetParent(hwnd))
+		int _dw = dc_w - (crect.right - crect.left),
+			_dh = dc_h - (crect.bottom - crect.top);
+		if(_dw != 0 || _dh != 0)
 		{
-			::POINT pt{0, 0};
+			::RECT rect;
 
-			::ClientToScreen(h_parent_wnd, &pt);
-			rect.left -= pt.x;
-			rect.top -= pt.y;
-			rect.right -= pt.x;
-			rect.bottom -= pt.y;
+			::GetWindowRect(hwnd, &rect);
+			if(::HWND h_parent_wnd = ::GetParent(hwnd))
+			{
+				::POINT pt{0, 0};
+
+				::ClientToScreen(h_parent_wnd, &pt);
+				rect.left -= pt.x;
+				rect.top -= pt.y;
+				rect.right -= pt.x;
+				rect.bottom -= pt.y;
+			}
+			::SetWindowPos(hwnd, {}, 0, 0, rect.right  + _dw - rect.left,
+				rect.bottom + _dh - rect.top, SWP_NOACTIVATE | SWP_NOMOVE
+				| SWP_NOOWNERZORDER | SWP_NOZORDER);
 		}
-		::SetWindowPos(hwnd, {}, 0, 0, rect.right  + _dw - rect.left,
-			rect.bottom + _dh - rect.top,
-			SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 	}
-	return grOk;
 }
 
 void
@@ -871,7 +859,7 @@ EGEApplication::_update_GUI()
 	msgmouse_queue.process(bind(&EGEApplication::_process_ui_msg, this, _1));
 }
 
-int
+bool
 EGEApplication::_waitdealmessage()
 {
 	if(update_mark_count < UPDATE_MAX_CALL)
@@ -912,13 +900,8 @@ _pages::_pages()
 {
 	check_page(0);
 	active_dc = img_page[0]->getdc();
-	imgtarget = img_page[active_page];
+	imgtarget = img_page[active_page].get();
 	update_mark_count = 0;
-}
-_pages::~_pages()
-{
-	for(const auto& p : img_page)
-		delete p;
 }
 
 void
@@ -929,7 +912,7 @@ _pages::check_page(int page) const
 		const int dc_w(gstate._get_dc_w());
 		const int dc_h(gstate._get_dc_h());
 
-		img_page[page] = new IMAGE(active_dc, dc_w, dc_h);
+		img_page[page].reset(new IMAGE(active_dc, dc_w, dc_h));
 	}
 }
 
@@ -977,7 +960,7 @@ int
 _pages::set_target(IMAGE* pbuf)
 {
 	imgtarget_set = pbuf;
-	imgtarget = pbuf ? pbuf : img_page[active_page];
+	imgtarget = pbuf ? pbuf : img_page[active_page].get();
 	return 0;
 }
 

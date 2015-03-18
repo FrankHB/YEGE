@@ -1,7 +1,6 @@
 ﻿#include "global.h"
 #include "ege/base.h"
 #include "ege/input.h"
-#include "head.h"
 
 namespace ege
 {
@@ -9,7 +8,7 @@ namespace ege
 int
 kbmsg()
 {
-	return FetchEGEApplication()._kbmsg();
+	return FetchEGEApplication()._get_input(get_input_op::kbmsg);
 }
 
 key_msg
@@ -27,19 +26,19 @@ keystate(int key)
 void
 flushkey()
 {
-	FetchEGEApplication()._flushkey();
+	FetchEGEApplication()._flush_key_mouse(true);
 }
 
 int
 getch()
 {
-	return FetchEGEApplication()._getch();
+	return FetchEGEApplication()._get_input(get_input_op::getch);
 }
 
 int
 kbhit()
 {
-	return FetchEGEApplication()._kbhit();
+	return FetchEGEApplication()._get_input(get_input_op::kbhit);
 }
 
 
@@ -58,7 +57,7 @@ getmouse()
 void
 flushmouse()
 {
-	FetchEGEApplication()._flushmouse();
+	FetchEGEApplication()._flush_key_mouse({});
 }
 
 bool
@@ -71,8 +70,11 @@ showmouse(bool bShow)
 int
 mousepos(int* x, int* y)
 {
-	yunseq(Deref(x) = FetchEGEApplication().mouse_last_x,
-		Deref(y) = FetchEGEApplication().mouse_last_y);
+	assert(x),
+	assert(y);
+
+	*x = FetchEGEApplication().mouse_last_x;
+	*y = FetchEGEApplication().mouse_last_y;
 	return 0;
 }
 

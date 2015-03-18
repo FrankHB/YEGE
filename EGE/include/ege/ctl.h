@@ -36,7 +36,7 @@ public:
 	~egeControlBase();
 
 	// 以下虚函数都不要直接相互调用
-	virtual ::LRESULT onMessage(::UINT, ::WPARAM, ::LPARAM)
+	virtual ::LRESULT onMessage(unsigned, ::WPARAM, ::LPARAM)
 	{
 		return 0;
 	}
@@ -283,13 +283,13 @@ protected:
 	int m_w, m_h;       // 宽高
 
 protected:
-	::DWORD   m_rop;              // 混合方式
-	int     m_AlphablendMode;   // 绘画混合过滤方式
-	int     m_bDirectDraw;      // 启用直接绘画
+	unsigned long m_rop;              // 混合方式
+	int m_AlphablendMode;   // 绘画混合过滤方式
+	int m_bDirectDraw;      // 启用直接绘画
 #if _MSC_VER <= 1200
 public:
 #endif
-	int     m_inheritlevel;     // 继承层次
+	int m_inheritlevel;     // 继承层次
 };
 
 }

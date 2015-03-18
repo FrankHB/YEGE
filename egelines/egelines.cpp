@@ -144,7 +144,6 @@ int main()
 	int n_poly[10]{80, 40, 10, 5, 1};
 	int n_polys = 2, i;
 
-	randomize();
 	//图形初始化
 	{
 		setinitmode(1, 0, 0);
@@ -154,9 +153,7 @@ int main()
 	}
 	//多边形对象初始化
 	for(i = 0; i < n_polys; ++i)
-	{
 		initpolys(&p[i], n_poly[i], n_points[i]);
-	}
 	setfont(12, 6, "宋体");
 	fps ui_fps;
 	//主循环

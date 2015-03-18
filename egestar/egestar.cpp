@@ -59,7 +59,6 @@ int main(int argc, char* argv[])
 	int mode = preinit(argc, argv);   // 记录初始化模式
 	if(mode < 0) return 0;
 
-	randomize(); // 初始化随机种子
 	initgraph(-1, -1);   // 打开图形窗口，以全屏模式
 
 	showmouse(mode);
@@ -75,9 +74,10 @@ int main(int argc, char* argv[])
 	// 绘制星空，按任意键或移动鼠标退出
 	setfont(12, 6, "宋体");
 	dtime = fclock();
-	while(kbmsg()) getkey();
-
-	for(; !exitflag && is_run() && kbmsg() == 0; delay_fps(fps))        //每秒画120帧，kbhit(1)是获取键盘任意键的消息，详见pdf
+	while(kbmsg())
+		getkey();
+	//每秒画120帧，kbhit(1)是获取键盘任意键的消息
+	for(; !exitflag && is_run() && kbmsg() == 0; delay_fps(fps))
 	{
 		// 如果有鼠标消息
 		while(mousemsg())

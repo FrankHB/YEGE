@@ -133,7 +133,6 @@ main()
 {
 	setinitmode(INIT_ANIMATION);
 	initgraph(640, 480);
-	randomize(); //初始化随机种子
 
 	AniObj aniobj; //定义对象
 	fps f;

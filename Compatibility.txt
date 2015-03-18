@@ -23,6 +23,7 @@ Code::Blocks 。
 ----
 入口统一为 ::main 。
 编译为 DLL 无需定义宏。
+移除 EGE_DEPRECATED 宏。
 移除 SHOW_CONSOLE 宏。若需要控制台，在 Code::Blocks 选项内选择，或确保编译命令行无 -mwindows 。
 无 Logo 显示。
 移除所有标记为 deprecated 的接口。
@@ -50,7 +51,8 @@ typedef 类型名 color_t 从 unsigned int 改为 YSLib::Drawing::PixelType 。
 移除枚举 initmode_flag 中的枚举项 INIT_RENDERMANUAL 和 INTIT_WITHLOGO ，枚举项 INIT_DEFAULT 的值固定为 0x0 。
 移除兼容宏 RGBtoGRAY 、RGBtoHSL 、RGBtoHSV 、HSLtoRGB 和 HSVtoRGB，使用函数 rgb2gray 、rgb2hsl 、rgb2hsv 、hsl2rgb 和 hsv2rgb 代替。
 颜色转换断言严格要求色调值在区间 [0, 360) 内。
-移除函数 getProcfunc 。
+移除 getProcfunc 和 SetCloseHandler 函数。
+移除枚举 graphics_modes 。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
@@ -62,13 +64,13 @@ delay_fps 和 delay_jfps 仅保留 double 重载版本。
 linestyletype 和 EGEMSG 默认初始化所有成员。
 函数 ege_sleep 支持多线程环境下使用。（实际原有实现可在多线程下使用但未在头文件中明确。）
 提升 fclock 函数的精度。
+随机数函数第一次调用时自动初始化随机数种子，不需要事先调用 randomize 函数。
 
 兼容接口和实现调整
 ----
 Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 、LPCWSTR 、PVOID 、LPVOID 和 LPPOINT 分别用 wchar_t 、char* 、const char* 、wchar_t* 、const wchar_t* 、void* 、void* 和 ::POINT* 代替。
 所有同名 typedef 结构体名称或 typedef 匿名结构体调整为非 typedef 结构体类型名。
 宏 EGEAPI 调整至返回值前；移除函数形参中不必要的 const 。
-移除宏 EGE_DEPRECATED 。
 
 修正错误实现
 ----
@@ -102,7 +104,7 @@ Windows SDK 类型 CHAR 、WCHAR 、LPSTR 、LPCSTR 、LPWSTR 、LPCWSTR 、PVOI
 移除 setrendermode 实现所需的计时器例程；主窗口消息循环不响应 WM_TIMER 。
 取消手动设置 exit_window 状态，改用 UI 线程状态表示；移除无用的 exit_flag 。
 类型 PDWORD 用 DWORD* 代替。
-类 IMAGE ：修复复制构造；新增交换、转移构造和统一赋值操作；移除成员初始化检查；封装部分成员保证不可在外部修改；使用 YFramework 的 platform_ex::ScreenBuffer 代替 ::HBITMAP 实现。
+类 IMAGE ：修复复制构造；新增交换、转移构造和统一赋值操作；移除成员初始化检查；封装部分成员保证不可在外部修改。
 CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入除空指针值外返回原值。
 命名空间作用域静态函数和对象去除 static 并使用未命名命名空间代替。
 移除不符合标准的保留名称 _RGBtoHSL 和 _HSLtoRGB 的使用。
@@ -112,6 +114,9 @@ CONVERT_IMAGE 和 CONVERT_IMAGE_CONST 宏改用内联函数实现，且当输入
 使用 YSLib::Drawing::HBitmap 实现 BMP 和 PNG 图像保存。
 使用 C++11 标准库 <thread> 提供的 std::this_thread::sleep_for 代替 ::HTIMER 和 ::Sleep 实现延时。
 使用 C++11 标准库 <chrono> 和 YSLib 提供的包装接口实现其它时间操作。
+thread_queue 类模板使用 std::mutex 、std::lock_guard 和 std::deque 实现。
+提升 flushkey 和 flushmouse 函数的性能。
+避免直接使用 malloc 和 free 。
 拆分宿主环境主窗口和控件的窗口过程。
 
 实现质量(QoI)

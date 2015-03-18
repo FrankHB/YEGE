@@ -174,7 +174,6 @@ int main()
 	setinitmode(INIT_ANIMATION);
 	initgraph(LEN, WID);
 	setcaption("Åö×²Ð¡Çò");
-	randomize();
 
 	BALL ball[MAXBALL];
 

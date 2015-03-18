@@ -40,7 +40,7 @@ void movechars(int* nobj, chartarget* ct, int bnew)
 int main()
 {
 	initgraph(400, 400);
-	randomize();
+
 
 	chartarget ct[256];
 	int nobj = 0;

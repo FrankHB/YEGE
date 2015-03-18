@@ -29,8 +29,8 @@ struct msg_createwindow
 	::HANDLE hEvent;
 	::HWND hwnd;
 	const wchar_t* classname;
-	::DWORD style;
-	::DWORD exstyle;
+	unsigned long style;
+	unsigned long exstyle;
 	unsigned id;
 	void* param;
 };

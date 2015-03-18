@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <algorithm>
 #include <cstdio>
+#include <Windows.h>
 
 //using namespace std;
 
@@ -730,7 +731,6 @@ main()
 	// 初始化绘图窗口及颜色
 	int w = SC_W, h = SC_H, dh = 48;
 	initgraph(w, h + dh);
-	randomize();
 	InitColor();
 //	setfillstyle(0x0);
 	setfont(12, 0, "宋体");

@@ -20,7 +20,7 @@ _save_brush(IMAGE* img, int save)
 
 	if(save)
 	{
-		::LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
+		::LOGBRUSH lbr{0, COLORREF(), 0U};
 
 		lbr.lbColor = 0;
 		lbr.lbStyle = BS_NULL;
@@ -127,7 +127,7 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 
 	if(linestyle == PS_USERSTYLE)
 	{
-		::DWORD style[20]{0};
+		unsigned long style[20]{0};
 		::LOGBRUSH lbr;
 		int n, bn = 0, len = 1, st = 0;
 		lbr.lbColor = lpen.lopnColor;
@@ -272,7 +272,7 @@ setcolor(color_t color, IMAGE* pimg)
 			::SetTextColor(img->getdc(), color);
 			if(lPen.lopnStyle == PS_USERSTYLE)
 			{
-				::DWORD style[20]{};
+				unsigned long style[20]{};
 				::LOGBRUSH lbr;
 				unsigned short upattern = img->m_linestyle.upattern;
 				int n, bn = 0, len = 1, st = 0;
@@ -820,12 +820,10 @@ drawlines(int numlines, const int* polypoints, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
-		auto pl = static_cast<::DWORD*>(malloc(sizeof(::DWORD) * numlines));
-
-		for(int i = 0; i < numlines; ++i) pl[i] = 2;
-		::PolyPolyline(img->getdc(),
-			reinterpret_cast<const ::POINT*>(polypoints), pl, numlines);
-		free(pl);
+		const auto pl(make_unique<unsigned long[]>(numlines));
+		for(int i = 0; i < numlines; ++i)
+			pl[i] = 2;
+		::PolyPolyline(img->getdc(), reinterpret_cast<const ::POINT*>(polypoints), &pl[0], numlines);
 	}
 }
 
@@ -852,36 +850,30 @@ fillpoly(int numpoints, const int* polypoints, IMAGE* pimg)
 void
 fillpoly_gradient(int numpoints, const ege_colpoint* polypoints, IMAGE* pimg)
 {
-	if(numpoints < 3)
-		return;
-	if(const auto img = CONVERT_IMAGE(pimg))
-		if(const auto vert
-			= static_cast<::TRIVERTEX*>(malloc(sizeof(::TRIVERTEX) * numpoints)))
+	if(numpoints >= 3)
+		if(const auto img = CONVERT_IMAGE(pimg))
 		{
-			if(const auto tri = static_cast<::GRADIENT_TRIANGLE*>(
-				malloc(sizeof(::GRADIENT_TRIANGLE) * (numpoints - 2))))
+			auto vert(make_unique<::TRIVERTEX[]>(numpoints));
+			auto tri(make_unique<::GRADIENT_TRIANGLE[]>(numpoints - 2));
+
+			for(int i = 0; i < numpoints; ++i)
 			{
-				for(int i = 0; i < numpoints; ++i)
-				{
-					vert[i].x = polypoints[i].x;
-					vert[i].y = polypoints[i].y;
-					vert[i].Red = EGEGET_R(polypoints[i].color) << 8;
-					vert[i].Green = EGEGET_G(polypoints[i].color) << 8;
-					vert[i].Blue = EGEGET_B(polypoints[i].color) << 8;
-				//	vert[i].Alpha = EGEGET_A(polypoints[i].color) << 8;
-					vert[i].Alpha = 0;
-				}
-				for(int j = 0; j < numpoints - 2; ++j)
-				{
-					tri[j].Vertex1 = j;
-					tri[j].Vertex2 = j + 1;
-					tri[j].Vertex3 = j + 2;
-				}
-				::GradientFill(img->getdc(), vert, numpoints, tri,
-					numpoints - 2, GRADIENT_FILL_TRIANGLE);
-				free(tri);
+				vert[i].x = long(polypoints[i].x);
+				vert[i].y = long(polypoints[i].y);
+				vert[i].Red = EGEGET_R(polypoints[i].color) << 8;
+				vert[i].Green = EGEGET_G(polypoints[i].color) << 8;
+				vert[i].Blue = EGEGET_B(polypoints[i].color) << 8;
+				//vert[i].Alpha = EGEGET_A(polypoints[i].color) << 8;
+				vert[i].Alpha = 0;
 			}
-			free(vert);
+			for(int j = 0; j < numpoints - 2; ++j)
+			{
+				tri[j].Vertex1 = j;
+				tri[j].Vertex2 = j + 1;
+				tri[j].Vertex3 = j + 2;
+			}
+			::GradientFill(img->getdc(), &vert[0], numpoints, &tri[0],
+				numpoints - 2, GRADIENT_FILL_TRIANGLE);
 		}
 }
 

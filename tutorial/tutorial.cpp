@@ -167,6 +167,7 @@ int main()
 	input w[3];
 	input2 w2;
 	fps f;
+
 	for(int i = 0; i < 3; ++i)
 	{
 		w[i].move(100, i * 32);
@@ -331,6 +332,8 @@ int preinit(int, char* [])
 
 // 主函数
 int main(int argc, char* argv[])
+int
+main(int argc, char* argv[])
 {
 	int i, ms_x = -1024, ms_y = -1024, exitflag = 0;
 	int fps = 60;
@@ -339,7 +342,6 @@ int main(int argc, char* argv[])
 	int mode = preinit(argc, argv);   // 记录初始化模式
 	if(mode < 0) return 0;
 
-	randomize(); // 初始化随机种子
 	initgraph(-1, -1);   // 打开图形窗口，以全屏模式
 
 	showmouse(mode);

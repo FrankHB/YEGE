@@ -2,6 +2,8 @@
 #define Inc_ege_sys_edit_h_
 
 #include "ege/ctl.h"
+#include <synchapi.h> // for ::CreateEvent;
+#include <WinBase.h> // for INFINITE;
 
 namespace ege
 {

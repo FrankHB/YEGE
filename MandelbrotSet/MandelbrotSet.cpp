@@ -516,7 +516,6 @@ main()
 	std::freopen("log.txt", "w", stdout);
 	setinitmode(0);
 	initgraph(rw, rh + th * tl);
-	randomize();
 	InitColor();
 	setfont(12, 0, "ËÎÌו");
 	::SetWindowTextA(getHWnd(), "Mandelbrot Set -- YEGE");
