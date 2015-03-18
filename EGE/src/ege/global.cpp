@@ -440,7 +440,7 @@ EGEApplication::_on_ime_control(::HWND hwnd, ::WPARAM wparam, ::LPARAM lparam)
 		COMPOSITIONFORM cpf{0, ::POINT(), ::RECT()};
 
 		cpf.dwStyle = CFS_POINT;
-		cpf.ptCurrentPos = *(LPPOINT)lparam;
+		cpf.ptCurrentPos = *reinterpret_cast<::LPPOINT>(lparam);
 		::ImmSetCompositionWindow(hImc, &cpf);
 	}
 }

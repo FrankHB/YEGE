@@ -132,11 +132,11 @@ _HSLtoRGB(float _h, float _s, float _l)
 
 	if(_h < 0.0f)
 	{
-		_h += (float)(int)(-_h + 1);
+		_h += float(int((-_h + 1)));
 	}
 	if(_h >= 1.0f)
 	{
-		_h -= (float)(int)(_h);
+		_h -= float(int((_h)));
 	}
 	if(_s == 0)
 	{
@@ -149,7 +149,7 @@ _HSLtoRGB(float _h, float _s, float _l)
 		float dp[3];
 		float xh = _h * 6;
 		if(xh ==    6) xh = 0;
-		int i = (int)(floor(xh) + 0.1), n;
+		int i = int(floor(xh) + 0.1), n;
 		dp[0] = 1;
 		dp[2] = 0;
 		xh -= i;
@@ -274,7 +274,7 @@ HSV_TO_RGB(COLORHSV* input, COLORRGB* output)
 		if(input->h == 1.0)
 			input->h = 0.0;
 		input->h *= 6.0;
-		k = (int)floor(input->h); // ??
+		k = int(floor(input->h)); // ??
 		f = input->h - k;
 		aa = input->v * (1.0f - input->s);
 		bb = input->v * (1.0f - input->s * f);
@@ -313,9 +313,9 @@ HSV_TO_RGB(COLORHSV* input, COLORRGB* output)
 			break;
 		}
 	}
-	output->r = (unsigned char)(R * 255);
-	output->g = (unsigned char)(G * 255);
-	output->b = (unsigned char)(B * 255);
+	output->r = static_cast<unsigned char>(R * 255);
+	output->g = static_cast<unsigned char>(G * 255);
+	output->b = static_cast<unsigned char>(B * 255);
 }
 
 }
@@ -330,15 +330,15 @@ rgb2gray(color_t color)
 
 	c = ((color >> 16) & 0xFF) * 0.299;
 	c += ((color >> 8) & 0xFF) * 0.587;
-	c += ((color) & 0xFF) * 0.114;
-	r = (color_t)c;
+	c += (color & 0xFF) * 0.114;
+	r = color_t(c);
 	return EGERGB(r, r, r);
 }
 
 void
 rgb2hsl(color_t rgb, float* H, float* S, float* L)
 {
-	COLORHSL hsl = _RGBtoHSL((int)rgb);
+	COLORHSL hsl = _RGBtoHSL(int(rgb));
 
 	*H = hsl.h * 360.0f;
 	*S = hsl.s;
@@ -348,7 +348,7 @@ rgb2hsl(color_t rgb, float* H, float* S, float* L)
 color_t
 hsl2rgb(float H, float S, float L)
 {
-	return (color_t)_HSLtoRGB(H / 360.0f, S, L);
+	return _HSLtoRGB(H / 360.0f, S, L);
 }
 
 void
@@ -357,9 +357,9 @@ rgb2hsv(color_t rgb, float* H, float* S, float* V)
 	COLORRGB crgb;
 	COLORHSV chsv;
 
-	crgb.r = (unsigned char)EGEGET_R(rgb);
-	crgb.g = (unsigned char)EGEGET_G(rgb);
-	crgb.b = (unsigned char)EGEGET_B(rgb);
+	crgb.r = static_cast<unsigned char>(EGEGET_R(rgb));
+	crgb.g = static_cast<unsigned char>(EGEGET_G(rgb));
+	crgb.b = static_cast<unsigned char>(EGEGET_B(rgb));
 	RGB_TO_HSV(&crgb, &chsv);
 	*H = chsv.h * 360.0f;
 	*S = chsv.s;
@@ -372,9 +372,9 @@ hsv2rgb(float H, float S, float V)
 	COLORRGB crgb;
 
 	if(H < 0.0f)
-		H += (float)(int)(-H / 360.0f + 1) * 360.0f;
+		H += float(int((-H / 360.0f + 1) * 360.0f));
 	if(H >= 360.0f)
-		H -= (float)(int)(H / 360.0f) * 360.0f;
+		H -= float(int((H / 360.0f) * 360.0f));
 	COLORHSV chsv{H / 360.0f, S, V};
 	HSV_TO_RGB(&chsv, &crgb);
 	return EGERGB(crgb.r, crgb.g, crgb.b);
