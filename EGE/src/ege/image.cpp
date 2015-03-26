@@ -5,9 +5,7 @@
 #include <utility> // for std::swap;
 #include <ocidl.h>
 #include <olectl.h>
-#include "../libpng/png.h"
-#include "../libpng/pngstruct.h"
-#include "../libpng/pnginfo.h"
+#include <png.h>
 #include "ege/gdi.h"
 #include "ege/text.h"
 #include "global.h"
@@ -335,7 +333,8 @@ IMAGE::getpngimg(std::FILE * fp)
 {
 	::png_structp pic_ptr;
 	::png_infop info_ptr;
-	std::uint32_t width, height, depth;
+	std::uint32_t width, height;
+	int depth;
 
 	{
 		char header[16];
@@ -358,15 +357,19 @@ IMAGE::getpngimg(std::FILE * fp)
 		return -1;
 	}
 	::png_init_io(pic_ptr, fp);
-	::png_read_png(pic_ptr, info_ptr, PNG_TRANSFORM_BGR | PNG_TRANSFORM_EXPAND, {});
+	::png_read_png(pic_ptr, info_ptr, PNG_TRANSFORM_BGR | PNG_TRANSFORM_EXPAND,
+		{});
 	::png_set_expand(pic_ptr);
 
-	Resize((int)(info_ptr->width), (int)(info_ptr->height)); //::png_get_IHDR
-	width = info_ptr->width;
-	height = info_ptr->height;
-	depth = info_ptr->pixel_depth;
+	int color_type_;
+
+	::png_get_IHDR(pic_ptr, info_ptr, &width, &height, &depth, &color_type_,
+		{}, {}, {});
+
+	Resize(int(width), int(height));
 
 	::png_bytepp row_pointers = ::png_get_rows(pic_ptr, info_ptr);
+
 	for(std::uint32_t i = 0; i < height; ++i)
 	{
 		if(depth == 24)
