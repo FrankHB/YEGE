@@ -16,98 +16,103 @@ ege_enable_aa(bool enable, IMAGE* pimg)
 	convert_image_ref(pimg).m_aa = enable;
 }
 
+namespace
+{
 
+template<typename _func>
 void
-ege_line(float x1, float y1, float x2, float y2, IMAGE* pimg)
+ege_aa_impl(_func f, IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
 	{
 		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
 
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img->m_aa)
 			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-		graphics.DrawLine(&pen, x1, y1, x2, y2);
+		f(graphics, img);
 	}
+}
+
+template<typename _func>
+void
+ege_draw_impl(_func f, IMAGE* pimg)
+{
+	ege_aa_impl([=](Gdiplus::Graphics& graphics, IMAGE* img){
+		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
+
+		f(graphics, pen);
+	}, pimg);
+}
+
+template<typename _func>
+void
+ege_fill_impl(_func f, IMAGE* pimg)
+{
+	ege_aa_impl([=](Gdiplus::Graphics& graphics, IMAGE* img){
+		if(img->m_pattern)
+			f(graphics, *img->m_pattern);
+		else
+		{
+			Gdiplus::SolidBrush brush(std::uint32_t(img->m_fillcolor));
+
+			f(graphics, brush);
+		}
+	}, pimg);
+}
+
+} // unnamed namespace;
+
+
+void
+ege_line(float x1, float y1, float x2, float y2, IMAGE* pimg)
+{
+	ege_draw_impl([=](Gdiplus::Graphics& graphics, Gdiplus::Pen& pen){
+		graphics.DrawLine(&pen, x1, y1, x2, y2);
+	}, pimg);
 }
 
 void
 ege_drawpoly(int numpoints, ege_point* polypoints, IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE(pimg))
-	{
-		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
-
-		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
-		if(img->m_aa)
-			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+	ege_draw_impl([=](Gdiplus::Graphics& graphics, Gdiplus::Pen& pen){
 		graphics.DrawLines(&pen, reinterpret_cast<Gdiplus::PointF*>(polypoints),
 			numpoints);
-	}
+	}, pimg);
 }
 
 void
 ege_drawcurve(int numpoints, ege_point* polypoints, IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE(pimg))
-	{
-		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
-
-		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
-		if(img->m_aa)
-			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+	ege_draw_impl([=](Gdiplus::Graphics& graphics, Gdiplus::Pen& pen){
 		graphics.DrawCurve(&pen, reinterpret_cast<Gdiplus::PointF*>(polypoints),
 			numpoints);
-	}
+	}, pimg);
 }
 
 void
 ege_rectangle(float x, float y, float w, float h, IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE(pimg))
-	{
-		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
-
-		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
-		if(img->m_aa)
-			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+	ege_draw_impl([=](Gdiplus::Graphics& graphics, Gdiplus::Pen& pen){
 		graphics.DrawRectangle(&pen, x, y, w, h);
-	}
+	}, pimg);
 }
 
 void
 ege_ellipse(float x, float y, float w, float h, IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE(pimg))
-	{
-		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
-
-		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
-		if(img->m_aa)
-			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+	ege_draw_impl([=](Gdiplus::Graphics& graphics, Gdiplus::Pen& pen){
 		graphics.DrawEllipse(&pen, x, y, w, h);
-	}
+	}, pimg);
 }
 
 void
 ege_pie(float x, float y, float w, float h, float stangle, float sweepAngle,
 	IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE(pimg))
-	{
-		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
-
-		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
-		if(img->m_aa)
-			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+	ege_draw_impl([=](Gdiplus::Graphics& graphics, Gdiplus::Pen& pen){
 		graphics.DrawPie(&pen, x, y, w, h, stangle, sweepAngle);
-	}
+	}, pimg);
 }
 
 
@@ -115,123 +120,53 @@ void
 ege_arc(float x, float y, float w, float h, float stangle, float sweepAngle,
 	IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE(pimg))
-	{
-		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
-
-		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
-		if(img->m_aa)
-		{
-			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-		}
+	ege_draw_impl([=](Gdiplus::Graphics& graphics, Gdiplus::Pen& pen){
 		graphics.DrawArc(&pen, x, y, w, h, stangle, sweepAngle);
-	}
+	}, pimg);
 }
 
 void
 ege_bezier(int numpoints, ege_point* polypoints, IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE(pimg))
-	{
-		Gdiplus::Graphics graphics(img->getdc());
-		Gdiplus::Pen pen(std::uint32_t(img->m_color), img->m_linewidth);
-
-		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
-		if(img->m_aa)
-			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+	ege_draw_impl([=](Gdiplus::Graphics& graphics, Gdiplus::Pen& pen){
 		graphics.DrawBeziers(&pen,
 			reinterpret_cast<Gdiplus::PointF*>(polypoints), numpoints);
-	}
+	}, pimg);
 }
 
 
 void
 ege_fillpoly(int numpoints, ege_point* polypoints, IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE(pimg))
-	{
-		Gdiplus::Graphics graphics(img->getdc());
-
-		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
-		if(img->m_aa)
-			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-		if(img->m_pattern)
-			graphics.FillPolygon(img->m_pattern.get(),
-				reinterpret_cast<Gdiplus::PointF*>(polypoints), numpoints);
-		else
-		{
-			Gdiplus::SolidBrush brush(std::uint32_t(img->m_fillcolor));
-
-			graphics.FillPolygon(&brush,
-				reinterpret_cast<Gdiplus::PointF*>(polypoints), numpoints);
-		}
-	}
+	ege_fill_impl([=](Gdiplus::Graphics& graphics, Gdiplus::Brush& brush){
+		graphics.FillPolygon(&brush,
+			reinterpret_cast<Gdiplus::PointF*>(polypoints), numpoints);
+	}, pimg);
 }
 
 void
 ege_fillrect(float x, float y, float w, float h, IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE(pimg))
-	{
-		Gdiplus::Graphics graphics(img->getdc());
-
-		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
-		if(img->m_aa)
-			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-		if(img->m_pattern)
-			graphics.FillRectangle(img->m_pattern.get(), x, y, w, h);
-		else
-		{
-			Gdiplus::SolidBrush brush(std::uint32_t(img->m_fillcolor));
-
-			graphics.FillRectangle(&brush, x, y, w, h);
-		}
-	}
+	ege_fill_impl([=](Gdiplus::Graphics& graphics, Gdiplus::Brush& brush){
+		graphics.FillRectangle(&brush, x, y, w, h);
+	}, pimg);
 }
 
 void
 ege_fillellipse(float x, float y, float w, float h, IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE(pimg))
-	{
-		Gdiplus::Graphics graphics(img->getdc());
-
-		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
-		if(img->m_aa)
-			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-		if(img->m_pattern)
-			graphics.FillEllipse(img->m_pattern.get(), x, y, w, h);
-		else
-		{
-			Gdiplus::SolidBrush brush(std::uint32_t(img->m_fillcolor));
-
-			graphics.FillEllipse(&brush, x, y, w, h);
-		}
-	}
+	ege_fill_impl([=](Gdiplus::Graphics& graphics, Gdiplus::Brush& brush){
+		graphics.FillEllipse(&brush, x, y, w, h);
+	}, pimg);
 }
 
 void
 ege_fillpie(float x, float y, float w, float h, float stangle, float sweepAngle,
 	IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE(pimg))
-	{
-		Gdiplus::Graphics graphics(img->getdc());
-
-		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
-		if(img->m_aa)
-			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-		if(img->m_pattern)
-			graphics.FillPie(img->m_pattern.get(), x, y, w, h, stangle,
-				sweepAngle);
-		else
-		{
-			Gdiplus::SolidBrush brush(std::uint32_t(img->m_fillcolor));
-
-			graphics.FillPie(&brush, x, y, w, h, stangle, sweepAngle);
-		}
-	}
+	ege_fill_impl([=](Gdiplus::Graphics& graphics, Gdiplus::Brush& brush){
+		graphics.FillPie(&brush, x, y, w, h, stangle, sweepAngle);
+	}, pimg);
 }
 
 
@@ -249,9 +184,7 @@ ege_setpattern_lineargradient(float x1, float y1, color_t c1, float x2,
 	if(const auto img = CONVERT_IMAGE(pimg))
 		img->m_pattern.reset(new
 			Gdiplus::LinearGradientBrush(Gdiplus::PointF(x1, y1),
-			Gdiplus::PointF(x2, y2),
-			Gdiplus::Color(c1),
-			Gdiplus::Color(c2)));
+			Gdiplus::PointF(x2, y2), Gdiplus::Color(c1), Gdiplus::Color(c2)));
 }
 
 void
