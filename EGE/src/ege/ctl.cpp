@@ -120,20 +120,20 @@ int egeControlBase::allocZorder()
 	return m_allocZorder++;
 }
 
-int egeControlBase::allocId()
+int
+egeControlBase::allocId()
 {
 	return ++m_allocId;
 }
 
-bool ctlcmp(const egeControlBase* pa, const egeControlBase* pb)
-{
-	return *pa < *pb;
-}
-
-void egeControlBase::sortzorder()
+void
+egeControlBase::sortzorder()
 {
 	if(const auto cvec = static_cast<egectlvec*>(m_childzorder))
-		std::sort(cvec->begin(), cvec->end(), ctlcmp);
+		std::sort(cvec->begin(), cvec->end(), [](const egeControlBase* pa,
+			const egeControlBase* pb){
+				return *pa < *pb;
+			});
 }
 
 int egeControlBase::addchild(egeControlBase* pChild)
