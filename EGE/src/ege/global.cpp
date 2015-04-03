@@ -255,7 +255,7 @@ EGEApplication::EGEApplication(int gdriver_n, int* gmode)
 		if(dc_h < 0)
 			dc_h = rect.bottom;
 	}
-	ys_pnl.reset(new Panel(Size(SDst(dc_w), SDst(dc_h))));
+	ys_pnl.reset(new Panel({Point::Invalid, SDst(dc_w), SDst(dc_h)}));
 	ShowTopLevel(*ys_pnl, g_windowstyle, g_windowexstyle);
 	ys_window
 		= dynamic_cast<HostRenderer&>(ys_pnl->GetRenderer()).GetWindowPtr();
