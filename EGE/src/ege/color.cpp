@@ -5,81 +5,41 @@
 namespace ege
 {
 
-struct COLORHSL
-{
-	float h;
-	float s;
-	float l;
-};
-
-struct COLORHSV
-{
-	float h;
-	float s;
-	float v;
-};
-
-struct COLORRGB
-{
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
-};
-
 namespace
 {
 
-COLORHSL
-rgb2hsl_impl(int _col)
+using MonoType = unsigned char;
+
+std::array<float, 3>
+rgb2hsl_impl(float r, float g, float b)
 {
-	COLORHSL _crCol;
-	float r, g, b;
+#define IFSWAP(a, b) if(*a>*b){t=a;a=b;b=t;}
+
 	float* t, *dp[3]{&r, &g, &b};
 
-	b = EGEGET_B(_col) / 255.0f;
-	g = EGEGET_G(_col) / 255.0f;
-	r = EGEGET_R(_col) / 255.0f;
-
-#define IFSWAP(a, b) if(*a>*b){t=a;a=b;b=t;}
-	{
-		IFSWAP(dp[0], dp[1]);
-		IFSWAP(dp[1], dp[2]);
-		IFSWAP(dp[0], dp[1]);
-	}
+	IFSWAP(dp[0], dp[1]);
+	IFSWAP(dp[1], dp[2]);
+	IFSWAP(dp[0], dp[1]);
 #undef IFSWAP
 
-	{
-		_crCol.l = (*dp[0] + *dp[2]) / 2;
-		if(_crCol.l < 1e-2f)
-		{
-			_crCol.l = 0;
-			_crCol.h = 0;
-			_crCol.s = 0;
-			return _crCol;
-		}
-		if(_crCol.l > 0.99)
-		{
-			_crCol.l = 1;
-			_crCol.h = 0;
-			_crCol.s = 0;
-			return _crCol;
-		}
-		if(fabs(_crCol.l - 0.5) < 1e-2)
-		{
-			_crCol.l = 0.5;
-		}
-	}
+	float rh, rs, rl;
+
+	rl = (*dp[0] + *dp[2]) / 2;
+	if(rl < 1e-2f)
+		return {0, 0, 0};
+	if(rl > 0.99)
+		return {0, 0, 1};
+	if(fabs(rl - 0.5) < 1e-2)
+		rl = 0.5;
 #define BLACKUNFORMAT(c, v) ((c)/((v)*2))
 #define WHITEUNFORMAT(c, v) (1-(1-c)/((1-(v))*2))
-	if(_crCol.l == 0.5)
-	{
+	if(rl == 0.5)
 		;
-	}
-	else if(_crCol.l < 0.5)
+	else if(rl < 0.5)
 	{
 		for(int n = 0; n < 3; ++n)
 		{
-			*dp[n] = BLACKUNFORMAT(*dp[n], _crCol.l);
+			*dp[n] = BLACKUNFORMAT(*dp[n], rl);
 			if(*dp[n] > 1)
 				*dp[n] = 1;
 		}
@@ -88,239 +48,128 @@ rgb2hsl_impl(int _col)
 	{
 		for(int n = 0; n < 3; ++n)
 		{
-			*dp[n] = WHITEUNFORMAT(*dp[n], _crCol.l);
+			*dp[n] = WHITEUNFORMAT(*dp[n], rl);
 			if(*dp[n] > 1)
 				*dp[n] = 1;
 		}
 	}
 #undef BLACKUNFORMAT
 #undef WHITEUNFORMAT
+	rs = *dp[2] * 2 - 1;
+	if(rs < 1e-2)
+		return {0, rs, rl};
+#define SATUNFORMAT(c, s) (((c)-.5F)/(s)+.5F)
+	for(int n = 0; n < 3; ++n)
 	{
-		_crCol.s = *dp[2] * 2 - 1;
-		if(_crCol.s < 1e-2)
-		{
-			_crCol.h = 0;
-			return _crCol;
-		}
-	}
-#define SATUNFORMAT(c, s) (((c)-0.5f)/(s)+0.5f)
-	{
-		for(int n = 0; n < 3; ++n)
-		{
-			*dp[n] = SATUNFORMAT(*dp[n], _crCol.s);
-			if(*dp[n] > 1)
-				*dp[n] = 1;
-		}
+		*dp[n] = SATUNFORMAT(*dp[n], rs);
+		if(*dp[n] > 1)
+			*dp[n] = 1;
 	}
 #undef SATUNFORMAT
-	{
-		_crCol.h = *dp[1];
-		if((dp[2] == &r) && (dp[1] == &g)) _crCol.h = _crCol.h + 0;
-		else if((dp[2] == &g) && (dp[1] == &b)) _crCol.h = _crCol.h + 2;
-		else if((dp[2] == &b) && (dp[1] == &r)) _crCol.h = _crCol.h + 4;
-		else if((dp[2] == &g) && (dp[1] == &r)) _crCol.h = 2 - _crCol.h;
-		else if((dp[2] == &b) && (dp[1] == &g)) _crCol.h = 4 - _crCol.h;
-		else if((dp[2] == &r) && (dp[1] == &b)) _crCol.h = 6 - _crCol.h;
-		_crCol.h /= 6;
-	}
-	return _crCol;
+	rh = *dp[1];
+	if((dp[2] == &r) && (dp[1] == &g))
+		;
+	else if((dp[2] == &g) && (dp[1] == &b))
+		rh += 2;
+	else if((dp[2] == &b) && (dp[1] == &r))
+		rh += 4;
+	else if((dp[2] == &g) && (dp[1] == &r))
+		rh = 2 - rh;
+	else if((dp[2] == &b) && (dp[1] == &g))
+		rh = 4 - rh;
+	else if((dp[2] == &r) && (dp[1] == &b))
+		rh = 6 - rh;
+	return {rh / 6, rs, rl};
 }
 
-int
-hsl2rgb_impl(float _h, float _s, float _l)
+std::array<float, 3>
+RGB_TO_HSV(MonoType ir, MonoType ig, MonoType ib)
 {
-	float r, g, b;
+	float r(ir / 255.F), g(ig / 255.F), b(ib / 255.F),
+		minRGB, maxRGB, deltaRGB, rh(0), rs, rv;
 
-	if(_h < 0.0f)
-	{
-		_h += float(int((-_h + 1)));
-	}
-	if(_h >= 1.0f)
-	{
-		_h -= float(int((_h)));
-	}
-	if(_s == 0)
-	{
-		r = _l;
-		g = _l;
-		b = _l;
-	}
-	else
-	{
-		float dp[3];
-		float xh = _h * 6;
-		if(xh ==    6) xh = 0;
-		int i = int(floor(xh) + 0.1), n;
-		dp[0] = 1;
-		dp[2] = 0;
-		xh -= i;
-		if(i & 1)
-			dp[1] = 1 - xh;
-		else
-			dp[1] = xh;
-#define SATFORMAT(c, s) (((c)-0.5f)*(s)+0.5f)
-		for(n = 0; n < 3; ++n)
-			dp[n] = SATFORMAT(dp[n], _s);
-#undef SATFORMAT
-#define BLACKFORMAT(c, v) ((c)*(v)*2)
-#define WHITEFORMAT(c, v) (1-(1-(c))*(1-(v))*2)
-		if(_l == 0.5f)
-			;
-		else if(_l < 0.5f)
-		{
-			if(_l < 0)
-				_l = 0;
-			for(n = 0; n < 3; ++n)
-				dp[n] = BLACKFORMAT(dp[n], _l);
-		}
-		else
-		{
-			if(_l > 1)
-				_l = 1;
-			for(n = 0; n < 3; ++n)
-				dp[n] = WHITEFORMAT(dp[n], _l);
-		}
-#undef BLACKFORMAT
-#undef WHITEFORMAT
-		{
-			if(i == 0)
-			{
-				r = dp[0];
-				g = dp[1];
-				b = dp[2];
-			}
-			else if(i == 1)
-			{
-				r = dp[1];
-				g = dp[0];
-				b = dp[2];
-			}
-			else if(i == 2)
-			{
-				r = dp[2];
-				g = dp[0];
-				b = dp[1];
-			}
-			else if(i == 3)
-			{
-				r = dp[2];
-				g = dp[1];
-				b = dp[0];
-			}
-			else if(i == 4)
-			{
-				r = dp[1];
-				g = dp[2];
-				b = dp[0];
-			}
-			else
-			{
-				r = dp[0];
-				g = dp[2];
-				b = dp[1];
-			}
-		}
-	}
-	return EGERGB(static_cast<unsigned long>(r * 255),
-		static_cast<unsigned long>(g * 255),
-		static_cast<unsigned long>(b * 255));
-}
-
-void
-RGB_TO_HSV(const COLORRGB* input, COLORHSV* output)
-{
-	float r, g, b, minRGB, maxRGB, deltaRGB;
-
-	output->h = 0;
-	r = input->r / 255.0f;
-	g = input->g / 255.0f;
-	b = input->b / 255.0f;
 	minRGB = std::min(r, std::min(g, b));
 	maxRGB = std::max(r, std::max(g, b));
 	deltaRGB = maxRGB - minRGB;
-	output->v = maxRGB;
-	if(maxRGB != 0.0f)
-		output->s = deltaRGB / maxRGB;
+	rv = maxRGB;
+	if(maxRGB != 0.F)
+		rs = deltaRGB / maxRGB;
 	else
-		output->s = 0.0f;
-	if(output->s <= 0.0f)
-		output->h = -1.0f;
+		rs = 0.F;
+	if(rs <= 0.F)
+		rh = -1.F;
 	else
 	{
 		if(r == maxRGB)
-			output->h = (g - b) / deltaRGB;
+			rh = (g - b) / deltaRGB;
 		else if(g == maxRGB)
-			output->h = 2.0f + (b - r) / deltaRGB;
+			rh = 2.0f + (b - r) / deltaRGB;
 		else if(b == maxRGB)
-			output->h = 4.0f + (r - g) / deltaRGB;
-		output->h *= 60.0f;
-		if(output->h < 0.0f)
-			output->h += 360.0f;
-		output->h /= 360.0f;
+			rh = 4.0f + (r - g) / deltaRGB;
+		rh *= 60.F;
+		if(rh < 0.F)
+			rh += 360.F;
+		rh /= 360.F;
 	}
+	return {rh, rs, rv};
 }
 
-void
-HSV_TO_RGB(COLORHSV* input, COLORRGB* output)
+std::array<MonoType, 3>
+HSV_TO_RGB(float ih, float is, float iv)
 {
 	float R = 0, G = 0, B = 0;
 	int k;
 	float aa, bb, cc, f;
-	if(input->s <= 0.0)
-	{
-		R = G = B = input->v;
-	}
+	if(is <= 0.0)
+		R = G = B = iv;
 	else
 	{
-		if(input->h == 1.0)
-			input->h = 0.0;
-		input->h *= 6.0;
-		k = int(floor(input->h)); // ??
-		f = input->h - k;
-		aa = input->v * (1.0f - input->s);
-		bb = input->v * (1.0f - input->s * f);
-		cc = input->v * (1.0f - (input->s * (1.0f - f)));
+		if(ih == 1.0)
+			ih = 0.0;
+		ih *= 6.0;
+		k = int(floor(ih)); // ??
+		f = ih - k;
+		aa = iv * (1.F - is);
+		bb = iv * (1.F - is * f);
+		cc = iv * (1.F - (is * (1.F - f)));
 		switch(k)
 		{
 		case 0:
-			R = input->v;
+			R = iv;
 			G = cc;
 			B = aa;
 			break;
 		case 1:
 			R = bb;
-			G = input->v;
+			G = iv;
 			B = aa;
 			break;
 		case 2:
 			R = aa;
-			G = input->v;
+			G = iv;
 			B = cc;
 			break;
 		case 3:
 			R = aa;
 			G = bb;
-			B = input->v;
+			B = iv;
 			break;
 		case 4:
 			R = cc;
 			G = aa;
-			B = input->v;
+			B = iv;
 			break;
 		case 5:
-			R = input->v;
+			R = iv;
 			G = aa;
 			B = bb;
 			break;
 		}
 	}
-	output->r = static_cast<unsigned char>(R * 255);
-	output->g = static_cast<unsigned char>(G * 255);
-	output->b = static_cast<unsigned char>(B * 255);
+	return {MonoType(R * 255), MonoType(G * 255), MonoType(B * 255)};
 }
 
 }
-
 
 
 color_t
@@ -339,46 +188,125 @@ rgb2gray(color_t color)
 void
 rgb2hsl(color_t rgb, float* H, float* S, float* L)
 {
-	COLORHSL hsl = rgb2hsl_impl(int(rgb));
+	const auto hsl(rgb2hsl_impl(EGEGET_R(rgb) / 255.F, EGEGET_G(rgb) / 255.F,
+		EGEGET_B(rgb) / 255.F));
 
-	*H = hsl.h * 360.0f;
-	*S = hsl.s;
-	*L = hsl.l;
+	*H = hsl[0] * 360.F;
+	*S = hsl[1];
+	*L = hsl[2];
 }
 
 color_t
 hsl2rgb(float H, float S, float L)
 {
-	return hsl2rgb_impl(H / 360.0f, S, L);
+	float _h = H / 360.F, _s = S, _l = L;
+	float r, g, b;
+
+	if(_h < 0.F)
+		_h += float(int((-_h + 1)));
+	if(_h >= 1.F)
+		_h -= float(int((_h)));
+	if(_s == 0)
+	{
+		r = _l;
+		g = _l;
+		b = _l;
+	}
+	else
+	{
+		float xh = _h == 1 ? 0 : _h * 6;
+		int i = int(floor(xh) + 0.1), n;
+		float dp[3];
+
+		dp[0] = 1;
+		dp[2] = 0;
+		xh -= i;
+		if(i & 1)
+			dp[1] = 1 - xh;
+		else
+			dp[1] = xh;
+		for(n = 0; n < 3; ++n)
+			dp[n] = (dp[n] - .5F) * _s + .5F;
+		if(_l == .5F)
+			;
+		else if(_l < .5F)
+		{
+			if(_l < 0)
+				_l = 0;
+			for(n = 0; n < 3; ++n)
+				dp[n] = dp[n] * _l * 2;
+		}
+		else
+		{
+			if(_l > 1)
+				_l = 1;
+			for(n = 0; n < 3; ++n)
+				dp[n] = 1- (1 - dp[n]) * (1 - _l) * 2;
+		}
+		if(i == 0)
+		{
+			r = dp[0];
+			g = dp[1];
+			b = dp[2];
+		}
+		else if(i == 1)
+		{
+			r = dp[1];
+			g = dp[0];
+			b = dp[2];
+		}
+		else if(i == 2)
+		{
+			r = dp[2];
+			g = dp[0];
+			b = dp[1];
+		}
+		else if(i == 3)
+		{
+			r = dp[2];
+			g = dp[1];
+			b = dp[0];
+		}
+		else if(i == 4)
+		{
+			r = dp[1];
+			g = dp[2];
+			b = dp[0];
+		}
+		else
+		{
+			r = dp[0];
+			g = dp[2];
+			b = dp[1];
+		}
+	}
+	return EGERGB(static_cast<unsigned long>(r * 255),
+		static_cast<unsigned long>(g * 255),
+		static_cast<unsigned long>(b * 255));
 }
 
 void
 rgb2hsv(color_t rgb, float* H, float* S, float* V)
 {
-	COLORRGB crgb;
-	COLORHSV chsv;
+	const auto chsv(RGB_TO_HSV(MonoType(EGEGET_R(rgb)), MonoType(EGEGET_G(rgb)),
+		MonoType(EGEGET_B(rgb))));
 
-	crgb.r = static_cast<unsigned char>(EGEGET_R(rgb));
-	crgb.g = static_cast<unsigned char>(EGEGET_G(rgb));
-	crgb.b = static_cast<unsigned char>(EGEGET_B(rgb));
-	RGB_TO_HSV(&crgb, &chsv);
-	*H = chsv.h * 360.0f;
-	*S = chsv.s;
-	*V = chsv.v;
+	*H = chsv[0] * 360.F;
+	*S = chsv[1];
+	*V = chsv[2];
 }
 
 color_t
 hsv2rgb(float H, float S, float V)
 {
-	COLORRGB crgb;
+	if(H < 0.F)
+		H += float(int((-H / 360.F + 1) * 360.F));
+	if(H >= 360.F)
+		H -= float(int((H / 360.F) * 360.F));
 
-	if(H < 0.0f)
-		H += float(int((-H / 360.0f + 1) * 360.0f));
-	if(H >= 360.0f)
-		H -= float(int((H / 360.0f) * 360.0f));
-	COLORHSV chsv{H / 360.0f, S, V};
-	HSV_TO_RGB(&chsv, &crgb);
-	return EGERGB(crgb.r, crgb.g, crgb.b);
+	const auto crgb(HSV_TO_RGB(H / 360.F, S, V));
+
+	return EGERGB(crgb[0], crgb[1], crgb[2]);
 }
 
 } // namespace ege;
