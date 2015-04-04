@@ -136,9 +136,6 @@ public:
 	_mousemsg();
 
 	void
-	_on_destroy();
-
-	void
 	_on_key(unsigned, unsigned long, ::LPARAM);
 
 	void

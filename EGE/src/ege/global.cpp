@@ -52,9 +52,6 @@ wndproc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		else
 			return ::DefWindowProc(hWnd, message, wParam, lParam);
 		break;
-	case WM_DESTROY:
-		app._on_destroy();
-		break;
 	case WM_ERASEBKGND:
 		return TRUE;
 	case WM_KEYDOWN:
@@ -256,9 +253,11 @@ EGEApplication::EGEApplication(int gdriver_n, int* gmode)
 			dc_h = rect.bottom;
 	}
 	ys_pnl.reset(new Panel({Point::Invalid, SDst(dc_w), SDst(dc_h)}));
-	ShowTopLevel(*ys_pnl, g_windowstyle, g_windowexstyle);
-	ys_window
-		= dynamic_cast<HostRenderer&>(ys_pnl->GetRenderer()).GetWindowPtr();
+	ys_window = dynamic_cast<HostRenderer&>(ShowTopLevel(*ys_pnl, g_windowstyle,
+		g_windowexstyle)).GetWindowPtr();
+	ys_window->MessageMap[WM_DESTROY] += [this]{
+		_uninit();
+	};
 }
 
 EGEApplication::~EGEApplication()
@@ -470,10 +469,9 @@ EGEApplication::_init_graph_x()
 
 	//	::SECURITY_ATTRIBUTES sa{};
 	//	unsigned long pid;
-		bool init_finish{};
+		std::atomic<bool> init_finish{{}};
 
 		ui_thread = std::thread([this, native_ys_window, &init_finish]{
-			//执行应用程序初始化
 			::SetWindowTextW(Nonnull(native_ys_window), window_caption),
 		//	ys_window->Move(Point(_g_windowpos_x, _g_windowpos_y)),
 			ys_window->Resize(Size(dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
@@ -487,9 +485,7 @@ EGEApplication::_init_graph_x()
 				{}, GetInstance(), {});
 			if(!hwnd)
 				return unsigned long(0xFFFFFFFF);
-			//图形初始化
 			window_dc = ::GetDC(hwnd);
-			//::ReleaseDC(hwnd, window_dc);
 			mouse_show = {};
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
 			if(!use_force_exit)
@@ -506,6 +502,11 @@ EGEApplication::_init_graph_x()
 				}
 				else
 					::Sleep(1);
+			::ReleaseDC(hwnd, window_dc);
+			window_dc = {};
+			if(::IsWindow(hwnd))
+				::DestroyWindow(hwnd);
+			hwnd = {};
 			return 0UL;
 		});
 		while(!init_finish)
@@ -524,8 +525,7 @@ EGEApplication::_init_graph_x()
 	::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
 	::UpdateWindow(native_ys_window);
 	if(g_windowexstyle & WS_EX_TOPMOST)
-		::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
-			SWP_NOSIZE | SWP_NOMOVE);
+		::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 }
 
 int
@@ -542,26 +542,6 @@ bool
 EGEApplication::_mousemsg()
 {
 	return _is_window_exit() ? false : bool(_peekmouse().hwnd);
-}
-
-void
-EGEApplication::_on_destroy()
-{
-	yassume(_is_run());
-
-	if(get_pages().active_dc)
-		::ReleaseDC(hwnd, window_dc);
-		// release objects, not finish
-	::PostQuitMessage(0);
-	if(ui_thread.joinable())
-		ui_thread.detach();
-	if(use_force_exit)
-	{
-		YSLib::PostQuitMessage(0);
-		if(ys_thrd.joinable())
-			ys_thrd.join();
-	//	::ExitProcess(0);
-	}
 }
 
 void
@@ -819,12 +799,25 @@ EGEApplication::_update()
 void
 EGEApplication::_uninit()
 {
-	::ShowWindow(_get_hwnd(), SW_HIDE);
+	YTraceDe(Informative, "Ready to call destroy method.");
+	if(::IsWindow(hwnd))
+		::ShowWindow(hwnd, SW_HIDE);
 	YSLib::PostQuitMessage(0);
 	if(ui_thread.joinable())
 		ui_thread.detach();
+	YTraceDe(Debug, "UI thread detached.");
 	if(ys_thrd.joinable())
 		ys_thrd.join();
+	YTraceDe(Debug, "YSLib main thread finished.");
+	if(use_force_exit)
+	{
+		YSLib::PostQuitMessage(0);
+		if(ys_thrd.joinable())
+			ys_thrd.join();
+	//	::ExitProcess(0);
+	}
+	yassume(!_is_run());
+	YTraceDe(Informative, "Destroy call finished.");
 }
 
 void
