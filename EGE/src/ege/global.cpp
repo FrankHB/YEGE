@@ -474,9 +474,6 @@ EGEApplication::_init_graph_x()
 		ui_thread = std::thread([this, native_ys_window, &init_finish]{
 			::SetWindowTextW(Nonnull(native_ys_window), window_caption),
 		//	ys_window->Move(Point(_g_windowpos_x, _g_windowpos_y)),
-			ys_window->Resize(Size(dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
-				dc_h + ::GetSystemMetrics(SM_CYFRAME)
-				+ ::GetSystemMetrics(SM_CYCAPTION) * 2));
 			hwnd = ::CreateWindowExW(0, window_class_name, window_caption,
 				WS_CHILD, _g_windowpos_x, _g_windowpos_y,
 				dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
