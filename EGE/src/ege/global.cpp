@@ -484,7 +484,12 @@ EGEApplication::_init_graph_x()
 				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, native_ys_window,
 				{}, GetInstance(), {});
 			if(!hwnd)
-				return unsigned long(0xFFFFFFFF);
+			{
+				init_finish = true;
+				// NOTE: 'return unsigned long(0xFFFFFFFFUL)' in lambda cause
+				//	G++ 4.9 to generate wrong code and fail in runtime.
+				return 0xFFFFFFFFUL;
+			}
 			window_dc = ::GetDC(hwnd);
 			mouse_show = {};
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
