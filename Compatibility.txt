@@ -9,15 +9,14 @@ Code::Blocks 。
 ----
 限 MinGW G++ 4.8.0 或以上，需要 -std=c++11 支持。使用了 std::thread ，需要 POSIX 线程模型。
 （其它版本未测试，但至少需要 -std=c++0x 的 auto 、nullptr 、lambda 表达式和初始化列表等 C++11 特性支持，且若在 Code::Blocks 项目使用，需要去除 debug 的 -Og 选项。）
-只测试 MinGW-W64 。未测试 MinGW.org 的运行时。
-使用同 YSLib 项目相同的 MSYS2 基础环境。
+只测试 MinGW-W64（使用同 YSLib 项目相同的 MSYS2 基础环境）。未测试 MinGW.org 的运行时。
 
 依赖项更改
 ----
 计划依赖 YBase 的 ydef.h（当前临时移除）。
 移除 GDI+ 源代码，需要显式依赖 GDI+（默认 MinGW 已提供）；移除 EGE_GDIPLUS 宏。
-移除 zlib 和 libpng 源代码（保留 zlib 头文件），仅需要显式依赖库 z 。
-移除 ole32 、oleaut32 和 uuid 。
+移除 zlib 和 libpng 源代码和头文件，需要显式依赖库 z 和 png16 。
+移除 imm32 、ole32 、oleaut32 和 uuid 。
 
 非向后兼容接口
 ----
@@ -36,7 +35,7 @@ Code::Blocks 。
 函数 showmouse 和 mousemsg 的参数/返回值使用 bool 代替 int 。
 宏 CTL_* 的定义不再被默认包含。若需使用，另行包含 <ege/mac.h> 或 <ege/ctl.h> 等。
 移除函数 attachHWND 以避免潜在的死锁。
-函数 setrendermode 无效，默认状态统一为 setrendermode(RENDER_MANUAL) ；仅为兼容性保留。
+移除函数 setrendermode 和枚举 rendermode_e 。默认状态等价于 setrendermode(RENDER_MANUAL) 。
 移除类型 LPCALLBACK_PROC 、LPMSG_KEY_PROC 、LPMSG_MOUSE_PROC 、MSG_KEY_PROC 和 MSG_MOUSE_PROC ，其中 LPCALLBACK_PROC 可用 CALLBACK_PROC* 代替，
 添加 linestyletype 和 EGEMSG 的构造函数，只支持默认构造和提供所有成员的初始化。
 typedef 类型名 color_t 从 unsigned int 改为 YSLib::Drawing::PixelType 。
@@ -53,6 +52,7 @@ typedef 类型名 color_t 从 unsigned int 改为 YSLib::Drawing::PixelType 。
 颜色转换断言严格要求色调值在区间 [0, 360) 内。
 移除 getProcfunc 和 SetCloseHandler 函数。
 移除枚举 graphics_modes 。
+移除输入法消息处理。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
@@ -130,6 +130,7 @@ thread_queue 类模板使用 std::mutex 、std::lock_guard 和 std::deque 实现
 提升 flushkey 和 flushmouse 函数的性能。
 避免直接使用 malloc 和 free 。
 拆分宿主环境主窗口和控件的窗口过程。
+简化绘图 API 实现。
 
 实现质量(QoI)
 ----

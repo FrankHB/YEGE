@@ -1,5 +1,5 @@
 ﻿#include "ege/compress.h"
-#include "../zlib/zlib.h"
+#include <zlib.h>
 
 namespace ege
 {

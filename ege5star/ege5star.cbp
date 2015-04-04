@@ -29,7 +29,6 @@
 					<Add library="z" />
 					<Add library="shlwapi" />
 					<Add library="gdi32" />
-					<Add library="imm32" />
 					<Add library="msimg32" />
 					<Add library="winmm" />
 					<Add library="gdiplus" />
@@ -56,7 +55,6 @@
 					<Add library="z" />
 					<Add library="shlwapi" />
 					<Add library="gdi32" />
-					<Add library="imm32" />
 					<Add library="msimg32" />
 					<Add library="winmm" />
 					<Add library="gdiplus" />
