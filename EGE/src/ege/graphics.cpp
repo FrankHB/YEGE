@@ -116,9 +116,6 @@ wndproc(::HWND hWnd, unsigned message, ::WPARAM wParam, ::LPARAM lParam)
 			return TRUE;
 		}
 		break;
-	case WM_IME_CONTROL:
-		EGEApplication::_on_ime_control(hWnd, wParam, lParam);
-		break;
 	case WM_USER + 1:
 		{
 			const auto p(reinterpret_cast<msg_createwindow*>(lParam));

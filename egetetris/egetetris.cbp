@@ -24,7 +24,6 @@
 					<Add library="z" />
 					<Add library="png16" />
 					<Add library="gdi32" />
-					<Add library="imm32" />
 					<Add library="msimg32" />
 					<Add library="ole32" />
 					<Add library="oleaut32" />
@@ -49,7 +48,6 @@
 					<Add library="z" />
 					<Add library="png16" />
 					<Add library="gdi32" />
-					<Add library="imm32" />
 					<Add library="msimg32" />
 					<Add library="ole32" />
 					<Add library="oleaut32" />

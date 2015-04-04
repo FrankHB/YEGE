@@ -16,6 +16,7 @@ Code::Blocks 。
 计划依赖 YBase 的 ydef.h（当前临时移除）。
 移除 GDI+ 源代码，需要显式依赖 GDI+（默认 MinGW 已提供）；移除 EGE_GDIPLUS 宏。
 移除 zlib 和 libpng 源代码和头文件，需要显式依赖库 z 和 png16 。
+移除 imm32 。
 
 接口扩充
 ----
@@ -51,6 +52,7 @@ Code::Blocks 。
 函数 drawlines 、fillpoly_gradient 和 inputbox_getline 在分配存储失败时抛出 std::bad_alloc 异常。
 函数 inputbox_getline 等加入断言。
 头文件中不保证包含 <Windows.h> 或其它系统头文件。
+移除输入法消息处理。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
@@ -198,7 +200,6 @@ LRES
 LoadCu
 LoadI
 LoadRes
-ImmSetCompositionWindow
 MCI_STATUS_PARMS
 MCIE
 MessageBox
