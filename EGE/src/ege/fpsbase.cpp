@@ -6,8 +6,16 @@ namespace ege
 
 using namespace std::chrono;
 
+namespace
+{
+
 duration<double>
-_get_highfeq_time_ls();
+_get_highfeq_time_ls()
+{
+	return YSLib::Timers::FetchElapsed();
+}
+
+} // unnamed namespace;
 
 float
 _get_FPS(int add)

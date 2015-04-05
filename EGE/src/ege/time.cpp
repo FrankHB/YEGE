@@ -11,18 +11,14 @@ namespace ege
 using namespace std::chrono;
 using dw_t = duration<double, std::milli>;
 
-float
-_get_FPS(int);
-
+namespace
+{
 
 duration<double>
 _get_highfeq_time_ls()
 {
 	return YSLib::Timers::FetchElapsed();
 }
-
-namespace
-{
 
 dw_t delay_ms_dwLast;
 dw_t delay_fps_dwLast;

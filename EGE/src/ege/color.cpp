@@ -1,4 +1,4 @@
-﻿#include "ege/colorbase.h"
+﻿#include "ege/color.h"
 #include "head.h"
 
 namespace ege

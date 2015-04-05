@@ -2084,8 +2084,6 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt, IMAGE* dc_src,
 	}
 }
 
-} // unnamed namespace;
-
 int
 putimage_trangle(
 	IMAGE* imgdest,
@@ -2137,6 +2135,8 @@ putimage_trangle(
 	}
 	return grOk;
 }
+
+} // unnamed namespace;
 
 int
 putimage_rotate(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,

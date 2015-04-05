@@ -3,6 +3,7 @@
 #include "image.h"
 #include <utility> // for std::swap;
 #include <cfloat> // for FLT_EPSILON;
+#include "ege.h"
 
 namespace ege
 {

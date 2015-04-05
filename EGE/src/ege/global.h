@@ -46,6 +46,8 @@ enum class get_input_op
 	kbmsg
 };
 
+float
+_get_FPS(int);
 
 // EGE 全局状态
 class EGEApplication : public YSLib::GUIApplication
