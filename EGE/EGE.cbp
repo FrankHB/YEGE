@@ -29,7 +29,10 @@
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
+					<Add option="-fomit-frame-pointer" />
+					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
+					<Add option="-flto=jobserver" />
 					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
@@ -48,6 +51,8 @@
 					<Add option="-g" />
 					<Add option="-D_GLIBCXX_DEBUG" />
 					<Add option="-D_GLIBCXX_DEBUG_PEDANTIC" />
+					<Add option="-DYB_DLL" />
+					<Add option="-DYF_DLL" />
 				</Compiler>
 				<Linker>
 					<Add library="YFrameworkd" />
@@ -92,13 +97,34 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-Wnon-virtual-dtor" />
+			<Add option="-Wredundant-decls" />
+			<Add option="-Wcast-align" />
+			<Add option="-Wmissing-declarations" />
 			<Add option="-Wmissing-include-dirs" />
-			<Add option="-pedantic-errors" />
 			<Add option="-Wzero-as-null-pointer-constant" />
-			<Add option="-std=c++11" />
+			<Add option="-pedantic-errors" />
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
+			<Add option="-std=c++11" />
+			<Add option="-Wctor-dtor-privacy" />
+			<Add option="-Winvalid-pch" />
+			<Add option="-Wsign-promo" />
+			<Add option="-Wdeprecated" />
+			<Add option="-Wdeprecated-declarations" />
+			<Add option="-Wformat=2" />
+			<Add option="-Wmultichar" />
+			<Add option="-Wno-format-nonliteral" />
+			<Add option="-Wpacked" />
+			<Add option="-Wfloat-equal" />
+			<Add option="-Wlogical-op" />
+			<Add option="-Wtrampolines" />
+			<Add option="-Wconditionally-supported" />
+			<Add option="-Wstrict-null-sentinel" />
+			<Add option="-fdata-sections" />
+			<Add option="-ffunction-sections" />
 			<Add option="-mthreads" />
+			<Add option="-pipe" />
 			<Add directory="include" />
 		</Compiler>
 		<Unit filename="include/ege.h" />
