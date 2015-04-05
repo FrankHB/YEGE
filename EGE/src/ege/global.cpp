@@ -143,10 +143,12 @@ egeControlBase* egectrl_focus;
 namespace
 {
 
-unsigned long g_windowstyle(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
-	| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE);
-unsigned long g_windowexstyle(WS_EX_LEFT | WS_EX_LTRREADING);
-int _g_windowpos_x(CW_USEDEFAULT), _g_windowpos_y(CW_USEDEFAULT);
+yconstexpr unsigned long c_style_base(WS_CLIPCHILDREN | WS_VISIBLE),
+	c_style_border(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX
+	| c_style_base), c_style_ex(WS_EX_LEFT | WS_EX_LTRREADING);
+
+unsigned long g_wstyle(c_style_border), g_wstyle_ex(c_style_ex);
+int g_wpos_x(CW_USEDEFAULT), g_wpos_y(CW_USEDEFAULT);
 
 CALLBACK ::BOOL
 EnumResNameProc(::HMODULE hModule, ::LPCTSTR, ::LPTSTR lpszName,
@@ -166,28 +168,18 @@ EnumResNameProc(::HMODULE hModule, ::LPCTSTR, ::LPTSTR lpszName,
 } // unnamed namespace;
 
 void
-_set_initmode(int mode, int x, int y)
+setinitmode(int mode, int x, int y)
 {
 	_g_initcall = true;
 	_g_initoption = mode;
-	if(mode & INIT_NOBORDER)
-	{
-		g_windowstyle = mode & INIT_CHILD ? WS_CHILDWINDOW | WS_CLIPCHILDREN
-			| WS_VISIBLE : WS_POPUP | WS_CLIPCHILDREN | WS_VISIBLE;
-		g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
-	}
-	else
-	{
-		g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
-			| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
-		g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
-	}
+	g_wstyle = mode & INIT_NOBORDER ? ((mode & INIT_CHILD
+		? WS_CHILDWINDOW : WS_POPUP) | c_style_ex) : c_style_border;
+	g_wstyle_ex = c_style_ex;
 	if(mode & INIT_TOPMOST)
-		g_windowexstyle |= WS_EX_TOPMOST;
-	_g_windowpos_x = x;
-	_g_windowpos_y = y;
+		g_wstyle_ex |= WS_EX_TOPMOST;
+	g_wpos_x = x;
+	g_wpos_y = y;
 }
-
 
 
 EGEApplication::EGEApplication(int gdriver_n, int* gmode)
@@ -250,8 +242,8 @@ EGEApplication::EGEApplication(int gdriver_n, int* gmode)
 			dc_h = rect.bottom;
 	}
 	ys_pnl.reset(new Panel({Point::Invalid, SDst(dc_w), SDst(dc_h)}));
-	ys_window = dynamic_cast<HostRenderer&>(ShowTopLevel(*ys_pnl, g_windowstyle,
-		g_windowexstyle)).GetWindowPtr();
+	ys_window = dynamic_cast<HostRenderer&>(ShowTopLevel(*ys_pnl, g_wstyle,
+		g_wstyle_ex)).GetWindowPtr();
 	ys_window->MessageMap[WM_DESTROY] += [this]{
 		_uninit();
 	};
@@ -470,9 +462,9 @@ EGEApplication::_init_graph_x()
 
 		ui_thread = std::thread([this, native_ys_window, &init_finish]{
 			::SetWindowTextW(Nonnull(native_ys_window), window_caption),
-		//	ys_window->Move(Point(_g_windowpos_x, _g_windowpos_y)),
+		//	ys_window->Move(Point(g_wpos_x, g_wpos_y)),
 			hwnd = ::CreateWindowExW(0, window_class_name, window_caption,
-				WS_CHILD, _g_windowpos_x, _g_windowpos_y,
+				WS_CHILD, g_wpos_x, g_wpos_y,
 				dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
 				dc_h + ::GetSystemMetrics(SM_CYFRAME)
 				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, native_ys_window,
@@ -523,7 +515,7 @@ EGEApplication::_init_graph_x()
 	window_setviewport(0, 0, dc_w, dc_h);
 	::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
 	::UpdateWindow(native_ys_window);
-	if(g_windowexstyle & WS_EX_TOPMOST)
+	if(g_wstyle_ex & WS_EX_TOPMOST)
 		::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 }
 

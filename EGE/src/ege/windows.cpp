@@ -5,12 +5,6 @@ namespace ege
 {
 
 void
-setinitmode(int mode, int x, int y)
-{
-	_set_initmode(mode, x, y);
-}
-
-void
 setcaption(const char* caption)
 {
 	::SetWindowTextA(getHWnd(), caption);

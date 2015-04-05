@@ -35,10 +35,6 @@ extern egeControlBase* egectrl_root;
 extern egeControlBase* egectrl_focus;
 
 
-void
-_set_initmode(int, int, int);
-
-
 enum class get_input_op
 {
 	getch,
