@@ -20,7 +20,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-Wl,-dn" />
-					<Add library="..\EGE\debug\libEGE.a" />
+					<Add library="../EGE/debug/libEGE.a" />
 					<Add library="YFrameworkd" />
 					<Add library="FreeImage" />
 					<Add library="freetype" />
@@ -49,7 +49,7 @@
 				<Linker>
 					<Add option="-s" />
 					<Add option="-Wl,-dn" />
-					<Add library="..\EGE\release\libEGE.a" />
+					<Add library="../EGE/release/libEGE.a" />
 					<Add library="YFramework" />
 					<Add library="FreeImage" />
 					<Add library="freetype" />
@@ -77,12 +77,13 @@
 					<Add option="-DYF_DLL" />
 				</Compiler>
 				<Linker>
-					<Add library="..\EGE\debug\EGE.dll" />
+					<Add library="../EGE/debug/EGE.dll" />
 					<Add library="YFrameworkd" />
 					<Add library="YBased" />
 				</Linker>
 				<ExtraCommands>
-					<Add before='CMD /C ECHO F | XCOPY /D /Y &quot;..\EGE\debug\EGE.dll&quot; &quot;debug\EGE.dll&quot;' />
+					<Add before='CMD /C DEL &quot;debug\EGE.dll&quot;' />
+					<Add before='CMD /C MKLINK &quot;debug\EGE.dll&quot; &quot;..\EGE\debug\EGE.dll&quot; || MKLINK /H &quot;debug\EGE.dll&quot; &quot;..\EGE\debug\EGE.dll&quot; || ECHO F | XCOPY /D /Y &quot;..\EGE\debug\EGE.dll&quot; &quot;debug\EGE.dll&quot;' />
 				</ExtraCommands>
 			</Target>
 			<Target title="release_DLL">
@@ -101,12 +102,13 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="..\EGE\release\EGE.dll" />
+					<Add library="../EGE/release/EGE.dll" />
 					<Add library="YFramework" />
 					<Add library="YBase" />
 				</Linker>
 				<ExtraCommands>
-					<Add before='CMD /C ECHO F | XCOPY /D /Y &quot;..\EGE\release\EGE.dll&quot; &quot;release\EGE.dll&quot;' />
+					<Add before='CMD /C DEL &quot;release\EGE.dll&quot;' />
+					<Add before='CMD /C MKLINK &quot;release\EGE.dll&quot; &quot;..\EGE\release\EGE.dll&quot; || MKLINK /H &quot;release\EGE.dll&quot; &quot;..\EGE\release\EGE.dll&quot; || ECHO F | XCOPY /D /Y &quot;..\EGE\release\EGE.dll&quot; &quot;release\EGE.dll&quot;' />
 				</ExtraCommands>
 			</Target>
 		</Build>
