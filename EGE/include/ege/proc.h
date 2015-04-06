@@ -8,11 +8,6 @@ namespace ege
 
 using CALLBACK_PROC = void();
 
-#if !YEGE_Use_YSLib
-int
-SetCloseHandler(CALLBACK_PROC* func);
-#endif
-
 } // namespace ege;
 
 #endif

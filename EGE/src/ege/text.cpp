@@ -14,7 +14,6 @@ namespace ege
 namespace
 {
 
-#if YEGE_Use_YSLib
 ::LRESULT CALLBACK
 sys_edit_proc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 {
@@ -111,7 +110,6 @@ sys_edit_proc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 	return (reinterpret_cast<egeControlBase*>(pg_w))
 		->onMessage(message, wParam, lParam);
 }
-#endif
 
 unsigned int
 private_gettextmode(IMAGE* img)
@@ -129,7 +127,8 @@ private_gettextmode(IMAGE* img)
 }
 
 void
-private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz, int vert)
+private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz,
+	int vert)
 {
 	if(horiz >= 0 && vert >= 0)
 	{
@@ -192,13 +191,11 @@ private_textout(IMAGE* img, const wchar_t* textstring, int x, int y, int horiz,
 
 } // unnamed namespace;
 
-#if YEGE_Use_YSLib
 ::WNDPROC
 sys_edit::GetSysEditWndProc()
 {
 	return sys_edit_proc;
 }
-#endif
 
 void
 outtext(const char* textstring, IMAGE* pimg)

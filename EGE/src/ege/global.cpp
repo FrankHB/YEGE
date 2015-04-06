@@ -48,6 +48,11 @@ wndproc(::HWND hWnd, unsigned message, ::WPARAM wParam, ::LPARAM lParam)
 	case WM_PAINT:
 		app._on_paint(hWnd);
 		break;
+#if !YEGE_Use_YSLib
+	case WM_DESTROY:
+		app._on_destroy();
+		break;
+#endif
 	case WM_ERASEBKGND:
 		return TRUE;
 	case WM_KEYDOWN:
@@ -888,7 +893,6 @@ EGEApplication::_waitdealmessage()
 	return _is_run();
 }
 
-#if YEGE_Use_YSLib
 void
 EGEApplication::_window_handle_wm_user_1(::LPARAM l, ::WPARAM w)
 {
@@ -909,25 +913,6 @@ EGEApplication::_window_handle_wm_user_1(::LPARAM l, ::WPARAM w)
 			::SetEvent(msg.hEvent);
 	}
 }
-#else
-void
-EGEApplication::_window_create(msg_createwindow& msg)
-{
-	msg.hwnd = ::CreateWindowExW(msg.exstyle, msg.classname, {},
-		msg.style, 0, 0, 0, 0, getHWnd(), ::HMENU(msg.id), getHInstance(), {});
-	if(msg.hEvent)
-		::SetEvent(msg.hEvent);
-}
-
-void
-EGEApplication::_window_destroy(msg_createwindow& msg)
-{
-	if(msg.hwnd)
-		::DestroyWindow(msg.hwnd);
-	if(msg.hEvent)
-		::SetEvent(msg.hEvent);
-}
-#endif
 
 
 _pages::_pages()
@@ -1033,16 +1018,6 @@ get_pages()
 
 	return *p;
 }
-
-
-#if !YEGE_Use_YSLib
-int
-SetCloseHandler(CALLBACK_PROC* func)
-{
-	FetchEGEApplication().callback_close = func;
-	return grOk;
-}
-#endif
 
 } // namespace ege;
 

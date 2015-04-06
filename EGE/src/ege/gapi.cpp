@@ -337,7 +337,7 @@ setbkcolor(color_t color, IMAGE* pimg)
 	if(const auto img = CONVERT_IMAGE(pimg))
 		if(img->getdc())
 		{
-			unsigned long* p = img->getbuffer();
+			auto p = reinterpret_cast<color_t*>(img->getbuffer());
 			size_t size = img->GetWidth() * img->GetHeight();
 			color_t col = img->m_bk_color;
 

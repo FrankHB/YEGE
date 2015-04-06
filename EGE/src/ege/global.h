@@ -214,16 +214,8 @@ public:
 	bool
 	_waitdealmessage();
 
-#if YEGE_Use_YSLib
 	static void
 	_window_handle_wm_user_1(::LPARAM, ::WPARAM);
-#else
-	static void
-	_window_create(msg_createwindow&);
-
-	static void
-	_window_destroy(msg_createwindow&);
-#endif
 };
 
 
