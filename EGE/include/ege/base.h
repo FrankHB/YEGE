@@ -46,10 +46,18 @@ make_unique(_tParams&&...) = delete;
 
 
 template<typename _type>
+inline _type&&
+Nonnull(_type&& p) ynothrow
+{
+	yconstraint(p);
+	return std::forward<_type&&>(p);
+}
+
+template<typename _type>
 yconstfn auto
 Deref(_type&& p) -> decltype(*p)
 {
-	return *std::forward<_type&&>(p);
+	return *ege::Nonnull(std::forward<_type&&>(p));
 }
 
 

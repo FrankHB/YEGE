@@ -11,29 +11,16 @@ namespace ege
 using namespace std::chrono;
 using dw_t = duration<double, std::milli>;
 
-float
-_get_FPS(int);
-
-
 namespace
 {
-
-template<class _tClock = high_resolution_clock>
-inline typename _tClock::time_point
-FetchEpoch()
-{
-	static auto start_time(_tClock::now());
-
-	return start_time;
-}
-
-} // unnamed namespace;
 
 duration<double>
 _get_highfeq_time_ls()
 {
 	return high_resolution_clock::now() - FetchEpoch<high_resolution_clock>();
 }
+
+} // unnamed namespace;
 
 namespace
 {
@@ -102,7 +89,7 @@ delay_ms(long ms)
 		}
 		FetchEGEApplication()._update();
 		dw = _get_highfeq_time_ls();
-		FetchEGEApplication()._update_GUI();
+		FetchEGEApplication()._process_queues();
 		egectrl_root->update();
 		if(delay_ms_dwLast + dw_t(200) <= dw || delay_ms_dwLast > dw)
 			delay_ms_dwLast = dw;
@@ -171,7 +158,7 @@ delay_jfps(double fps)
 		else
 			_get_FPS(-0x100);
 		dw = _get_highfeq_time_ls();
-		FetchEGEApplication()._update_GUI();
+		FetchEGEApplication()._process_queues();
 		egectrl_root->update();
 		if(delay_fps_dwLast + delay_time + avg_max_time <= dw
 			|| delay_fps_dwLast > dw)

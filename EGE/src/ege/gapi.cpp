@@ -3,6 +3,7 @@
 #include "image.h"
 #include <utility> // for std::swap;
 #include <cfloat> // for FLT_EPSILON;
+#include "ege.h"
 
 namespace ege
 {
@@ -495,14 +496,6 @@ lineto(int x, int y, IMAGE* pimg)
 
 namespace
 {
-
-template<typename _type>
-inline _type&&
-Nonnull(_type&& p) ynothrow
-{
-	yconstraint(p);
-	return std::forward<decltype(p)>(p);
-}
 
 void
 line_base(float x1, float y1, float x2, float y2, IMAGE* img)

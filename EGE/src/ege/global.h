@@ -7,6 +7,7 @@
 #include "ege/input.h"
 #include "ege/env.h"
 #include "ege/base.h"
+#include <chrono>
 #include <thread>
 #include "thread_queue.h"
 #include <windows.h>
@@ -33,6 +34,15 @@ extern egeControlBase* egectrl_root;
 extern egeControlBase* egectrl_focus;
 
 
+template<class _tClock = std::chrono::high_resolution_clock>
+inline typename _tClock::time_point
+FetchEpoch()
+{
+	static auto start_time(_tClock::now());
+
+	return start_time;
+}
+
 void
 _set_initmode(int, int, int);
 
@@ -44,6 +54,8 @@ enum class get_input_op
 	kbmsg
 };
 
+float
+_get_FPS(int);
 
 // 定义ege全局状态对象
 struct EGEApplication
@@ -73,9 +85,6 @@ public:
 
 	bool
 	_is_run() const;
-
-	bool
-	_is_window_exit() const;
 
 	void
 	_flush_key_mouse(bool);
@@ -153,6 +162,9 @@ public:
 	_peekmouse();
 
 	void
+	_process_queues();
+
+	void
 	_process_ui_msg(EGEMSG&);
 
 	void
@@ -166,9 +178,6 @@ public:
 
 	void
 	_update();
-
-	void
-	_update_GUI();
 
 	void
 	_update_if_necessary();

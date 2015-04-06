@@ -9,6 +9,8 @@
 #include <memory> // for std::unique_ptr;
 #include <functional> // for std::bind;
 #include <mutex> // for std::once_flag, std::call_once;
+#include <atomic>
+#include "head.h"
 
 #ifdef _WIN64
 #define ARCH L"x64"
@@ -25,6 +27,9 @@
 namespace ege
 {
 
+const wchar_t window_class_name[]{L"Easy Graphics Engine"};
+const wchar_t window_caption[]{EGE_TITLE};
+
 int _g_initoption(INIT_DEFAULT);
 bool _g_initcall;
 int update_mark_count; //更新标记
@@ -35,13 +40,12 @@ egeControlBase* egectrl_focus;
 namespace
 {
 
-const wchar_t window_class_name[]{L"Easy Graphics Engine"};
-const wchar_t window_caption[]{EGE_TITLE};
+yconstexpr unsigned long c_style_base(WS_CLIPCHILDREN | WS_VISIBLE),
+	c_style_border(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX
+	| c_style_base), c_style_ex(WS_EX_LEFT | WS_EX_LTRREADING);
 
-unsigned long g_windowstyle(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
-	| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE);
-unsigned long g_windowexstyle(WS_EX_LEFT | WS_EX_LTRREADING);
-int _g_windowpos_x(CW_USEDEFAULT), _g_windowpos_y(CW_USEDEFAULT);
+unsigned long g_wstyle(c_style_border), g_wstyle_ex(c_style_ex);
+int g_wpos_x(CW_USEDEFAULT), g_wpos_y(CW_USEDEFAULT);
 
 CALLBACK ::BOOL
 EnumResNameProc(::HMODULE hModule, ::LPCTSTR, ::LPTSTR lpszName,
@@ -60,30 +64,18 @@ EnumResNameProc(::HMODULE hModule, ::LPCTSTR, ::LPTSTR lpszName,
 
 } // unnamed namespace;
 
-float
-_get_FPS(int);
-
 void
-_set_initmode(int mode, int x, int y)
+setinitmode(int mode, int x, int y)
 {
 	_g_initcall = true;
 	_g_initoption = mode;
-	if(mode & INIT_NOBORDER)
-	{
-		g_windowstyle = mode & INIT_CHILD ? WS_CHILDWINDOW | WS_CLIPCHILDREN
-			| WS_VISIBLE : WS_POPUP | WS_CLIPCHILDREN | WS_VISIBLE;
-		g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
-	}
-	else
-	{
-		g_windowstyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
-			| WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_VISIBLE;
-		g_windowexstyle = WS_EX_LEFT | WS_EX_LTRREADING;
-	}
+	g_wstyle = mode & INIT_NOBORDER ? ((mode & INIT_CHILD
+		? WS_CHILDWINDOW : WS_POPUP) | c_style_ex) : c_style_border;
+	g_wstyle_ex = c_style_ex;
 	if(mode & INIT_TOPMOST)
-		g_windowexstyle |= WS_EX_TOPMOST;
-	_g_windowpos_x = x;
-	_g_windowpos_y = y;
+		g_wstyle_ex |= WS_EX_TOPMOST;
+	g_wpos_x = x;
+	g_wpos_y = y;
 }
 
 
@@ -91,50 +83,47 @@ EGEApplication::EGEApplication(int gdriver_n, int* gmode)
 {
 	static std::once_flag init_flag;
 
-	std::call_once(init_flag, [this]{
-		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 
-		Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, {});
+	Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, {});
 
-		static ::WNDCLASSEXW wcex;
+	static ::WNDCLASSEXW wcex;
 
-		wcex.cbSize = sizeof(wcex);
-		wcex.style = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc = getProcfunc();
-		wcex.cbClsExtra = 0;
-		wcex.cbWndExtra = 0;
-		wcex.hInstance = GetInstance();
-		wcex.hIcon = ::LoadIcon({}, IDI_WINLOGO);
-		wcex.hCursor = ::LoadCursor({}, IDC_ARROW);
-		wcex.hbrBackground = ::HBRUSH(COLOR_WINDOW + 1);
-		wcex.lpszClassName = window_class_name;
+	wcex.cbSize = sizeof(wcex);
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = getProcfunc();
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = GetInstance();
+	wcex.hIcon = ::LoadIcon({}, IDI_WINLOGO);
+	wcex.hCursor = ::LoadCursor({}, IDC_ARROW);
+	wcex.hbrBackground = ::HBRUSH(COLOR_WINDOW + 1);
+	wcex.lpszClassName = window_class_name;
 
-		const auto load([&](::LPCTSTR rt){
-			::HICON hico = {};
+	const auto load([&](::LPCTSTR rt){
+		::HICON hico = {};
 
-			EnumResourceNames(GetInstance(), rt, EnumResNameProc,
-				::LONG_PTR(&hico));
-			if(hico)
-				wcex.hIcon = hico;
-			return hico;
-		});
-		do
-		{
-			if(load(RT_ANIICON))
-				break;
-			if(load(RT_GROUP_ICON))
-				break;
-			if(load(RT_ICON))
-				break;
-		}while(0);
-		::RegisterClassExW(&wcex);
+		EnumResourceNames(GetInstance(), rt, EnumResNameProc,
+			::LONG_PTR(&hico));
+		if(hico)
+			wcex.hIcon = hico;
+		return hico;
 	});
+	do
+	{
+		if(load(RT_ANIICON))
+			break;
+		if(load(RT_GROUP_ICON))
+			break;
+		if(load(RT_ICON))
+			break;
+	}while(0);
+	::RegisterClassExW(&wcex);
 
 	yassume(gdriver_n);
 
 	if(gdriver_n == TRUECOLORSIZE)
 	{
-		yassume(gmode);
 		::RECT rect;
 
 		::GetWindowRect(GetDesktopWindow(), &rect);
@@ -146,6 +135,7 @@ EGEApplication::EGEApplication(int gdriver_n, int* gmode)
 			dc_h = rect.bottom;
 	}
 }
+
 EGEApplication::~EGEApplication()
 {
 	if(ui_thread.joinable())
@@ -158,12 +148,6 @@ bool
 EGEApplication::_is_run() const
 {
 	return ui_thread.joinable();
-}
-
-bool
-EGEApplication::_is_window_exit() const
-{
-	return !_is_run();
 }
 
 void
@@ -179,26 +163,28 @@ EGEApplication::_flush_key_mouse(bool key)
 int
 EGEApplication::_get_input(get_input_op op)
 {
-	if(_is_window_exit())
-		return grNoInitGraph;
-	switch(op)
+	if(_is_run())
 	{
-	case get_input_op::getch:
-		do
+		switch(op)
 		{
-			int key = _peekkey();
-			if(key < 0)
-				break;
-			if(key > 0)
-				key = _getkey_p();
-		} while(_is_run() && _waitdealmessage());
-		break;
-	case get_input_op::kbhit:
-		return _peekkey();
-	case get_input_op::kbmsg:
-		return _peekallkey(1);
+		case get_input_op::getch:
+			do
+			{
+				int key = _peekkey();
+				if(key < 0)
+					break;
+				if(key > 0)
+					key = _getkey_p();
+			} while(_is_run() && _waitdealmessage());
+			break;
+		case get_input_op::kbhit:
+			return _peekkey();
+		case get_input_op::kbmsg:
+			return _peekallkey(1);
+		}
+		return 0;
 	}
-	return 0;
+	return grNoInitGraph;
 }
 
 int
@@ -281,64 +267,64 @@ EGEApplication::_getmouse()
 {
 	auto mmsg = mouse_msg();
 
-	if(_is_window_exit())
-		return mmsg;
-
-	EGEMSG msg;
-
-	do
+	if(_is_run())
 	{
-		if(!msgmouse_queue.empty())
+		EGEMSG msg;
+
+		do
 		{
-			msg = msgkey_queue.top();
-			msgkey_queue.pop();
-		}
-		if(msg.hwnd)
-		{
-			mmsg.flags |= ((msg.wParam & MK_CONTROL) != 0
-				? mouse_flag_ctrl : 0);
-			mmsg.flags |= ((msg.wParam & MK_SHIFT) != 0 ? mouse_flag_shift : 0);
-			mmsg.x = short(int(msg.lParam) & 0xFFFF);
-			mmsg.y = short(unsigned(msg.lParam) >> 16);
-			mmsg.msg = mouse_msg_move;
-			if(msg.message == WM_LBUTTONDOWN)
+			if(!msgmouse_queue.empty())
 			{
-				mmsg.msg = mouse_msg_down;
-				mmsg.flags |= mouse_flag_left;
+				msg = msgkey_queue.top();
+				msgkey_queue.pop();
 			}
-			else if(msg.message == WM_RBUTTONDOWN)
+			if(msg.hwnd)
 			{
-				mmsg.msg = mouse_msg_down;
-				mmsg.flags |= mouse_flag_right;
+				mmsg.flags |= ((msg.wParam & MK_CONTROL) != 0
+					? mouse_flag_ctrl : 0);
+				mmsg.flags |= ((msg.wParam & MK_SHIFT) != 0 ? mouse_flag_shift : 0);
+				mmsg.x = short(int(msg.lParam) & 0xFFFF);
+				mmsg.y = short(unsigned(msg.lParam) >> 16);
+				mmsg.msg = mouse_msg_move;
+				if(msg.message == WM_LBUTTONDOWN)
+				{
+					mmsg.msg = mouse_msg_down;
+					mmsg.flags |= mouse_flag_left;
+				}
+				else if(msg.message == WM_RBUTTONDOWN)
+				{
+					mmsg.msg = mouse_msg_down;
+					mmsg.flags |= mouse_flag_right;
+				}
+				else if(msg.message == WM_MBUTTONDOWN)
+				{
+					mmsg.msg = mouse_msg_down;
+					mmsg.flags |= mouse_flag_mid;
+				}
+				else if(msg.message == WM_LBUTTONUP)
+				{
+					mmsg.msg = mouse_msg_up;
+					mmsg.flags |= mouse_flag_left;
+				}
+				else if(msg.message == WM_RBUTTONUP)
+				{
+					mmsg.msg = mouse_msg_up;
+					mmsg.flags |= mouse_flag_right;
+				}
+				else if(msg.message == WM_MBUTTONUP)
+				{
+					mmsg.msg = mouse_msg_up;
+					mmsg.flags |= mouse_flag_mid;
+				}
+				else if(msg.message == WM_MOUSEWHEEL)
+				{
+					mmsg.msg = mouse_msg_wheel;
+					mmsg.wheel = short(unsigned(msg.wParam) >> 16);
+				}
+				return mmsg;
 			}
-			else if(msg.message == WM_MBUTTONDOWN)
-			{
-				mmsg.msg = mouse_msg_down;
-				mmsg.flags |= mouse_flag_mid;
-			}
-			else if(msg.message == WM_LBUTTONUP)
-			{
-				mmsg.msg = mouse_msg_up;
-				mmsg.flags |= mouse_flag_left;
-			}
-			else if(msg.message == WM_RBUTTONUP)
-			{
-				mmsg.msg = mouse_msg_up;
-				mmsg.flags |= mouse_flag_right;
-			}
-			else if(msg.message == WM_MBUTTONUP)
-			{
-				mmsg.msg = mouse_msg_up;
-				mmsg.flags |= mouse_flag_mid;
-			}
-			else if(msg.message == WM_MOUSEWHEEL)
-			{
-				mmsg.msg = mouse_msg_wheel;
-				mmsg.wheel = short(unsigned(msg.wParam) >> 16);
-			}
-			return mmsg;
-		}
-	}while(_is_run() && _waitdealmessage());
+		}while(_is_run() && _waitdealmessage());
+	}
 	return mmsg;
 }
 
@@ -350,21 +336,19 @@ EGEApplication::_init_graph_x()
 	std::call_once(init_flag, [this]{
 	//	::SECURITY_ATTRIBUTES sa{};
 	//	unsigned long pid;
-		bool init_finish{};
+		std::atomic<bool> init_finish{{}};
 
 		ui_thread = std::thread([this, &init_finish]{
-			//执行应用程序初始化
-			hwnd = ::CreateWindowExW(g_windowexstyle, window_class_name,
-				window_caption, g_windowstyle & ~WS_VISIBLE, _g_windowpos_x,
-				_g_windowpos_y, dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
+			hwnd = ::CreateWindowExW(g_wstyle_ex, window_class_name,
+				window_caption, g_wstyle & ~WS_VISIBLE, g_wpos_x, g_wpos_y,
+				dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
 				dc_h + ::GetSystemMetrics(SM_CYFRAME)
 				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, HWND_DESKTOP, {},
 				GetInstance(), {});
 			if(!hwnd)
 				return 0xFFFFFFFFUL;
-			//图形初始化
+
 			window_dc = ::GetDC(hwnd);
-			//::ReleaseDC(hwnd, window_dc);
 			mouse_show = {};
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
 			init_finish = true;
@@ -379,6 +363,11 @@ EGEApplication::_init_graph_x()
 				}
 				else
 					::Sleep(1);
+			::ReleaseDC(hwnd, window_dc);
+			window_dc = {};
+			if(::IsWindow(hwnd))
+				::DestroyWindow(hwnd);
+			hwnd = {};
 			return 0UL;
 		});
 		while(!init_finish)
@@ -395,9 +384,8 @@ EGEApplication::_init_graph_x()
 	window_setviewport(0, 0, dc_w, dc_h);
 	::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
 	::ShowWindow(hwnd, SW_SHOW);
-	if(g_windowexstyle & WS_EX_TOPMOST)
-		::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
-			SWP_NOSIZE | SWP_NOMOVE);
+	if(g_wstyle_ex & WS_EX_TOPMOST)
+		::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 }
 
 int
@@ -413,7 +401,7 @@ EGEApplication::_keystate(int key)
 bool
 EGEApplication::_mousemsg()
 {
-	return _is_window_exit() ? false : bool(_peekmouse().hwnd);
+	return _is_run() && bool(_peekmouse().hwnd);
 }
 
 void
@@ -571,6 +559,16 @@ EGEApplication::_peekmouse()
 }
 
 void
+EGEApplication::_process_queues()
+{
+	using namespace std;
+	using namespace placeholders;
+
+	msgkey_queue.process(bind(&EGEApplication::_process_ui_msg, this, _1));
+	msgmouse_queue.process(bind(&EGEApplication::_process_ui_msg, this, _1));
+}
+
+void
 EGEApplication::_process_ui_msg(EGEMSG& qmsg)
 {
 	if(qmsg.flag & 1)
@@ -642,9 +640,13 @@ EGEApplication::_show_mouse(bool bShow)
 }
 
 void
+EGEApplication::_uninit()
+{}
+
+void
 EGEApplication::_update()
 {
-	if(!_is_window_exit())
+	if(_is_run())
 	{
 		if(IsWindowVisible(hwnd) && window_dc)
 			get_pages().update();
@@ -680,24 +682,10 @@ EGEApplication::_update()
 }
 
 void
-EGEApplication::_uninit()
-{}
-
-void
 EGEApplication::_update_if_necessary()
 {
 	if(update_mark_count <= 0)
 		_update();
-}
-
-void
-EGEApplication::_update_GUI()
-{
-	using namespace std;
-	using namespace placeholders;
-
-	msgkey_queue.process(bind(&EGEApplication::_process_ui_msg, this, _1));
-	msgmouse_queue.process(bind(&EGEApplication::_process_ui_msg, this, _1));
 }
 
 bool
@@ -707,7 +695,7 @@ EGEApplication::_waitdealmessage()
 	{
 		egectrl_root->draw({});
 		_update();
-		_update_GUI();
+		_process_queues();
 		egectrl_root->update();
 	}
 	ege_sleep(1);

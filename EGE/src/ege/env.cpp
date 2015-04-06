@@ -10,7 +10,6 @@ namespace ege
 void
 initgraph(int* gdriver, int* gmode, char*)
 {
-	yconstraint(gdriver);
 	FetchEGEApplication(Deref(gdriver), gmode)._init_graph_x();
 }
 void

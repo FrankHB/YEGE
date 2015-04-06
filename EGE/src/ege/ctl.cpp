@@ -130,10 +130,10 @@ void
 egeControlBase::sortzorder()
 {
 	if(const auto cvec = static_cast<egectlvec*>(m_childzorder))
-		std::sort(cvec->begin(), cvec->end(), [](const egeControlBase* pa,
-			const egeControlBase* pb){
-				return *pa < *pb;
-			});
+		std::sort(cvec->begin(), cvec->end(),
+		[](const egeControlBase* pa, const egeControlBase* pb){
+			return *pa < *pb;
+		});
 }
 
 int egeControlBase::addchild(egeControlBase* pChild)
