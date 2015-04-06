@@ -36,6 +36,8 @@ void* EGEAPI
 getbuffer(IMAGE* pimg);
 
 
+// \pre 间接断言： \c pDstImg 。
+//@{
 EGEAPI int
 resize(IMAGE* pDstImg, int width, int height); //重设尺寸
 
@@ -43,7 +45,7 @@ EGEAPI void
 getimage(IMAGE* pDstImg, int srcX, int srcY, int srcWidth, int srcHeight);             //从屏幕获取图像
 EGEAPI void
 getimage(IMAGE* pDstImg, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);   //从另一个 IMAGE* 对象中获取图像
-
+//@}
 
 EGEAPI int
 putimage_transparent(

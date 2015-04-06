@@ -253,7 +253,7 @@ IMAGE::Resize(int width, int height)
 	bmi.bmiHeader.biSizeImage = width * height * 4;
 
 	return Refresh(::CreateDIBSection({}, &bmi, DIB_RGB_COLORS,
-		reinterpret_cast<void**>(&p_bmp_buf), {}, 0)));
+		reinterpret_cast<void**>(&p_bmp_buf), {}, 0));
 #endif
 }
 
@@ -455,14 +455,14 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 	if(FAILED(hr))
 		return grIOerror;
 
-	const auto img = get_pages().imgtarget;
+	auto& img(get_pages().get_target_ref());
 
 	pPicture->get_Width(&lWidth);
 	lWidthPixels
-		= ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
+		= ::MulDiv(lWidth, ::GetDeviceCaps(img.m_hDC, LOGPIXELSX), 2540);
 	pPicture->get_Height(&lHeight);
 	lHeightPixels
-		= ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
+		= ::MulDiv(lHeight, ::GetDeviceCaps(img.m_hDC, LOGPIXELSY), 2540);
 	Resize(lWidthPixels, lHeightPixels);
 	pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 		lWidth, -lHeight, {});
@@ -499,14 +499,14 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 		if(FAILED(hr))
 			return grIOerror;
 
-		IMAGE* img(get_pages().imgtarget);
+		auto& img(get_pages().get_target_ref());
 
 		pPicture->get_Width(&lWidth);
-		lWidthPixels = ::MulDiv(lWidth,
-			::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
+		lWidthPixels
+			= ::MulDiv(lWidth, ::GetDeviceCaps(img.m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
-		lHeightPixels = ::MulDiv(lHeight,
-			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
+		lHeightPixels
+			= ::MulDiv(lHeight, ::GetDeviceCaps(img.m_hDC, LOGPIXELSY), 2540);
 		Resize(lWidthPixels, lHeightPixels);
 		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 			lWidth, -lHeight, {});
@@ -545,12 +545,14 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 		if(FAILED(hr))
 			return grIOerror;
 
-		const auto img = get_pages().imgtarget;
+		auto& img(get_pages().get_target_ref());
 
 		pPicture->get_Width(&lWidth);
-		lWidthPixels = ::MulDiv(lWidth, ::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
+		lWidthPixels
+			= ::MulDiv(lWidth, ::GetDeviceCaps(img.m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
-		lHeightPixels = ::MulDiv(lHeight, ::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
+		lHeightPixels
+			= ::MulDiv(lHeight, ::GetDeviceCaps(img.m_hDC, LOGPIXELSY), 2540);
 		Resize(lWidthPixels, lHeightPixels);
 		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 			lWidth, -lHeight, {});
@@ -599,14 +601,14 @@ IMAGE::getimage(void * pMem, long size)
 			return grIOerror;
 		}
 
+		auto& img(get_pages().get_target_ref());
 
-		const auto img = get_pages().imgtarget;
 		pPicture->get_Width(&lWidth);
-		lWidthPixels = ::MulDiv(lWidth,
-			::GetDeviceCaps(img->m_hDC, LOGPIXELSX), 2540);
+		lWidthPixels
+			= ::MulDiv(lWidth, ::GetDeviceCaps(img.m_hDC, LOGPIXELSX), 2540);
 		pPicture->get_Height(&lHeight);
-		lHeightPixels = ::MulDiv(lHeight,
-			::GetDeviceCaps(img->m_hDC, LOGPIXELSY), 2540);
+		lHeightPixels
+			= ::MulDiv(lHeight, ::GetDeviceCaps(img.m_hDC, LOGPIXELSY), 2540);
 		Resize(lWidthPixels, lHeightPixels);
 		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 			lWidth, -lHeight, {});
@@ -620,42 +622,26 @@ void
 IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
 	if(Resize(srcWidth, srcHeight) == 0)
-#if YEGE_Use_YSLib
 		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight,
-			convert_image_ref_c(pSrcImg).m_hDC, srcX, srcY, SRCCOPY);
-#else
-	{
-		const auto img = CONVERT_IMAGE_CONST(pSrcImg);
-
-		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight, img->m_hDC, srcX, srcY, SRCCOPY);
-	}
-#endif
+			cimg_ref_c(pSrcImg).m_hDC, srcX, srcY, SRCCOPY);
 }
 
 void
 IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	int srcX, int srcY, int srcWidth, int srcHeight, unsigned long dwRop) const
 {
-	if(const auto img = CONVERT_IMAGE(pDstImg))
-	{
-		::SetStretchBltMode(img->m_hDC, COLORONCOLOR);
-		::StretchBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC,
-			srcX, srcY, srcWidth, srcHeight, dwRop);
-	}
+	const auto img_dc(cimg_ref(pDstImg).m_hDC);
+
+	::SetStretchBltMode(img_dc, COLORONCOLOR);
+	::StretchBlt(img_dc, dstX, dstY, dstWidth, dstHeight, m_hDC, srcX, srcY,
+		srcWidth, srcHeight, dwRop);
 }
 void
 IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 	int srcX, int srcY, unsigned long dwRop) const
 {
-#if YEGE_Use_YSLib
-	::BitBlt(convert_image_ref(pDstImg).m_hDC, dstX, dstY, dstWidth, dstHeight,
+	::BitBlt(cimg_ref(pDstImg).m_hDC, dstX, dstY, dstWidth, dstHeight,
 		m_hDC, srcX, srcY, dwRop);
-#else
-	const auto img = CONVERT_IMAGE(pDstImg);
-
-	::BitBlt(img->m_hDC, dstX, dstY, dstWidth, dstHeight, m_hDC, srcX, srcY,
-		dwRop);
-#endif
 }
 void
 IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, unsigned long dwRop) const
@@ -666,25 +652,13 @@ void
 IMAGE::putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX,
 	int srcY, unsigned long dwRop) const
 {
-#if YEGE_Use_YSLib
-	putimage(CONVERT_IMAGE(nullptr), dstX, dstY, dstWidth, dstHeight, srcX,
+	putimage(&cimg_ref({}), dstX, dstY, dstWidth, dstHeight, srcX,
 		srcY, dwRop);
-#else
-	const auto img = CONVERT_IMAGE(nullptr);
-
-	putimage(img, dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
-#endif
 }
 void
 IMAGE::putimage(int dstX, int dstY, unsigned long dwRop) const
 {
-#if YEGE_Use_YSLib
-	putimage(CONVERT_IMAGE(nullptr), dstX, dstY, dwRop);
-#else
-	const auto img = CONVERT_IMAGE(nullptr);
-
-	putimage(img, dstX, dstY, dwRop);
-#endif
+	putimage(&cimg_ref({}), dstX, dstY, dwRop);
 }
 
 #if YEGE_Use_YSLib
@@ -714,11 +688,12 @@ namespace
 {
 
 int
-saveimagetofile(IMAGE* img, std::FILE * fp)
+saveimagetofile(IMAGE* pimg, std::FILE * fp)
 {
 	auto bmpfHead = ::BITMAPFILEHEADER();
 	auto bmpinfo = ::BITMAPINFOHEADER();
-	int pitch = img->GetWidth() * 3, addbit, y, x, zero = 0;
+	auto& img(Deref(pimg));
+	int pitch = img.GetWidth() * 3, addbit, y, x, zero = 0;
 
 	addbit = 4 - (pitch & 3);
 	if(pitch & 3)
@@ -727,21 +702,21 @@ saveimagetofile(IMAGE* img, std::FILE * fp)
 	bmpfHead.bfType = *(WORD*)"BM";
 	bmpfHead.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 	bmpfHead.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER)
-		+ pitch * img->GetHeight();
+		+ pitch * img.GetHeight();
 	bmpinfo.biSize = sizeof(BITMAPINFOHEADER);
 	bmpinfo.biBitCount = 24;
-	bmpinfo.biHeight = img->GetHeight();
-	bmpinfo.biWidth = img->GetWidth();
+	bmpinfo.biHeight = img.GetHeight();
+	bmpinfo.biWidth = img.GetWidth();
 	bmpinfo.biPlanes = 1;
-	bmpinfo.biSizeImage = pitch * img->GetHeight();
+	bmpinfo.biSizeImage = pitch * img.GetHeight();
 	//bmpinfo.biXPelsPerMeter
 	std::fwrite(&bmpfHead, sizeof(bmpfHead), 1, fp);
 	std::fwrite(&bmpinfo, sizeof(bmpinfo), 1, fp);
-	for(y = img->GetHeight() - 1; y >= 0; --y)
+	for(y = img.GetHeight() - 1; y >= 0; --y)
 	{
-		for(x = 0; x < img->GetWidth(); ++x)
+		for(x = 0; x < img.GetWidth(); ++x)
 		{
-			unsigned long col = img->getbuffer()[y * img->GetWidth() + x];
+			unsigned long col = img.getbuffer()[y * img.GetWidth() + x];
 			//col = RGBTOBGR(col);
 			if(std::fwrite(&col, 3, 1, fp) < 1)
 				goto ERROR_BREAK;
@@ -958,32 +933,30 @@ IMAGE::putimage_transparent(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	if(const auto img = CONVERT_IMAGE(imgdest))
-	{
-		IMAGE* imgsrc = this;
-		int y, x;
-		unsigned long ddx, dsx;
-		unsigned long cr;
+	auto& img(cimg_ref(imgdest));
+	IMAGE* imgsrc = this;
+	int y, x;
+	unsigned long ddx, dsx;
+	unsigned long cr;
 
-		// fix rect
-		fix_rect_1size(img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
-			&nYOriginSrc, &nWidthSrc, &nHeightSrc);
-		// draw
-		auto pdp = img->GetBufferPtr() + nYOriginDest * img->GetWidth()
-			+ nXOriginDest;
-		auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth()
-			+ nXOriginSrc;
-		ddx = img->GetWidth() - nWidthSrc;
-		dsx = imgsrc->GetWidth() - nWidthSrc;
-		cr = crTransparent;
-		for(y = 0; y < nHeightSrc; ++y)
-		{
-			for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
-				if(*psp != cr)
-					*pdp = *psp;
-			pdp += ddx;
-			psp += dsx;
-		}
+	fix_rect_1size(&img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
+		&nYOriginSrc, &nWidthSrc, &nHeightSrc);
+
+	auto pdp = img.GetBufferPtr() + nYOriginDest * img.GetWidth()
+		+ nXOriginDest;
+	auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth()
+		+ nXOriginSrc;
+
+	ddx = img.GetWidth() - nWidthSrc;
+	dsx = imgsrc->GetWidth() - nWidthSrc;
+	cr = crTransparent;
+	for(y = 0; y < nHeightSrc; ++y)
+	{
+		for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
+			if(*psp != cr)
+				*pdp = *psp;
+		pdp += ddx;
+		psp += dsx;
 	}
 	return grOk;
 }
@@ -1000,44 +973,35 @@ IMAGE::putimage_alphablend(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	if(const auto img = CONVERT_IMAGE(imgdest))
+	auto& img(cimg_ref(imgdest));
+	IMAGE* imgsrc = this;
+	int y, x;
+	unsigned long ddx, dsx;
+	unsigned long sa = alpha + 1, da = 0xFF - alpha;
+
+	fix_rect_1size(&img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
+		&nYOriginSrc, &nWidthSrc, &nHeightSrc);
+
+	auto pdp = img.GetBufferPtr() + nYOriginDest * img.GetWidth()
+		+ nXOriginDest;
+	auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth()
+		+ nXOriginSrc;
+
+	ddx = img.GetWidth() - nWidthSrc;
+	dsx = imgsrc->GetWidth() - nWidthSrc;
+	for(y = 0; y < nHeightSrc; ++y)
 	{
-		IMAGE* imgsrc = this;
-		int y, x;
-		unsigned long ddx, dsx;
-		unsigned long sa = alpha + 1, da = 0xFF - alpha;
-		// fix rect
-		fix_rect_1size(
-			img,
-			imgsrc,
-			&nXOriginDest,
-			&nYOriginDest,
-			&nXOriginSrc,
-			&nYOriginSrc,
-			&nWidthSrc,
-			&nHeightSrc
-		);
-		// draw
-		auto pdp = img->GetBufferPtr() + nYOriginDest * img->GetWidth()
-			+ nXOriginDest;
-		auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth()
-			+ nXOriginSrc;
-		ddx = img->GetWidth() - nWidthSrc;
-		dsx = imgsrc->GetWidth() - nWidthSrc;
-		for(y = 0; y < nHeightSrc; ++y)
+		for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
 		{
-			for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
-			{
-				unsigned long d = *pdp, s = *psp;
-				d = ((d & 0xFF00FF) * da & 0xFF00FF00)
-					| ((d & 0xFF00) * da >> 16 << 16);
-				s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
-					| ((s & 0xFF00) * sa >> 16 << 16);
-				*pdp = (d + s) >> 8;
-			}
-			pdp += ddx;
-			psp += dsx;
+			unsigned long d = *pdp, s = *psp;
+			d = ((d & 0xFF00FF) * da & 0xFF00FF00)
+				| ((d & 0xFF00) * da >> 16 << 16);
+			s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
+				| ((s & 0xFF00) * sa >> 16 << 16);
+			*pdp = (d + s) >> 8;
 		}
+		pdp += ddx;
+		psp += dsx;
 	}
 	return grOk;
 }
@@ -1055,49 +1019,40 @@ IMAGE::putimage_alphatransparent(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	if(const auto img = CONVERT_IMAGE(imgdest))
+	auto& img(cimg_ref(imgdest));
+	IMAGE* imgsrc = this;
+	int y, x;
+	unsigned long ddx, dsx;
+	unsigned long cr;
+	unsigned long sa = alpha + 1, da = 0xFF - alpha;
+
+	fix_rect_1size(&img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
+		&nYOriginSrc, &nWidthSrc, &nHeightSrc);
+
+	auto pdp = img.GetBufferPtr() + nYOriginDest * img.GetWidth()
+		+ nXOriginDest;
+	auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth()
+		+ nXOriginSrc;
+
+	ddx = img.GetWidth() - nWidthSrc;
+	dsx = imgsrc->GetWidth() - nWidthSrc;
+	cr = crTransparent;
+	for(y = 0; y < nHeightSrc; ++y)
 	{
-		IMAGE* imgsrc = this;
-		int y, x;
-		unsigned long ddx, dsx;
-		unsigned long cr;
-		unsigned long sa = alpha + 1, da = 0xFF - alpha;
-		// fix rect
-		fix_rect_1size(
-			img,
-			imgsrc,
-			&nXOriginDest,
-			&nYOriginDest,
-			&nXOriginSrc,
-			&nYOriginSrc,
-			&nWidthSrc,
-			&nHeightSrc
-		);
-		// draw
-		auto pdp = img->GetBufferPtr() + nYOriginDest * img->GetWidth()
-			+ nXOriginDest;
-		auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth()
-			+ nXOriginSrc;
-		ddx = img->GetWidth() - nWidthSrc;
-		dsx = imgsrc->GetWidth() - nWidthSrc;
-		cr = crTransparent;
-		for(y = 0; y < nHeightSrc; ++y)
+		for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
 		{
-			for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
+			if(*psp != cr)
 			{
-				if(*psp != cr)
-				{
-					unsigned long d = *pdp, s = *psp;
-					d = ((d & 0xFF00FF) * da & 0xFF00FF00)
-						| ((d & 0xFF00) * da >> 16 << 16);
-					s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
-						| ((s & 0xFF00) * sa >> 16 << 16);
-					*pdp = (d + s) >> 8;
-				}
+				unsigned long d = *pdp, s = *psp;
+				d = ((d & 0xFF00FF) * da & 0xFF00FF00)
+					| ((d & 0xFF00) * da >> 16 << 16);
+				s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
+					| ((s & 0xFF00) * sa >> 16 << 16);
+				*pdp = (d + s) >> 8;
 			}
-			pdp += ddx;
-			psp += dsx;
 		}
+		pdp += ddx;
+		psp += dsx;
 	}
 	return grOk;
 }
@@ -1113,48 +1068,39 @@ IMAGE::putimage_withalpha(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	if(const auto img = CONVERT_IMAGE(imgdest))
+	auto& img(cimg_ref(imgdest));
+	IMAGE* imgsrc = this;
+	int y, x;
+	unsigned long ddx, dsx;
+
+	fix_rect_1size(&img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
+		&nYOriginSrc, &nWidthSrc, &nHeightSrc);
+
+	auto pdp = img.GetBufferPtr() + nYOriginDest * img.GetWidth()
+		+ nXOriginDest;
+	auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth()
+		+ nXOriginSrc;
+
+	ddx = img.GetWidth() - nWidthSrc;
+	dsx = imgsrc->GetWidth() - nWidthSrc;
+	for(y = 0; y < nHeightSrc; ++y)
 	{
-		IMAGE* imgsrc = this;
-		int y, x;
-		unsigned long ddx, dsx;
-		// fix rect
-		fix_rect_1size(
-			img,
-			imgsrc,
-			&nXOriginDest,
-			&nYOriginDest,
-			&nXOriginSrc,
-			&nYOriginSrc,
-			&nWidthSrc,
-			&nHeightSrc
-		);
-		// draw
-		auto pdp = img->GetBufferPtr() + nYOriginDest * img->GetWidth()
-			+ nXOriginDest;
-		auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth()
-			+ nXOriginSrc;
-		ddx = img->GetWidth() - nWidthSrc;
-		dsx = imgsrc->GetWidth() - nWidthSrc;
-		for(y = 0; y < nHeightSrc; ++y)
+		for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
 		{
-			for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
+			unsigned long alpha = *psp >> 24;
+			//if(*psp != cr)
 			{
-				unsigned long alpha = *psp >> 24;
-				//if(*psp != cr)
-				{
-					unsigned long sa = alpha + 1, da = 0xFF - alpha;
-					unsigned long d = *pdp, s = *psp;
-					d = ((d & 0xFF00FF) * da & 0xFF00FF00)
-						| ((d & 0xFF00) * da >> 16 << 16);
-					s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
-						| ((s & 0xFF00) * sa >> 16 << 16);
-					*pdp = (d + s) >> 8;
-				}
+				unsigned long sa = alpha + 1, da = 0xFF - alpha;
+				unsigned long d = *pdp, s = *psp;
+				d = ((d & 0xFF00FF) * da & 0xFF00FF00)
+					| ((d & 0xFF00) * da >> 16 << 16);
+				s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
+					| ((s & 0xFF00) * sa >> 16 << 16);
+				*pdp = (d + s) >> 8;
 			}
-			pdp += ddx;
-			psp += dsx;
 		}
+		pdp += ddx;
+		psp += dsx;
 	}
 	return grOk;
 }
@@ -1171,51 +1117,42 @@ IMAGE::putimage_alphafilter(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	if(const auto img = CONVERT_IMAGE(imgdest))
+	auto& img(cimg_ref(imgdest));
+	IMAGE* imgsrc = this;
+	int y, x;
+	unsigned long ddx, dsx;
+	//unsigned long sa = alpha + 1, da = 0xFF - alpha;
+
+	fix_rect_1size(&img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
+		&nYOriginSrc, &nWidthSrc, &nHeightSrc);
+
+	auto pdp = img.GetBufferPtr() + nYOriginDest * img.GetWidth()
+		+ nXOriginDest;
+	auto psp = imgsrc->GetBufferPtr() + nYOriginSrc * imgsrc->GetWidth()
+		+ nXOriginSrc;
+	auto pap = imgalpha->GetBufferPtr() + nYOriginSrc * imgalpha->GetWidth()
+		+ nXOriginSrc;
+
+	ddx = img.GetWidth() - nWidthSrc;
+	dsx = imgsrc->GetWidth() - nWidthSrc;
+	for(y = 0; y < nHeightSrc; ++y)
 	{
-		IMAGE* imgsrc = this;
-		int y, x;
-		unsigned long ddx, dsx;
-		//unsigned long sa = alpha + 1, da = 0xFF - alpha;
-		// fix rect
-		fix_rect_1size(
-			img,
-			imgsrc,
-			&nXOriginDest,
-			&nYOriginDest,
-			&nXOriginSrc,
-			&nYOriginSrc,
-			&nWidthSrc,
-			&nHeightSrc
-		);
-		// draw
-		auto pdp = img->GetBufferPtr() + nYOriginDest * img->GetWidth()
-			+ nXOriginDest;
-		auto psp = imgsrc->GetBufferPtr() + nYOriginSrc * imgsrc->GetWidth()
-			+ nXOriginSrc;
-		auto pap = imgalpha->GetBufferPtr() + nYOriginSrc * imgalpha->GetWidth()
-			+ nXOriginSrc;
-		ddx = img->GetWidth() - nWidthSrc;
-		dsx = imgsrc->GetWidth() - nWidthSrc;
-		for(y = 0; y < nHeightSrc; ++y)
+		for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp, ++pap)
 		{
-			for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp, ++pap)
+			unsigned long d = *pdp, s = *psp;
+			if(*pap)
 			{
-				unsigned long d = *pdp, s = *psp;
-				if(*pap)
-				{
-					unsigned long sa = (*pap & 0xFF) + 1, da = 0xFF - (*pap & 0xFF);
-					d = ((d & 0xFF00FF) * da & 0xFF00FF00)
-						| ((d & 0xFF00) * da >> 16 << 16);
-					s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
-						| ((s & 0xFF00) * sa >> 16 << 16);
-					*pdp = (d + s) >> 8;
-				}
+				unsigned long sa = (*pap & 0xFF) + 1, da = 0xFF - (*pap & 0xFF);
+				d = ((d & 0xFF00FF) * da & 0xFF00FF00)
+					| ((d & 0xFF00) * da >> 16 << 16);
+				s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
+					| ((s & 0xFF00) * sa >> 16 << 16);
+				*pdp = (d + s) >> 8;
 			}
-			pdp += ddx;
-			psp += dsx;
-			pap += dsx;
 		}
+		pdp += ddx;
+		psp += dsx;
+		pap += dsx;
 	}
 	return grOk;
 }
@@ -2681,46 +2618,43 @@ putimage_rotate(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 	int alpha, // in range[0, 256], alpha==256 means no alpha
 	int smooth)
 {
-	auto dc_dest(CONVERT_IMAGE(imgdest));
+	auto& dc_dest(cimg_ref(imgdest));
 	auto dc_src(imgtexture);
 
-	if(dc_dest)
-	{
-		triangle2d _tt[2];
-		triangle2d _dt[2];
-		double dx, dy, cr = std::cos(radian), sr = -std::sin(radian);
-		int i, j;
+	triangle2d _tt[2];
+	triangle2d _dt[2];
+	double dx, dy, cr = std::cos(radian), sr = -std::sin(radian);
+	int i, j;
 
-		_tt[0].p[0].x = 0;
-		_tt[0].p[0].y = 0;
-		_tt[0].p[1].x = 0;
-		_tt[0].p[1].y = 1;
-		_tt[0].p[2].x = 1;
-		_tt[0].p[2].y = 1;
-		_tt[1].p[0] = _tt[0].p[2];
-		_tt[1].p[1].x = 1;
-		_tt[1].p[1].y = 0;
-		_tt[1].p[2] = _tt[0].p[0];
-		std::memcpy(&_dt, &_tt, sizeof(triangle2d) * 2);
-		for(j = 0; j < 2; ++j)
-			for(i = 0; i < 3; ++i)
-			{
-				_dt[j].p[i].x = (_dt[j].p[i].x - centerx)
-					* (dc_src->GetWidth());
-				_dt[j].p[i].y = (_dt[j].p[i].y - centery)
-					* (dc_src->GetHeight());
-				dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
-				dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
-				_dt[j].p[i].x = float(float2int(float((dx + nXOriginDest)
-					+ FLT_EPSILON)));
-				_dt[j].p[i].y = float(float2int(float((dy + nYOriginDest)
-					+ FLT_EPSILON)));
-			}
-		putimage_trangle(dc_dest, imgtexture, &_dt[0], &_tt[0], btransparent,
-			alpha, smooth);
-		putimage_trangle(dc_dest, imgtexture, &_dt[1], &_tt[1], btransparent,
-			alpha, smooth);
-	}
+	_tt[0].p[0].x = 0;
+	_tt[0].p[0].y = 0;
+	_tt[0].p[1].x = 0;
+	_tt[0].p[1].y = 1;
+	_tt[0].p[2].x = 1;
+	_tt[0].p[2].y = 1;
+	_tt[1].p[0] = _tt[0].p[2];
+	_tt[1].p[1].x = 1;
+	_tt[1].p[1].y = 0;
+	_tt[1].p[2] = _tt[0].p[0];
+	std::memcpy(&_dt, &_tt, sizeof(triangle2d) * 2);
+	for(j = 0; j < 2; ++j)
+		for(i = 0; i < 3; ++i)
+		{
+			_dt[j].p[i].x = (_dt[j].p[i].x - centerx)
+				* (dc_src->GetWidth());
+			_dt[j].p[i].y = (_dt[j].p[i].y - centery)
+				* (dc_src->GetHeight());
+			dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
+			dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
+			_dt[j].p[i].x = float(float2int(float((dx + nXOriginDest)
+				+ FLT_EPSILON)));
+			_dt[j].p[i].y = float(float2int(float((dy + nYOriginDest)
+				+ FLT_EPSILON)));
+		}
+	putimage_trangle(&dc_dest, imgtexture, &_dt[0], &_tt[0], btransparent,
+		alpha, smooth);
+	putimage_trangle(&dc_dest, imgtexture, &_dt[1], &_tt[1], btransparent,
+		alpha, smooth);
 	return grOk;
 }
 
@@ -2731,66 +2665,56 @@ putimage_rotatezoom(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 	int alpha, // in range[0, 256], alpha==256 means no alpha
 	int smooth)
 {
-	auto dc_dest = CONVERT_IMAGE(imgdest);
+	auto& dc_dest(cimg_ref(imgdest));
 	auto dc_src = imgtexture;
 
-	if(dc_dest)
-	{
-		triangle2d _tt[2];
-		triangle2d _dt[2];
-		double dx, dy, cr = std::cos(radian), sr = -std::sin(radian);
-		int i, j;
-		_tt[0].p[0].x = 0;
-		_tt[0].p[0].y = 0;
-		_tt[0].p[1].x = 0;
-		_tt[0].p[1].y = 1;
-		_tt[0].p[2].x = 1;
-		_tt[0].p[2].y = 1;
-		_tt[1].p[0] = _tt[0].p[2];
-		_tt[1].p[1].x = 1;
-		_tt[1].p[1].y = 0;
-		_tt[1].p[2] = _tt[0].p[0];
-		std::memcpy(&_dt, &_tt, sizeof(triangle2d) * 2);
-		for(j = 0; j < 2; ++j)
-			for(i = 0; i < 3; ++i)
-			{
-				_dt[j].p[i].x = (_dt[j].p[i].x - centerx)
-					* (dc_src->GetWidth());
-				_dt[j].p[i].y = (_dt[j].p[i].y - centery)
-					* (dc_src->GetHeight());
-				dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
-				dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
-				_dt[j].p[i].x = float(float2int(float((dx * zoom + nXOriginDest)
-					+ FLT_EPSILON)));
-				_dt[j].p[i].y = float(float2int(float((dy * zoom + nYOriginDest)
-					+ FLT_EPSILON)));
-			}
-		putimage_trangle(dc_dest, imgtexture, &_dt[0], &_tt[0], btransparent,
-			alpha, smooth);
-		putimage_trangle(
-			dc_dest,
-			imgtexture,
-			&_dt[1],
-			&_tt[1],
-			btransparent,
-			alpha,
-			smooth
-		);
-	}
+	triangle2d _tt[2];
+	triangle2d _dt[2];
+	double dx, dy, cr = std::cos(radian), sr = -std::sin(radian);
+	int i, j;
+	_tt[0].p[0].x = 0;
+	_tt[0].p[0].y = 0;
+	_tt[0].p[1].x = 0;
+	_tt[0].p[1].y = 1;
+	_tt[0].p[2].x = 1;
+	_tt[0].p[2].y = 1;
+	_tt[1].p[0] = _tt[0].p[2];
+	_tt[1].p[1].x = 1;
+	_tt[1].p[1].y = 0;
+	_tt[1].p[2] = _tt[0].p[0];
+	std::memcpy(&_dt, &_tt, sizeof(triangle2d) * 2);
+	for(j = 0; j < 2; ++j)
+		for(i = 0; i < 3; ++i)
+		{
+			_dt[j].p[i].x = (_dt[j].p[i].x - centerx)
+				* (dc_src->GetWidth());
+			_dt[j].p[i].y = (_dt[j].p[i].y - centery)
+				* (dc_src->GetHeight());
+			dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
+			dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
+			_dt[j].p[i].x = float(float2int(float((dx * zoom + nXOriginDest)
+				+ FLT_EPSILON)));
+			_dt[j].p[i].y = float(float2int(float((dy * zoom + nYOriginDest)
+				+ FLT_EPSILON)));
+		}
+	putimage_trangle(&dc_dest, imgtexture, &_dt[0], &_tt[0], btransparent,
+		alpha, smooth);
+	putimage_trangle(&dc_dest, imgtexture, &_dt[1], &_tt[1], btransparent,
+		alpha, smooth);
 	return grOk;
 }
 
 
-IMAGE*
-CONVERT_IMAGE(IMAGE* pimg)
+IMAGE&
+cimg_ref(IMAGE* pimg)
 {
-	return pimg ? pimg : (--update_mark_count, get_pages().get_target());
+	return pimg ? *pimg : (--update_mark_count, get_pages().get_target_ref());
 }
 
-IMAGE*
-CONVERT_IMAGE_CONST(IMAGE* pimg)
+IMAGE&
+cimg_ref_c(IMAGE* pimg)
 {
-	return pimg ? pimg : get_pages().get_target();
+	return pimg ? *pimg : get_pages().get_target_ref();
 }
 
 } // namespace ege;

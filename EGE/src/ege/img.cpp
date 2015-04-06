@@ -5,46 +5,42 @@
 namespace ege
 {
 
+namespace
+{
+
+::POINT
+getxy(IMAGE* pimg)
+{
+	::POINT pt;
+
+	::GetCurrentPositionEx(cimg_ref_c(pimg).getdc(), &pt);
+	return pt;
+}
+
+} // unnamed namespace;
+
 int
 getwidth(IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	return img ? img->GetWidth() : 0;
+	return cimg_ref_c(pimg).GetWidth();
 }
 
 int
 getheight(IMAGE* pimg)
 {
-	const auto img(CONVERT_IMAGE_CONST(pimg));
-
-	return img ? img->GetHeight() : 0;
+	return cimg_ref_c(pimg).GetHeight();
 }
 
 int
 getx(IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE_CONST(pimg))
-	{
-		::POINT pt;
-
-		::GetCurrentPositionEx(img->getdc(), &pt);
-		return pt.x;
-	}
-	return -1;
+	return getxy(pimg).x;
 }
 
 int
 gety(IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE_CONST(pimg))
-	{
-		::POINT pt;
-
-		::GetCurrentPositionEx(img->getdc(), &pt);
-		return pt.y;
-	}
-	return -1;
+	return getxy(pimg).y;
 }
 
 IMAGE*
@@ -67,7 +63,7 @@ delimage(IMAGE* pimg)
 void*
 getbuffer(IMAGE* pimg)
 {
-	return convert_image_ref_c(pimg).getbuffer();
+	return cimg_ref_c(pimg).getbuffer();
 }
 
 int
@@ -79,7 +75,7 @@ resize(IMAGE* pDstImg, int width, int height)
 void
 getimage(IMAGE* pDstImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
-	Deref(pDstImg).getimage(get_pages().get_target(), srcX, srcY, srcWidth,
+	Deref(pDstImg).getimage(&get_pages().get_target_ref(), srcX, srcY, srcWidth,
 		srcHeight);
 }
 void
@@ -172,10 +168,8 @@ imagefilter_blurring(
 	int nHeightDest
 )
 {
-	if(const auto img = CONVERT_IMAGE(imgdest))
-		return img->imagefilter_blurring(intensity, alpha, nXOriginDest,
-			nYOriginDest, nWidthDest, nHeightDest);
-	return 0;
+	return cimg_ref(imgdest).imagefilter_blurring(intensity, alpha,
+		nXOriginDest, nYOriginDest, nWidthDest, nHeightDest);
 }
 
 } // namespace ege;

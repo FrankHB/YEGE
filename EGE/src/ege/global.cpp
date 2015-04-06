@@ -905,10 +905,9 @@ EGEApplication::_window_handle_wm_user_1(::LPARAM l, ::WPARAM w)
 
 
 _pages::_pages()
-	: gstate(FetchEGEApplication())
+	: gstate(FetchEGEApplication()), img_page(),
+	imgtarget(Nonnull((check_page(0), img_page[0].get())))
 {
-	check_page(0);
-	imgtarget = img_page[active_page].get();
 	update_mark_count = 0;
 }
 
@@ -967,7 +966,7 @@ void
 _pages::set_target(IMAGE* pbuf)
 {
 	imgtarget_set = pbuf;
-	imgtarget = pbuf ? pbuf : img_page[active_page].get();
+	imgtarget = pbuf ? pbuf : Nonnull(img_page[active_page].get());
 }
 
 void

@@ -326,23 +326,11 @@ public:
 };
 
 
-IMAGE*
-CONVERT_IMAGE(IMAGE*);
+IMAGE&
+cimg_ref(IMAGE*);
 
-IMAGE*
-CONVERT_IMAGE_CONST(IMAGE*);
-
-inline IMAGE&
-convert_image_ref(IMAGE* pimg)
-{
-	return Deref(CONVERT_IMAGE(pimg));
-}
-
-inline IMAGE&
-convert_image_ref_c(IMAGE* pimg)
-{
-	return Deref(CONVERT_IMAGE_CONST(pimg));
-}
+IMAGE&
+cimg_ref_c(IMAGE*);
 
 } // namespace ege;
 

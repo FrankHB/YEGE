@@ -227,8 +227,8 @@ public:
 private:
 	size_t active_page = 0;
 	size_t visual_page = 0;
-	IMAGE* imgtarget = {};
 	mutable unique_ptr<IMAGE> img_page[BITMAP_PAGE_SIZE];
+	IMAGE* imgtarget;
 
 public:
 	int base_x = 0, base_y = 0, base_w = 0, base_h = 0;
@@ -245,10 +245,10 @@ public:
 	IMAGE&
 	get_vpage_ref() const;
 
-	IMAGE*
-	get_target() const
+	IMAGE&
+	get_target_ref() const
 	{
-		return imgtarget;
+		return Deref(imgtarget);
 	}
 
 	IMAGE*

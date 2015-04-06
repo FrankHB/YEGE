@@ -9,7 +9,7 @@ void
 getviewport(int* pleft, int* ptop, int* pright, int* pbottom, int* pclip,
 	IMAGE* pimg)
 {
-	auto& vpt(convert_image_ref_c(pimg).m_vpt);
+	auto& vpt(cimg_ref_c(pimg).m_vpt);
 
 	if(pleft)
 		*pleft = vpt.left;
@@ -26,28 +26,29 @@ getviewport(int* pleft, int* ptop, int* pright, int* pbottom, int* pclip,
 void
 setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 {
-	convert_image_ref(pimg).SetViewport(left, top, right, bottom, clip);
+	cimg_ref(pimg).SetViewport(left, top, right, bottom, clip);
 }
 
 void
 clearviewport(IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE(pimg))
-		if(img->getdc())
-		{
-			::RECT rect{0, 0, img->m_vpt.right - img->m_vpt.left,
-				img->m_vpt.bottom - img->m_vpt.top};
-			::HBRUSH hbr_c = ::HBRUSH(::GetCurrentObject(img->getdc(),
-				OBJ_BRUSH));
-			::LOGBRUSH logBrush;
+	auto& img(cimg_ref(pimg));
 
-			::GetObjectW(hbr_c, sizeof(logBrush), &logBrush);
+	if(img.getdc())
+	{
+		::RECT rect{0, 0, img.m_vpt.right - img.m_vpt.left,
+			img.m_vpt.bottom - img.m_vpt.top};
+		::HBRUSH hbr_c = ::HBRUSH(::GetCurrentObject(img.getdc(),
+			OBJ_BRUSH));
+		::LOGBRUSH logBrush;
 
-			::HBRUSH hbr(::CreateSolidBrush(logBrush.lbColor));
+		::GetObjectW(hbr_c, sizeof(logBrush), &logBrush);
 
-			::FillRect(img->getdc(), &rect, hbr);
-			::DeleteObject(hbr);
-		}
+		::HBRUSH hbr(::CreateSolidBrush(logBrush.lbColor));
+
+		::FillRect(img.getdc(), &rect, hbr);
+		::DeleteObject(hbr);
+	}
 }
 
 void
