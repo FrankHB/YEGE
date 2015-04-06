@@ -152,6 +152,9 @@ public:
 	_peekmouse();
 
 	void
+	_process_queues();
+
+	void
 	_process_ui_msg(EGEMSG&);
 
 	void
@@ -165,9 +168,6 @@ public:
 
 	void
 	_update();
-
-	void
-	_update_GUI();
 
 	void
 	_update_if_necessary();

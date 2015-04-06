@@ -673,6 +673,16 @@ EGEApplication::_peekmouse()
 }
 
 void
+EGEApplication::_process_queues()
+{
+	using namespace std;
+	using namespace placeholders;
+
+	msgkey_queue.process(bind(&EGEApplication::_process_ui_msg, this, _1));
+	msgmouse_queue.process(bind(&EGEApplication::_process_ui_msg, this, _1));
+}
+
+void
 EGEApplication::_process_ui_msg(EGEMSG& qmsg)
 {
 	if(qmsg.flag & 1)
@@ -744,6 +754,25 @@ EGEApplication::_show_mouse(bool bShow)
 }
 
 void
+EGEApplication::_uninit()
+{
+	YTraceDe(Informative, "Ready to call destroy method.");
+	if(::IsWindow(hwnd))
+		::ShowWindow(hwnd, SW_HIDE);
+	YSLib::PostQuitMessage(0);
+	if(ui_thread.joinable())
+		ui_thread.detach();
+	YTraceDe(Debug, "UI thread detached.");
+	if(ys_thrd.joinable())
+		ys_thrd.join();
+	YTraceDe(Debug, "YSLib main thread finished.");
+	if(use_force_exit)
+		::ExitProcess(0);
+	yassume(!_is_run());
+	YTraceDe(Informative, "Destroy call finished.");
+}
+
+void
 EGEApplication::_update()
 {
 	if(_is_run())
@@ -782,39 +811,10 @@ EGEApplication::_update()
 }
 
 void
-EGEApplication::_uninit()
-{
-	YTraceDe(Informative, "Ready to call destroy method.");
-	if(::IsWindow(hwnd))
-		::ShowWindow(hwnd, SW_HIDE);
-	YSLib::PostQuitMessage(0);
-	if(ui_thread.joinable())
-		ui_thread.detach();
-	YTraceDe(Debug, "UI thread detached.");
-	if(ys_thrd.joinable())
-		ys_thrd.join();
-	YTraceDe(Debug, "YSLib main thread finished.");
-	if(use_force_exit)
-		::ExitProcess(0);
-	yassume(!_is_run());
-	YTraceDe(Informative, "Destroy call finished.");
-}
-
-void
 EGEApplication::_update_if_necessary()
 {
 	if(update_mark_count <= 0)
 		_update();
-}
-
-void
-EGEApplication::_update_GUI()
-{
-	using namespace std;
-	using namespace placeholders;
-
-	msgkey_queue.process(bind(&EGEApplication::_process_ui_msg, this, _1));
-	msgmouse_queue.process(bind(&EGEApplication::_process_ui_msg, this, _1));
 }
 
 bool
@@ -824,7 +824,7 @@ EGEApplication::_waitdealmessage()
 	{
 		egectrl_root->draw({});
 		_update();
-		_update_GUI();
+		_process_queues();
 		egectrl_root->update();
 	}
 	ege_sleep(1);

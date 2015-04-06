@@ -84,7 +84,7 @@ delay_ms(long ms)
 		}
 		FetchEGEApplication()._update();
 		dw = _get_highfeq_time_ls();
-		FetchEGEApplication()._update_GUI();
+		FetchEGEApplication()._process_queues();
 		egectrl_root->update();
 		if(delay_ms_dwLast + dw_t(200) <= dw || delay_ms_dwLast > dw)
 			delay_ms_dwLast = dw;
@@ -116,7 +116,7 @@ delay_fps(double fps)
 			}while(dw + delay_time >= _get_highfeq_time_ls());
 		FetchEGEApplication()._update();
 		dw = _get_highfeq_time_ls();
-		FetchEGEApplication()._update_GUI();
+		FetchEGEApplication()._process_queues();
 		egectrl_root->update();
 		if(delay_fps_dwLast + delay_time + avg_max_time <= dw
 			|| delay_fps_dwLast > dw)
@@ -153,7 +153,7 @@ delay_jfps(double fps)
 		else
 			_get_FPS(-0x100);
 		dw = _get_highfeq_time_ls();
-		FetchEGEApplication()._update_GUI();
+		FetchEGEApplication()._process_queues();
 		egectrl_root->update();
 		if(delay_fps_dwLast + delay_time + avg_max_time <= dw
 			|| delay_fps_dwLast > dw)
