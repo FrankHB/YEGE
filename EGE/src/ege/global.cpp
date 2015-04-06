@@ -183,10 +183,14 @@ setinitmode(int mode, int x, int y)
 
 
 EGEApplication::EGEApplication(int gdriver_n, int* gmode)
-{
 #if YEGE_Use_YSLib
-	static unique_ptr<ImageCodec> p(new ImageCodec());
+	: ys_thrd(std::thread([this]{
+		static ImageCodec ic;
+
+		Execute(*this);
+	}))
 #endif
+{
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 
 	Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, {});
@@ -238,14 +242,6 @@ EGEApplication::EGEApplication(int gdriver_n, int* gmode)
 		if(dc_h < 0)
 			dc_h = rect.bottom;
 	}
-#if YEGE_Use_YSLib
-	ys_pnl.reset(new Panel({Point::Invalid, SDst(dc_w), SDst(dc_h)}));
-	ys_window = dynamic_cast<HostRenderer&>(ShowTopLevel(*ys_pnl, g_wstyle,
-		g_wstyle_ex)).GetWindowPtr();
-	ys_window->MessageMap[WM_DESTROY] += [this]{
-		_uninit();
-	};
-#endif
 }
 
 EGEApplication::~EGEApplication()
@@ -253,6 +249,9 @@ EGEApplication::~EGEApplication()
 #if YEGE_Use_YSLib
 	_uninit();
 	ys_pnl.reset();
+	yassume(ys_thrd.joinable());
+	ys_thrd.join();
+	YTraceDe(Debug, "YSLib main thread finished.");
 #else
 	if(ui_thread.joinable())
 		ui_thread.join();
@@ -264,11 +263,7 @@ EGEApplication::~EGEApplication()
 bool
 EGEApplication::_is_run() const
 {
-#if YEGE_Use_YSLib
-	return ui_thread.joinable() || ys_thrd.joinable();
-#else
 	return ui_thread.joinable();
-#endif
 }
 
 void
@@ -455,13 +450,15 @@ EGEApplication::_init_graph_x()
 	static std::once_flag init_flag;
 
 #if YEGE_Use_YSLib
+	ys_pnl.reset(new Panel({Point::Invalid, SDst(dc_w), SDst(dc_h)}));
+	ys_window = dynamic_cast<HostRenderer&>(ShowTopLevel(*ys_pnl, g_wstyle,
+		g_wstyle_ex)).GetWindowPtr();
+	ys_window->MessageMap[WM_DESTROY] += [this]{
+		_uninit();
+	};
 	const auto native_ys_window(Deref(ys_window).GetNativeHandle());
 
 	std::call_once(init_flag, [this, native_ys_window]{
-		ys_thrd = std::thread([this]{
-			Execute(*this);
-		});
-
 #else
 	std::call_once(init_flag, [this]{
 #endif
@@ -491,9 +488,7 @@ EGEApplication::_init_graph_x()
 				{}, GetInstance(), {});
 			if(!hwnd)
 			{
-#if YEGE_Use_YSLib
 				YTraceDe(Critical, "Main window creation failed.");
-#endif
 				init_finish = true;
 				// NOTE: 'return unsigned long(0xFFFFFFFFUL)' in lambda cause
 				//	G++ 4.9 to generate wrong code and fail in runtime.
@@ -511,7 +506,7 @@ EGEApplication::_init_graph_x()
 			::MSG msg;
 
 #if YEGE_Use_YSLib
-			while(ys_thrd.joinable())
+			while(true)
 #else
 			while(_is_run())
 #endif
@@ -816,22 +811,19 @@ EGEApplication::_show_mouse(bool bShow)
 void
 EGEApplication::_uninit()
 {
-#if YEGE_Use_YSLib
 	YTraceDe(Informative, "Ready to call destroy method.");
+#if YEGE_Use_YSLib
 	if(::IsWindow(hwnd))
 		::ShowWindow(hwnd, SW_HIDE);
 	YSLib::PostQuitMessage(0);
 	if(ui_thread.joinable())
 		ui_thread.detach();
 	YTraceDe(Debug, "UI thread detached.");
-	if(ys_thrd.joinable())
-		ys_thrd.join();
-	YTraceDe(Debug, "YSLib main thread finished.");
 	if(use_force_exit)
 		::ExitProcess(0);
 	yassume(!_is_run());
-	YTraceDe(Informative, "Destroy call finished.");
 #endif
+	YTraceDe(Informative, "Destroy call finished.");
 }
 
 void
