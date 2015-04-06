@@ -9,18 +9,18 @@ void
 getviewport(int* pleft, int* ptop, int* pright, int* pbottom, int* pclip,
 	IMAGE* pimg)
 {
-	auto& img(convert_image_ref_c(pimg));
+	auto& vpt(convert_image_ref_c(pimg).m_vpt);
 
 	if(pleft)
-		*pleft = img.m_vpt.left;
+		*pleft = vpt.left;
 	if(ptop)
-		*ptop = img.m_vpt.top;
+		*ptop = vpt.top;
 	if(pright)
-		*pright = img.m_vpt.right;
+		*pright = vpt.right;
 	if(pbottom)
-		*pbottom = img.m_vpt.bottom;
+		*pbottom = vpt.bottom;
 	if(pclip)
-		*pclip = img.m_vpt.clipflag;
+		*pclip = vpt.clipflag;
 }
 
 void
