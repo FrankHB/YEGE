@@ -258,12 +258,6 @@ EGEApplication::_is_run() const
 	return ui_thread.joinable() || ys_thrd.joinable();
 }
 
-bool
-EGEApplication::_is_window_exit() const
-{
-	return !_is_run();
-}
-
 void
 EGEApplication::_flush_key_mouse(bool key)
 {
@@ -277,26 +271,28 @@ EGEApplication::_flush_key_mouse(bool key)
 int
 EGEApplication::_get_input(get_input_op op)
 {
-	if(_is_window_exit())
-		return grNoInitGraph;
-	switch(op)
+	if(_is_run())
 	{
-	case get_input_op::getch:
-		do
+		switch(op)
 		{
-			int key = _peekkey();
-			if(key < 0)
-				break;
-			if(key > 0)
-				key = _getkey_p();
-		} while(_is_run() && _waitdealmessage());
-		break;
-	case get_input_op::kbhit:
-		return _peekkey();
-	case get_input_op::kbmsg:
-		return _peekallkey(1);
+		case get_input_op::getch:
+			do
+			{
+				int key = _peekkey();
+				if(key < 0)
+					break;
+				if(key > 0)
+					key = _getkey_p();
+			} while(_is_run() && _waitdealmessage());
+			break;
+		case get_input_op::kbhit:
+			return _peekkey();
+		case get_input_op::kbmsg:
+			return _peekallkey(1);
+		}
+		return 0;
 	}
-	return 0;
+	return grNoInitGraph;
 }
 
 int
@@ -379,64 +375,64 @@ EGEApplication::_getmouse()
 {
 	auto mmsg = mouse_msg();
 
-	if(_is_window_exit())
-		return mmsg;
-
-	EGEMSG msg;
-
-	do
+	if(_is_run())
 	{
-		if(!msgmouse_queue.empty())
+		EGEMSG msg;
+
+		do
 		{
-			msg = msgkey_queue.top();
-			msgkey_queue.pop();
-		}
-		if(msg.hwnd)
-		{
-			mmsg.flags |= ((msg.wParam & MK_CONTROL) != 0
-				? mouse_flag_ctrl : 0);
-			mmsg.flags |= ((msg.wParam & MK_SHIFT) != 0 ? mouse_flag_shift : 0);
-			mmsg.x = short(int(msg.lParam) & 0xFFFF);
-			mmsg.y = short(unsigned(msg.lParam) >> 16);
-			mmsg.msg = mouse_msg_move;
-			if(msg.message == WM_LBUTTONDOWN)
+			if(!msgmouse_queue.empty())
 			{
-				mmsg.msg = mouse_msg_down;
-				mmsg.flags |= mouse_flag_left;
+				msg = msgkey_queue.top();
+				msgkey_queue.pop();
 			}
-			else if(msg.message == WM_RBUTTONDOWN)
+			if(msg.hwnd)
 			{
-				mmsg.msg = mouse_msg_down;
-				mmsg.flags |= mouse_flag_right;
+				mmsg.flags |= ((msg.wParam & MK_CONTROL) != 0
+					? mouse_flag_ctrl : 0);
+				mmsg.flags |= ((msg.wParam & MK_SHIFT) != 0 ? mouse_flag_shift : 0);
+				mmsg.x = short(int(msg.lParam) & 0xFFFF);
+				mmsg.y = short(unsigned(msg.lParam) >> 16);
+				mmsg.msg = mouse_msg_move;
+				if(msg.message == WM_LBUTTONDOWN)
+				{
+					mmsg.msg = mouse_msg_down;
+					mmsg.flags |= mouse_flag_left;
+				}
+				else if(msg.message == WM_RBUTTONDOWN)
+				{
+					mmsg.msg = mouse_msg_down;
+					mmsg.flags |= mouse_flag_right;
+				}
+				else if(msg.message == WM_MBUTTONDOWN)
+				{
+					mmsg.msg = mouse_msg_down;
+					mmsg.flags |= mouse_flag_mid;
+				}
+				else if(msg.message == WM_LBUTTONUP)
+				{
+					mmsg.msg = mouse_msg_up;
+					mmsg.flags |= mouse_flag_left;
+				}
+				else if(msg.message == WM_RBUTTONUP)
+				{
+					mmsg.msg = mouse_msg_up;
+					mmsg.flags |= mouse_flag_right;
+				}
+				else if(msg.message == WM_MBUTTONUP)
+				{
+					mmsg.msg = mouse_msg_up;
+					mmsg.flags |= mouse_flag_mid;
+				}
+				else if(msg.message == WM_MOUSEWHEEL)
+				{
+					mmsg.msg = mouse_msg_wheel;
+					mmsg.wheel = short(unsigned(msg.wParam) >> 16);
+				}
+				return mmsg;
 			}
-			else if(msg.message == WM_MBUTTONDOWN)
-			{
-				mmsg.msg = mouse_msg_down;
-				mmsg.flags |= mouse_flag_mid;
-			}
-			else if(msg.message == WM_LBUTTONUP)
-			{
-				mmsg.msg = mouse_msg_up;
-				mmsg.flags |= mouse_flag_left;
-			}
-			else if(msg.message == WM_RBUTTONUP)
-			{
-				mmsg.msg = mouse_msg_up;
-				mmsg.flags |= mouse_flag_right;
-			}
-			else if(msg.message == WM_MBUTTONUP)
-			{
-				mmsg.msg = mouse_msg_up;
-				mmsg.flags |= mouse_flag_mid;
-			}
-			else if(msg.message == WM_MOUSEWHEEL)
-			{
-				mmsg.msg = mouse_msg_wheel;
-				mmsg.wheel = short(unsigned(msg.wParam) >> 16);
-			}
-			return mmsg;
-		}
-	}while(_is_run() && _waitdealmessage());
+		}while(_is_run() && _waitdealmessage());
+	}
 	return mmsg;
 }
 
@@ -528,7 +524,7 @@ EGEApplication::_keystate(int key)
 bool
 EGEApplication::_mousemsg()
 {
-	return _is_window_exit() ? false : bool(_peekmouse().hwnd);
+	return _is_run() && bool(_peekmouse().hwnd);
 }
 
 void
@@ -748,7 +744,7 @@ EGEApplication::_show_mouse(bool bShow)
 void
 EGEApplication::_update()
 {
-	if(!_is_window_exit())
+	if(_is_run())
 	{
 		if(IsWindowVisible(hwnd) && window_dc)
 			get_pages().update();

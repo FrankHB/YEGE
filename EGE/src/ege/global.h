@@ -79,9 +79,6 @@ public:
 	bool
 	_is_run() const;
 
-	bool
-	_is_window_exit() const;
-
 	void
 	_flush_key_mouse(bool);
 
