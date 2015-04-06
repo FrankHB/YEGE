@@ -1,9 +1,7 @@
 ﻿#ifndef INC_ege_h_
 #define INC_ege_h_
 
-#include "ege/def.h"
 #include "ege/base.h"
-#include "ege/colorbase.h"
 #include "ege/color.h"
 #include "ege/proc.h"
 #include "ege/v3d.h"

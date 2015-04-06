@@ -49,9 +49,6 @@ getHWnd();         // 获取绘图窗口句柄
 EGEAPI ::HINSTANCE
 getHInstance();
 
-EGEAPI ::WNDPROC
-getProcfunc();
-
 }
 
 #endif

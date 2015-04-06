@@ -6,13 +6,110 @@
 #include "ege/sys_edit.h"
 #include <cstdio>
 #include <cstdarg>
-#include <cstring>
+#include <cstring> // for std::strlen;
 
 namespace ege
 {
 
 namespace
 {
+
+::LRESULT CALLBACK
+sys_edit_proc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
+{
+	auto& app(FetchEGEApplication());
+	//int wmId, wmEvent;
+	const auto pg_w(reinterpret_cast<EGEApplication*>(
+		::GetWindowLongPtrW(hWnd, GWLP_USERDATA)));
+
+	if(!pg_w)
+		return ::DefWindowProc(hWnd, message, wParam, lParam);
+	switch(message)
+	{
+	case WM_PAINT:
+	case WM_CLOSE:
+	case WM_DESTROY:
+	case WM_ERASEBKGND:
+	case WM_SETCURSOR:
+		break;
+	case WM_KEYDOWN:
+	case WM_KEYUP:
+	case WM_CHAR:
+	//	if(hWnd == app.hwnd)
+		app._on_key(message, static_cast<unsigned long>(wParam), lParam);
+		break;
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONDBLCLK:
+		app.mouse_lastclick_x = short(lParam & 0xFFFF);
+		app.mouse_lastclick_y = short(::UINT(lParam) >> 16);
+		app.keystatemap[VK_LBUTTON] = 1;
+		::SetCapture(hWnd);
+		app.mouse_state_l = 1;
+		if(hWnd == app._get_hwnd())
+			app._push_mouse_msg( message, wParam, lParam);
+		break;
+	case WM_MBUTTONDOWN:
+	case WM_MBUTTONDBLCLK:
+		app.mouse_lastclick_x = short(lParam & 0xFFFF);
+		app.mouse_lastclick_y = short(::UINT(lParam) >> 16);
+		app.keystatemap[VK_MBUTTON] = 1;
+		::SetCapture(hWnd);
+		app.mouse_state_m = 1;
+		if(hWnd == app._get_hwnd())
+			app._push_mouse_msg(message, wParam, lParam);
+		break;
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONDBLCLK:
+		app.mouse_lastclick_x = short(lParam & 0xFFFF);
+		app.mouse_lastclick_y = short(::UINT(lParam) >> 16);
+		app.keystatemap[VK_RBUTTON] = 1;
+		::SetCapture(hWnd);
+		app.mouse_state_r = 1;
+		if(hWnd == app._get_hwnd())
+			app._push_mouse_msg( message, wParam, lParam);
+		break;
+	case WM_LBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONUP:
+		app._on_mouse_button_up(hWnd, message, wParam, lParam);
+		break;
+	case WM_MOUSEMOVE:
+		app.mouse_last_x = short(lParam & 0xFFFF);
+		app.mouse_last_y = short(::UINT(lParam) >> 16);
+		if(hWnd == app._get_hwnd() && (app.mouse_lastup_x
+			!= app.mouse_last_x || app.mouse_lastup_y
+			!= app.mouse_last_y))
+			app._push_mouse_msg(message, wParam, lParam);
+		break;
+	case WM_MOUSEWHEEL:
+		{
+			::POINT pt{short(lParam & 0xFFFF), short(::UINT(lParam) >> 16)};
+
+			::ScreenToClient(app._get_hwnd(), &pt);
+			app.mouse_last_x = pt.x;
+			app.mouse_last_y = pt.y;
+			lParam = static_cast<unsigned short>(short(app.mouse_last_y))
+				<< 16 | static_cast<unsigned short>(short(app.mouse_last_x));
+		}
+		if(hWnd == app._get_hwnd())
+			app._push_mouse_msg(message, wParam, lParam);
+		break;
+	case WM_USER + 1:
+		EGEApplication::_window_handle_wm_user_1(lParam, wParam);
+		break;
+	case WM_USER + 2:
+		::SetFocus(::HWND(lParam));
+		break;
+	case WM_CTLCOLOREDIT:
+		return (reinterpret_cast<egeControlBase*>(::GetWindowLongPtrW(
+			::HWND(lParam), GWLP_USERDATA)))
+			->onMessage(message, wParam, lParam);
+	default:
+		break;
+	}
+	return (reinterpret_cast<egeControlBase*>(pg_w))
+		->onMessage(message, wParam, lParam);
+}
 
 unsigned int
 private_gettextmode(IMAGE* img)
@@ -30,7 +127,8 @@ private_gettextmode(IMAGE* img)
 }
 
 void
-private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz, int vert)
+private_textout(IMAGE* img, const char* textstring, int x, int y, int horiz,
+	int vert)
 {
 	if(horiz >= 0 && vert >= 0)
 	{
@@ -92,6 +190,12 @@ private_textout(IMAGE* img, const wchar_t* textstring, int x, int y, int horiz,
 }
 
 } // unnamed namespace;
+
+::WNDPROC
+sys_edit::GetSysEditWndProc()
+{
+	return sys_edit_proc;
+}
 
 void
 outtext(const char* textstring, IMAGE* pimg)
@@ -359,11 +463,11 @@ setfont(
 	int bItalic,
 	int bUnderline,
 	int bStrikeOut,
-	::BYTE fbCharSet,
-	::BYTE fbOutPrecision,
-	::BYTE fbClipPrecision,
-	::BYTE fbQuality,
-	::BYTE fbPitchAndFamily,
+	byte fbCharSet,
+	byte fbOutPrecision,
+	byte fbClipPrecision,
+	byte fbQuality,
+	byte fbPitchAndFamily,
 	IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
@@ -389,11 +493,11 @@ setfont(
 	int bItalic,
 	int bUnderline,
 	int bStrikeOut,
-	::BYTE fbCharSet,
-	::BYTE fbOutPrecision,
-	::BYTE fbClipPrecision,
-	::BYTE fbQuality,
-	::BYTE fbPitchAndFamily,
+	byte fbCharSet,
+	byte fbOutPrecision,
+	byte fbClipPrecision,
+	byte fbQuality,
+	byte fbPitchAndFamily,
 	IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
@@ -543,6 +647,10 @@ int
 inputbox_getline(const char* title, const char* text, char* buf, int len)
 {
 	yconstraint(buf);
+#if YEGE_Use_YSLib
+	using namespace platform_ex;
+	unique_ptr<wchar_t[]> wbuf(new wchar_t[len * 2]);
+#endif
 
 	const auto _buf(make_unique<wchar_t[]>(len));
 	wchar_t _title[256], _text[256];
@@ -551,11 +659,22 @@ inputbox_getline(const char* title, const char* text, char* buf, int len)
 	::MultiByteToWideChar(CP_ACP, 0,  text, -1,  _text, 256);
 	buf[0] = 0;
 
+#if YEGE_Use_YSLib
+	if(const int ret = inputbox_getline(MBCSToWCS(title).c_str(),
+		MBCSToWCS(text).c_str(), wbuf.get(), len))
+	{
+		// XXX: Remove redundant copy.
+		std::strcpy(buf, WCSToMBCS(wbuf.get()).c_str());
+		return ret;
+	}
+	return 0;
+#else
 	const int ret(inputbox_getline(_title, _text, _buf.get(), len));
 
 	if(ret)
 		::WideCharToMultiByte(CP_ACP, 0, _buf.get(), -1, buf, len, {}, {});
 	return ret;
+#endif
 }
 
 int

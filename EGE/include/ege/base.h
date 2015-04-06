@@ -1,17 +1,38 @@
 ﻿#ifndef Inc_ege_base_h_
 #define Inc_ege_base_h_
 
-#include <cmath>
-#include <type_traits>
-#include <memory>
-#include "ege/def.h"
 #include "ege/colorbase.h"
+#if !YEGE_Use_YSLib
+#	include <cstddef>
+#	include <cstdint>
+#	include <memory>
+#endif
 
 namespace ege
 {
 
-const double PI = 3.14159265358979323;
+#if YEGE_Use_YSLib
+using YSLib::size_t;
+using YSLib::bad_weak_ptr;
+using YSLib::const_pointer_cast;
+using YSLib::dynamic_pointer_cast;
+using YSLib::enable_shared_from_this;
+using YSLib::get_deleter;
+using YSLib::make_shared;
+using YSLib::owner_less;
+using YSLib::shared_ptr;
+using YSLib::static_pointer_cast;
+using YSLib::unique_ptr;
+using YSLib::weak_ptr;
 
+using YSLib::make_unique;
+
+using platform::Nonnull;
+using platform::Deref;
+
+using YSLib::SPos;
+using YSLib::SDst;
+#else
 using std::size_t;
 using std::bad_weak_ptr;
 using std::const_pointer_cast;
@@ -50,16 +71,21 @@ inline _type&&
 Nonnull(_type&& p) ynothrow
 {
 	yconstraint(p);
-	return std::forward<_type&&>(p);
+	return yforward(p);
 }
 
 template<typename _type>
 yconstfn auto
 Deref(_type&& p) -> decltype(*p)
 {
-	return *ege::Nonnull(std::forward<_type&&>(p));
+	return *ege::Nonnull(yforward(p));
 }
 
+using SPos = long;
+using SDst = unsigned long;
+#endif
+
+const double PI = 3.14159265358979323;
 
 enum graphics_drivers /* define graphics drivers */
 {

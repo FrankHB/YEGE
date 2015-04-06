@@ -1,94 +1,108 @@
 ﻿#ifndef Inc_ege_colorbase_h_
 #define Inc_ege_colorbase_h_
 
-#include <cstdint>
+#include "ege/def.h"
+#if YEGE_Use_YSLib
+#	include <ysbuild.h>
+#else
+#	include <cstdint>
+#endif
 
-typedef std::uint8_t u8;
-typedef std::uint32_t u32;
+namespace ege
+{
 
-yconstfn u32
-RGBTOBGR(u32 color)
+#if YEGE_Use_YSLib
+using color_t = YSLib::Drawing::Pixel;
+using color_int_t = color_t::Trait::IntegerType;
+using mono_t = YSLib::Drawing::MonoType;
+#else
+using color_t = int;
+using color_int_t = std::uint32_t;
+using mono_t = std::uint8_t;
+#endif
+
+yconstfn color_int_t
+RGBTOBGR(mono_t color)
 {
 	return ((color & 0xFF) << 16) | ((color & 0xFF0000) >> 16)
 		   | (color & 0xFF00FF00);
 }
 
-yconstfn u32
-EGERGB(u8 r, u8 g, u8 b)
+yconstfn color_int_t
+EGERGB(mono_t r, mono_t g, mono_t b)
 {
 	return (b << 16) | (g << 8) | r;
 }
-yconstfn u32
-EGERGBA(u8 r, u8 g, u8 b, u8 a)
-{
-	return EGERGB(r, g, b) | a << 24;
-}
-yconstfn u32
-EGEARGB(u8 a, u8 r, u8 g, u8 b)
+
+yconstfn color_int_t
+EGERGBA(mono_t r, mono_t g, mono_t b, mono_t a)
 {
 	return EGERGB(r, g, b) | a << 24;
 }
 
-
-yconstfn u32
-EGEACOLOR(u8 a, u32 color)
+yconstfn color_int_t
+EGEARGB(mono_t a, mono_t r, mono_t g,
+	mono_t b)
 {
-	return (color & 0xFFFFFF) | (a << 24);
-}
-yconstfn u32
-EGECOLORA(u8 a, u32 color)
-{
-	return (color & 0xFFFFFF) | (a << 24);
+	return EGERGB(r, g, b) | a << 24;
 }
 
 
-yconstfn u8
-EGEGET_R(u32 c)
+yconstfn color_int_t
+EGEACOLOR(mono_t a, color_int_t color)
+{
+	return (color & 0xFFFFFF) | (a << 24);
+}
+yconstfn color_int_t
+EGECOLORA(mono_t a, color_int_t color)
+{
+	return (color & 0xFFFFFF) | (a << 24);
+}
+
+
+yconstfn mono_t
+EGEGET_R(color_int_t c)
 {
 	return (c >> 16) & 0xFF;
 }
-yconstfn u8
-EGEGET_G(u32 c)
+
+yconstfn mono_t
+EGEGET_G(color_int_t c)
 {
 	return (c >> 8) & 0xFF;
 }
-yconstfn u8
-EGEGET_B(u32 c)
+
+yconstfn mono_t
+EGEGET_B(color_int_t c)
 {
 	return c & 0xFF;
 }
-yconstfn u8
-EGEGET_A(u32 c)
+
+yconstfn mono_t
+EGEGET_A(color_int_t c)
 {
 	return (c >> 24) & 0xFF;
 }
 
-yconstfn u32
-EGEGRAY(u32 gray)
+yconstfn color_int_t
+EGEGRAY(color_int_t gray)
 {
 	return (gray << 16) | (gray << 8) | gray;
 }
 
-yconstfn u32
-EGEGRAYA(u32 gray, u8 a)
+yconstfn color_int_t
+EGEGRAYA(color_int_t gray, mono_t a)
 {
 	return EGEGRAY(gray) | (a << 24);
 }
 
-yconstfn u32
-EGEAGRAY(u8 a, u32 gray)
+yconstfn color_int_t
+EGEAGRAY(mono_t a, color_int_t gray)
 {
 	return EGEGRAY(gray) | (a << 24);
 }
 
-// 兼容宏
-#define RGBtoGRAY   rgb2gray
-#define RGBtoHSL    rgb2hsl
-#define RGBtoHSV    rgb2hsv
-#define HSLtoRGB    hsl2rgb
-#define HSVtoRGB    hsv2rgb
-
-typedef unsigned int color_t;
+} // namespace ege;
 
 #endif
 

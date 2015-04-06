@@ -105,14 +105,22 @@ int
 savepng(IMAGE* pimg, const char* filename, int)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
+#if YEGE_Use_YSLib
+		return img->saveimage(filename, ImageFormat::PNG);
+#else
 		return img->saveimage(filename);
+#endif
 	return 0;
 }
 int
 savepng(IMAGE* pimg, const wchar_t* filename, int)
 {
 	if(const auto img = CONVERT_IMAGE(pimg))
+#if YEGE_Use_YSLib
+		return img->saveimage(filename, ImageFormat::PNG);
+#else
 		return img->saveimage(filename);
+#endif
 	return 0;
 }
 

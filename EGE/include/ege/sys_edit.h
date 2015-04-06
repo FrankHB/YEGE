@@ -12,10 +12,7 @@ class EGEAPI sys_edit : public egeControlBase
 {
 private:
 	static ::WNDPROC
-	GetSysEditWndProc()
-	{
-		return getProcfunc();
-	}
+	GetSysEditWndProc();
 
 public:
 	CTL_PREINIT(sys_edit, egeControlBase)

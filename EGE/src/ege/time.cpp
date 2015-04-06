@@ -17,13 +17,12 @@ namespace
 duration<double>
 _get_highfeq_time_ls()
 {
+#if YEGE_Use_YSLib
+	return YSLib::Timers::FetchElapsed();
+#else
 	return high_resolution_clock::now() - FetchEpoch<high_resolution_clock>();
+#endif
 }
-
-} // unnamed namespace;
-
-namespace
-{
 
 dw_t delay_ms_dwLast;
 dw_t delay_fps_dwLast;
@@ -121,7 +120,7 @@ delay_fps(double fps)
 			}while(dw + delay_time >= _get_highfeq_time_ls());
 		FetchEGEApplication()._update();
 		dw = _get_highfeq_time_ls();
-		FetchEGEApplication()._update();
+		FetchEGEApplication()._process_queues();
 		egectrl_root->update();
 		if(delay_fps_dwLast + delay_time + avg_max_time <= dw
 			|| delay_fps_dwLast > dw)
