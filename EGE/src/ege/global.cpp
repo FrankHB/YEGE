@@ -795,12 +795,7 @@ EGEApplication::_uninit()
 		ys_thrd.join();
 	YTraceDe(Debug, "YSLib main thread finished.");
 	if(use_force_exit)
-	{
-		YSLib::PostQuitMessage(0);
-		if(ys_thrd.joinable())
-			ys_thrd.join();
-	//	::ExitProcess(0);
-	}
+		::ExitProcess(0);
 	yassume(!_is_run());
 	YTraceDe(Informative, "Destroy call finished.");
 }
