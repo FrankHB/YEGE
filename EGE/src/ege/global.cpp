@@ -477,9 +477,11 @@ EGEApplication::_init_graph_x()
 
 			::MSG msg;
 
-			while(_is_run())
+			while(ys_thrd.joinable())
 				if(::GetMessage(&msg, {}, 0, 0))
 				{
+					if(msg.message == WM_QUIT)
+						break;
 					::TranslateMessage(&msg);
 					::DispatchMessage(&msg);
 				}

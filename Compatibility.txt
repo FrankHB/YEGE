@@ -53,6 +53,7 @@ typedef 类型名 color_t 从 unsigned int 改为 YSLib::Drawing::PixelType 。
 移除 getProcfunc 和 SetCloseHandler 函数。
 移除枚举 graphics_modes 。
 移除输入法消息处理。
+允许主窗口循环接受 WM_QUIT 退出。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
