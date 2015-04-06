@@ -577,9 +577,6 @@ EGEApplication::_on_destroy()
 {
 	yassume(_is_run());
 
-	if(get_pages().active_dc)
-		::ReleaseDC(hwnd, window_dc);
-		// release objects, not finish
 	::PostQuitMessage(0);
 	ui_thread.detach();
 	if(use_force_exit)
@@ -908,11 +905,9 @@ EGEApplication::_window_handle_wm_user_1(::LPARAM l, ::WPARAM w)
 
 
 _pages::_pages()
-	: gstate(FetchEGEApplication()), active_dc(gstate._get_window_dc())
+	: gstate(FetchEGEApplication())
 {
-	yassume(active_dc);
 	check_page(0);
-	active_dc = img_page[0]->getdc();
 	imgtarget = img_page[active_page].get();
 	update_mark_count = 0;
 }
@@ -925,7 +920,7 @@ _pages::check_page(int page) const
 		const int dc_w(gstate._get_dc_w());
 		const int dc_h(gstate._get_dc_h());
 
-		img_page[page].reset(new IMAGE(active_dc, dc_w, dc_h));
+		img_page[page].reset(new IMAGE(dc_w, dc_h));
 	}
 }
 
@@ -935,12 +930,6 @@ _pages::get_apage_ref() const
 	check_page(active_page);
 
 	return *img_page[active_page];
-}
-
-::HDC
-_pages::get_image_context() const
-{
-	return imgtarget ? imgtarget->getdc() : active_dc;
 }
 
 IMAGE&
@@ -966,7 +955,6 @@ _pages::set_apage(int page)
 {
 	check_page(page);
 	active_page = page;
-	active_dc = img_page[page]->getdc();
 }
 
 int

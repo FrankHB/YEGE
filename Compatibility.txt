@@ -90,6 +90,9 @@ linestyletype 和 EGEMSG 默认初始化所有成员。
 函数 ege_sleep 支持多线程环境下使用。（实际原有实现可在多线程下使用但未在头文件中明确。）
 提升 fclock 函数的精度。
 随机数函数第一次调用时自动初始化随机数种子，不需要事先调用 randomize 函数。
+窗口过程不依赖 GWLP_USERDATA 。
+创建图像和图像页面操作取屏幕设备上下文替代全局图像页面状态。
+设置图像大小不依赖公共 API 。
 
 兼容接口和实现调整
 ----
@@ -154,8 +157,6 @@ thread_queue 类模板使用 std::mutex 、std::lock_guard 和 std::deque 实现
 避免直接使用 malloc 和 free 。
 拆分宿主环境主窗口和控件的窗口过程。
 简化绘图 API 实现。
-窗口过程不依赖 GWLP_USERDATA 。
-创建图像取屏幕设备上下文，不依赖全局图形状态；设置大小不依赖公共 API 。
 
 实现注记（仅当依赖 YSLib 时）
 ----

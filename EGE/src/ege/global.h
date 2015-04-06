@@ -223,7 +223,6 @@ class _pages
 {
 public:
 	EGEApplication& gstate;
-	::HDC active_dc;
 
 private:
 	int active_page = 0;
@@ -242,9 +241,6 @@ public:
 
 	IMAGE&
 	get_apage_ref() const;
-
-	::HDC
-	get_image_context() const;
 
 	IMAGE&
 	get_vpage_ref() const;
