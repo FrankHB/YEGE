@@ -1,15 +1,89 @@
 ﻿#ifndef Inc_ege_base_h_
 #define Inc_ege_base_h_
 
-#include "ege/def.h"
 #include "ege/colorbase.h"
-#include <ysbuild.h>
+#if !YEGE_Use_YSLib
+#	include <cstddef>
+#	include <cstdint>
+#	include <memory>
+#endif
 
 namespace ege
 {
 
+#if YEGE_Use_YSLib
+using YSLib::size_t;
+using YSLib::bad_weak_ptr;
+using YSLib::const_pointer_cast;
+using YSLib::dynamic_pointer_cast;
+using YSLib::enable_shared_from_this;
+using YSLib::get_deleter;
+using YSLib::make_shared;
+using YSLib::owner_less;
+using YSLib::shared_ptr;
+using YSLib::static_pointer_cast;
+using YSLib::unique_ptr;
+using YSLib::weak_ptr;
+
+using YSLib::make_unique;
+
 using platform::Nonnull;
 using platform::Deref;
+
+using YSLib::SPos;
+using YSLib::SDst;
+#else
+using std::size_t;
+using std::bad_weak_ptr;
+using std::const_pointer_cast;
+using std::dynamic_pointer_cast;
+using std::enable_shared_from_this;
+using std::get_deleter;
+using std::make_shared;
+using std::owner_less;
+using std::shared_ptr;
+using std::static_pointer_cast;
+using std::unique_ptr;
+using std::weak_ptr;
+
+template<typename _type, typename... _tParams>
+inline typename
+	std::enable_if<!std::is_array<_type>::value, unique_ptr<_type>>::type
+make_unique(_tParams&&... args)
+{
+	return unique_ptr<_type>(new _type(yforward(args)...));
+}
+template<typename _type, typename... _tParams>
+inline typename std::enable_if<std::is_array<_type>::value
+	&& std::extent<_type>::value == 0, unique_ptr<_type>>::type
+make_unique(size_t size)
+{
+	return std::unique_ptr<_type>(new
+		typename std::remove_extent<_type>::type[size]());
+}
+template<typename _type,  typename... _tParams>
+typename std::enable_if<std::extent<_type>::value != 0>::type
+make_unique(_tParams&&...) = delete;
+
+
+template<typename _type>
+inline _type&&
+Nonnull(_type&& p) ynothrow
+{
+	yconstraint(p);
+	return yforward(p);
+}
+
+template<typename _type>
+yconstfn auto
+Deref(_type&& p) -> decltype(*p)
+{
+	return *ege::Nonnull(yforward(p));
+}
+
+using SPos = long;
+using SDst = unsigned long;
+#endif
 
 const double PI = 3.14159265358979323;
 

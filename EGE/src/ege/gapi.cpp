@@ -3,6 +3,7 @@
 #include "image.h"
 #include <utility> // for std::swap;
 #include <cfloat> // for FLT_EPSILON;
+#include <cmath> // for std::cos;
 #include "ege.h"
 
 namespace ege
@@ -337,12 +338,12 @@ setbkcolor(color_t color, IMAGE* pimg)
 		if(img->getdc())
 		{
 			unsigned long* p = img->getbuffer();
-			int size = img->GetWidth() * img->GetHeight();
+			size_t size = img->GetWidth() * img->GetHeight();
 			color_t col = img->m_bk_color;
 
 			img->m_bk_color = color;
 			::SetBkColor(img->getdc(), color);
-			for(int n = 0; n < size; n++, p++)
+			for(size_t n = 0; n < size; ++n, ++p)
 				if(*p == col)
 					*p = color;
 		}

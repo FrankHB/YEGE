@@ -17,7 +17,11 @@ namespace
 duration<double>
 _get_highfeq_time_ls()
 {
+#if YEGE_Use_YSLib
 	return YSLib::Timers::FetchElapsed();
+#else
+	return high_resolution_clock::now() - FetchEpoch<high_resolution_clock>();
+#endif
 }
 
 dw_t delay_ms_dwLast;

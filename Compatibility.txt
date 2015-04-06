@@ -13,10 +13,25 @@ Code::Blocks 。
 
 依赖项更改
 ----
-计划依赖 YBase 的 ydef.h（当前临时移除）。
+当定义宏 YEGE_Use_YSLib 时，依赖 YSLib 。
 移除 GDI+ 源代码，需要显式依赖 GDI+（默认 MinGW 已提供）；移除 EGE_GDIPLUS 宏。
 移除 zlib 和 libpng 源代码和头文件，需要显式依赖库 z 和 png16 。
 移除 ole32 、oleaut32 和 uuid 。
+
+接口扩充
+----
+在 ege 命名空间提供类型别名 color_int_t 和 color_mono_t 表示颜色转换整数类型和分量类型。
+
+YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）
+----
+提供和 YSLib 兼容的伪关键字宏 yconstfn 、yconstexpr 和 ynothrow 分别替换为 constexpr 、constexpr 和 noexcept 。
+提供和 YSLib 兼容的伪关键字宏 yconstraint 和 yassume 替换 assert 。
+提供和 YSLib 兼容的伪关键字宏 yunseq 。
+提供和 YSLib 一致实现的伪关键字宏 yunused 。
+在 ege 命名空间提供和 YSLib 一致实现的类型 octet 和 byte 。
+在 ege 命名空间使用 using 引入智能指针类型和相关操作的声明，并提供 std::make_unique 的替代实现。
+在 ege 命名空间提供和 YSLib 的 platform::Deref 和 platform::Nonnull 兼容的模板。
+在 ege 命名空间提供和 YSLib 兼容的 SPos 和 SDst 类型。
 
 非向后兼容接口
 ----
@@ -38,22 +53,29 @@ Code::Blocks 。
 移除函数 setrendermode 和枚举 rendermode_e 。默认状态等价于 setrendermode(RENDER_MANUAL) 。
 移除类型 LPCALLBACK_PROC 、LPMSG_KEY_PROC 、LPMSG_MOUSE_PROC 、MSG_KEY_PROC 和 MSG_MOUSE_PROC ，其中 LPCALLBACK_PROC 可用 CALLBACK_PROC* 代替，
 添加 linestyletype 和 EGEMSG 的构造函数，只支持默认构造和提供所有成员的初始化。
+宏 RGBTOBGR 、EGERGB 、EGERGBA 、EGEARGB 、EGEACOLOR 、EGECOLORA 、EGEGET_R 、EGEGET_G 、EGEGET_B 、EGEGET_A 、EGEGRAY 、EGEGRAYA 和 EGEAGRAY 变更为 ege 命名空间内的函数。
+移除枚举 graphics_modes 。
+移除类 Lock ，使用 std::lock_guard 等代替。
+移除类模板 thread_queue 的 last 和 unpop 函数。。
+函数 drawlines 、fillpoly_gradient 和 inputbox_getline 在分配存储失败时抛出 std::bad_alloc 异常。
+函数 inputbox_getline 等加入断言。
+移除函数 api_sleep 。使用 ::Sleep 函数代替。
+移除函数 delay 。使用 ege_sleep 函数代替。
+移除函数 setrendermode 和枚举 rendermode_e 。（原有代码使用 RENDER_AUTO 和 RENDER_MANUAL 渲染的效果相同，都不闪烁。）
+枚举 initmode_flag 中枚举项 INIT_DEFAULT 的值固定为 0x0（枚举项 INIT_RENDERMANUAL 和 INIT_WITHLOGO 仅为兼容性保留）。
+移除输入法消息处理。
+允许主窗口循环接受 WM_QUIT 退出。
+
+非向后兼容接口（仅当依赖 YSLib 时）
+----
 typedef 类型名 color_t 从 unsigned int 改为 YSLib::Drawing::PixelType 。
 使用 YCLib 提供的 YSLib::Drawing::MonoType 表示颜色分量。
 使用 YSLib::Drawing::PixelType::Integer 表示颜色对应的整数类型。
 	* 注意布局同 ::COLORREF ，相对原有实现红色和蓝色分量交换，修复了 <wingdi.h> 中 RGB 等宏的参数红色和蓝色分量相反的问题。
-宏 RGBTOBGR 、EGERGB 、EGERGBA 、EGEARGB 、EGEACOLOR 、EGECOLORA 、EGEGET_R 、EGEGET_G 、EGEGET_B 、EGEGET_A 、EGEGRAY 、EGEGRAYA 和 EGEAGRAY 变更为 ege 命名空间内的函数。
 函数 savepng 的表示是否使用 alpha 的参数被忽略。
-移除函数 api_sleep 。使用 ::Sleep 函数代替。
-移除函数 delay 。使用 ege_sleep 函数代替。
-使用 RENDER_AUTO 和 RENDER_MANUAL 渲染的效果相同，都不闪烁。移除函数 setrendermode 和枚举 rendermode_e 。
-移除枚举 initmode_flag 中的枚举项 INIT_RENDERMANUAL 和 INTIT_WITHLOGO ，枚举项 INIT_DEFAULT 的值固定为 0x0 。
 移除兼容宏 RGBtoGRAY 、RGBtoHSL 、RGBtoHSV 、HSLtoRGB 和 HSVtoRGB，使用函数 rgb2gray 、rgb2hsl 、rgb2hsv 、hsl2rgb 和 hsv2rgb 代替。
 颜色转换断言严格要求色调值在区间 [0, 360) 内。
 移除 getProcfunc 和 SetCloseHandler 函数。
-移除枚举 graphics_modes 。
-移除输入法消息处理。
-允许主窗口循环接受 WM_QUIT 退出。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----

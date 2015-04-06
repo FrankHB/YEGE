@@ -1,7 +1,6 @@
 ﻿#ifndef Inc_ege_color_h_
 #define Inc_ege_color_h_
 
-#include "ege/def.h"
 #include "ege/colorbase.h"
 
 namespace ege

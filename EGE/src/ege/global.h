@@ -7,20 +7,22 @@
 #include "ege/input.h"
 #include "ege/env.h"
 #include "ege/base.h"
+#include <chrono>
 #include <thread>
 #include "thread_queue.h"
-#include YFM_Helper_HostedUI
-#include YFM_Helper_Environment
-#include <memory>
+#if YEGE_Use_YSLib
+#	include YFM_Helper_HostedUI
+#	include YFM_Helper_Environment
+#else
+#	include <windows.h>
+#endif
 
 #define BITMAP_PAGE_SIZE 4
 #define MAX_KEY_VCODE 256
-#define UPDATE_MAX_CALL     0xFF
+#define UPDATE_MAX_CALL 0xFF
 
 namespace ege
 {
-
-using std::unique_ptr;
 
 class IMAGE;
 class egeControlBase;
@@ -35,6 +37,22 @@ extern egeControlBase* egectrl_root;
 extern egeControlBase* egectrl_focus;
 
 
+#if YEGE_Use_YSLib
+using YSLib::Timers::FetchEpoch;
+#else
+template<class _tClock = std::chrono::high_resolution_clock>
+inline typename _tClock::time_point
+FetchEpoch()
+{
+	static auto start_time(_tClock::now());
+
+	return start_time;
+}
+
+void
+_set_initmode(int, int, int);
+#endif
+
 enum class get_input_op
 {
 	getch,
@@ -46,12 +64,17 @@ float
 _get_FPS(int);
 
 // EGE 全局状态
-class EGEApplication : public YSLib::GUIApplication
+class EGEApplication
+#if YEGE_Use_YSLib
+	: public YSLib::GUIApplication
+#endif
 {
 private:
-	YSLib::unique_ptr<YSLib::UI::Panel> ys_pnl;
+#if YEGE_Use_YSLib
+	unique_ptr<YSLib::UI::Panel> ys_pnl;
 	std::thread ys_thrd;
 	YSLib::Host::Window* ys_window;
+#endif
 	::HWND hwnd;
 	::HDC window_dc;
 	int dc_w = 640, dc_h = 480;
@@ -60,6 +83,10 @@ private:
 	std::thread ui_thread;
 
 public:
+#if !YEGE_Use_YSLib
+	CALLBACK_PROC* callback_close = {};
+#endif
+
 	// 鼠标状态
 	int mouse_state_l = 0, mouse_state_m = 0, mouse_state_r = 0;
 	int mouse_last_x = 0, mouse_last_y = 0;
@@ -73,7 +100,15 @@ public:
 	EGEApplication(const EGEApplication&) = delete;
 	~EGEApplication();
 
+#if YEGE_Use_YSLib
 	static DefGetter(ynothrow, ::HINSTANCE, Instance, ::GetModuleHandleW({}))
+#else
+	static ::HINSTANCE
+	GetInstance()
+	{
+		return ::GetModuleHandleW({});
+	}
+#endif
 
 	bool
 	_is_run() const;
@@ -129,6 +164,11 @@ public:
 	bool
 	_mousemsg();
 
+#if !YEGE_Use_YSLib
+	void
+	_on_destroy();
+#endif
+
 	void
 	_on_key(unsigned, unsigned long, ::LPARAM);
 
@@ -174,8 +214,16 @@ public:
 	bool
 	_waitdealmessage();
 
+#if YEGE_Use_YSLib
 	static void
 	_window_handle_wm_user_1(::LPARAM, ::WPARAM);
+#else
+	static void
+	_window_create(msg_createwindow&);
+
+	static void
+	_window_destroy(msg_createwindow&);
+#endif
 };
 
 

@@ -6,6 +6,7 @@
 #include "ege/sys_edit.h"
 #include <cstdio>
 #include <cstdarg>
+#include <cstring> // for std::strlen;
 
 namespace ege
 {
@@ -13,6 +14,7 @@ namespace ege
 namespace
 {
 
+#if YEGE_Use_YSLib
 ::LRESULT CALLBACK
 sys_edit_proc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 {
@@ -109,6 +111,7 @@ sys_edit_proc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 	return (reinterpret_cast<egeControlBase*>(pg_w))
 		->onMessage(message, wParam, lParam);
 }
+#endif
 
 unsigned int
 private_gettextmode(IMAGE* img)
@@ -189,11 +192,13 @@ private_textout(IMAGE* img, const wchar_t* textstring, int x, int y, int horiz,
 
 } // unnamed namespace;
 
+#if YEGE_Use_YSLib
 ::WNDPROC
 sys_edit::GetSysEditWndProc()
 {
 	return sys_edit_proc;
 }
+#endif
 
 void
 outtext(const char* textstring, IMAGE* pimg)
@@ -461,11 +466,11 @@ setfont(
 	int bItalic,
 	int bUnderline,
 	int bStrikeOut,
-	ystdex::byte fbCharSet,
-	ystdex::byte fbOutPrecision,
-	ystdex::byte fbClipPrecision,
-	ystdex::byte fbQuality,
-	ystdex::byte fbPitchAndFamily,
+	byte fbCharSet,
+	byte fbOutPrecision,
+	byte fbClipPrecision,
+	byte fbQuality,
+	byte fbPitchAndFamily,
 	IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
@@ -491,11 +496,11 @@ setfont(
 	int bItalic,
 	int bUnderline,
 	int bStrikeOut,
-	ystdex::byte fbCharSet,
-	ystdex::byte fbOutPrecision,
-	ystdex::byte fbClipPrecision,
-	ystdex::byte fbQuality,
-	ystdex::byte fbPitchAndFamily,
+	byte fbCharSet,
+	byte fbOutPrecision,
+	byte fbClipPrecision,
+	byte fbQuality,
+	byte fbPitchAndFamily,
 	IMAGE* pimg)
 {
 	if(const auto img = CONVERT_IMAGE_CONST(pimg))
@@ -644,8 +649,11 @@ draw_frame(IMAGE* img, int l, int t, int r, int b, color_t lc, color_t dc)
 int
 inputbox_getline(const char* title, const char* text, char* buf, int len)
 {
+	yconstraint(buf);
+#if YEGE_Use_YSLib
 	using namespace platform_ex;
-	std::unique_ptr<wchar_t[]> wbuf(new wchar_t[len * 2]);
+	unique_ptr<wchar_t[]> wbuf(new wchar_t[len * 2]);
+#endif
 
 	const auto _buf(make_unique<wchar_t[]>(len));
 	wchar_t _title[256], _text[256];
@@ -654,11 +662,22 @@ inputbox_getline(const char* title, const char* text, char* buf, int len)
 	::MultiByteToWideChar(CP_ACP, 0,  text, -1,  _text, 256);
 	buf[0] = 0;
 
+#if YEGE_Use_YSLib
 	if(const int ret = inputbox_getline(MBCSToWCS(title).c_str(),
 		MBCSToWCS(text).c_str(), wbuf.get(), len))
+	{
 		// XXX: Remove redundant copy.
 		std::strcpy(buf, WCSToMBCS(wbuf.get()).c_str());
+		return ret;
+	}
 	return 0;
+#else
+	const int ret(inputbox_getline(_title, _text, _buf.get(), len));
+
+	if(ret)
+		::WideCharToMultiByte(CP_ACP, 0, _buf.get(), -1, buf, len, {}, {});
+	return ret;
+#endif
 }
 
 int

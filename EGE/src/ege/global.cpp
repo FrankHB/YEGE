@@ -26,7 +26,10 @@
 namespace ege
 {
 
+#if YEGE_Use_YSLib
+using namespace YSLib;
 using namespace Host;
+#endif
 
 namespace
 {
@@ -176,8 +179,9 @@ setinitmode(int mode, int x, int y)
 
 EGEApplication::EGEApplication(int gdriver_n, int* gmode)
 {
-	static std::unique_ptr<ImageCodec> p(new ImageCodec());
-	static ::ULONG_PTR g_gdiplusToken;
+#if YEGE_Use_YSLib
+	static unique_ptr<ImageCodec> p(new ImageCodec());
+#endif
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 
 	Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, {});
@@ -229,25 +233,37 @@ EGEApplication::EGEApplication(int gdriver_n, int* gmode)
 		if(dc_h < 0)
 			dc_h = rect.bottom;
 	}
+#if YEGE_Use_YSLib
 	ys_pnl.reset(new Panel({Point::Invalid, SDst(dc_w), SDst(dc_h)}));
 	ys_window = dynamic_cast<HostRenderer&>(ShowTopLevel(*ys_pnl, g_wstyle,
 		g_wstyle_ex)).GetWindowPtr();
 	ys_window->MessageMap[WM_DESTROY] += [this]{
 		_uninit();
 	};
+#endif
 }
 
 EGEApplication::~EGEApplication()
 {
+#if YEGE_Use_YSLib
 	_uninit();
 	ys_pnl.reset();
+#else
+	if(ui_thread.joinable())
+		ui_thread.join();
+	_uninit();
+#endif
 	Gdiplus::GdiplusShutdown(g_gdiplusToken);
 }
 
 bool
 EGEApplication::_is_run() const
 {
+#if YEGE_Use_YSLib
 	return ui_thread.joinable() || ys_thrd.joinable();
+#else
+	return ui_thread.joinable();
+#endif
 }
 
 void
@@ -433,6 +449,7 @@ EGEApplication::_init_graph_x()
 {
 	static std::once_flag init_flag;
 
+#if YEGE_Use_YSLib
 	const auto native_ys_window(Deref(ys_window).GetNativeHandle());
 
 	std::call_once(init_flag, [this, native_ys_window]{
@@ -440,11 +457,16 @@ EGEApplication::_init_graph_x()
 			Execute(*this);
 		});
 
+#else
+	std::call_once(init_flag, [this]{
+#endif
 	//	::SECURITY_ATTRIBUTES sa{};
 	//	unsigned long pid;
 		std::atomic<bool> init_finish{{}};
 
-		ui_thread = std::thread([this, native_ys_window, &init_finish]{
+		ui_thread = std::thread([this,
+#if YEGE_Use_YSLib
+			native_ys_window, &init_finish]{
 			yassume(native_ys_window);
 			::SetWindowTextW(Nonnull(native_ys_window), window_caption),
 		//	ys_window->Move(Point(g_wpos_x, g_wpos_y)),
@@ -453,10 +475,20 @@ EGEApplication::_init_graph_x()
 				dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
 				dc_h + ::GetSystemMetrics(SM_CYFRAME)
 				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, native_ys_window,
+#else
+			&init_finish]{
+			hwnd = ::CreateWindowExW(g_wstyle_ex, window_class_name,
+				window_caption, g_wstyle & ~WS_VISIBLE, g_wpos_x, g_wpos_y,
+				dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
+				dc_h + ::GetSystemMetrics(SM_CYFRAME)
+				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, HWND_DESKTOP,
+#endif
 				{}, GetInstance(), {});
 			if(!hwnd)
 			{
+#if YEGE_Use_YSLib
 				YTraceDe(Critical, "Main window creation failed.");
+#endif
 				init_finish = true;
 				// NOTE: 'return unsigned long(0xFFFFFFFFUL)' in lambda cause
 				//	G++ 4.9 to generate wrong code and fail in runtime.
@@ -465,13 +497,19 @@ EGEApplication::_init_graph_x()
 			window_dc = ::GetDC(hwnd);
 			mouse_show = {};
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
+#if YEGE_Use_YSLib
 			if(!use_force_exit)
 				FetchEnvironment().ExitOnAllWindowThreadCompleted = {};
+#endif
 			init_finish = true;
 
 			::MSG msg;
 
+#if YEGE_Use_YSLib
 			while(ys_thrd.joinable())
+#else
+			while(_is_run())
+#endif
 				if(::GetMessage(&msg, {}, 0, 0))
 				{
 					if(msg.message == WM_QUIT)
@@ -492,7 +530,9 @@ EGEApplication::_init_graph_x()
 			::Sleep(1);
 		if(hwnd)
 		{
+#if YEGE_Use_YSLib
 			::ShowWindow(hwnd, SW_SHOW);
+#endif
 			::UpdateWindow(hwnd);
 			mouse_last_x = dc_w / 2;
 			mouse_last_y = dc_h / 2;
@@ -506,7 +546,11 @@ EGEApplication::_init_graph_x()
 	});
 	window_setviewport(0, 0, dc_w, dc_h);
 	::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
+#if YEGE_Use_YSLib
 	::UpdateWindow(native_ys_window);
+#else
+	::ShowWindow(hwnd, SW_SHOW);
+#endif
 	if(g_wstyle_ex & WS_EX_TOPMOST)
 		::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 }
@@ -526,6 +570,22 @@ EGEApplication::_mousemsg()
 {
 	return _is_run() && bool(_peekmouse().hwnd);
 }
+
+#if !YEGE_Use_YSLib
+void
+EGEApplication::_on_destroy()
+{
+	yassume(_is_run());
+
+	if(get_pages().active_dc)
+		::ReleaseDC(hwnd, window_dc);
+		// release objects, not finish
+	::PostQuitMessage(0);
+	ui_thread.detach();
+	if(use_force_exit)
+		::ExitProcess(0);
+}
+#endif
 
 void
 EGEApplication::_on_key(unsigned message, unsigned long keycode, ::LPARAM keyflag)
@@ -751,6 +811,7 @@ EGEApplication::_show_mouse(bool bShow)
 void
 EGEApplication::_uninit()
 {
+#if YEGE_Use_YSLib
 	YTraceDe(Informative, "Ready to call destroy method.");
 	if(::IsWindow(hwnd))
 		::ShowWindow(hwnd, SW_HIDE);
@@ -765,6 +826,7 @@ EGEApplication::_uninit()
 		::ExitProcess(0);
 	yassume(!_is_run());
 	YTraceDe(Informative, "Destroy call finished.");
+#endif
 }
 
 void
@@ -826,6 +888,7 @@ EGEApplication::_waitdealmessage()
 	return _is_run();
 }
 
+#if YEGE_Use_YSLib
 void
 EGEApplication::_window_handle_wm_user_1(::LPARAM l, ::WPARAM w)
 {
@@ -846,6 +909,25 @@ EGEApplication::_window_handle_wm_user_1(::LPARAM l, ::WPARAM w)
 			::SetEvent(msg.hEvent);
 	}
 }
+#else
+void
+EGEApplication::_window_create(msg_createwindow& msg)
+{
+	msg.hwnd = ::CreateWindowExW(msg.exstyle, msg.classname, {},
+		msg.style, 0, 0, 0, 0, getHWnd(), ::HMENU(msg.id), getHInstance(), {});
+	if(msg.hEvent)
+		::SetEvent(msg.hEvent);
+}
+
+void
+EGEApplication::_window_destroy(msg_createwindow& msg)
+{
+	if(msg.hwnd)
+		::DestroyWindow(msg.hwnd);
+	if(msg.hEvent)
+		::SetEvent(msg.hEvent);
+}
+#endif
 
 
 _pages::_pages()
@@ -951,6 +1033,16 @@ get_pages()
 
 	return *p;
 }
+
+
+#if !YEGE_Use_YSLib
+int
+SetCloseHandler(CALLBACK_PROC* func)
+{
+	FetchEGEApplication().callback_close = func;
+	return grOk;
+}
+#endif
 
 } // namespace ege;
 
