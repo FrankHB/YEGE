@@ -16,7 +16,7 @@ RGBTOBGR(u32 color)
 yconstfn u32
 EGERGB(u8 r, u8 g, u8 b)
 {
-	return (r << 16) | (g << 8) | b;
+	return (b << 16) | (g << 8) | r;
 }
 yconstfn u32
 EGERGBA(u8 r, u8 g, u8 b, u8 a)
@@ -87,6 +87,8 @@ EGEAGRAY(u8 a, u32 gray)
 #define RGBtoHSV    rgb2hsv
 #define HSLtoRGB    hsl2rgb
 #define HSVtoRGB    hsv2rgb
+
+typedef unsigned int color_t;
 
 #endif
 

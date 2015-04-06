@@ -7,9 +7,6 @@
 namespace ege
 {
 
-typedef unsigned int color_t;
-
-
 struct ege_colpoint
 {
 	float x;
