@@ -112,7 +112,7 @@ wndproc(::HWND hWnd, unsigned message, ::WPARAM wParam, ::LPARAM lParam)
 	case WM_SETCURSOR:
 		if(&gstate == pg_w)
 		{
-			gstate._on_setcursor(hWnd);
+			::SetCursor(gstate._on_setcursor(hWnd));
 			return TRUE;
 		}
 		break;

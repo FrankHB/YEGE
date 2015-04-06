@@ -140,7 +140,7 @@ public:
 	void
 	_on_paint(::HWND);
 
-	void
+	::HCURSOR
 	_on_setcursor(::HWND);
 
 	int
