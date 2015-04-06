@@ -32,11 +32,22 @@ namespace
 ::HPEN g_pen_def;
 ::HFONT g_font_def;
 
-::HDC
-GetDCPrototype()
+
+struct WDC
 {
-	return get_pages().get_image_context();
-}
+	::HDC dc;
+	WDC()
+		: dc(::GetDC({}))
+	{}
+
+	~WDC()
+	{
+		::ReleaseDC({}, dc);
+	}
+};
+
+#define YEGE_GetDCPrototype() WDC().dc
+//	get_pages().get_image_context();
 
 } // unnamed namespace;
 
@@ -47,12 +58,12 @@ IMAGE::IMAGE(int width, int height)
 #if YEGE_Use_YSLib
 	: IMAGE(ToSize(width, height))
 #else
-	: IMAGE(GetDCPrototype(), width, height)
+	: IMAGE(YEGE_GetDCPrototype(), width, height)
 #endif
 {}
 #if YEGE_Use_YSLib
 IMAGE::IMAGE(const Size& size)
-	: IMAGE(GetDCPrototype(), size)
+	: IMAGE(YEGE_GetDCPrototype(), size)
 {}
 #endif
 IMAGE::IMAGE(::HDC hdc, int width, int height)
