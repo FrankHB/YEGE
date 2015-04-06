@@ -74,10 +74,10 @@ setvisualpage(int page)
 }
 
 
-int
+void
 settarget(IMAGE* pbuf)
 {
-	return get_pages().set_target(pbuf);
+	get_pages().set_target(pbuf);
 }
 
 void

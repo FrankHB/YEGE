@@ -68,6 +68,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）
 移除输入法消息处理。
 允许主窗口循环接受 WM_QUIT 退出。
 移除 getProcfunc 和 SetCloseHandler 函数。
+函数 settarget 返回类型恢复为 void 。
 
 非向后兼容接口（仅当依赖 YSLib 时）
 ----

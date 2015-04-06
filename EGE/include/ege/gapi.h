@@ -11,7 +11,7 @@ namespace ege
 EGEAPI IMAGE*
 gettarget();
 
-EGEAPI int
+EGEAPI void
 settarget(IMAGE* pbuf); //用 {} 设置窗口为绘图目标
 
 EGEAPI void
