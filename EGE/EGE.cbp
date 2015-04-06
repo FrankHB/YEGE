@@ -158,7 +158,6 @@
 		<Unit filename="src/ege/gdi.cpp" />
 		<Unit filename="src/ege/global.cpp" />
 		<Unit filename="src/ege/global.h" />
-		<Unit filename="src/ege/graphics.cpp" />
 		<Unit filename="src/ege/head.h" />
 		<Unit filename="src/ege/image.cpp" />
 		<Unit filename="src/ege/image.h" />

@@ -31,11 +31,157 @@ const wchar_t window_class_name[]{L"Easy Graphics Engine"};
 const wchar_t window_caption[]{EGE_TITLE};
 
 int _g_initoption(INIT_DEFAULT);
+
+namespace
+{
+
+::LRESULT CALLBACK
+wndproc(::HWND hWnd, unsigned message, ::WPARAM wParam, ::LPARAM lParam)
+{
+	auto& app(FetchEGEApplication());
+	//int wmId, wmEvent;
+	auto pg_w = reinterpret_cast<EGEApplication*>(
+		::GetWindowLongPtrW(hWnd, GWLP_USERDATA));
+
+	if(!pg_w)
+		return ::DefWindowProc(hWnd, message, wParam, lParam);
+	switch(message)
+	{
+	case WM_PAINT:
+		if(&app == pg_w)
+			app._on_paint(hWnd);
+		break;
+	case WM_CLOSE:
+		if(&app == pg_w)
+		{
+			if(app.callback_close)
+				app.callback_close();
+			else
+				return ::DefWindowProc(hWnd, message, wParam, lParam);
+		}
+		break;
+	case WM_DESTROY:
+		if(&app == pg_w)
+			app._on_destroy();
+		break;
+	case WM_ERASEBKGND:
+		if(&app == pg_w)
+			return TRUE;
+		break;
+	case WM_KEYDOWN:
+	case WM_KEYUP:
+	case WM_CHAR:
+	//	if(hWnd == app.hwnd)
+		app._on_key(message, static_cast<unsigned long>(wParam), lParam);
+		break;
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONDBLCLK:
+		app.mouse_lastclick_x = short(unsigned(lParam) & 0xFFFF);
+		app.mouse_lastclick_y = short(unsigned(lParam) >> 16);
+		app.keystatemap[VK_LBUTTON] = 1;
+		::SetCapture(hWnd);
+		app.mouse_state_l = 1;
+		if(hWnd == app._get_hwnd())
+			app._push_mouse_msg( message, wParam, lParam);
+		break;
+	case WM_MBUTTONDOWN:
+	case WM_MBUTTONDBLCLK:
+		app.mouse_lastclick_x = short(unsigned(lParam) & 0xFFFF);
+		app.mouse_lastclick_y = short(unsigned(lParam) >> 16);
+		app.keystatemap[VK_MBUTTON] = 1;
+		::SetCapture(hWnd);
+		app.mouse_state_m = 1;
+		if(hWnd == app._get_hwnd())
+			app._push_mouse_msg(message, wParam, lParam);
+		break;
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONDBLCLK:
+		app.mouse_lastclick_x = short(unsigned(lParam) & 0xFFFF);
+		app.mouse_lastclick_y = short(unsigned(lParam) >> 16);
+		app.keystatemap[VK_RBUTTON] = 1;
+		::SetCapture(hWnd);
+		app.mouse_state_r = 1;
+		if(hWnd == app._get_hwnd())
+			app._push_mouse_msg( message, wParam, lParam);
+		break;
+	case WM_LBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONUP:
+		app._on_mouse_button_up(hWnd, message, wParam, lParam);
+		break;
+	case WM_MOUSEMOVE:
+		app.mouse_last_x = short(unsigned(lParam) & 0xFFFF);
+		app.mouse_last_y = short(unsigned(lParam) >> 16);
+		if(hWnd == app._get_hwnd() && (app.mouse_lastup_x
+			!= app.mouse_last_x || app.mouse_lastup_y
+			!= app.mouse_last_y))
+			app._push_mouse_msg(message, wParam, lParam);
+		break;
+	case WM_MOUSEWHEEL:
+		{
+			::POINT pt{short(unsigned(lParam) & 0xFFFF),
+				short(unsigned(lParam) >> 16)};
+
+			::ScreenToClient(app._get_hwnd(), &pt);
+			app.mouse_last_x = pt.x;
+			app.mouse_last_y = pt.y;
+			lParam = static_cast<unsigned short>(short(app.mouse_last_y))
+				<< 16 | static_cast<unsigned short>(short(app.mouse_last_x));
+		}
+		if(hWnd == app._get_hwnd())
+			app._push_mouse_msg(message, wParam, lParam);
+		break;
+	case WM_SETCURSOR:
+		if(&app == pg_w)
+		{
+			::SetCursor(app._on_setcursor(hWnd));
+			return TRUE;
+		}
+		break;
+	case WM_USER + 1:
+		{
+			const auto p(reinterpret_cast<msg_createwindow*>(lParam));
+
+			assert(p);
+
+			auto& msg(*p);
+
+			if(wParam != 0)
+				EGEApplication::_window_create(msg);
+			else
+				EGEApplication::_window_destroy(msg);
+		}
+		break;
+	case WM_USER + 2:
+		::SetFocus(::HWND(lParam));
+		break;
+	case WM_CTLCOLOREDIT:
+		return (reinterpret_cast<egeControlBase*>(::GetWindowLongPtrW(
+			::HWND(lParam), GWLP_USERDATA)))->onMessage(message, wParam,
+			lParam);
+		break;
+	default:
+		if(&app == pg_w)
+			return ::DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	if(&app != pg_w)
+		return (reinterpret_cast<egeControlBase*>(pg_w))->onMessage(message,
+			wParam, lParam);
+	return 0;
+}
+
+} // unnamed namespace;
+
+::WNDPROC
+getProcfunc()
+{
+	return wndproc;
+}
+
 bool _g_initcall;
 int update_mark_count; //更新标记
 egeControlBase* egectrl_root;
 egeControlBase* egectrl_focus;
-
 
 namespace
 {
