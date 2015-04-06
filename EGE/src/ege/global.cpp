@@ -445,6 +445,7 @@ EGEApplication::_init_graph_x()
 		std::atomic<bool> init_finish{{}};
 
 		ui_thread = std::thread([this, native_ys_window, &init_finish]{
+			yassume(native_ys_window);
 			::SetWindowTextW(Nonnull(native_ys_window), window_caption),
 		//	ys_window->Move(Point(g_wpos_x, g_wpos_y)),
 			hwnd = ::CreateWindowExW(0, window_class_name, window_caption,
@@ -455,6 +456,7 @@ EGEApplication::_init_graph_x()
 				{}, GetInstance(), {});
 			if(!hwnd)
 			{
+				YTraceDe(Critical, "Main window creation failed.");
 				init_finish = true;
 				// NOTE: 'return unsigned long(0xFFFFFFFFUL)' in lambda cause
 				//	G++ 4.9 to generate wrong code and fail in runtime.
@@ -488,15 +490,19 @@ EGEApplication::_init_graph_x()
 		});
 		while(!init_finish)
 			::Sleep(1);
-		::ShowWindow(hwnd, SW_SHOW);
-		::UpdateWindow(hwnd);
-		//初始化鼠标位置数据
-		mouse_last_x = dc_w / 2;
-		mouse_last_y = dc_h / 2;
+		if(hwnd)
+		{
+			::ShowWindow(hwnd, SW_SHOW);
+			::UpdateWindow(hwnd);
+			mouse_last_x = dc_w / 2;
+			mouse_last_y = dc_h / 2;
 
-		static egeControlBase _egeControlBase;
+			static egeControlBase _egeControlBase;
 
-		mouse_show = true;
+			mouse_show = true;
+		}
+		else
+			throw std::runtime_error("Initialization failed.");
 	});
 	window_setviewport(0, 0, dc_w, dc_h);
 	::SetWindowLongPtrW(hwnd, GWLP_USERDATA, ::LONG_PTR(this));
