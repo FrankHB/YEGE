@@ -64,13 +64,13 @@ swappage()
 void
 setactivepage(int page)
 {
-	get_pages().set_apage(page);
+	get_pages().set_apage(size_t(page));
 }
 
 void
 setvisualpage(int page)
 {
-	get_pages().set_vpage(page);
+	get_pages().set_apage(size_t(page));
 }
 
 

@@ -912,9 +912,14 @@ _pages::_pages()
 	update_mark_count = 0;
 }
 
-void
-_pages::check_page(int page) const
+bool
+_pages::check_page(size_t page) const
 {
+	if(page > BITMAP_PAGE_SIZE)
+	{
+		YTraceDe(Warning, "Request page index out of range.");
+		return {};
+	}
 	if(!img_page[page])
 	{
 		const int dc_w(gstate._get_dc_w());
@@ -922,6 +927,7 @@ _pages::check_page(int page) const
 
 		img_page[page].reset(new IMAGE(dc_w, dc_h));
 	}
+	return true;
 }
 
 IMAGE&
@@ -951,26 +957,27 @@ _pages::paint(::HDC dc)
 }
 
 void
-_pages::set_apage(int page)
+_pages::set_apage(size_t page)
 {
-	check_page(page);
-	active_page = page;
+	if(check_page(page))
+		active_page = page;
 }
 
-int
+void
 _pages::set_target(IMAGE* pbuf)
 {
 	imgtarget_set = pbuf;
 	imgtarget = pbuf ? pbuf : img_page[active_page].get();
-	return 0;
 }
 
 void
-_pages::set_vpage(int page)
+_pages::set_vpage(size_t page)
 {
-	check_page(page);
-	visual_page = page;
-	update_mark_count = 0;
+	if(check_page(page))
+	{
+		visual_page = page;
+		update_mark_count = 0;
+	}
 }
 
 void

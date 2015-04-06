@@ -78,6 +78,7 @@ typedef 类型名 color_t 从 unsigned int 改为 YSLib::Drawing::PixelType 。
 函数 savepng 的表示是否使用 alpha 的参数被忽略。
 移除兼容宏 RGBtoGRAY 、RGBtoHSL 、RGBtoHSV 、HSLtoRGB 和 HSVtoRGB，使用函数 rgb2gray 、rgb2hsl 、rgb2hsv 、hsl2rgb 和 hsv2rgb 代替。
 颜色转换断言严格要求色调值在区间 [0, 360) 内。
+越界访问图像页面时使用 YTraceDe 警告。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
@@ -93,6 +94,7 @@ linestyletype 和 EGEMSG 默认初始化所有成员。
 窗口过程不依赖 GWLP_USERDATA 。
 创建图像和图像页面操作取屏幕设备上下文替代全局图像页面状态。
 设置图像大小不依赖公共 API 。
+设置图像页面时检查越界并忽略越界访问。
 
 兼容接口和实现调整
 ----

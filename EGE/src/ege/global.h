@@ -225,8 +225,8 @@ public:
 	EGEApplication& gstate;
 
 private:
-	int active_page = 0;
-	int visual_page = 0;
+	size_t active_page = 0;
+	size_t visual_page = 0;
 	IMAGE* imgtarget = {};
 	mutable unique_ptr<IMAGE> img_page[BITMAP_PAGE_SIZE];
 
@@ -236,8 +236,8 @@ public:
 
 	_pages();
 
-	void
-	check_page(int) const;
+	bool
+	check_page(size_t) const;
 
 	IMAGE&
 	get_apage_ref() const;
@@ -261,13 +261,13 @@ public:
 	paint(::HDC);
 
 	void
-	set_apage(int);
+	set_apage(size_t);
 
-	int
+	void
 	set_target(IMAGE*);
 
 	void
-	set_vpage(int);
+	set_vpage(size_t);
 
 	void
 	update();
