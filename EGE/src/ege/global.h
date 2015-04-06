@@ -66,7 +66,6 @@ public:
 	int mouse_lastclick_x = 0, mouse_lastclick_y = 0;
 	int mouse_lastup_x = 0, mouse_lastup_y = 0;
 	bool mouse_show = {};
-	CALLBACK_PROC* callback_close = {};
 	// 键盘状态
 	int keystatemap[MAX_KEY_VCODE]{};
 

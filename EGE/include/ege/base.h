@@ -1,12 +1,15 @@
 ﻿#ifndef Inc_ege_base_h_
 #define Inc_ege_base_h_
 
-#include <cmath>
 #include "ege/def.h"
 #include "ege/colorbase.h"
+#include <ysbuild.h>
 
 namespace ege
 {
+
+using platform::Nonnull;
+using platform::Deref;
 
 const double PI = 3.14159265358979323;
 

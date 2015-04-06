@@ -155,7 +155,6 @@
 		<Unit filename="include/ege/windows.h" />
 		<Unit filename="include/graphics.h" />
 		<Unit filename="include/thread_queue.h" />
-		<Unit filename="src/ege/base.cpp" />
 		<Unit filename="src/ege/color.cpp" />
 		<Unit filename="src/ege/compress.cpp" />
 		<Unit filename="src/ege/ctl.cpp" />
@@ -166,7 +165,6 @@
 		<Unit filename="src/ege/gdi.cpp" />
 		<Unit filename="src/ege/global.cpp" />
 		<Unit filename="src/ege/global.h" />
-		<Unit filename="src/ege/graphics.cpp" />
 		<Unit filename="src/ege/head.h" />
 		<Unit filename="src/ege/image.cpp" />
 		<Unit filename="src/ege/image.h" />
@@ -175,7 +173,6 @@
 		<Unit filename="src/ege/math.cpp" />
 		<Unit filename="src/ege/msg.h" />
 		<Unit filename="src/ege/music.cpp" />
-		<Unit filename="src/ege/proc.cpp" />
 		<Unit filename="src/ege/random.cpp" />
 		<Unit filename="src/ege/text.cpp" />
 		<Unit filename="src/ege/time.cpp" />

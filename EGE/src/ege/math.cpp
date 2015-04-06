@@ -4,8 +4,6 @@
 namespace ege
 {
 
-using platform::Deref;
-
 void
 rotate_point3d_x(VECTOR3D* p_pt, float r)
 {
