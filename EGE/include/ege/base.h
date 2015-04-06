@@ -83,6 +83,9 @@ Deref(_type&& p) -> decltype(*p)
 
 using SPos = long;
 using SDst = unsigned long;
+
+#define YTraceDe(_lv, ...)
+
 #endif
 
 const double PI = 3.14159265358979323;

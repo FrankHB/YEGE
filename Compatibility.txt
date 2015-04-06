@@ -32,6 +32,8 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）
 在 ege 命名空间使用 using 引入智能指针类型和相关操作的声明，并提供 std::make_unique 的替代实现。
 在 ege 命名空间提供和 YSLib 的 platform::Deref 和 platform::Nonnull 兼容的模板。
 在 ege 命名空间提供和 YSLib 兼容的 SPos 和 SDst 类型。
+提供和 YSLib 兼容的宏 YTraceDe。
+	* 空实现。
 
 非向后兼容接口
 ----
