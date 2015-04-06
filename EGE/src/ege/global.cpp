@@ -184,48 +184,44 @@ setinitmode(int mode, int x, int y)
 
 EGEApplication::EGEApplication(int gdriver_n, int* gmode)
 {
-	static std::once_flag init_flag;
+	static std::unique_ptr<ImageCodec> p(new ImageCodec());
+	static ::ULONG_PTR g_gdiplusToken;
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 
-	std::call_once(init_flag, [this]{
-		static std::unique_ptr<ImageCodec> p(new ImageCodec());
-		static ::ULONG_PTR g_gdiplusToken;
-		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, {});
 
-		Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, {});
+	static ::WNDCLASSEXW wcex;
 
-		static ::WNDCLASSEXW wcex;
+	wcex.cbSize = sizeof(wcex);
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = wndproc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = GetInstance();
+	wcex.hIcon = ::LoadIcon({}, IDI_WINLOGO);
+	wcex.hCursor = ::LoadCursor({}, IDC_ARROW);
+	wcex.hbrBackground = ::HBRUSH(COLOR_WINDOW + 1);
+	wcex.lpszClassName = window_class_name;
 
-		wcex.cbSize = sizeof(wcex);
-		wcex.style = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc = wndproc;
-		wcex.cbClsExtra = 0;
-		wcex.cbWndExtra = 0;
-		wcex.hInstance = GetInstance();
-		wcex.hIcon = ::LoadIcon({}, IDI_WINLOGO);
-		wcex.hCursor = ::LoadCursor({}, IDC_ARROW);
-		wcex.hbrBackground = ::HBRUSH(COLOR_WINDOW + 1);
-		wcex.lpszClassName = window_class_name;
+	const auto load([&](::LPCTSTR rt){
+		::HICON hico = {};
 
-		const auto load([&](::LPCTSTR rt){
-			::HICON hico = {};
-
-			EnumResourceNames(GetInstance(), rt, EnumResNameProc,
-				::LONG_PTR(&hico));
-			if(hico)
-				wcex.hIcon = hico;
-			return hico;
-		});
-		do
-		{
-			if(load(RT_ANIICON))
-				break;
-			if(load(RT_GROUP_ICON))
-				break;
-			if(load(RT_ICON))
-				break;
-		}while(0);
-		::RegisterClassExW(&wcex);
+		EnumResourceNames(GetInstance(), rt, EnumResNameProc,
+			::LONG_PTR(&hico));
+		if(hico)
+			wcex.hIcon = hico;
+		return hico;
 	});
+	do
+	{
+		if(load(RT_ANIICON))
+			break;
+		if(load(RT_GROUP_ICON))
+			break;
+		if(load(RT_ICON))
+			break;
+	}while(0);
+	::RegisterClassExW(&wcex);
 
 	assert(gdriver_n != 0);
 
