@@ -134,6 +134,35 @@ IMAGE::operator=(IMAGE img) ynothrow
 }
 
 void
+IMAGE::SetViewport(int left, int top, int right, int bottom, int clip)
+{
+	::SetViewportOrgEx(getdc(), 0, 0, {});
+	m_vpt.left = left;
+	m_vpt.top = top;
+	m_vpt.right = right;
+	m_vpt.bottom = bottom;
+	m_vpt.clipflag = clip;
+	if(m_vpt.left < 0)
+		m_vpt.left = 0;
+	if(m_vpt.top < 0)
+		m_vpt.top = 0;
+	if(m_vpt.right > int(GetWidth()))
+		m_vpt.right = GetWidth();
+	if(m_vpt.bottom > int(GetHeight()))
+		m_vpt.bottom = GetHeight();
+
+	auto rgn(m_vpt.clipflag ? ::CreateRectRgn(m_vpt.left, m_vpt.top,
+		m_vpt.right, m_vpt.bottom) : ::CreateRectRgn(0, 0, GetWidth(),
+		GetHeight()));
+
+	::SelectClipRgn(getdc(), rgn);
+
+	::DeleteObject(rgn);
+	//OffsetViewportOrgEx(getdc(), m_vpt.left, m_vpt.top, {});
+	::SetViewportOrgEx(getdc(), m_vpt.left, m_vpt.top, {});
+}
+
+void
 IMAGE::swap(IMAGE& img) ynothrow
 {
 #if YEGE_Use_YSLib
@@ -180,7 +209,7 @@ IMAGE::Refresh(::HBITMAP bitmap)
 			g_font_def = ::HFONT(::GetCurrentObject(m_hDC, OBJ_FONT));
 		}
 		::DeleteObject(hbmp_def);
-		setviewport(0, 0, GetWidth(), GetHeight(), 1, this);
+		SetViewport(0, 0, GetWidth(), GetHeight(), 1);
 		cleardevice(this);
 	}
 	else

@@ -155,7 +155,7 @@ thread_queue 类模板使用 std::mutex 、std::lock_guard 和 std::deque 实现
 拆分宿主环境主窗口和控件的窗口过程。
 简化绘图 API 实现。
 窗口过程不依赖 GWLP_USERDATA 。
-创建图像取屏幕设备上下文，不依赖全局图形状态。
+创建图像取屏幕设备上下文，不依赖全局图形状态；设置大小不依赖公共 API 。
 
 实现注记（仅当依赖 YSLib 时）
 ----

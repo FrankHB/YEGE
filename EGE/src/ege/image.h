@@ -94,6 +94,9 @@ public:
 #endif
 
 	void
+	SetViewport(int, int, int, int, int);
+
+	void
 	swap(IMAGE&) ynothrow;
 
 	void
