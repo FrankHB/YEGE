@@ -227,12 +227,12 @@ public:
 private:
 	int active_page = 0;
 	int visual_page = 0;
-	IMAGE* imgtarget_set = {};
+	IMAGE* imgtarget = {};
 	mutable unique_ptr<IMAGE> img_page[BITMAP_PAGE_SIZE];
 
 public:
 	int base_x = 0, base_y = 0, base_w = 0, base_h = 0;
-	IMAGE* imgtarget = {};
+	IMAGE* imgtarget_set = {};
 
 	_pages();
 
@@ -247,6 +247,12 @@ public:
 
 	IMAGE*
 	get_target() const
+	{
+		return imgtarget;
+	}
+
+	IMAGE*
+	get_target_set() const
 	{
 		return imgtarget_set;
 	}

@@ -79,7 +79,7 @@ resize(IMAGE* pDstImg, int width, int height)
 void
 getimage(IMAGE* pDstImg, int srcX, int srcY, int srcWidth, int srcHeight)
 {
-	Deref(pDstImg).getimage(get_pages().imgtarget, srcX, srcY, srcWidth,
+	Deref(pDstImg).getimage(get_pages().get_target(), srcX, srcY, srcWidth,
 		srcHeight);
 }
 void

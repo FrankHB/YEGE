@@ -48,7 +48,7 @@ _save_brush(IMAGE* img, int save)
 IMAGE*
 gettarget()
 {
-	return get_pages().get_target();
+	return get_pages().get_target_set();
 }
 
 #if 0

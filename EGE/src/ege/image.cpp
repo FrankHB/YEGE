@@ -2784,13 +2784,13 @@ putimage_rotatezoom(IMAGE* imgdest, IMAGE* imgtexture, int nXOriginDest,
 IMAGE*
 CONVERT_IMAGE(IMAGE* pimg)
 {
-	return pimg ? pimg : (--update_mark_count, get_pages().imgtarget);
+	return pimg ? pimg : (--update_mark_count, get_pages().get_target());
 }
 
 IMAGE*
 CONVERT_IMAGE_CONST(IMAGE* pimg)
 {
-	return pimg ? pimg : get_pages().imgtarget;
+	return pimg ? pimg : get_pages().get_target();
 }
 
 } // namespace ege;
