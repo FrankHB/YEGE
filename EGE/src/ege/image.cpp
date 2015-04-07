@@ -32,6 +32,12 @@ namespace
 ::HPEN g_pen_def;
 ::HFONT g_font_def;
 
+::HDC
+GetDCPrototype()
+{
+	return get_pages().get_image_context();
+}
+
 } // unnamed namespace;
 
 IMAGE::IMAGE()
@@ -41,12 +47,12 @@ IMAGE::IMAGE(int width, int height)
 #if YEGE_Use_YSLib
 	: IMAGE(ToSize(width, height))
 #else
-	: IMAGE(get_pages().get_image_context(), width, height)
+	: IMAGE(GetDCPrototype(), width, height)
 #endif
 {}
 #if YEGE_Use_YSLib
 IMAGE::IMAGE(const Size& size)
-	: IMAGE(get_pages().get_image_context(), size)
+	: IMAGE(GetDCPrototype(), size)
 {}
 #endif
 IMAGE::IMAGE(::HDC hdc, int width, int height)
@@ -148,11 +154,10 @@ IMAGE::gentexture(bool gen)
 		reinterpret_cast<byte*>(getbuffer())) : nullptr);
 }
 
-#if YEGE_Use_YSLib
 int
-IMAGE::Refresh()
+IMAGE::Refresh(::HBITMAP bitmap)
 {
-	if(const auto bitmap = GetBitmap())
+	if(bitmap)
 	{
 		const auto hbmp_def = ::HBITMAP(::SelectObject(m_hDC, bitmap));
 
@@ -176,7 +181,6 @@ IMAGE::Refresh()
 	}
 	return 0;
 }
-#endif
 
 int
 #if YEGE_Use_YSLib
@@ -188,11 +192,11 @@ IMAGE::Resize(int width, int height)
 #if YEGE_Use_YSLib
 	std::memset(&m_vpt, 0, sizeof(m_vpt));
 
-	assert(m_hDC);
+	yassume(m_hDC);
 
 	if(GetSize() != size)
 		sbuf = ScreenBuffer(size);
-	return Refresh();
+	return Refresh(GetBitmap());
 #else
 	std::memset(&m_vpt, 0, sizeof(m_vpt));
 
@@ -208,38 +212,14 @@ IMAGE::Resize(int width, int height)
 	bmi.bmiHeader.biBitCount = 32;
 	bmi.bmiHeader.biSizeImage = width * height * 4;
 
-	if(::HBITMAP bitmap = ::CreateDIBSection(
-		{},
-		&bmi,
-		DIB_RGB_COLORS,
-		(VOID**)&p_bmp_buf,
-		{},
-		0
-	))
-	{
-		::HBITMAP hbmp_def = (::HBITMAP)::SelectObject(m_hDC, bitmap);
-		if(!g_hbmp_def)
-		{
-			g_hbmp_def = hbmp_def;
-			g_hbr_def  = (::HBRUSH)::GetCurrentObject(m_hDC, OBJ_BRUSH);
-			g_pen_def  = (::HPEN)::GetCurrentObject(m_hDC, OBJ_PEN);
-			g_font_def = (::HFONT)::GetCurrentObject(m_hDC, OBJ_FONT);
-		}
-		::DeleteObject(hbmp_def);
-		m_hBmp = bitmap;
-		m_width = width;
-		m_height = height;
-		m_pBuffer = (unsigned long*)p_bmp_buf;
-		setviewport(0, 0, m_width, m_height, 1, this);
-		cleardevice(this);
-	}
-	else
-	{
-		int err = ::GetLastError();
-		::DeleteDC(m_hDC);
-		return err;
-	}
-	return 0;
+	const auto bitmap(::CreateDIBSection({}, &bmi, DIB_RGB_COLORS,
+		reinterpret_cast<void**>(&p_bmp_buf), {}, 0));
+
+	m_hBmp = bitmap;
+	m_width = width;
+	m_height = height;
+	m_pBuffer = reinterpret_cast<unsigned long*>(p_bmp_buf);
+	return Refresh(bitmap);
 #endif
 }
 

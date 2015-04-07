@@ -105,10 +105,12 @@ public:
 		return m_hDC;
 	}
 
-#if YEGE_Use_YSLib
+private:
 	int
-	Refresh();
+	Refresh(::HBITMAP);
 
+public:
+#if YEGE_Use_YSLib
 	unsigned long*
 	getbuffer() const
 	{
