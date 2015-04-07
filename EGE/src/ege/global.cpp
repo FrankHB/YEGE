@@ -127,7 +127,7 @@ wndproc(::HWND hWnd, unsigned message, ::WPARAM wParam, ::LPARAM lParam)
 		::SetFocus(::HWND(lParam));
 		break;
 	default:
-		return ::DefWindowProc(hWnd, message, wParam, lParam);
+		return ::DefWindowProcW(hWnd, message, wParam, lParam);
 	}
 	return 0;
 }
