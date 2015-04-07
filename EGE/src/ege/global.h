@@ -96,15 +96,7 @@ public:
 	EGEApplication(const EGEApplication&) = delete;
 	~EGEApplication();
 
-#if YEGE_Use_YSLib
 	static DefGetter(ynothrow, ::HINSTANCE, Instance, ::GetModuleHandleW({}))
-#else
-	static ::HINSTANCE
-	GetInstance()
-	{
-		return ::GetModuleHandleW({});
-	}
-#endif
 
 	bool
 	_is_run() const;

@@ -33,6 +33,114 @@ using platform::Deref;
 using YSLib::SPos;
 using YSLib::SDst;
 #else
+
+#define PDefH(_t, _n, ...) \
+	_t \
+	_n(__VA_ARGS__)
+
+#define PDefHOp(_t, _op, ...) \
+	PDefH(_t, operator _op, __VA_ARGS__)
+
+#define ImplExpr(...) \
+	{ \
+		(__VA_ARGS__), void(); \
+	}
+#define ImplRet(...) \
+	{ \
+		return __VA_ARGS__; \
+	}
+#define ImplThrow(...) \
+	{ \
+		throw __VA_ARGS__; \
+	}
+#define ImplUnseq(...) \
+	{ \
+		yunused(yunseq(__VA_ARGS__)); \
+	}
+
+#define TryExpr(...) \
+	try \
+	ImplExpr(__VA_ARGS__)
+#define TryRet(...) \
+	try \
+	ImplRet(__VA_ARGS__)
+
+#define CatchExpr(_ex, ...) \
+	catch(_ex) \
+	ImplExpr(__VA_ARGS__)
+#define CatchIgnore(_ex) \
+	catch(_ex) \
+	{}
+#define CatchRet(_ex, ...) \
+	catch(_ex) \
+	ImplRet(__VA_ARGS__)
+#define CatchThrow(_ex, ...) \
+	catch(_ex) \
+	ImplThrow(__VA_ARGS__)
+
+#define DefDeCtor(_t) \
+	_t() = default;
+#define DefDelCtor(_t) \
+	_t() = delete;
+
+#define DefDeCopyCtor(_t) \
+	_t(const _t&) = default;
+#define DefDelCopyCtor(_t) \
+	_t(const _t&) = delete;
+
+#define DefDeMoveCtor(_t) \
+	_t(_t&&) = default;
+#define DefDelMoveCtor(_t) \
+	_t(_t&&) = delete;
+
+#define DefDeCopyMoveCtor(_t) \
+	DefDeCopyCtor(_t) \
+	DefDeMoveCtor(_t)
+
+#define DefDeDtor(_t) \
+	~_t() = default;
+#define DefDelDtor(_t) \
+	~_t() = delete;
+
+#define ImplDeDtor(_t) \
+	_t::DefDeDtor(_t)
+
+#define DefDeCopyAssignment(_t) \
+	_t& operator=(const _t&) = default;
+#define DefDelCopyAssignment(_t) \
+	_t& operator=(const _t&) = delete;
+
+#define DefDeMoveAssignment(_t) \
+	_t& operator=(_t&&) = default;
+#define DefDelMoveAssignment(_t) \
+	_t& operator=(_t&&) = delete;
+
+#define DefDeCopyMoveAssignment(_t) \
+	DefDeCopyAssignment(_t) \
+	DefDeMoveAssignment(_t)
+
+#define DefDeCopyMoveCtorAssignment(_t) \
+	DefDeCopyMoveCtor(_t) \
+	DefDeCopyMoveAssignment(_t)
+
+#define DefCvt(_q, _t, ...) \
+	operator _t() _q \
+	ImplRet(__VA_ARGS__)
+
+#define DefPred(_q, _n, ...) \
+	bool \
+	YPP_Concat(Is, _n)() _q \
+		ImplRet(__VA_ARGS__)
+
+#define DefGetter(_q, _t, _n, ...) \
+	_t \
+	YPP_Concat(Get, _n)() _q \
+		ImplRet(__VA_ARGS__)
+
+#define DefSwap(_q, _t) \
+	PDefH(void, swap, _t& _x, _t& _y) _q \
+		ImplExpr(_x.swap(_y))
+
 using std::size_t;
 using std::bad_weak_ptr;
 using std::const_pointer_cast;

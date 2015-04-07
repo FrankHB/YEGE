@@ -35,6 +35,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）
 提供和 YSLib 兼容的宏 YTraceDe。
 	* 空实现。
 提供和 YSLib 一致实现的宏 YPP_Empty 、YPP_Commma 和 YPP_Concat 。
+提供和 YSLib 一致实现的宏 PDefH 、PDefHOp 、ImplExpr 、ImplRet 、ImplThrow 、ImplUnseq 、TryExpr 、TryRet 、CatchExpr 、CatchIgnore 、CatchThrow 、DefPred 、DefGetter 和 DefSwap 。
 
 非向后兼容接口
 ----
