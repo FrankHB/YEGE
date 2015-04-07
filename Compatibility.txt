@@ -47,7 +47,7 @@ DefDeDtor DefDelDtor ImplDeDtor
 DefDeCopyAssignment DefDelCopyAssignment DefDeMoveAssignment DefDelMoveAssignment DefDeCopyMoveAssignment DefDeCopyMoveCtorAssignment
 DefCvt
 DefNeg DefBoolNeg
-DefPred DefGetter DefSetter
+DefPred DefGetter DefGetterMem DefSetter
 DefSwap
 提供和 YCLib 兼容的宏 YAssert（替换为 yassume 表达式）。
 在 ege 命名空间提供和 YSLib 兼容的 min 和 max 模板（非 YSLib 使用 std 的对应名称代替，不保证 constexpr ）。

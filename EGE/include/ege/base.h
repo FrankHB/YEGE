@@ -161,6 +161,8 @@ using YSLib::Drawing::Rect;
 	_t \
 	YPP_Concat(Get, _n)() _q \
 		ImplRet(__VA_ARGS__)
+#define DefGetterMem(_q, _t, _n, _m) \
+	DefGetter(_q, _t, _n, (_m).YPP_Concat(Get, _n)())
 
 #define DefSetter(_t, _n, _m) \
 	void \
