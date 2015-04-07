@@ -182,7 +182,7 @@ setinitmode(int mode, int x, int y)
 }
 
 
-EGEApplication::EGEApplication(int gdriver_n, int* gmode)
+EGEApplication::EGEApplication(SDst w, SDst h)
 #if YEGE_Use_YSLib
 	: ys_thrd(std::thread([this]{
 		static ImageCodec ic;
@@ -228,20 +228,12 @@ EGEApplication::EGEApplication(int gdriver_n, int* gmode)
 	}while(0);
 	::RegisterClassExW(&wcex);
 
-	yassume(gdriver_n);
+	::RECT rect;
 
-	if(gdriver_n == TRUECOLORSIZE)
-	{
-		::RECT rect;
+	::GetWindowRect(GetDesktopWindow(), &rect);
 
-		::GetWindowRect(GetDesktopWindow(), &rect);
-		dc_w = short(Deref(gmode) & 0xFFFF);
-		dc_h = short(unsigned(*gmode >> 16));
-		if(dc_w < 0)
-			dc_w = rect.right;
-		if(dc_h < 0)
-			dc_h = rect.bottom;
-	}
+	dc_w = w == 0 ? rect.right : int(w);
+	dc_h = h == 0 ? rect.bottom : int(h);
 }
 
 EGEApplication::~EGEApplication()
@@ -577,9 +569,6 @@ EGEApplication::_on_destroy()
 {
 	yassume(_is_run());
 
-	if(get_pages().active_dc)
-		::ReleaseDC(hwnd, window_dc);
-		// release objects, not finish
 	::PostQuitMessage(0);
 	ui_thread.detach();
 	if(use_force_exit)
@@ -908,25 +897,28 @@ EGEApplication::_window_handle_wm_user_1(::LPARAM l, ::WPARAM w)
 
 
 _pages::_pages()
-	: gstate(FetchEGEApplication()), active_dc(gstate._get_window_dc())
+	: gstate(FetchEGEApplication()), img_page(),
+	imgtarget(Nonnull((check_page(0), img_page[0].get())))
 {
-	yassume(active_dc);
-	check_page(0);
-	active_dc = img_page[0]->getdc();
-	imgtarget = img_page[active_page].get();
 	update_mark_count = 0;
 }
 
-void
-_pages::check_page(int page) const
+bool
+_pages::check_page(size_t page) const
 {
+	if(page > BITMAP_PAGE_SIZE)
+	{
+		YTraceDe(Warning, "Request page index out of range.");
+		return {};
+	}
 	if(!img_page[page])
 	{
 		const int dc_w(gstate._get_dc_w());
 		const int dc_h(gstate._get_dc_h());
 
-		img_page[page].reset(new IMAGE(active_dc, dc_w, dc_h));
+		img_page[page].reset(new IMAGE(dc_w, dc_h));
 	}
+	return true;
 }
 
 IMAGE&
@@ -935,12 +927,6 @@ _pages::get_apage_ref() const
 	check_page(active_page);
 
 	return *img_page[active_page];
-}
-
-::HDC
-_pages::get_image_context() const
-{
-	return imgtarget ? imgtarget->getdc() : active_dc;
 }
 
 IMAGE&
@@ -962,27 +948,27 @@ _pages::paint(::HDC dc)
 }
 
 void
-_pages::set_apage(int page)
+_pages::set_apage(size_t page)
 {
-	check_page(page);
-	active_page = page;
-	active_dc = img_page[page]->getdc();
-}
-
-int
-_pages::set_target(IMAGE* pbuf)
-{
-	imgtarget_set = pbuf;
-	imgtarget = pbuf ? pbuf : img_page[active_page].get();
-	return 0;
+	if(check_page(page))
+		active_page = page;
 }
 
 void
-_pages::set_vpage(int page)
+_pages::set_target(IMAGE* pbuf)
 {
-	check_page(page);
-	visual_page = page;
-	update_mark_count = 0;
+	imgtarget_set = pbuf;
+	imgtarget = pbuf ? pbuf : Nonnull(img_page[active_page].get());
+}
+
+void
+_pages::set_vpage(size_t page)
+{
+	if(check_page(page))
+	{
+		visual_page = page;
+		update_mark_count = 0;
+	}
 }
 
 void
@@ -996,9 +982,9 @@ _pages::update()
 
 
 EGEApplication&
-FetchEGEApplication(int gdriver_n, int* gmode)
+FetchEGEApplication(SDst w, SDst h)
 {
-	static EGEApplication app(gdriver_n, gmode);
+	static EGEApplication app(w, h);
 
 	return app;
 }

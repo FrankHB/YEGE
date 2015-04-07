@@ -9,72 +9,46 @@ void
 getviewport(int* pleft, int* ptop, int* pright, int* pbottom, int* pclip,
 	IMAGE* pimg)
 {
-	auto& img(convert_image_ref_c(pimg));
+	auto& vpt(cimg_ref_c(pimg).m_vpt);
 
 	if(pleft)
-		*pleft = img.m_vpt.left;
+		*pleft = vpt.left;
 	if(ptop)
-		*ptop = img.m_vpt.top;
+		*ptop = vpt.top;
 	if(pright)
-		*pright = img.m_vpt.right;
+		*pright = vpt.right;
 	if(pbottom)
-		*pbottom = img.m_vpt.bottom;
+		*pbottom = vpt.bottom;
 	if(pclip)
-		*pclip = img.m_vpt.clipflag;
+		*pclip = vpt.clipflag;
 }
 
 void
 setviewport(int left, int top, int right, int bottom, int clip, IMAGE* pimg)
 {
-	auto& img(convert_image_ref(pimg));
-
-	::SetViewportOrgEx(img.getdc(), 0, 0, {});
-	img.m_vpt.left = left;
-	img.m_vpt.top = top;
-	img.m_vpt.right = right;
-	img.m_vpt.bottom = bottom;
-	img.m_vpt.clipflag = clip;
-	if(img.m_vpt.left < 0)
-		img.m_vpt.left = 0;
-	if(img.m_vpt.top < 0)
-		img.m_vpt.top = 0;
-	if(img.m_vpt.right > int(img.GetWidth()))
-		img.m_vpt.right = img.GetWidth();
-	if(img.m_vpt.bottom > int(img.GetHeight()))
-		img.m_vpt.bottom = img.GetHeight();
-
-	::HRGN rgn = {};
-
-	if(img.m_vpt.clipflag)
-		rgn = ::CreateRectRgn(img.m_vpt.left, img.m_vpt.top, img.m_vpt.right,
-			img.m_vpt.bottom);
-	else
-		rgn = ::CreateRectRgn(0, 0, img.GetWidth(), img.GetHeight());
-	::SelectClipRgn(img.getdc(), rgn);
-	::DeleteObject(rgn);
-	//OffsetViewportOrgEx(img.getdc(), img.m_vpt.left, img.m_vpt.top, {});
-	::SetViewportOrgEx(img.getdc(), img.m_vpt.left, img.m_vpt.top, {});
+	cimg_ref(pimg).SetViewport(left, top, right, bottom, clip);
 }
 
 void
 clearviewport(IMAGE* pimg)
 {
-	if(const auto img = CONVERT_IMAGE(pimg))
-		if(img->getdc())
-		{
-			::RECT rect{0, 0, img->m_vpt.right - img->m_vpt.left,
-				img->m_vpt.bottom - img->m_vpt.top};
-			::HBRUSH hbr_c = ::HBRUSH(::GetCurrentObject(img->getdc(),
-				OBJ_BRUSH));
-			::LOGBRUSH logBrush;
+	auto& img(cimg_ref(pimg));
 
-			::GetObjectW(hbr_c, sizeof(logBrush), &logBrush);
+	if(img.getdc())
+	{
+		::RECT rect{0, 0, img.m_vpt.right - img.m_vpt.left,
+			img.m_vpt.bottom - img.m_vpt.top};
+		::HBRUSH hbr_c = ::HBRUSH(::GetCurrentObject(img.getdc(),
+			OBJ_BRUSH));
+		::LOGBRUSH logBrush;
 
-			::HBRUSH hbr(::CreateSolidBrush(logBrush.lbColor));
+		::GetObjectW(hbr_c, sizeof(logBrush), &logBrush);
 
-			::FillRect(img->getdc(), &rect, hbr);
-			::DeleteObject(hbr);
-		}
+		::HBRUSH hbr(::CreateSolidBrush(logBrush.lbColor));
+
+		::FillRect(img.getdc(), &rect, hbr);
+		::DeleteObject(hbr);
+	}
 }
 
 void

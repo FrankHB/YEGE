@@ -64,10 +64,15 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）
 移除函数 api_sleep 。使用 ::Sleep 函数代替。
 移除函数 delay 。使用 ege_sleep 函数代替。
 移除函数 setrendermode 和枚举 rendermode_e 。（原有代码使用 RENDER_AUTO 和 RENDER_MANUAL 渲染的效果相同，都不闪烁。）
+移除兼容宏 RGBtoGRAY 、RGBtoHSL 、RGBtoHSV 、HSLtoRGB 和 HSVtoRGB，使用函数 rgb2gray 、rgb2hsl 、rgb2hsv 、hsl2rgb 和 hsv2rgb 代替。
 枚举 initmode_flag 中枚举项 INIT_DEFAULT 的值固定为 0x0（枚举项 INIT_RENDERMANUAL 和 INIT_WITHLOGO 仅为兼容性保留）。
 移除输入法消息处理。
 允许主窗口循环接受 WM_QUIT 退出。
 移除 getProcfunc 和 SetCloseHandler 函数。
+函数 settarget 返回类型恢复为 void 。
+初始化函数 initgraph 移除兼容 BGI 的重载，只接受 size_t 类型的主窗口宽和高（等于 0 时仍然表示屏幕宽和高）。
+移除 CALLBACK_PROC 类型。
+移除兼容宏 getmaxx 和 getmaxy ，使用函数 getwidth 和 getheight 代替。
 
 非向后兼容接口（仅当依赖 YSLib 时）
 ----
@@ -76,8 +81,8 @@ typedef 类型名 color_t 从 unsigned int 改为 YSLib::Drawing::PixelType 。
 使用 YSLib::Drawing::PixelType::Integer 表示颜色对应的整数类型。
 	* 注意布局同 ::COLORREF ，相对原有实现红色和蓝色分量交换，修复了 <wingdi.h> 中 RGB 等宏的参数红色和蓝色分量相反的问题。
 函数 savepng 的表示是否使用 alpha 的参数被忽略。
-移除兼容宏 RGBtoGRAY 、RGBtoHSL 、RGBtoHSV 、HSLtoRGB 和 HSVtoRGB，使用函数 rgb2gray 、rgb2hsl 、rgb2hsv 、hsl2rgb 和 hsv2rgb 代替。
 颜色转换断言严格要求色调值在区间 [0, 360) 内。
+越界访问图像页面时使用 YTraceDe 警告。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口
 ----
@@ -90,6 +95,10 @@ linestyletype 和 EGEMSG 默认初始化所有成员。
 函数 ege_sleep 支持多线程环境下使用。（实际原有实现可在多线程下使用但未在头文件中明确。）
 提升 fclock 函数的精度。
 随机数函数第一次调用时自动初始化随机数种子，不需要事先调用 randomize 函数。
+窗口过程不依赖 GWLP_USERDATA 。
+创建图像和图像页面操作取屏幕设备上下文替代全局图像页面状态。
+设置图像大小不依赖公共 API 。
+设置图像页面时检查越界并忽略越界访问。
 
 兼容接口和实现调整
 ----
@@ -111,6 +120,7 @@ DWORD_PTR → ::ULONG_PTR 。
 
 修正错误实现
 ----
+修正绘制时遗漏调用 ::EndPaint（此 bug 在 EGE 15.04 修正）。
 修正退出时遗漏清理 GDI+ 。
 修正初始化图形时设置背景读取未初始化的缓冲区。
 修正初始化图形时未初始化 linestyletype 被读取。
@@ -154,7 +164,6 @@ thread_queue 类模板使用 std::mutex 、std::lock_guard 和 std::deque 实现
 避免直接使用 malloc 和 free 。
 拆分宿主环境主窗口和控件的窗口过程。
 简化绘图 API 实现。
-窗口过程不依赖 GWLP_USERDATA 。
 
 实现注记（仅当依赖 YSLib 时）
 ----

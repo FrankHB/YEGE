@@ -6,8 +6,6 @@
 namespace ege
 {
 
-using CALLBACK_PROC = void();
-
 } // namespace ege;
 
 #endif

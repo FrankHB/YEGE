@@ -83,10 +83,6 @@ private:
 	std::thread ui_thread;
 
 public:
-#if !YEGE_Use_YSLib
-	CALLBACK_PROC* callback_close = {};
-#endif
-
 	// 鼠标状态
 	int mouse_state_l = 0, mouse_state_m = 0, mouse_state_r = 0;
 	int mouse_last_x = 0, mouse_last_y = 0;
@@ -96,7 +92,7 @@ public:
 	// 键盘状态
 	int keystatemap[MAX_KEY_VCODE]{};
 
-	EGEApplication(int, int*);
+	EGEApplication(SDst, SDst);
 	EGEApplication(const EGEApplication&) = delete;
 	~EGEApplication();
 
@@ -223,34 +219,36 @@ class _pages
 {
 public:
 	EGEApplication& gstate;
-	::HDC active_dc;
 
 private:
-	int active_page = 0;
-	int visual_page = 0;
-	IMAGE* imgtarget_set = {};
+	size_t active_page = 0;
+	size_t visual_page = 0;
 	mutable unique_ptr<IMAGE> img_page[BITMAP_PAGE_SIZE];
+	IMAGE* imgtarget;
 
 public:
 	int base_x = 0, base_y = 0, base_w = 0, base_h = 0;
-	IMAGE* imgtarget = {};
+	IMAGE* imgtarget_set = {};
 
 	_pages();
 
-	void
-	check_page(int) const;
+	bool
+	check_page(size_t) const;
 
 	IMAGE&
 	get_apage_ref() const;
 
-	::HDC
-	get_image_context() const;
-
 	IMAGE&
 	get_vpage_ref() const;
 
+	IMAGE&
+	get_target_ref() const
+	{
+		return Deref(imgtarget);
+	}
+
 	IMAGE*
-	get_target() const
+	get_target_set() const
 	{
 		return imgtarget_set;
 	}
@@ -259,13 +257,13 @@ public:
 	paint(::HDC);
 
 	void
-	set_apage(int);
+	set_apage(size_t);
 
-	int
+	void
 	set_target(IMAGE*);
 
 	void
-	set_vpage(int);
+	set_vpage(size_t);
 
 	void
 	update();
@@ -273,7 +271,7 @@ public:
 
 
 EGEApplication&
-FetchEGEApplication(int = VGA, int* = {});
+FetchEGEApplication(SDst = 0, SDst = 0);
 
 _pages&
 get_pages();

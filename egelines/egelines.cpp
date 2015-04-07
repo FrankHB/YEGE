@@ -148,8 +148,8 @@ int main()
 	{
 		setinitmode(1, 0, 0);
 		initgraph(-1, -1);
-		width  = getmaxx();
-		height = getmaxy();
+		width  = getwidth();
+		height = getheight();
 	}
 	//多边形对象初始化
 	for(i = 0; i < n_polys; ++i)

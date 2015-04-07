@@ -3,7 +3,6 @@
 
 #include "ege/base.h"
 #include "ege/color.h"
-#include "ege/proc.h"
 #include "ege/v3d.h"
 #include "ege/env.h"
 #include "ege/viewport.h"
