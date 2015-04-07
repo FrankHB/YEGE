@@ -114,7 +114,8 @@ void initpolys(struct polys* p, int npoly, int npoint) //³õÊ¼»¯¶à±ßĞÎ¶ÓÁĞ×é
 	}
 }
 
-void draw_poly(struct poly* p, int color) //»æÖÆÒ»¸ö¶à±ßĞÎ
+void
+draw_poly(struct poly* p, int color) //»æÖÆÒ»¸ö¶à±ßĞÎ
 {
 	int points[100];
 	int i;
@@ -129,7 +130,8 @@ void draw_poly(struct poly* p, int color) //»æÖÆÒ»¸ö¶à±ßĞÎ
 	drawpoly(p->n_point + 1, points);
 }
 
-void draw_polys(struct polys* p) //»æÖÆ¶à±ßĞÎ¶ÓÁĞ£¨Ö»»­µÚÒ»¸öºÍ×îºóÒ»¸ö£¬×îºóÒ»¸öÓÃÓÚ²Á³ı£©
+void
+draw_polys(struct polys* p) //»æÖÆ¶à±ßĞÎ¶ÓÁĞ£¨Ö»»­µÚÒ»¸öºÍ×îºóÒ»¸ö£¬×îºóÒ»¸öÓÃÓÚ²Á³ı£©
 {
 	draw_poly(&(p->p[p->n_poly - 1]),        0);
 	draw_poly(&(p->p[          0]), p->color);
@@ -137,20 +139,19 @@ void draw_polys(struct polys* p) //»æÖÆ¶à±ßĞÎ¶ÓÁĞ£¨Ö»»­µÚÒ»¸öºÍ×îºóÒ»¸ö£¬×îºóÒ»¸
 	//    draw_poly(&(p->p[i]), p->color);
 }
 
-int main()
+int
+main()
 {
-	static struct polys p[10];
+	polys p[10];
 	int n_points[10]{4, 3, 5, 6, 7};
 	int n_poly[10]{80, 40, 10, 5, 1};
 	int n_polys = 2, i;
 
 	//Í¼ĞÎ³õÊ¼»¯
-	{
-		setinitmode(1, 0, 0);
-		initgraph(-1, -1);
-		width  = getwidth();
-		height = getheight();
-	}
+	setinitmode(1, 0, 0);
+	initgraph(0, 0);
+	width = getwidth();
+	height = getheight();
 	//¶à±ßĞÎ¶ÔÏó³õÊ¼»¯
 	for(i = 0; i < n_polys; ++i)
 		initpolys(&p[i], n_poly[i], n_points[i]);
@@ -159,18 +160,12 @@ int main()
 	//Ö÷Ñ­»·
 	for(; is_run(); delay_fps(60))
 	{
-		if(kbhit() > 0)  //ÓĞ°´¼ü°´ÏÂ¾ÍÍË³ö
-		{
+		if(kbhit() > 0) //ÓĞ°´¼ü°´ÏÂ¾ÍÍË³ö
 			break;
-		}
 		for(i = 0; i < n_polys; ++i)
-		{
 			movepolys(&(p[i]));
-		}
 		for(i = 0; i < n_polys; ++i)
-		{
 			draw_polys(&(p[i]));
-		}
 		//imagefilter_blurring({}, 0xff, 0x100);
 	}
 	closegraph();
