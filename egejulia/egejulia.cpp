@@ -385,7 +385,7 @@ int main()
 	// 初始化绘图窗口及颜色
 	setinitmode(0x005, 0, 0);
 	//initgraph(320, 240);
-	initgraph(-1, -1);
+	initgraph(0, 0);
 	randomize();
 	showmouse(0);
 	flushmouse();
