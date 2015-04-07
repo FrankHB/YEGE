@@ -55,36 +55,22 @@ IMAGE::IMAGE()
 	: IMAGE(1, 1)
 {}
 IMAGE::IMAGE(int width, int height)
-#if YEGE_Use_YSLib
 	: IMAGE(ToSize(width, height))
-#else
-	: IMAGE(YEGE_GetDCPrototype(), width, height)
-#endif
 {}
-#if YEGE_Use_YSLib
 IMAGE::IMAGE(const Size& size)
 	: IMAGE(YEGE_GetDCPrototype(), size)
 {}
-#endif
 IMAGE::IMAGE(::HDC hdc, int width, int height)
-#if YEGE_Use_YSLib
 	: IMAGE(hdc, ToSize(width, height))
 {}
 IMAGE::IMAGE(::HDC hdc, const Size& size)
 	: sbuf(size), m_hDC([hdc]{
 		return ::CreateCompatibleDC(Nonnull(hdc));
 	}())
-#else
-	: m_hDC([hdc]{assert(hdc); return ::CreateCompatibleDC(hdc);}())
-#endif
 {
 	if(m_hDC)
 	{
-#if YEGE_Use_YSLib
 		Resize(size);
-#else
-		Resize(width, height);
-#endif
 		setcolor(LIGHTGRAY, this);
 		setbkcolor_f(BLACK, this);
 		::SetBkMode(hdc, OPAQUE); //TRANSPARENT);
@@ -97,22 +83,14 @@ IMAGE::IMAGE(::HDC hdc, const Size& size)
 //		throw ::GetLastError();
 }
 IMAGE::IMAGE(const IMAGE& img)
-#if YEGE_Use_YSLib
 	: IMAGE(img.m_hDC, img.GetSize())
-#else
-	: IMAGE(img.m_hDC, img.m_width, img.m_height)
-#endif
 {
-#if YEGE_Use_YSLib
 	sbuf.UpdateFrom(img.sbuf.GetBufferPtr());
-#endif
 	::BitBlt(m_hDC, 0, 0, img.GetWidth(), img.GetHeight(), img.m_hDC, 0, 0,
 		SRCCOPY);
 }
 IMAGE::IMAGE(IMAGE&& img) ynothrow
-#if YEGE_Use_YSLib
 	: sbuf(img.sbuf.GetSize())
-#endif
 {
 	img.swap(*this);
 }
@@ -165,14 +143,7 @@ IMAGE::SetViewport(int left, int top, int right, int bottom, int clip)
 void
 IMAGE::swap(IMAGE& img) ynothrow
 {
-#if YEGE_Use_YSLib
 	std::swap(sbuf, img.sbuf);
-#else
-	std::swap(m_hBmp, img.m_hBmp);
-	std::swap(m_width, img.m_width);
-	std::swap(m_height, img.m_height);
-	std::swap(m_pBuffer, img.m_pBuffer);
-#endif
 	std::swap(m_hDC, img.m_hDC);
 	std::swap(m_color, img.m_color);
 	std::swap(m_fillcolor, img.m_fillcolor);
@@ -223,40 +194,14 @@ IMAGE::Refresh(::HBITMAP bitmap)
 }
 
 int
-#if YEGE_Use_YSLib
 IMAGE::Resize(const Size& size)
-#else
-IMAGE::Resize(int width, int height)
-#endif
 {
 	std::memset(&m_vpt, 0, sizeof(m_vpt));
 
 	yassume(m_hDC);
-#if YEGE_Use_YSLib
 	if(GetSize() != size)
 		sbuf = ScreenBuffer(size);
 	return Refresh(GetBitmap());
-#else
-
-	void* p_bmp_buf;
-	auto bmi = ::BITMAPINFO();
-
-	bmi.bmiHeader.biSize = sizeof(bmi.bmiHeader);
-	bmi.bmiHeader.biWidth = width;
-	bmi.bmiHeader.biHeight = -height - 1;
-	bmi.bmiHeader.biPlanes = 1;
-	bmi.bmiHeader.biBitCount = 32;
-	bmi.bmiHeader.biSizeImage = width * height * 4;
-
-	const auto bitmap(::CreateDIBSection({}, &bmi, DIB_RGB_COLORS,
-		reinterpret_cast<void**>(&p_bmp_buf), {}, 0));
-
-	m_hBmp = bitmap;
-	m_width = width;
-	m_height = height;
-	m_pBuffer = reinterpret_cast<unsigned long*>(p_bmp_buf);
-	return Refresh(bitmap);
-#endif
 }
 
 int
@@ -328,6 +273,8 @@ IMAGE::getpngimg(std::FILE* fp)
 
 	for(std::uint32_t i = 0; i < height; ++i)
 	{
+		const auto m_pBuffer(GetBufferPtr());
+
 		if(depth == 24)
 			for(std::uint32_t j = 0; j < width; ++j)
 				m_pBuffer[i * width + j] = 0xFFFFFF
@@ -714,11 +661,14 @@ saveimagetofile(IMAGE* pimg, std::FILE * fp)
 	//bmpinfo.biXPelsPerMeter
 	std::fwrite(&bmpfHead, sizeof(bmpfHead), 1, fp);
 	std::fwrite(&bmpinfo, sizeof(bmpinfo), 1, fp);
-	for(y = img.GetHeight() - 1; y >= 0; --y)
+
+	const SDst height(img.GetHeight()), width(img.GetWidth());
+
+	for(y = SPos(height) - 1; y >= 0; --y)
 	{
-		for(x = 0; x < img.GetWidth(); ++x)
+		for(x = 0; x < SPos(width); ++x)
 		{
-			unsigned long col = img.getbuffer()[y * img.GetWidth() + x];
+			unsigned long col = img.getbuffer()[y * width + x];
 			//col = RGBTOBGR(col);
 			if(std::fwrite(&col, 3, 1, fp) < 1)
 				goto ERROR_BREAK;
@@ -768,13 +718,14 @@ IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 	::png_structp pic_ptr;
 	::png_infop info_ptr;
 	::png_colorp palette;
+
 	pic_ptr = ::png_create_write_struct(PNG_LIBPNG_VER_STRING, {}, {}, {});
+
 	std::uint32_t pixelsize = bAlpha ? 4 : 3;
-	std::uint32_t width = m_width, height = m_height;
+	const SDst width(GetWidth()), height(GetHeight());
+
 	if(!pic_ptr)
-	{
 		return -1;
-	}
 	info_ptr = ::png_create_info_struct(pic_ptr);
 	if(!info_ptr)
 	{
@@ -804,6 +755,7 @@ IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 		const unique_ptr<::png_bytep[]> p_row_pointers(new png_bytep[height]);
 		const auto image(&p_image[0]);
 		const auto row_pointers(&p_row_pointers[0]);
+		const auto m_pBuffer(GetBufferPtr());
 
 		for(i = 0; i < height; i++)
 		{
