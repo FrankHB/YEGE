@@ -96,7 +96,7 @@ public:
 	// 键盘状态
 	int keystatemap[MAX_KEY_VCODE]{};
 
-	EGEApplication(int, int*);
+	EGEApplication(SDst, SDst);
 	EGEApplication(const EGEApplication&) = delete;
 	~EGEApplication();
 
@@ -275,7 +275,7 @@ public:
 
 
 EGEApplication&
-FetchEGEApplication(int = VGA, int* = {});
+FetchEGEApplication(SDst = 0, SDst = 0);
 
 _pages&
 get_pages();

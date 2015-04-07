@@ -182,7 +182,7 @@ setinitmode(int mode, int x, int y)
 }
 
 
-EGEApplication::EGEApplication(int gdriver_n, int* gmode)
+EGEApplication::EGEApplication(SDst w, SDst h)
 #if YEGE_Use_YSLib
 	: ys_thrd(std::thread([this]{
 		static ImageCodec ic;
@@ -228,20 +228,12 @@ EGEApplication::EGEApplication(int gdriver_n, int* gmode)
 	}while(0);
 	::RegisterClassExW(&wcex);
 
-	yassume(gdriver_n);
+	::RECT rect;
 
-	if(gdriver_n == TRUECOLORSIZE)
-	{
-		::RECT rect;
+	::GetWindowRect(GetDesktopWindow(), &rect);
 
-		::GetWindowRect(GetDesktopWindow(), &rect);
-		dc_w = short(Deref(gmode) & 0xFFFF);
-		dc_h = short(unsigned(*gmode >> 16));
-		if(dc_w < 0)
-			dc_w = rect.right;
-		if(dc_h < 0)
-			dc_h = rect.bottom;
-	}
+	dc_w = w == 0 ? rect.right : int(w);
+	dc_h = h == 0 ? rect.bottom : int(h);
 }
 
 EGEApplication::~EGEApplication()
@@ -990,9 +982,9 @@ _pages::update()
 
 
 EGEApplication&
-FetchEGEApplication(int gdriver_n, int* gmode)
+FetchEGEApplication(SDst w, SDst h)
 {
-	static EGEApplication app(gdriver_n, gmode);
+	static EGEApplication app(w, h);
 
 	return app;
 }

@@ -69,6 +69,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）
 允许主窗口循环接受 WM_QUIT 退出。
 移除 getProcfunc 和 SetCloseHandler 函数。
 函数 settarget 返回类型恢复为 void 。
+初始化函数 initgraph 移除兼容 BGI 的重载，只接受 size_t 类型的主窗口宽和高（等于 0 时仍然表示屏幕宽和高）。
 
 非向后兼容接口（仅当依赖 YSLib 时）
 ----

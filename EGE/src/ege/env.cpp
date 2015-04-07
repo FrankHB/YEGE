@@ -8,18 +8,11 @@ namespace ege
 {
 
 void
-initgraph(int* gdriver, int* gmode, char*)
+initgraph(size_t width, size_t height, int flag)
 {
-	FetchEGEApplication(Deref(gdriver), gmode)._init_graph_x();
-}
-void
-initgraph(int width, int height, int flag)
-{
-	int g(TRUECOLORSIZE), m((width) | (height << 16));
-
 	if(!_g_initcall)
 		setinitmode(flag);
-	initgraph(&g, &m, {});
+	FetchEGEApplication(SDst(width), SDst(height))._init_graph_x();
 }
 
 void
