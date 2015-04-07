@@ -116,10 +116,8 @@ putimage_alphablend(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	yassume(imgsrc);
-
-	return imgsrc->putimage_alphablend(imgdest, nXOriginDest, nYOriginDest,
-		alpha, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
+	return Deref(imgsrc).putimage_alphablend(imgdest, nXOriginDest,
+		nYOriginDest, alpha, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
 }
 
 int
