@@ -20,7 +20,7 @@ Code::Blocks 。
 
 接口扩充
 ----
-在 ege 命名空间提供类型别名 color_int_t 和 color_mono_t 表示颜色转换整数类型和分量类型。
+在 ege 命名空间提供类型别名 color_int_t 和 mono_t 表示颜色转换整数类型和分量类型。
 
 YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）
 ----
@@ -53,6 +53,8 @@ DefSwap
 在 ege 命名空间提供和 YSLib 兼容的 min 和 max 模板（非 YSLib 使用 std 的对应名称代替，不保证 constexpr ）。
 在 ege 命名空间提供和 YSLib 兼容的 FetchZero 、HalfDifference 、IsInInterval 和 IsInOpenInterval 模板。
 在 ege 命名空间提供和 YSLib::Drawing 兼容的模板 GBinaryGroup 、类型 Point 、Vec 、Size 和 Rect 以及相关操作。
+在 ege 命名空间提供和 YSLib::Drawing 二进制兼容的类型 BitmapPtr 和 ConstBitmapPtr（实现为 color_int_t 的指针）。
+在 ege 命名空间提供和 YSLib::Drawing 相同实现的类型 AlphaType 和 MonoType 。
 
 非向后兼容接口
 ----

@@ -15,10 +15,18 @@ namespace ege
 using color_t = YSLib::Drawing::Pixel;
 using color_int_t = color_t::Trait::IntegerType;
 using mono_t = YSLib::Drawing::MonoType;
+using YSLib::Drawing::AlphaType;
+using YSLib::Drawing::MonoType;
+using YSLib::Drawing::BitmapPtr;
+using YSLib::Drawing::ConstBitmapPtr;
 #else
 using color_t = int;
 using color_int_t = std::uint32_t;
 using mono_t = std::uint8_t;
+using AlphaType = ystdex::octet;
+using MonoType = ystdex::octet;
+using BitmapPtr = color_int_t*;
+using ConstBitmapPtr = const color_int_t*;
 #endif
 
 yconstfn color_int_t
