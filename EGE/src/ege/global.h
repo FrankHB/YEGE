@@ -83,10 +83,6 @@ private:
 	std::thread ui_thread;
 
 public:
-#if !YEGE_Use_YSLib
-	CALLBACK_PROC* callback_close = {};
-#endif
-
 	// 鼠标状态
 	int mouse_state_l = 0, mouse_state_m = 0, mouse_state_r = 0;
 	int mouse_last_x = 0, mouse_last_y = 0;
