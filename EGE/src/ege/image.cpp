@@ -229,20 +229,16 @@ IMAGE::Resize(const Size& size)
 IMAGE::Resize(int width, int height)
 #endif
 {
-#if YEGE_Use_YSLib
 	std::memset(&m_vpt, 0, sizeof(m_vpt));
 
 	yassume(m_hDC);
-
+#if YEGE_Use_YSLib
 	if(GetSize() != size)
 		sbuf = ScreenBuffer(size);
 	return Refresh(GetBitmap());
 #else
-	std::memset(&m_vpt, 0, sizeof(m_vpt));
 
-	assert(m_hDC);
-
-	VOID* p_bmp_buf;
+	void* p_bmp_buf;
 	auto bmi = ::BITMAPINFO();
 
 	bmi.bmiHeader.biSize = sizeof(bmi.bmiHeader);
