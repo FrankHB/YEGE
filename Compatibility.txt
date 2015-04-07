@@ -117,6 +117,7 @@ DWORD_PTR → ::ULONG_PTR 。
 
 修正错误实现
 ----
+修正绘制时遗漏调用 ::EndPaint（此 bug 在 EGE 15.04 修正）。
 修正退出时遗漏清理 GDI+ 。
 修正初始化图形时设置背景读取未初始化的缓冲区。
 修正初始化图形时未初始化 linestyletype 被读取。
