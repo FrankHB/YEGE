@@ -34,6 +34,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）
 在 ege 命名空间提供和 YSLib 兼容的 SPos 和 SDst 类型。
 提供和 YSLib 兼容的宏 YTraceDe。
 	* 空实现。
+提供和 YSLib 一致实现的宏 YPP_Empty 、YPP_Commma 和 YPP_Concat 。
 
 非向后兼容接口
 ----

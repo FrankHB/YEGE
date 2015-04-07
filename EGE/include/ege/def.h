@@ -21,6 +21,10 @@ using ystdex::octet;
 #	include <cwchar>
 #	include <utility>
 
+#define YPP_Empty
+#define YPP_Comma ,
+#define YPP_Concat(_x, _y) _x ## _y
+
 #	define yconstfn constexpr
 #	define yconstexpr constexpr
 #	define ynothrow noexcept
