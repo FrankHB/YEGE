@@ -90,15 +90,6 @@ using SDst = unsigned long;
 
 const double PI = 3.14159265358979323;
 
-enum graphics_drivers /* define graphics drivers */
-{
-	DETECT, /* requests autodetection */
-	CGA, MCGA, EGA, EGA64, EGAMONO, IBM8514, /* 1 - 6 */
-	HERCMONO, ATT400, VGA, PC3270, /* 7 - 10 */
-	TRUECOLOR, TRUECOLORSIZE,
-	CURRENT_DRIVER = -1
-};
-
 enum graphics_errors        /* graphresult error return codes */
 {
 	grOk                =   0,
@@ -124,23 +115,6 @@ enum graphics_errors        /* graphresult error return codes */
 	grNullPointer       = 0x14,
 	grAllocError        = 0x15,
 	grInvalidMemory     = 0xCDCDCDCD,
-};
-
-enum message_event
-{
-	MSG_EVENT_UP            = 0x00,
-	MSG_EVENT_DOWN          = 0x01,
-	MSG_EVENT_CLICK         = 0x01,
-	MSG_EVENT_DBCLICK       = 0x02,
-	MSG_EVENT_MOVE          = 0x04,
-	MSG_EVENT_WHEEL         = 0x10,
-};
-
-enum message_mouse
-{
-	MSG_MOUSE_LEFT      = 0x01,
-	MSG_MOUSE_RIGHT     = 0x02,
-	MSG_MOUSE_MID       = 0x04,
 };
 
 // 颜色
