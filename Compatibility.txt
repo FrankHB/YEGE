@@ -20,7 +20,7 @@ Code::Blocks 。
 
 接口扩充
 ----
-在 ege 命名空间提供类型别名 color_int_t 和 mono_t 表示颜色转换整数类型和分量类型。
+在 ege 命名空间提供类型别名 color_int_t 表示颜色转换整数类型；分量类型使用和 YSLib 兼容的 MonoType 类型表示。
 
 YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）
 ----
