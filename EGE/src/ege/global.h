@@ -71,8 +71,8 @@ class EGEApplication
 {
 private:
 #if YEGE_Use_YSLib
-	unique_ptr<YSLib::UI::Panel> ys_pnl;
 	std::thread ys_thrd;
+	unique_ptr<YSLib::UI::Panel> ys_pnl;
 	YSLib::Host::Window* ys_window;
 #endif
 	::HWND hwnd;
