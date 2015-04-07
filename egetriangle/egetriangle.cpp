@@ -135,8 +135,8 @@ int main()
 	{
 		setinitmode(INIT_ANIMATION);
 		initgraph(width, height);
-		width  = getmaxx();
-		height = getmaxy();
+		width  = getwidth();
+		height = getheight();
 	}
 	//多边形对象初始化
 	for(i = 0; i < n_polys; ++i)

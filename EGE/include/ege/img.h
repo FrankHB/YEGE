@@ -8,8 +8,6 @@ namespace ege
 {
 
 //图片函数
-#define getmaxx getwidth
-#define getmaxy getheight
 
 EGEAPI int
 getwidth(IMAGE* pimg = {});           //获取图片宽度
