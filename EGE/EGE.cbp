@@ -144,7 +144,6 @@
 		<Unit filename="include/ege/label.h" />
 		<Unit filename="include/ege/mac.h" />
 		<Unit filename="include/ege/music.h" />
-		<Unit filename="include/ege/proc.h" />
 		<Unit filename="include/ege/pushtarget.h" />
 		<Unit filename="include/ege/random.h" />
 		<Unit filename="include/ege/sys_edit.h" />
