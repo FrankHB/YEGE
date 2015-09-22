@@ -502,7 +502,7 @@ EGEApplication::_init_graph_x()
 #else
 			while(_is_run())
 #endif
-				if(::GetMessage(&msg, {}, 0, 0))
+				if(::GetMessageW(&msg, {}, 0, 0))
 				{
 					if(msg.message == WM_QUIT)
 						break;
