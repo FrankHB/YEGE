@@ -51,7 +51,7 @@ DefPred DefGetter DefGetterMem DefSetter
 DefSwap
 提供和 YCLib 兼容的宏 YAssert（替换为 yassume 表达式）。
 在 ege 命名空间提供和 YSLib 兼容的 min 和 max 模板（非 YSLib 使用 std 的对应名称代替，不保证 constexpr ）。
-在 ege 命名空间提供和 YSLib 兼容的 FetchZero 、HalfDifference 、IsInInterval 和 IsInOpenInterval 模板。
+在 ege 命名空间提供和 YSLib 兼容的 HalfDifference 、IsInInterval 和 IsInOpenInterval 模板。
 在 ege 命名空间提供和 YSLib::Drawing 兼容的模板 GBinaryGroup 、类型 Point 、Vec 、Size 和 Rect 以及相关操作。
 在 ege 命名空间提供和 YSLib::Drawing 二进制兼容的类型 BitmapPtr 和 ConstBitmapPtr（实现为 color_int_t 的指针）。
 提供和 YBase 兼容的宏 YB_EXPECT 、YB_LIKELY 和 YB_UNLIKELY。

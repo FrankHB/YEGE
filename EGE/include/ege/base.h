@@ -39,7 +39,6 @@ using YSLib::SDst;
 using YSLib::min;
 using YSLib::max;
 
-using YSLib::FetchZero;
 using YSLib::HalfDifference;
 using YSLib::IsInInterval;
 using YSLib::IsInOpenInterval;
@@ -232,13 +231,6 @@ using std::max;
 
 template<typename _type>
 yconstfn _type
-FetchZero() ynothrow
-{
-	return _type(0);
-}
-
-template<typename _type>
-yconstfn _type
 HalfDifference(_type x, _type y)
 {
 	return (x - y) / 2;
@@ -248,9 +240,9 @@ template<typename _type>
 inline bool
 IsInInterval(_type i, _type b) ynothrow
 {
-	YAssert(FetchZero<_type>() < b,
+	YAssert(_type(0) < b,
 		"Zero element as lower bound is not less than upper bound.");
-	return !(i < FetchZero<_type>()) && i < b;
+	return !(i < _type(0)) && i < b;
 }
 template<typename _type>
 inline bool
@@ -264,9 +256,9 @@ template<typename _type>
 inline bool
 IsInOpenInterval(_type i, _type b) ynothrow
 {
-	YAssert(FetchZero<_type>() < b,
+	YAssert(_type(0) < b,
 		"Zero element as lower bound is not less than upper bound.");
-	return FetchZero<_type>() < i && i < b;
+	return _type(0) < i && i < b;
 }
 template<typename _type>
 inline bool
