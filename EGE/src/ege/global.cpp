@@ -491,7 +491,7 @@ EGEApplication::_init_graph_x()
 			use_force_exit = !(_g_initoption & INIT_NOFORCEEXIT);
 #if YEGE_Use_YSLib
 			if(!use_force_exit)
-				FetchEnvironment().ExitOnAllWindowThreadCompleted = {};
+				FetchGUIHost().ExitOnAllWindowThreadCompleted = {};
 #endif
 			init_finish = true;
 

@@ -73,7 +73,7 @@ private:
 #if YEGE_Use_YSLib
 	std::thread ys_thrd;
 	unique_ptr<YSLib::UI::Panel> ys_pnl;
-	YSLib::Host::Window* ys_window;
+	YSLib::observer_ptr<YSLib::Host::Window> ys_window;
 #endif
 	::HWND hwnd;
 	::HDC window_dc;
