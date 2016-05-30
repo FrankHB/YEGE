@@ -14,7 +14,7 @@
 #	include YFM_Helper_HostedUI
 #	include YFM_Helper_Environment
 #else
-#	include <windows.h>
+#	include <Windows.h>
 #endif
 
 #define BITMAP_PAGE_SIZE 4
@@ -73,7 +73,7 @@ private:
 #if YEGE_Use_YSLib
 	std::thread ys_thrd;
 	unique_ptr<YSLib::UI::Panel> ys_pnl;
-	YSLib::Host::Window* ys_window;
+	YSLib::observer_ptr<YSLib::Host::Window> ys_window;
 #endif
 	::HWND hwnd;
 	::HDC window_dc;
@@ -96,15 +96,7 @@ public:
 	EGEApplication(const EGEApplication&) = delete;
 	~EGEApplication();
 
-#if YEGE_Use_YSLib
 	static DefGetter(ynothrow, ::HINSTANCE, Instance, ::GetModuleHandleW({}))
-#else
-	static ::HINSTANCE
-	GetInstance()
-	{
-		return ::GetModuleHandleW({});
-	}
-#endif
 
 	bool
 	_is_run() const;

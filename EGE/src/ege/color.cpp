@@ -85,7 +85,7 @@ rgb2hsl_impl(float r, float g, float b)
 }
 
 std::array<float, 3>
-RGB_TO_HSV(mono_t ir, mono_t ig, mono_t ib)
+RGB_TO_HSV(MonoType ir, MonoType ig, MonoType ib)
 {
 	float r(ir / 255.F), g(ig / 255.F), b(ib / 255.F),
 		minRGB, maxRGB, deltaRGB, rh(0), rs, rv;
@@ -116,7 +116,7 @@ RGB_TO_HSV(mono_t ir, mono_t ig, mono_t ib)
 	return {rh, rs, rv};
 }
 
-std::array<mono_t, 3>
+std::array<MonoType, 3>
 HSV_TO_RGB(float ih, float is, float iv)
 {
 	float R = 0, G = 0, B = 0;
@@ -168,7 +168,7 @@ HSV_TO_RGB(float ih, float is, float iv)
 			break;
 		}
 	}
-	return {mono_t(R * 255), mono_t(G * 255), mono_t(B * 255)};
+	return {MonoType(R * 255), MonoType(G * 255), MonoType(B * 255)};
 }
 
 } // unnamed namespace;
@@ -308,8 +308,8 @@ rgb2hsv(color_t rgb, float* h, float* s, float* v)
 
 	yunseq(Deref(h) = hsv.GetH(), Deref(s) = hsv.GetS(), Deref(v) = hsv.GetV());
 #else
-	const auto chsv(RGB_TO_HSV(mono_t(EGEGET_R(rgb)), mono_t(EGEGET_G(rgb)),
-		mono_t(EGEGET_B(rgb))));
+	const auto chsv(RGB_TO_HSV(MonoType(EGEGET_R(rgb)), MonoType(EGEGET_G(rgb)),
+		MonoType(EGEGET_B(rgb))));
 
 	yunseq(Deref(h) = chsv[0] * 360.F, Deref(s) = chsv[1], Deref(v) = chsv[2]);
 #endif

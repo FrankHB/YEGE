@@ -1,10 +1,11 @@
 ﻿#ifndef Inc_ege_windows_h_
 #define Inc_ege_windows_h_
 
+#include "ege/base.h"
 #include "ege/env.h"
-#include <windef.h>
-#include <minwinbase.h>
-#include <wingdi.h>
+#include <WinDef.h>
+#include <MinWinBase.h>
+#include <Wingdi.h>
 #include <WinUser.h>
 
 #ifndef WM_MOUSEWHEEL
@@ -13,6 +14,44 @@
 
 namespace ege
 {
+
+#if YEGE_Use_YSLib
+using platform_ex::ScreenBuffer;
+#else
+class EGEAPI ScreenBuffer
+{
+private:
+	Size size;
+
+protected:
+	BitmapPtr pBuffer;
+	::HBITMAP hBitmap;
+
+public:
+	ScreenBuffer(const Size&);
+	ScreenBuffer(ScreenBuffer&&) ynothrow;
+	~ScreenBuffer();
+
+	ScreenBuffer&
+	operator=(ScreenBuffer&&);
+
+	DefGetter(const ynothrow, BitmapPtr, BufferPtr, pBuffer)
+	DefGetter(const ynothrow, ::HBITMAP, NativeHandle, hBitmap)
+	DefGetter(const ynothrow, const Size&, Size, size)
+
+	void
+	Resize(const Size&);
+
+	void
+	UpdateFrom(ConstBitmapPtr) ynothrow;
+
+	void
+	swap(ScreenBuffer&) ynothrow;
+};
+
+inline DefSwap(ynothrow, ScreenBuffer)
+
+#endif
 
 enum line_styles /* Line styles for get/setlinestyle */
 {

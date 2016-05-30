@@ -189,7 +189,7 @@ int egeControlBase::delchild(egeControlBase* pChild)
 
 void egeControlBase::fixzorder()
 {
-	if(const auto cmap = static_cast<egectlmap*>(m_childmap))
+	if(m_childmap)
 	{
 		auto& cvec(reinterpret_cast<egectlvec*&>(m_childzorder));
 		int z(1);

@@ -21,6 +21,20 @@ using ystdex::octet;
 #	include <cwchar>
 #	include <utility>
 
+#define YPP_Empty
+#define YPP_Comma ,
+#define YPP_Concat(_x, _y) _x ## _y
+
+#	if __GNUC__
+#		define YB_EXPECT(_expr, _constant) (__builtin_expect(_expr, _constant))
+#		define YB_LIKELY(_expr) (__builtin_expect(bool(_expr), 1))
+#		define YB_UNLIKELY(_expr) (__builtin_expect(bool(_expr), 0))
+#	else
+#		define YB_EXPECT(_expr, _constant) (_expr)
+#		define YB_LIKELY(_expr) (_expr)
+#		define YB_UNLIKELY(_expr) (_expr)
+#	endif
+
 #	define yconstfn constexpr
 #	define yconstexpr constexpr
 #	define ynothrow noexcept

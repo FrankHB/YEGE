@@ -24,16 +24,39 @@ Code::Blocks 。
 
 YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）
 ----
-提供和 YSLib 兼容的伪关键字宏 yconstfn 、yconstexpr 和 ynothrow 分别替换为 constexpr 、constexpr 和 noexcept 。
-提供和 YSLib 兼容的伪关键字宏 yconstraint 和 yassume 替换 assert 。
-提供和 YSLib 兼容的伪关键字宏 yunseq 。
-提供和 YSLib 一致实现的伪关键字宏 yunused 。
-在 ege 命名空间提供和 YSLib 一致实现的类型 octet 和 byte 。
+提供和 YBase 兼容的伪关键字宏 yconstfn 、yconstexpr 和 ynothrow 分别替换为 constexpr 、constexpr 和 noexcept 。
+提供和 YBase 兼容的伪关键字宏 yconstraint 和 yassume 替换 assert 。
+提供和 YBase 兼容的伪关键字宏 yunseq 。
+提供和 YBase 一致实现的伪关键字宏 yunused 。
+在 ege 命名空间提供和 YBase 一致实现的类型 octet 和 byte 。
 在 ege 命名空间使用 using 引入智能指针类型和相关操作的声明，并提供 std::make_unique 的替代实现。
-在 ege 命名空间提供和 YSLib 的 platform::Deref 和 platform::Nonnull 兼容的模板。
+在 ege 命名空间提供和 YCLib 的 platform::Deref 和 platform::Nonnull 兼容的模板。
 在 ege 命名空间提供和 YSLib 兼容的 SPos 和 SDst 类型。
-提供和 YSLib 兼容的宏 YTraceDe。
+提供和 YBase 一致实现的宏 YPP_Empty 、YPP_Commma 和 YPP_Concat 。
+提供和 YCLib 兼容的宏 YTraceDe。
 	* 空实现。
+提供和 YSLib 一致实现的以下宏：
+PDefH PDefHOp
+ImplExpr ImplRet ImplThrow ImplUnseq
+TryExpr TryRet
+CatchExpr CatchIgnore CatchThrow
+DefDeCtor DefDelCtor
+DefDeCopyCtor DefDelCopyCtor DefDeMoveCtor DefDelMoveCtor
+DefDeCopyMoveCtor
+DefDeDtor DefDelDtor ImplDeDtor
+DefDeCopyAssignment DefDelCopyAssignment DefDeMoveAssignment DefDelMoveAssignment DefDeCopyMoveAssignment DefDeCopyMoveCtorAssignment
+DefCvt
+DefNeg DefBoolNeg
+DefPred DefGetter DefGetterMem DefSetter
+DefSwap
+提供和 YCLib 兼容的宏 YAssert（替换为 yassume 表达式）。
+在 ege 命名空间提供和 YSLib 兼容的 min 和 max 模板（非 YSLib 使用 std 的对应名称代替，不保证 constexpr ）。
+在 ege 命名空间提供和 YSLib 兼容的 HalfDifference 、IsInInterval 和 IsInOpenInterval 模板。
+在 ege 命名空间提供和 YSLib::Drawing 兼容的模板 GBinaryGroup 、类型 Point 、Vec 、Size 和 Rect 以及相关操作。
+在 ege 命名空间提供和 YSLib::Drawing 二进制兼容的类型 BitmapPtr 和 ConstBitmapPtr（实现为 color_int_t 的指针）。
+提供和 YBase 兼容的宏 YB_EXPECT 、YB_LIKELY 和 YB_UNLIKELY。
+	* 仅实现判断 GCC ，不确定版本。
+在 ege 命名空间提供和 YCLib 兼容的类 ScreenBuffer ，但成员 Premultiply 、UpdatePremultipliedTo 和 UpdateTo 除外。
 
 非向后兼容接口
 ----
@@ -73,6 +96,8 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）
 初始化函数 initgraph 移除兼容 BGI 的重载，只接受 size_t 类型的主窗口宽和高（等于 0 时仍然表示屏幕宽和高）。
 移除 CALLBACK_PROC 类型。
 移除兼容宏 getmaxx 和 getmaxy ，使用函数 getwidth 和 getheight 代替。
+移除枚举 graphics_drivers 、message_event 和 message_mouse 。
+函数 resize 调用后状态未指定，不保证填充背景色。
 
 非向后兼容接口（仅当依赖 YSLib 时）
 ----
@@ -149,7 +174,7 @@ DWORD_PTR → ::ULONG_PTR 。
 移除 ASSERT_TRUE 宏。
 移除非接口函数 detectgraph 、message_addkeyhandler 和 message_addmousehandler 的孤立实现。
 使用 std::thread 代替 WinAPI 操作线程。
-移除 CONVERT_IMAGE_END 、CONVERT_IMAGE_F 和 CONVERT_IMAGE_F_CONST 宏。
+移除 CONVERT_IMAGE_END 、CONVERT_IMAGE_F 和 CONVERT_IMAGE_F_CONST 宏，使用函数 cimg_ref 和 cimg_ref_c 替代。
 移除 setrendermode 实现所需的计时器例程；主窗口消息循环不响应 WM_TIMER 。
 取消手动设置 exit_window 状态，改用 UI 线程状态表示；移除无用的 exit_flag 。
 类型 PDWORD 用 DWORD* 代替。
@@ -164,6 +189,7 @@ thread_queue 类模板使用 std::mutex 、std::lock_guard 和 std::deque 实现
 避免直接使用 malloc 和 free 。
 拆分宿主环境主窗口和控件的窗口过程。
 简化绘图 API 实现。
+使用 YSLib 兼容的 ScreenBuffer 实现类 IMAGE 。
 
 实现注记（仅当依赖 YSLib 时）
 ----

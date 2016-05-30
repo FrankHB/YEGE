@@ -6,15 +6,21 @@
 
 #define myrand(m) ((float)(randomf() * m ))
 
-struct Point
-{
-	float x, y;
-	float vx, vy;
-	int color;
-};
 
 class AniObj
 {
+private:
+	struct
+	{
+		float x, y;
+		float vx, vy;
+		int color;
+	} p[100];
+	int n;
+	int color;
+	int start;
+	int cnt;
+
 public:
 	//初始化，设置坐标
 	AniObj()
@@ -61,18 +67,6 @@ public:
 			putpixel(p[i].x, p[i].y, color);
 		}
 	}
-
-	//释放这个对象时调用
-	~AniObj()
-	{
-	}
-
-private:
-	Point p[100];
-	int n;
-	int color;
-	int start;
-	int cnt;
 };
 
 

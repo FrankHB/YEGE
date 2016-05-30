@@ -23,7 +23,7 @@ sys_edit_proc(::HWND hWnd, ::UINT message, ::WPARAM wParam, ::LPARAM lParam)
 		::GetWindowLongPtrW(hWnd, GWLP_USERDATA)));
 
 	if(!pg_w)
-		return ::DefWindowProc(hWnd, message, wParam, lParam);
+		return ::DefWindowProcW(hWnd, message, wParam, lParam);
 	switch(message)
 	{
 	case WM_PAINT:

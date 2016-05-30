@@ -2,8 +2,8 @@
 #define Inc_ege_gdi_h_
 
 #include "ege/base.h"
-#include <windef.h>
-#include <wingdi.h>
+#include <WinDef.h>
+#include <Wingdi.h>
 
 namespace ege
 {
