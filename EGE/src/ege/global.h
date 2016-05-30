@@ -14,7 +14,7 @@
 #	include YFM_Helper_HostedUI
 #	include YFM_Helper_Environment
 #else
-#	include <windows.h>
+#	include <Windows.h>
 #endif
 
 #define BITMAP_PAGE_SIZE 4

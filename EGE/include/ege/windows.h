@@ -2,9 +2,9 @@
 #define Inc_ege_windows_h_
 
 #include "ege/env.h"
-#include <windef.h>
-#include <minwinbase.h>
-#include <wingdi.h>
+#include <WinDef.h>
+#include <MinWinBase.h>
+#include <Wingdi.h>
 #include <WinUser.h>
 #include "ege/base.h"
 

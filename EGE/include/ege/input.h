@@ -2,7 +2,7 @@
 #define Inc_ege_input_h_
 
 #include "ege/def.h"
-#include <minwindef.h>
+#include <MinWinDef.h>
 
 namespace ege
 {
