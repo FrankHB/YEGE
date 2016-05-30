@@ -1,12 +1,12 @@
 ﻿#ifndef Inc_ege_windows_h_
 #define Inc_ege_windows_h_
 
+#include "ege/base.h"
 #include "ege/env.h"
 #include <WinDef.h>
 #include <MinWinBase.h>
 #include <Wingdi.h>
 #include <WinUser.h>
-#include "ege/base.h"
 
 #ifndef WM_MOUSEWHEEL
 #define WM_MOUSEWHEEL                   0x020A
