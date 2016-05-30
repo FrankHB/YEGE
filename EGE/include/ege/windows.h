@@ -16,7 +16,7 @@ namespace ege
 {
 
 #if YEGE_Use_YSLib
-using platform::ScreenBuffer;
+using platform_ex::ScreenBuffer;
 #else
 class EGEAPI ScreenBuffer
 {
