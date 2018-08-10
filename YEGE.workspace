@@ -72,5 +72,6 @@
 		<Project filename="tutorial/tutorial.cbp">
 			<Depends filename="EGE/EGE.cbp" />
 		</Project>
+		<Project filename="note/note.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
