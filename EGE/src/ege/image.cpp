@@ -8,7 +8,9 @@
 #include "ege/gapi.h"
 #include "ege/gapi_aa.h"
 #include "ege/img.h"
-#if !YEGE_Use_YSLib
+#if YEGE_Use_YSLib
+#	include YFM_Win32_YCLib_NLS // for platform_ex::MBCSToWCS;
+#else
 #	include <ocidl.h>
 #	include <olectl.h>
 #	include <png.h>
