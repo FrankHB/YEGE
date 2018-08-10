@@ -7,6 +7,10 @@
 #include <cstdio>
 #include <cstdarg>
 #include <cstring> // for std::strlen;
+#if YEGE_Use_YSLib
+#	include YFM_Win32_YCLib_NLS // for platform_ex::MBCSToWCS,
+//	platform_ex::WCSToMBCS;
+#endif
 
 namespace ege
 {

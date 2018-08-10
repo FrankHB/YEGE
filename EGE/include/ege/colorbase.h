@@ -13,7 +13,7 @@ namespace ege
 
 #if YEGE_Use_YSLib
 using color_t = YSLib::Drawing::Pixel;
-using color_int_t = color_t::Trait::IntegerType;
+using color_int_t = color_t::Traits::integer;
 using YSLib::Drawing::AlphaType;
 using YSLib::Drawing::MonoType;
 using YSLib::Drawing::BitmapPtr;
