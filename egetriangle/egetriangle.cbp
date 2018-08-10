@@ -83,7 +83,7 @@
 				</Linker>
 				<ExtraCommands>
 					<Add before='CMD /C DEL &quot;debug\EGE.dll&quot;' />
-					<Add before='CMD /C MKLINK &quot;debug\EGE.dll&quot; &quot;..\EGE\debug\EGE.dll&quot; || MKLINK /H &quot;debug\EGE.dll&quot; &quot;..\EGE\debug\EGE.dll&quot; || ECHO F | XCOPY /D /Y &quot;..\EGE\debug\EGE.dll&quot; &quot;debug\EGE.dll&quot;' />
+					<Add before='CMD /C MKLINK &quot;debug\EGE.dll&quot; &quot;..\..\EGE\debug\EGE.dll&quot; || MKLINK /H &quot;debug\EGE.dll&quot; &quot;..\EGE\debug\EGE.dll&quot; || ECHO F | XCOPY /D /Y &quot;..\EGE\debug\EGE.dll&quot; &quot;debug\EGE.dll&quot;' />
 				</ExtraCommands>
 			</Target>
 			<Target title="release_DLL">
@@ -108,7 +108,7 @@
 				</Linker>
 				<ExtraCommands>
 					<Add before='CMD /C DEL &quot;release\EGE.dll&quot;' />
-					<Add before='CMD /C MKLINK &quot;release\EGE.dll&quot; &quot;..\EGE\release\EGE.dll&quot; || MKLINK /H &quot;release\EGE.dll&quot; &quot;..\EGE\release\EGE.dll&quot; || ECHO F | XCOPY /D /Y &quot;..\EGE\release\EGE.dll&quot; &quot;release\EGE.dll&quot;' />
+					<Add before='CMD /C MKLINK &quot;release\EGE.dll&quot; &quot;..\..\EGE\release\EGE.dll&quot; || MKLINK /H &quot;release\EGE.dll&quot; &quot;..\EGE\release\EGE.dll&quot; || ECHO F | XCOPY /D /Y &quot;..\EGE\release\EGE.dll&quot; &quot;release\EGE.dll&quot;' />
 				</ExtraCommands>
 			</Target>
 		</Build>
