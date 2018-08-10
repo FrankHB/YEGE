@@ -151,12 +151,14 @@ void dealMouse(BALL* ball)
 		my = mouse.y;
 
 		if(iCapture == -1 && mouse.msg == mouse_msg_down)
+		{
 			for(i = MAXBALL - 1; i > -1; --i)
 				if(ball[i].resmouse(mouse, dx, dy))
 				{
 					iCapture = i;
 					break;
 				}
+		}
 		else if(iCapture >= 0 && (mouse.msg == mouse_msg_up
 			|| mouse.msg == mouse_msg_move))
 			if(ball[iCapture].resmouse(mouse, dx, dy) == 0)
