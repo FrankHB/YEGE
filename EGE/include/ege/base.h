@@ -36,8 +36,8 @@ using platform::Deref;
 using YSLib::SPos;
 using YSLib::SDst;
 
-using YSLib::min;
-using YSLib::max;
+using ystdex::min;
+using ystdex::max;
 
 using YSLib::HalfDifference;
 using YSLib::IsInInterval;
