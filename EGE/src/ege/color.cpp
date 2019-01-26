@@ -178,7 +178,7 @@ color_t
 rgb2gray(color_t color)
 {
 #if YEGE_Use_YSLib
-	return MakeGray(color_t::Traits::integer(((color >> 16) & 0xFF) * 0.299
+	return MakeGray(color_t::traits_type::integer(((color >> 16) & 0xFF) * 0.299
 		+ ((color >> 8) & 0xFF) * 0.587 + ((color) & 0xFF) * 0.114));
 #else
 	double c;
