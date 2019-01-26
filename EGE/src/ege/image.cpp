@@ -13,6 +13,7 @@
 #	include <olectl.h>
 #	include <png.h>
 #	include <vector>
+#	include <cstring> // for std::wcsstr;
 #endif
 
 namespace ege
@@ -380,14 +381,13 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 	if(getimage_pngfile(this, filename) == 0)
 		return 0;
 
-	struct IPicture* pPicture;
-	::OLECHAR wszPath[MAX_PATH * 2 + 1];
+	struct ::IPicture* pPicture;
 	wchar_t szPath[MAX_PATH * 2 + 1] = L"";
 	long lWidth, lHeight;
 	long lWidthPixels, lHeightPixels;
 	::HRESULT hr;
 
-	if(wcsstr(filename, L"http://"))
+	if(std::wcsstr(filename, L"http://"))
 		::lstrcpyW(szPath, filename);
 	else if(filename[1] == ':')
 		::lstrcpyW(szPath, filename);
@@ -398,8 +398,8 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 		::lstrcatW(szPath, filename);
 	}
 
-	::lstrcpyW(wszPath, szPath);
-	hr = ::OleLoadPicturePath(wszPath, {}, 0, 0, IID_IPicture,
+	// XXX: Only 'wchar_t' is supported here.
+	hr = ::OleLoadPicturePath(szPath, {}, 0, 0, ::IID_IPicture,
 		(void**)&pPicture);
 	if(FAILED(hr))
 		return grIOerror;
@@ -442,8 +442,8 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
 			return grNullPointer;
 
-		hr = OleLoadPicture(pStm, ::LONG(dwSize), TRUE, IID_IPicture,
-							(void**)&pPicture);
+		hr = ::OleLoadPicture(pStm, ::LONG(dwSize), TRUE, ::IID_IPicture,
+			(void**)&pPicture);
 		::GlobalFree(hGlobal);
 		if(FAILED(hr))
 			return grIOerror;
@@ -487,8 +487,8 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
 			return grNullPointer;
 
-		auto hr(OleLoadPicture(pStm, (::LONG)dwSize, TRUE, IID_IPicture,
-							   (void**)&pPicture));
+		auto hr(::OleLoadPicture(pStm, (::LONG)dwSize, TRUE, ::IID_IPicture,
+			(void**)&pPicture));
 
 		::GlobalFree(hGlobal);
 		if(FAILED(hr))
@@ -535,13 +535,8 @@ IMAGE::getimage(void * pMem, long size)
 			return grNullPointer;
 		}
 
-		hr = OleLoadPicture(
-				 pStm,
-				 (::LONG)dwSize,
-				 TRUE,
-				 IID_IPicture,
-				 (void**)&pPicture
-			 );
+		hr = ::OleLoadPicture(pStm, (::LONG)dwSize, TRUE, ::IID_IPicture,
+			(void**)&pPicture);
 
 		::GlobalFree(hGlobal);
 
