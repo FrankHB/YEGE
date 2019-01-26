@@ -49,49 +49,22 @@ bool isDoubleLbutton();//可以手动调节速度，最小速度必须大于2*1000/fps
 void getTime();
 void putTime();
 
-int main()
+void
+SetTransparent(HWND hwnd, UINT alpha)
 {
-	loop();
-}
-int loop()
-{
-	startInf();
-	HWND hwnd = ::FindWindowA(NULL,"easyNote");
-	SetTransparent(hwnd,215);
-	while(1)
-	{
-		view();
-		setcolor(RED);
-		moveWindow(hwnd);
-		doubleThing(inf.page-1);
-		putTitle(th[0].title,BLUE);
-		putThing(inf.screen_x,inf.screen_y,inf.box_y,th[0].thing,RED);
-		putTime();
-		drawMouse(mouse(X),mouse(Y),WHITE);
-		if(keystate(VK_ESCAPE)&&keystate(VK_LBUTTON))
-			break;
-		delay_fps(100);
-		cleardevice();
-	}
-	return 0;
-}
-void SetTransparent(HWND hwnd, UINT alpha)
-{
-	typedef BOOL (FAR PASCAL*LAYERFUNC)(HWND,COLORREF,BYTE,DWORD);
-	LAYERFUNC SetLayer;
-	HMODULE hmod = ::LoadLibraryW(L"user32.dll");
-	SetWindowLong(hwnd,GWL_EXSTYLE,GetWindowLong(hwnd,GWL_EXSTYLE)|0x80000L);
-	SetLayer=(LAYERFUNC)GetProcAddress(hmod,  "SetLayeredWindowAttributes");
-	if(0 == alpha)
+	::SetWindowLong(hwnd, GWL_EXSTYLE,
+		::GetWindowLong(hwnd,GWL_EXSTYLE) | 0x80000L);
+
+	if(alpha == 0)
 	{
 		setbkcolor(BLACK);
-		SetLayer(hwnd, BLACK, 255, 0x3);
+		::SetLayeredWindowAttributes(hwnd, BLACK, 255, 0x3);
 		cleardevice();
 	}
 	else
-		SetLayer(hwnd, 0, alpha, 0x2);
-	FreeLibrary(hmod);
+		::SetLayeredWindowAttributes(hwnd, 0, alpha, 0x2);
 }
+
 void drawMouse(int x,int y,int color)
 {
 	setcolor(color);
@@ -318,3 +291,27 @@ void putTime()
 			timeinfo->tm_hour,timeinfo->tm_min,timeinfo->tm_sec);
 	x==0?pos=-pos,x++,state++:(x==70?pos=-pos,x--,state++:(state/5==1?x=x+pos,state=0:state++));
 }
+
+int main()
+{
+	startInf();
+	HWND hwnd = ::FindWindowA(NULL,"easyNote");
+	SetTransparent(hwnd,215);
+
+	while(true)
+	{
+		view();
+		setcolor(RED);
+		moveWindow(hwnd);
+		doubleThing(inf.page-1);
+		putTitle(th[0].title,BLUE);
+		putThing(inf.screen_x,inf.screen_y,inf.box_y,th[0].thing,RED);
+		putTime();
+		drawMouse(mouse(X),mouse(Y),WHITE);
+		if(keystate(VK_ESCAPE)&&keystate(VK_LBUTTON))
+			break;
+		delay_fps(100);
+		cleardevice();
+	}
+}
+
