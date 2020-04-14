@@ -19,7 +19,9 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 	* 撤销 14.01 的修改，和原始 misakamm/xege 的 `color_t` 一致，而不再和 `::COLORREF` 一致。
 	* 同时修改函数 `EGERGB` 的实现，解决和其它函数的不一致问题。
 	* 修改后的格式和 `YSLib::Pixel` 在 Win32 上的实现以及 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 中的像素格式保持一致，存储格式都为 BGRA8888 。
-
+* 函数 `clearviewport` 使用背景颜色填充。
+	* 参见 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 。
+ 
 ## 19.01
 
 YEGE 19.01 以 YEGE 14.01 为基础修改。

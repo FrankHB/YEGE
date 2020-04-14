@@ -38,13 +38,7 @@ clearviewport(IMAGE* pimg)
 	{
 		::RECT rect{0, 0, img.m_vpt.right - img.m_vpt.left,
 			img.m_vpt.bottom - img.m_vpt.top};
-		::HBRUSH hbr_c = ::HBRUSH(::GetCurrentObject(img.getdc(),
-			OBJ_BRUSH));
-		::LOGBRUSH logBrush;
-
-		::GetObjectW(hbr_c, sizeof(logBrush), &logBrush);
-
-		::HBRUSH hbr(::CreateSolidBrush(logBrush.lbColor));
+		const auto hbr(::CreateSolidBrush(GetBkColor(img.getdc())));
 
 		::FillRect(img.getdc(), &rect, hbr);
 		::DeleteObject(hbr);
