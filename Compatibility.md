@@ -13,6 +13,7 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 * 修复 `putimage_`* 系列函数剪裁区域和坐标变换的问题。
 	* 参见 [wysaid/xege pull request 5](https://github.com/wysaid/xege/pull/5) 。
 	* 参见 [wysaid/xege pull request 9](https://github.com/wysaid/xege/pull/9) 。
+* 颜色转换函数添加 `ynothrow` 。
 
 ## 19.01
 
