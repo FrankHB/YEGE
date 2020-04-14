@@ -132,6 +132,14 @@ wndproc(::HWND hWnd, unsigned message, ::WPARAM wParam, ::LPARAM lParam)
 	return 0;
 }
 
+std::uint16_t
+filter_getch(int kv, unsigned w) ynothrow
+{
+	if(((kv & KEYMSG_DOWN) && (w >= 0x70 && w < 0x80)) || (w > ' ' && w < '0'))
+		kv |= 0x100;
+	return kv & 0xFFFF;
+}
+
 } // unnamed namespace;
 
 
@@ -276,14 +284,38 @@ EGEApplication::_get_input(get_input_op op)
 		switch(op)
 		{
 		case get_input_op::getch:
-			do
 			{
-				int key = _peekkey();
-				if(key < 0)
-					break;
-				if(key > 0)
-					key = _getkey_p();
-			} while(_is_run() && _waitdealmessage());
+				const auto dw(GetTickCount());
+
+				do
+				{
+					int key = _peekkey();
+					if(key < 0)
+						break;
+					if(key > 0)
+					{
+						key = _getkey_p();
+						if(key != 0)
+						{
+							const auto k(msgkey_queue.process_queue(
+								[&](std::deque<EGEMSG>& q) -> std::uint32_t{
+								if(!q.empty())
+								{
+									const auto& msg(q.back());
+
+									if(dw < msg.time + 1000)
+										return filter_getch(key, msg.wParam);
+									return 0xFFFFFFFF;
+								}
+								return filter_getch(key, key & 0xFFFF);
+							}));
+
+							if(k != 0xFFFFFFFF)
+								return k;
+						}
+					}
+				} while(_is_run() && _waitdealmessage());
+			}
 			break;
 		case get_input_op::kbhit:
 			return _peekkey();
@@ -577,7 +609,8 @@ EGEApplication::_on_destroy()
 #endif
 
 void
-EGEApplication::_on_key(unsigned message, unsigned long keycode, ::LPARAM keyflag)
+EGEApplication::_on_key(unsigned message, unsigned long keycode,
+	::LPARAM keyflag)
 {
 	if(message == WM_KEYDOWN && keycode < MAX_KEY_VCODE)
 		keystatemap[keycode] = 1;
@@ -588,8 +621,8 @@ EGEApplication::_on_key(unsigned message, unsigned long keycode, ::LPARAM keyfla
 }
 
 void
-EGEApplication::_on_mouse_button_up(::HWND h_wnd, unsigned msg, ::WPARAM w_param,
-	::LPARAM l_param)
+EGEApplication::_on_mouse_button_up(::HWND h_wnd, unsigned msg,
+	::WPARAM w_param, ::LPARAM l_param)
 {
 	auto* l = &mouse_state_l;
 	auto vk = VK_LBUTTON;
@@ -641,7 +674,8 @@ EGEApplication::_on_setcursor(::HWND hwnd)
 		::GetCursorPos(&pt);
 		::ScreenToClient(hwnd, &pt);
 		::GetClientRect(hwnd, &rect);
-		if(pt.x >= rect.left && pt.x < rect.right && pt.y >= rect.top && pt.y <= rect.bottom)
+		if(pt.x >= rect.left && pt.x < rect.right
+			&& pt.y >= rect.top && pt.y <= rect.bottom)
 			return {};
 	}
 	return ::LoadCursor({}, IDC_ARROW);
@@ -669,8 +703,8 @@ EGEApplication::_peekkey()
 			if(msg.message == WM_KEYDOWN)
 			{
 				if(msg.wParam >= 0x70 && msg.wParam < 0x80)
-					return (KEYMSG_DOWN | (int(msg.wParam) + 0x100));
-				return (KEYMSG_DOWN | (int(msg.wParam) & 0xFFFF));
+					return KEYMSG_DOWN | (int(msg.wParam) + 0x100);
+				return KEYMSG_DOWN | (int(msg.wParam) & 0xFFFF);
 			}
 			else if(msg.message == WM_KEYUP)
 				return KEYMSG_UP | (int(msg.wParam) & 0xFFFF);
@@ -693,10 +727,10 @@ EGEApplication::_peekallkey(int flag)
 			(msg.message == WM_KEYDOWN && (flag & KEYMSG_DOWN_FLAG)))
 		{
 			if(msg.message == WM_CHAR)
-				return (KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF));
+				return KEYMSG_CHAR | (int(msg.wParam) & 0xFFFF);
 			else if(msg.message == WM_KEYDOWN)
-				return (KEYMSG_DOWN | (int(msg.wParam) & 0xFFFF)
-					| (msg.lParam & 0x40000000 ? 0 : KEYMSG_FIRSTDOWN));
+				return KEYMSG_DOWN | (int(msg.wParam) & 0xFFFF)
+					| (msg.lParam & 0x40000000 ? 0 : KEYMSG_FIRSTDOWN);
 			else if(msg.message == WM_KEYUP)
 				return KEYMSG_UP | (int(msg.wParam) & 0xFFFF);
 		}
