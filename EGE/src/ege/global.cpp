@@ -288,7 +288,7 @@ EGEApplication::_get_input(get_input_op op)
 		case get_input_op::kbhit:
 			return _peekkey();
 		case get_input_op::kbmsg:
-			return _peekallkey(1);
+			return _peekallkey(3);
 		}
 		return 0;
 	}

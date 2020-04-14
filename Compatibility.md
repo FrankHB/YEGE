@@ -4,6 +4,13 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 
 # 版本历史
 
+## 主分支版本
+
+### API 修改
+
+* 函数 `getkey` 支持 `WM_CHAR` 消息。
+	* 参见 [wysaid/xege pull request 3](https://github.com/wysaid/xege/pull/3) 。
+
 ## 19.01
 
 YEGE 19.01 以 YEGE 14.01 为基础修改。
