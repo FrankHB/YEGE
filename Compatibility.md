@@ -21,6 +21,7 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 	* 修改后的格式和 `YSLib::Pixel` 在 Win32 上的实现以及 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 中的像素格式保持一致，存储格式都为 BGRA8888 。
 * 函数 `clearviewport` 使用背景颜色填充。
 	* 参见 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 。
+* 修复函数 `getch` 阻塞不返回（[自 19.01](https://github.com/FrankHB/YEGE/commit/86d5bfd29538da85bb09b242c9a807608b5d11aa#diff-7a45f9d952914e7def2c69dde935ecfa)）。
 
 ### 非外部依赖项代码风格和格式
 
