@@ -15,6 +15,10 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 	* 参见 [wysaid/xege pull request 9](https://github.com/wysaid/xege/pull/9) 。
 * 颜色转换函数添加 `ynothrow` 。
 * 修复函数 `RGBTOBGR` 的参数类型（自从 19.01 ）。
+* 修改 `color_t` 的格式：交换红色和蓝色分量。
+	* 撤销 14.01 的修改，和原始 misakamm/xege 的 `color_t` 一致，而不再和 `::COLORREF` 一致。
+	* 同时修改函数 `EGERGB` 的实现，解决和其它函数的不一致问题。
+	* 修改后的格式和 `YSLib::Pixel` 在 Win32 上的实现以及 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 中的像素格式保持一致，存储格式都为 BGRA8888 。
 
 ## 19.01
 

@@ -116,9 +116,8 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 {
 	auto& img(cimg_ref_c(pimg));
 
-	::LOGPEN lpen{0, ::POINT(), COLORREF()};
+	::LOGPEN lpen{0, ::POINT(), RGBTOBGR(getcolor(pimg))};
 
-	lpen.lopnColor = getcolor(pimg);
 	img.m_linestyle.thickness = thickness;
 	img.m_linewidth = float(thickness);
 	img.m_linestyle.linestyle = linestyle;
@@ -131,12 +130,9 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 	if(linestyle == PS_USERSTYLE)
 	{
 		unsigned long style[20]{0};
-		::LOGBRUSH lbr;
-		int n, bn = 0, len = 1, st = 0;
-		lbr.lbColor = lpen.lopnColor;
-		lbr.lbStyle = BS_SOLID;
-		lbr.lbHatch = 0;
-		st = upattern & 1;
+		::LOGBRUSH lbr{BS_SOLID, lpen.lopnColor, 0};
+		int n, bn = 0, len = 1, st(upattern & 1);
+
 		for(n = 1; n < 16; n++)
 		{
 			if(upattern & (1 << n))
@@ -184,10 +180,9 @@ setfillstyle(int pattern, color_t color, IMAGE* pimg)
 {
 	auto& img(cimg_ref_c(pimg));
 
-	::LOGBRUSH lbr{0, COLORREF(), ::UINT_PTR()};
+	::LOGBRUSH lbr{0, RGBTOBGR(color), ::UINT_PTR()};
 
 	img.m_fillcolor = color;
-	lbr.lbColor = color;
 	//::SetBkColor(img.getdc(), color);
 	if(pattern < SOLID_FILL)
 		lbr.lbHatch = BS_NULL;
@@ -268,21 +263,17 @@ setcolor(color_t color, IMAGE* pimg)
 		::HPEN hpen;
 
 		img.m_color = color;
-		lPen.lopnColor = color;
+		lPen.lopnColor = RGBTOBGR(color);
 		lPen.lopnStyle = img.m_linestyle.linestyle;
 		lPen.lopnWidth.x = img.m_linestyle.thickness;
 		::SetTextColor(img.getdc(), color);
 		if(lPen.lopnStyle == PS_USERSTYLE)
 		{
 			unsigned long style[20]{};
-			::LOGBRUSH lbr;
+			::LOGBRUSH lbr{BS_SOLID, lPen.lopnColor, 0};
 			unsigned short upattern = img.m_linestyle.upattern;
-			int n, bn = 0, len = 1, st = 0;
+			int n, bn = 0, len = 1, st(upattern & 1);
 
-			lbr.lbColor = lPen.lopnColor;
-			lbr.lbStyle = BS_SOLID;
-			lbr.lbHatch = 0;
-			st = upattern & 1;
 			for(n = 1; n < 16; n++)
 				if(upattern & (1 << n))
 				{
@@ -321,11 +312,9 @@ setfillcolor(color_t color, IMAGE* pimg)
 {
 	auto& img(cimg_ref_c(pimg));
 
-	::LOGBRUSH lbr{0, COLORREF(), ::ULONG_PTR()};
+	::LOGBRUSH lbr{0, RGBTOBGR(color), BS_SOLID};
 
 	img.m_fillcolor = color;
-	lbr.lbColor = color;
-	lbr.lbHatch = BS_SOLID;
 	::HBRUSH hbr = ::CreateBrushIndirect(&lbr);
 	if(hbr)
 		::DeleteObject(::SelectObject(img.getdc(), hbr));
@@ -343,7 +332,7 @@ setbkcolor(color_t color, IMAGE* pimg)
 		color_t col = img.m_bk_color;
 
 		img.m_bk_color = color;
-		::SetBkColor(img.getdc(), color);
+		::SetBkColor(img.getdc(), RGBTOBGR(color));
 		for(size_t n = 0; n < size; ++n, ++p)
 			if(*p == col)
 				*p = color;
@@ -360,7 +349,7 @@ setbkcolor_f(color_t color, IMAGE* pimg)
 	if(const auto dc = img.getdc())
 	{
 		img.m_bk_color = color;
-		::SetBkColor(dc, color);
+		::SetBkColor(dc, RGBTOBGR(color));
 	}
 }
 
@@ -370,7 +359,7 @@ setfontbkcolor(color_t color, IMAGE* pimg)
 	auto& img(cimg_ref(pimg));
 
 	if(const auto dc = img.getdc())
-		::SetBkColor(dc, color);
+		::SetBkColor(dc, RGBTOBGR(color));
 }
 
 void
