@@ -786,7 +786,9 @@ fix_rect_1size(IMAGE* pdest, IMAGE* psrc,
 	int* nHeightSrc      // height of source rectangle
 )
 {
-	viewporttype _vpt{0, 0, int(pdest->GetWidth()), int(pdest->GetHeight()), 0};
+	const auto& _vpt(pdest->m_vpt);
+
+	yunseq(*nXOriginDest += _vpt.left, *nYOriginDest += _vpt.top);
 	/* default value proc */
 	if(*nWidthSrc == 0)
 	{
@@ -835,13 +837,13 @@ fix_rect_1size(IMAGE* pdest, IMAGE* psrc,
 	}
 	if(*nXOriginDest + *nWidthSrc > _vpt.right)
 	{
-		int dx = *nXOriginDest + *nWidthSrc - _vpt.right + 1;
+		int dx = *nXOriginDest + *nWidthSrc - _vpt.right;
 
 		*nWidthSrc -= dx;
 	}
 	if(*nYOriginDest + *nHeightSrc > _vpt.bottom)
 	{
-		int dy = *nYOriginDest + *nHeightSrc - _vpt.bottom + 1;
+		int dy = *nYOriginDest + *nHeightSrc - _vpt.bottom;
 
 		*nHeightSrc -= dy;
 	}
