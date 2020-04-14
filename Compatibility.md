@@ -14,6 +14,7 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 	* 参见 [wysaid/xege pull request 5](https://github.com/wysaid/xege/pull/5) 。
 	* 参见 [wysaid/xege pull request 9](https://github.com/wysaid/xege/pull/9) 。
 * 颜色转换函数添加 `ynothrow` 。
+* 修复函数 `RGBTOBGR` 的参数类型（自从 19.01 ）。
 
 ## 19.01
 

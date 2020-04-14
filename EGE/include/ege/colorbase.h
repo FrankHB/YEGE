@@ -28,7 +28,7 @@ using ConstBitmapPtr = const color_int_t*;
 #endif
 
 yconstfn color_int_t
-RGBTOBGR(MonoType color) ynothrow
+RGBTOBGR(color_int_t color) ynothrow
 {
 	return ((color & 0xFF) << 16) | ((color & 0xFF0000) >> 16)
 		| (color & 0xFF00FF00);
