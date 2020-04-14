@@ -707,7 +707,7 @@ IMAGE::saveimage(const wchar_t* filename)
 }
 
 int
-IMAGE::savepngimg(std::FILE * fp, int bAlpha)
+IMAGE::savepngimg(std::FILE* fp, int bAlpha)
 {
 	unsigned long i, j;
 	::png_structp pic_ptr;
@@ -755,6 +755,8 @@ IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 		for(i = 0; i < height; i++)
 		{
 			for(j = 0; j < width; ++j)
+				// XXX: Assume little endiness. PNG stores RGB by default,
+				//	which is BGR in little endian integer representations.
 				reinterpret_cast<unsigned long&>(image[(i * width  + j)
 					* pixelsize]) = RGBTOBGR(m_pBuffer[i * width + j]);
 			row_pointers[i] = (::png_bytep)image + i * width * pixelsize;
