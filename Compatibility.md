@@ -22,10 +22,18 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 * 函数 `clearviewport` 使用背景颜色填充。
 	* 参见 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 。
 * 修复函数 `getch` 阻塞不返回（自从 19.01 ）。
+* 修复函数 `setcolor` 、`setlinestyle` 和 `setlinewidth` 并简化实现。
+	* 参见 [wysaid/xege pull request 13](https://github.com/wysaid/xege/pull/13) 。
 
 ### 非外部依赖项代码风格和格式
 
 * 函数参数列表 `(void)` 修改为 `()` 。
+
+### 外部依赖项全局名称
+
+具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
+
+* `ExtC`
 
 ## 19.01
 
