@@ -10,31 +10,31 @@ namespace ege
 //图片函数
 
 EGEAPI int
-getwidth(IMAGE* pimg = {});           //获取图片宽度
+getwidth(IMAGE* pimg = {}); //获取图片宽度
 
 EGEAPI int
-getheight(IMAGE* pimg = {});          //获取图片高度
+getheight(IMAGE* pimg = {}); //获取图片高度
 
 EGEAPI int
-getx(IMAGE* pimg = {});               //获取当前 x 坐标
+getx(IMAGE* pimg = {}); //获取当前 x 坐标
 
 EGEAPI int
-gety(IMAGE* pimg = {});               //获取当前 y 坐标
+gety(IMAGE* pimg = {}); //获取当前 y 坐标
 
 
-IMAGE* EGEAPI
-newimage(); //创建PIMAGE
-IMAGE* EGEAPI
-newimage(int width, int height); //创建PIMAGE
+EGEAPI IMAGE*
+newimage();
+EGEAPI IMAGE*
+newimage(int width, int height);
 
 EGEAPI void
-delimage(IMAGE* pimg); //删除PIMAGE
+delimage(IMAGE* pimg);
 
 void* EGEAPI
 getbuffer(IMAGE* pimg);
 
 
-// \pre 间接断言： \c pDstImg 。
+//! \pre 间接断言：\c pDstImg 。
 //@{
 EGEAPI int
 resize(IMAGE* pDstImg, int width, int height); //重设尺寸

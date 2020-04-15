@@ -78,6 +78,15 @@ public:
 		for(auto& e : _queue)
 			f(e);
 	}
+
+	template<typename F>
+	auto
+	process_queue(F f) -> decltype(f(_queue))
+	{
+		std::lock_guard<std::mutex> lck(mtx);
+
+		return f(_queue);
+	}
 };
 
 }
