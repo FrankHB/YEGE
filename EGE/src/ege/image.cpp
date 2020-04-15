@@ -15,6 +15,7 @@
 #	include <olectl.h>
 #	include <png.h>
 #	include <vector>
+#	include <cstring> // for std::wcsstr;
 #endif
 
 namespace ege
@@ -382,14 +383,13 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 	if(getimage_pngfile(this, filename) == 0)
 		return 0;
 
-	struct IPicture* pPicture;
-	::OLECHAR wszPath[MAX_PATH * 2 + 1];
+	struct ::IPicture* pPicture;
 	wchar_t szPath[MAX_PATH * 2 + 1] = L"";
 	long lWidth, lHeight;
 	long lWidthPixels, lHeightPixels;
 	::HRESULT hr;
 
-	if(wcsstr(filename, L"http://"))
+	if(std::wcsstr(filename, L"http://"))
 		::lstrcpyW(szPath, filename);
 	else if(filename[1] == ':')
 		::lstrcpyW(szPath, filename);
@@ -400,9 +400,9 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 		::lstrcatW(szPath, filename);
 	}
 
-	::lstrcpyW(wszPath, szPath);
-	hr = ::OleLoadPicturePath(wszPath, {}, 0, 0, IID_IPicture,
-		(void**)&pPicture);
+	// XXX: Only 'wchar_t' is supported here.
+	hr = ::OleLoadPicturePath(szPath, {}, 0, 0, ::IID_IPicture,
+		reinterpret_cast<void**>(&pPicture));
 	if(FAILED(hr))
 		return grIOerror;
 
@@ -444,8 +444,8 @@ IMAGE::getimage(const char* pResType, const char* pResName, int, int)
 		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
 			return grNullPointer;
 
-		hr = OleLoadPicture(pStm, ::LONG(dwSize), TRUE, IID_IPicture,
-							(void**)&pPicture);
+		hr = ::OleLoadPicture(pStm, long(dwSize), TRUE, ::IID_IPicture,
+			reinterpret_cast<void**>(&pPicture));
 		::GlobalFree(hGlobal);
 		if(FAILED(hr))
 			return grIOerror;
@@ -489,8 +489,8 @@ IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
 		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
 			return grNullPointer;
 
-		auto hr(OleLoadPicture(pStm, (::LONG)dwSize, TRUE, IID_IPicture,
-							   (void**)&pPicture));
+		auto hr(::OleLoadPicture(pStm, long(dwSize), TRUE, ::IID_IPicture,
+			reinterpret_cast<void**>(&pPicture)));
 
 		::GlobalFree(hGlobal);
 		if(FAILED(hr))
@@ -537,13 +537,8 @@ IMAGE::getimage(void * pMem, long size)
 			return grNullPointer;
 		}
 
-		hr = OleLoadPicture(
-				 pStm,
-				 (::LONG)dwSize,
-				 TRUE,
-				 IID_IPicture,
-				 (void**)&pPicture
-			 );
+		hr = ::OleLoadPicture(pStm, long(dwSize), TRUE, ::IID_IPicture,
+			reinterpret_cast<void**>(&pPicture));
 
 		::GlobalFree(hGlobal);
 
@@ -714,7 +709,7 @@ IMAGE::saveimage(const wchar_t* filename)
 }
 
 int
-IMAGE::savepngimg(std::FILE * fp, int bAlpha)
+IMAGE::savepngimg(std::FILE* fp, int bAlpha)
 {
 	unsigned long i, j;
 	::png_structp pic_ptr;
@@ -762,6 +757,8 @@ IMAGE::savepngimg(std::FILE * fp, int bAlpha)
 		for(i = 0; i < height; i++)
 		{
 			for(j = 0; j < width; ++j)
+				// XXX: Assume little endiness. PNG stores RGB by default,
+				//	which is BGR in little endian integer representations.
 				reinterpret_cast<unsigned long&>(image[(i * width  + j)
 					* pixelsize]) = RGBTOBGR(m_pBuffer[i * width + j]);
 			row_pointers[i] = (::png_bytep)image + i * width * pixelsize;
@@ -793,7 +790,9 @@ fix_rect_1size(IMAGE* pdest, IMAGE* psrc,
 	int* nHeightSrc      // height of source rectangle
 )
 {
-	viewporttype _vpt{0, 0, int(pdest->GetWidth()), int(pdest->GetHeight()), 0};
+	const auto& _vpt(pdest->m_vpt);
+
+	yunseq(*nXOriginDest += _vpt.left, *nYOriginDest += _vpt.top);
 	/* default value proc */
 	if(*nWidthSrc == 0)
 	{
@@ -842,13 +841,13 @@ fix_rect_1size(IMAGE* pdest, IMAGE* psrc,
 	}
 	if(*nXOriginDest + *nWidthSrc > _vpt.right)
 	{
-		int dx = *nXOriginDest + *nWidthSrc - _vpt.right + 1;
+		int dx = *nXOriginDest + *nWidthSrc - _vpt.right;
 
 		*nWidthSrc -= dx;
 	}
 	if(*nYOriginDest + *nHeightSrc > _vpt.bottom)
 	{
-		int dy = *nYOriginDest + *nHeightSrc - _vpt.bottom + 1;
+		int dy = *nYOriginDest + *nHeightSrc - _vpt.bottom;
 
 		*nHeightSrc -= dy;
 	}

@@ -12,24 +12,27 @@ int gw, gh;
 struct SNAKE
 {
 	int dir, head, inc, tail;
-	int pool[MAP_W* MAP_H];
+	int pool[MAP_W * MAP_H];
 } game;
 
-inline void drawAt(const int& i)
+inline void
+drawAt(const int& i)
 {
 	int x = (i % MAP_W) * gw, y = (i / MAP_W) * gh;
 	setfillcolor(GCOLOR[game.pool[i] >> 16]);
 	bar(x, y, x + gw, y + gh);
 }
 
-void newFruit(void)
+void
+newFruit()
 {
 	int nf;
 	while(game.pool[nf = random(MAP_W * MAP_H)] >> 16);
 	game.pool[nf] = 0x20000, drawAt(nf);
 }
 
-int moveSnake(const int dx, const int dy, const bool u = {})
+int
+moveSnake(const int dx, const int dy, const bool u = {})
 {
 	if(u && dx + (game.dir & 3) == 1 && dy + (game.dir >> 2) == 1) return 1;
 	int nh;
@@ -60,14 +63,16 @@ int moveSnake(const int dx, const int dy, const bool u = {})
 	return 1;
 }
 
-void gameInit(void)
+void
+gameInit()
 {
 	int data[]{6, 0, 2, 0, 0x10000};
 	std::memset(game.pool, 0, sizeof(game.pool));
 	memmove(&game, data, sizeof(data));
 }
 
-void gameScene(void)
+void
+gameScene()
 {
 	setbkcolor(DARKGRAY);
 	setfillcolor(GREEN);
@@ -96,7 +101,8 @@ void gameScene(void)
 	}
 }
 
-int main()
+int
+main()
 {
 	setinitmode(INIT_ANIMATION);
 	initgraph(640, 480);
