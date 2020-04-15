@@ -42,6 +42,59 @@ _save_brush(IMAGE* img, int save)
 	return 0;
 }
 
+::DWORD
+upattern2array(unsigned short upattern, ::DWORD style[]) ynothrow
+{
+	::DWORD bn(0), len(1);
+	bool st((upattern & 1) != 0);
+
+	for(size_t n(1); n < 16; ++n)
+	{
+		const bool cbit((upattern & (1 << n)) != 0);
+
+		if(st == cbit)
+			++len;
+		else
+		{
+			st = cbit;
+			style[bn++] = len;
+			len = 1;
+		}
+	}
+	style[bn] = len;
+	++bn;
+	if((upattern & 1) == 0 && bn % 2 == 0)
+	{
+		const auto p0(style[0]);
+
+		for(size_t i(0); i < bn - 1; ++i)
+			style[i] = style[i + 1];
+		style[bn - 1] = p0;
+	}
+	return bn;
+}
+
+void
+update_ls_pen(::HDC h_dc, ::COLORREF bgrcolor, int linestyle, int thickness,
+	int upattern) ynothrow
+{
+	if(const auto hpen = [&]() ynothrow -> ::HPEN{
+		const ::LOGBRUSH lbr{BS_SOLID, bgrcolor, 0};
+		const int
+			ls(linestyle | PS_GEOMETRIC | PS_ENDCAP_ROUND | PS_JOIN_ROUND);
+
+		if(linestyle == USERBIT_LINE)
+		{
+			::DWORD style[20]{0};
+
+			return ::ExtCreatePen(ls, thickness, &lbr,
+				upattern2array(upattern, style), style);
+		}
+		return ::ExtCreatePen(ls, thickness, &lbr, 0, {});
+	}())
+		::DeleteObject(::SelectObject(h_dc, hpen));
+}
+
 } // unnamed namespace;
 
 
@@ -116,54 +169,15 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 {
 	auto& img(cimg_ref_c(pimg));
 
-	::LOGPEN lpen{0, ::POINT(), RGBTOBGR(getcolor(pimg))};
-
-	img.m_linestyle.thickness = thickness;
-	img.m_linewidth = float(thickness);
-	img.m_linestyle.linestyle = linestyle;
-	img.m_linestyle.upattern = upattern;
-	lpen.lopnWidth.x = thickness;
-	lpen.lopnStyle   = linestyle;
-
-	::HPEN hpen;
-
-	if(linestyle == PS_USERSTYLE)
+	if(const auto h_dc = img.getdc())
 	{
-		unsigned long style[20]{0};
-		::LOGBRUSH lbr{BS_SOLID, lpen.lopnColor, 0};
-		int n, bn = 0, len = 1, st(upattern & 1);
-
-		for(n = 1; n < 16; n++)
-		{
-			if(upattern & (1 << n))
-			{
-				if(st == 0)
-				{
-					st = 1;
-					style[bn++] = len;
-					len = 1;
-				}
-				else
-					++len;
-			}
-			else
-			{
-				if(st == 0)
-					++len;
-				else
-				{
-					st = 0;
-					style[bn++] = len;
-					len = 1;
-				}
-			}
-		}
-		hpen = ExtCreatePen(PS_GEOMETRIC, thickness, &lbr, bn, style);
+		img.m_linestyle.thickness = thickness;
+		img.m_linewidth = float(thickness);
+		img.m_linestyle.linestyle = linestyle;
+		img.m_linestyle.upattern = upattern;
+		update_ls_pen(h_dc, RGBTOBGR(img.m_color), linestyle, thickness,
+			upattern);
 	}
-	else
-		hpen = ::CreatePenIndirect(&lpen);
-	if(hpen)
-		::DeleteObject(::SelectObject(img.getdc(), hpen));
 }
 
 void
@@ -171,8 +185,15 @@ setlinewidth(float width, IMAGE* pimg)
 {
 	auto& img(cimg_ref_c(pimg));
 
-	img.m_linestyle.thickness = int(width);
-	img.m_linewidth = width;
+	if(const auto h_dc = img.getdc())
+	{
+		const int thickness = int(width);
+
+		img.m_linestyle.thickness = thickness;
+		img.m_linewidth = width;
+		update_ls_pen(h_dc, RGBTOBGR(img.m_color), img.m_linestyle.linestyle,
+			thickness, img.m_linestyle.upattern);
+	}
 }
 
 void
@@ -257,53 +278,14 @@ setcolor(color_t color, IMAGE* pimg)
 {
 	auto& img(cimg_ref(pimg));
 
-	if(img.getdc())
+	if(const auto h_dc = img.getdc())
 	{
-		::LOGPEN lPen;
-		::HPEN hpen;
+		const auto bgrcolor(RGBTOBGR(color));
 
 		img.m_color = color;
-		lPen.lopnColor = RGBTOBGR(color);
-		lPen.lopnStyle = img.m_linestyle.linestyle;
-		lPen.lopnWidth.x = img.m_linestyle.thickness;
-		::SetTextColor(img.getdc(), color);
-		if(lPen.lopnStyle == PS_USERSTYLE)
-		{
-			unsigned long style[20]{};
-			::LOGBRUSH lbr{BS_SOLID, lPen.lopnColor, 0};
-			unsigned short upattern = img.m_linestyle.upattern;
-			int n, bn = 0, len = 1, st(upattern & 1);
-
-			for(n = 1; n < 16; n++)
-				if(upattern & (1 << n))
-				{
-					if(st == 0)
-					{
-						st = 1;
-						style[bn++] = len;
-						len = 1;
-					}
-					else
-						++len;
-				}
-				else
-				{
-					if(st == 0)
-						++len;
-					else
-					{
-						st = 0;
-						style[bn++] = len;
-						len = 1;
-					}
-				}
-			hpen = ::ExtCreatePen(PS_GEOMETRIC, img.m_linestyle.thickness,
-				&lbr, bn, style);
-		}
-		else
-			hpen = ::CreatePenIndirect(&lPen);
-		if(hpen)
-			::DeleteObject(::SelectObject(img.getdc(), hpen));
+		update_ls_pen(h_dc, bgrcolor, img.m_linestyle.linestyle,
+			img.m_linestyle.thickness, img.m_linestyle.upattern);
+		::SetTextColor(h_dc, bgrcolor);
 	}
 }
 
