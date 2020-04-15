@@ -118,6 +118,7 @@
 			<Add option="-Wlogical-op" />
 			<Add option="-Wtrampolines" />
 			<Add option="-Wconditionally-supported" />
+			<Add option="-Wno-noexcept-type" />
 			<Add option="-Wstrict-null-sentinel" />
 			<Add option="-fdata-sections" />
 			<Add option="-ffunction-sections" />
