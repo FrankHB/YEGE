@@ -152,10 +152,8 @@ public:
 	bool
 	_mousemsg();
 
-#if !YEGE_Use_YSLib
 	void
 	_on_destroy();
-#endif
 
 	void
 	_on_key(unsigned, unsigned long, ::LPARAM);

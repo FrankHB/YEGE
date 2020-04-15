@@ -243,12 +243,10 @@ EGEApplication::EGEApplication(SDst w, SDst h)
 	dc_w = w == 0 ? rect.right : int(w);
 	dc_h = h == 0 ? rect.bottom : int(h);
 }
-
 EGEApplication::~EGEApplication()
 {
 #if YEGE_Use_YSLib
 	_uninit();
-	ys_pnl.reset();
 	yassume(ys_thrd.joinable());
 	ys_thrd.join();
 	YTraceDe(Debug, "YSLib main thread finished.");
@@ -478,7 +476,7 @@ EGEApplication::_init_graph_x()
 	ys_window = dynamic_cast<HostRenderer&>(ShowTopLevel(*ys_pnl, g_wstyle,
 		g_wstyle_ex)).GetWindowPtr();
 	ys_window->MessageMap[WM_DESTROY] += [this]{
-		_uninit();
+		_on_destroy();
 	};
 	const auto native_ys_window(Deref(ys_window).GetNativeHandle());
 
@@ -595,18 +593,28 @@ EGEApplication::_mousemsg()
 	return _is_run() && bool(_peekmouse().hwnd);
 }
 
-#if !YEGE_Use_YSLib
 void
 EGEApplication::_on_destroy()
 {
+#if YEGE_Use_YSLib
+	if(::IsWindow(hwnd))
+		::ShowWindow(hwnd, SW_HIDE);
+	YSLib::PostQuitMessage(0);
+	if(ui_thread.joinable())
+		ui_thread.detach();
+	YTraceDe(Debug, "UI thread detached.");
+	if(use_force_exit)
+		::ExitProcess(0);
+	yassume(!_is_run());
+#else
 	yassume(_is_run());
 
 	::PostQuitMessage(0);
 	ui_thread.detach();
 	if(use_force_exit)
 		::ExitProcess(0);
-}
 #endif
+}
 
 void
 EGEApplication::_on_key(unsigned message, unsigned long keycode,
@@ -836,15 +844,8 @@ EGEApplication::_uninit()
 {
 	YTraceDe(Informative, "Ready to call destroy method.");
 #if YEGE_Use_YSLib
-	if(::IsWindow(hwnd))
-		::ShowWindow(hwnd, SW_HIDE);
-	YSLib::PostQuitMessage(0);
-	if(ui_thread.joinable())
-		ui_thread.detach();
-	YTraceDe(Debug, "UI thread detached.");
-	if(use_force_exit)
-		::ExitProcess(0);
-	yassume(!_is_run());
+	_on_destroy();
+	ys_pnl.reset();
 #endif
 	YTraceDe(Informative, "Destroy call finished.");
 }
