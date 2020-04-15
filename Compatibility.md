@@ -24,6 +24,8 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 * 修复函数 `getch` 阻塞不返回（自从 19.01 ）。
 * 修复函数 `setcolor` 、`setlinestyle` 和 `setlinewidth` 并简化实现。
 	* 参见 [wysaid/xege pull request 13](https://github.com/wysaid/xege/pull/13) 。
+* 修复函数 `ege_setalpha` 对无效的 `IMAGE`（未成功初始化的图像）缺少检查。
+	* 另见 [wysaid/xege pull request 16](https://github.com/wysaid/xege/pull/16) 。
 
 ### 非外部依赖项代码风格和格式
 

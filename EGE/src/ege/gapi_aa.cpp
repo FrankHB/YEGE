@@ -228,17 +228,21 @@ void
 ege_setalpha(int alpha, IMAGE* pimg)
 {
 	auto& img(cimg_ref(pimg));
-	const int a(alpha << 24);
-	const int w(img.GetWidth()), h(img.GetHeight());
 
-	for(int y = 0; y < h; ++y)
-		for(int x = 0; x < w; ++x)
-		{
-			int c = getpixel_f(x, y, &img);
+	if(img.getdc())
+	{
+		const int a(alpha << 24);
+		const int w(img.GetWidth()), h(img.GetHeight());
 
-			c = a | (c & 0xFFFFFF);
-			putpixel_f(x, y, c, &img);
-		}
+		for(int y = 0; y < h; ++y)
+			for(int x = 0; x < w; ++x)
+			{
+				int c = getpixel_f(x, y, &img);
+
+				c = a | (c & 0xFFFFFF);
+				putpixel_f(x, y, c, &img);
+			}
+	}
 }
 
 void
