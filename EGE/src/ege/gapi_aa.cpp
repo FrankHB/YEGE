@@ -4,6 +4,7 @@
 #include "global.h"
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
 #include <gdiplus.h>
+#include <type_traits> // for std::decay;
 
 namespace ege
 {
@@ -231,16 +232,17 @@ ege_setalpha(int alpha, IMAGE* pimg)
 
 	if(img.getdc())
 	{
-		const int a(alpha << 24);
-		const int w(img.GetWidth()), h(img.GetHeight());
+		const auto w(img.GetWidth()), h(img.GetHeight());
+		const auto buf(img.getbuffer());
+		typename std::decay<decltype(*buf)>::type a(alpha << 24);
 
-		for(int y = 0; y < h; ++y)
-			for(int x = 0; x < w; ++x)
+		yassume(buf);
+		for(typename std::decay<decltype(h)>::type y(0); y < h; ++y)
+			for(typename std::decay<decltype(w)>::type x(0); x < w; ++x)
 			{
-				int c = getpixel_f(x, y, &img);
+				auto& cref(buf[y * w + x]);
 
-				c = a | (c & 0xFFFFFF);
-				putpixel_f(x, y, c, &img);
+				cref = a | (cref & 0xFFFFFF);
 			}
 	}
 }
