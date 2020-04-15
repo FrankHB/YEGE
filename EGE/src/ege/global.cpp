@@ -247,9 +247,16 @@ EGEApplication::~EGEApplication()
 {
 #if YEGE_Use_YSLib
 	_uninit();
+	// XXX: The code in %ys_thrd may be interrupted due to the termination of
+	//	the program. The shell (%hShel) may remain.
 	yassume(ys_thrd.joinable());
 	ys_thrd.join();
 	YTraceDe(Debug, "YSLib main thread finished.");
+	// XXX: This is called here instead of the destructor of %Application to
+	//	suppress determinstic warning, as well as to make it before the cleanup
+	//	of other resources (e.g. the following GDI+ shundown), even it is
+	//	optional after YSLib b888.
+	hShell = {};
 #else
 	if(ui_thread.joinable())
 		ui_thread.join();
