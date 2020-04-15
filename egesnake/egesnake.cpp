@@ -34,27 +34,39 @@ newFruit()
 int
 moveSnake(const int dx, const int dy, const bool u = {})
 {
-	if(u && dx + (game.dir & 3) == 1 && dy + (game.dir >> 2) == 1) return 1;
+	if(u && dx + (game.dir & 3) == 1 && dy + (game.dir >> 2) == 1)
+		return 1;
+
 	int nh;
+
 	if(dx && !dy)
 	{
 		nh = game.head % MAP_W + dx;
-		if(nh < 0 || nh >= MAP_W) return 0;
+		if(nh < 0 || nh >= MAP_W)
+			return 0;
 		nh = game.head + dx;
 	}
 	else
 	{
 		nh = game.head / MAP_W + dy;
-		if(nh < 0 || nh >= MAP_H) return 0;
+		if(nh < 0 || nh >= MAP_H)
+			return 0;
 		nh = game.head + dy * MAP_W;
 	}
 	int s = game.pool[nh] >> 16;
-	if(s == 1) return 0;
-	if(s == 2) game.inc += 5, newFruit();
-	if(game.inc > 0) --game.inc;
+	if(s == 1)
+		return 0;
+	if(s == 2)
+	{
+		game.inc += 5;
+		newFruit();
+	}
+	if(game.inc > 0)
+		--game.inc;
 	else
 	{
-		game.tail = game.pool[s = game.tail] & 0xffff;
+		s = game.tail;
+		game.tail = game.pool[s] & 0xffff;
 		game.pool[s] = 0, drawAt(s);
 	}
 	game.pool[game.head] |= nh;
@@ -67,8 +79,9 @@ void
 gameInit()
 {
 	int data[]{6, 0, 2, 0, 0x10000};
+
 	std::memset(game.pool, 0, sizeof(game.pool));
-	memmove(&game, data, sizeof(data));
+	std::memmove(&game, data, sizeof(data));
 }
 
 void
@@ -83,14 +96,18 @@ gameScene()
 		while(kbhit())
 		{
 			int key = getch() | 0x20;
-			if(key == (27 | 0x20)) return;
+
+			if(key == (27 | 0x20))
+				return;
 			if(key == 'a' || key == 'd')
 			{
-				if(!moveSnake(((key - 'a') >> 1 << 1) - 1, 0, true)) return;
+				if(!moveSnake(((key - 'a') >> 1 << 1) - 1, 0, true))
+					return;
 			}
 			else if(key == 's' || key == 'w')
 			{
-				if(!moveSnake(0, 1 - ((key - 's') >> 2 << 1), true)) return;
+				if(!moveSnake(0, 1 - ((key - 's') >> 2 << 1), true))
+					return;
 			}
 		}
 		if(c < 0)
