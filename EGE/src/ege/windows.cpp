@@ -58,7 +58,9 @@ ScreenBuffer::ScreenBuffer(ScreenBuffer&& sbuf) ynothrow
 }
 ScreenBuffer::~ScreenBuffer()
 {
-	::DeleteObject(hBitmap);
+	if(hBitmap)
+		// XXX: Error ignored.
+		::DeleteObject(hBitmap);
 }
 
 ScreenBuffer&
