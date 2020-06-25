@@ -1,4 +1,4 @@
-# YEGE
+﻿# YEGE
 
 Yet another EGE library
 
