@@ -37,10 +37,10 @@ namespace
 struct WDC
 {
 	::HDC dc;
+
 	WDC()
 		: dc(::GetDC({}))
 	{}
-
 	~WDC()
 	{
 		::ReleaseDC({}, dc);
