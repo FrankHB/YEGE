@@ -10,7 +10,7 @@ Licensed GNU LGPLv3.
 
 See [Compatibility.md](Compatibility.md) (zh-CN) for details about modification of features & compatibility issues.
 
- YEGE 库和 EGE 图形库的一个接口类似的库。
+YEGE 库和 EGE 图形库的一个接口类似的库。
 
 代码来源于 EGE 13.03 。
 
