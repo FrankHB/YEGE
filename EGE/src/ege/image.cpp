@@ -8,7 +8,10 @@
 #include "ege/gapi.h"
 #include "ege/gapi_aa.h"
 #include "ege/img.h"
-#if !YEGE_Use_YSLib
+#if YEGE_Use_YSLib
+#	include YFM_Win32_YCLib_NLS // for platform_ex::MBCSToWCS,
+//	platform_ex::WCSToMBCS;
+#else
 #	include <ocidl.h>
 #	include <olectl.h>
 #	include <png.h>
@@ -294,36 +297,69 @@ IMAGE::getpngimg(std::FILE* fp)
 #endif
 }
 
+void
+IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
+{
+	if(Resize(srcWidth, srcHeight) == 0)
+		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight,
+			cimg_ref_c(pSrcImg).m_hDC, srcX, srcY, SRCCOPY);
+}
+graphics_errors
+IMAGE::getimage(::HRSRC hrsrc)
+{
+	if(const auto hg = ::LoadResource({}, hrsrc))
+		if(const auto pvRes = ::LockResource(hg))
+			return getimage(pvRes, ::SizeofResource({}, hrsrc));
+	return grIOerror;
+}
+graphics_errors
+IMAGE::getimage(void* pMem, unsigned long dwSize)
+{
+	assert(pMem);
 #if YEGE_Use_YSLib
-graphics_errors
-IMAGE::getimage(HBitmap&& bitmap)
-{
 	try
 	{
-		const Size& s(bitmap.GetSize());
+		const auto p(static_cast<ystdex::octet*>(pMem));
 
-		Resize(s);
-
-		// XXX: Use raw conversion without buffer to improve performance.
-		std::copy_n(CompactPixmap(bitmap).GetBufferPtr(),
-			s.Width * s.Height, sbuf.GetBufferPtr());
-		return grOk;
+		return getimage_b(
+			HBitmap(ImageMemory(vector<octet>(p, p + size_t(dwSize)))));
+	}
+	catch(std::bad_alloc&)
+	{
+		return grAllocError;
 	}
 	catch(std::exception&)
 	{}
 	return grIOerror;
-}
-graphics_errors
-IMAGE::getimage(ystdex::octet* p, size_t l)
-{
-	try
+#else
+	if(pMem)
 	{
-		return getimage(HBitmap(ImageMemory(vector<octet>(p, p + l))));
+		auto hGlobal(::GlobalAlloc(GMEM_MOVEABLE, dwSize));
+		void* pvData;
+
+		if(!hGlobal || !(pvData = ::GlobalLock(hGlobal)))
+			return grAllocError;
+		std::memcpy(pvData, pMem, dwSize);
+		::GlobalUnlock(hGlobal);
+
+		::IStream* pStm;
+
+		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
+			return grNullPointer;
+
+		::IPicture* pPicture;
+
+		const auto hr(::OleLoadPicture(pStm, long(dwSize), TRUE,
+			::IID_IPicture, reinterpret_cast<void**>(&pPicture)));
+
+		::GlobalFree(hGlobal);
+		if(!FAILED(hr))
+			return getimage_b(pPicture);
 	}
-	catch(std::exception&)
-	{}
 	return grIOerror;
+#endif
 }
+#if YEGE_Use_YSLib
 graphics_errors
 IMAGE::getimage(const char* filename)
 {
@@ -335,57 +371,31 @@ IMAGE::getimage(const wchar_t* filename)
 	try
 	{
 		// XXX: URL unsupported.
-		return getimage(HBitmap(reinterpret_cast<const char16_t*>(filename)));
+		return getimage_b(HBitmap(reinterpret_cast<const char16_t*>(filename)));
 	}
 	catch(std::exception&)
 	{}
 	return grIOerror;
 }
-graphics_errors
-IMAGE::getimage(const char* pResType, const char* pResName)
-{
-	if(const auto hrsrc = ::FindResourceA(EGEApplication::GetInstance(),
-		pResName, pResType))
-		if(const auto hg = ::LoadResource({}, hrsrc))
-			if(const auto pvRes = ::LockResource(hg))
-				return getimage(static_cast<ystdex::octet*>(pvRes),
-					::SizeofResource({}, hrsrc));
-	return grIOerror;
-}
-graphics_errors
-IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName)
-{
-	if(const auto hrsrc = ::FindResourceW(EGEApplication::GetInstance(),
-		pResName, pResType))
-		if(const auto hg = ::LoadResource({}, hrsrc))
-			if(const auto pvRes = ::LockResource(hg))
-				return getimage(static_cast<ystdex::octet*>(pvRes),
-					::SizeofResource({}, hrsrc));
-	return grIOerror;
-}
 #else
-int
-IMAGE::getimage(const char* filename, int zoomWidth, int zoomHeight)
+graphics_errors
+IMAGE::getimage(const char* filename)
 {
 	if(getimage_pngfile(this, filename) == 0)
-		return 0;
+		return grOk;
 
 	wchar_t wszPath[MAX_PATH * 2 + 1];
 
 	::MultiByteToWideChar(CP_ACP, 0, filename, -1, wszPath, MAX_PATH * 2);
-	return getimage(wszPath, zoomWidth, zoomHeight);
+	return getimage(wszPath);
 }
-int
-IMAGE::getimage(const wchar_t* filename, int, int)
+graphics_errors
+IMAGE::getimage(const wchar_t* filename)
 {
 	if(getimage_pngfile(this, filename) == 0)
-		return 0;
+		return grOk;
 
-	struct ::IPicture* pPicture;
 	wchar_t szPath[MAX_PATH * 2 + 1] = L"";
-	long lWidth, lHeight;
-	long lWidthPixels, lHeightPixels;
-	::HRESULT hr;
 
 	if(std::wcsstr(filename, L"http://"))
 		::lstrcpyW(szPath, filename);
@@ -398,177 +408,78 @@ IMAGE::getimage(const wchar_t* filename, int, int)
 		::lstrcatW(szPath, filename);
 	}
 
+	::IPicture* pPicture;
 	// XXX: Only 'wchar_t' is supported here.
-	hr = ::OleLoadPicturePath(szPath, {}, 0, 0, ::IID_IPicture,
+	::HRESULT hr = ::OleLoadPicturePath(szPath, {}, 0, 0, ::IID_IPicture,
 		reinterpret_cast<void**>(&pPicture));
+
 	if(FAILED(hr))
 		return grIOerror;
-
-	auto& img(get_pages().get_target_ref());
-
-	pPicture->get_Width(&lWidth);
-	lWidthPixels
-		= ::MulDiv(lWidth, ::GetDeviceCaps(img.m_hDC, LOGPIXELSX), 2540);
-	pPicture->get_Height(&lHeight);
-	lHeightPixels
-		= ::MulDiv(lHeight, ::GetDeviceCaps(img.m_hDC, LOGPIXELSY), 2540);
-	Resize(lWidthPixels, lHeightPixels);
-	pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-		lWidth, -lHeight, {});
-	pPicture->Release();
-	return grOk;
+	return getimage_b(pPicture);
 }
-int
-IMAGE::getimage(const char* pResType, const char* pResName, int, int)
+#endif
+graphics_errors
+IMAGE::getimage(const char* pResType, const char* pResName)
 {
 	if(const auto hrsrc = ::FindResourceA(EGEApplication::GetInstance(),
 		pResName, pResType))
-	{
-		auto hg(::LoadResource({}, hrsrc));
-		auto dwSize(::SizeofResource({}, hrsrc));
-		auto hGlobal(::GlobalAlloc(GMEM_MOVEABLE, dwSize));
-		auto pvRes(::LockResource(hg));
-		void* pvData;
-		IPicture* pPicture;
-		IStream* pStm;
-		long lWidth, lHeight;
-		long lWidthPixels, lHeightPixels;
-		::HRESULT hr;
-
-		if(!hGlobal || !(pvData = ::GlobalLock(hGlobal)))
-			return grAllocError;
-		std::memcpy(pvData, pvRes, dwSize);
-		::GlobalUnlock(hGlobal);
-		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
-			return grNullPointer;
-
-		hr = ::OleLoadPicture(pStm, long(dwSize), TRUE, ::IID_IPicture,
-			reinterpret_cast<void**>(&pPicture));
-		::GlobalFree(hGlobal);
-		if(FAILED(hr))
-			return grIOerror;
-
-		auto& img(get_pages().get_target_ref());
-
-		pPicture->get_Width(&lWidth);
-		lWidthPixels
-			= ::MulDiv(lWidth, ::GetDeviceCaps(img.m_hDC, LOGPIXELSX), 2540);
-		pPicture->get_Height(&lHeight);
-		lHeightPixels
-			= ::MulDiv(lHeight, ::GetDeviceCaps(img.m_hDC, LOGPIXELSY), 2540);
-		Resize(lWidthPixels, lHeightPixels);
-		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-			lWidth, -lHeight, {});
-		pPicture->Release();
-		return grOk;
-	}
+		return getimage(hrsrc);
 	return grIOerror;
 }
-int
-IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName, int, int)
+graphics_errors
+IMAGE::getimage(const wchar_t* pResType, const wchar_t* pResName)
 {
 	if(const auto hrsrc = ::FindResourceW(EGEApplication::GetInstance(),
 		pResName, pResType))
-	{
-		auto hg = ::LoadResource({}, hrsrc);
-		auto dwSize = ::SizeofResource({}, hrsrc);
-		auto hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, dwSize);
-		auto pvRes = ::LockResource(hg);
-		void* pvData;
-		IPicture* pPicture;
-		IStream* pStm;
-		long lWidth, lHeight;
-		long lWidthPixels, lHeightPixels;
-
-		if(!hGlobal || !(pvData = ::GlobalLock(hGlobal)))
-			return grAllocError;
-		std::memcpy(pvData, pvRes, dwSize);
-		::GlobalUnlock(hGlobal);
-		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
-			return grNullPointer;
-
-		auto hr(::OleLoadPicture(pStm, long(dwSize), TRUE, ::IID_IPicture,
-			reinterpret_cast<void**>(&pPicture)));
-
-		::GlobalFree(hGlobal);
-		if(FAILED(hr))
-			return grIOerror;
-
-		auto& img(get_pages().get_target_ref());
-
-		pPicture->get_Width(&lWidth);
-		lWidthPixels
-			= ::MulDiv(lWidth, ::GetDeviceCaps(img.m_hDC, LOGPIXELSX), 2540);
-		pPicture->get_Height(&lHeight);
-		lHeightPixels
-			= ::MulDiv(lHeight, ::GetDeviceCaps(img.m_hDC, LOGPIXELSY), 2540);
-		Resize(lWidthPixels, lHeightPixels);
-		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-			lWidth, -lHeight, {});
-		pPicture->Release();
-		return grOk;
-	}
+		return getimage(hrsrc);
 	return grIOerror;
 }
-int
-IMAGE::getimage(void * pMem, long size)
+
+#if YEGE_Use_YSLib
+graphics_errors
+IMAGE::getimage_b(HBitmap&& bitmap)
 {
-	if(pMem)
+	try
 	{
-		unsigned long dwSize = size;
-		::HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, dwSize);
-		void* pvData;
-		struct IPicture* pPicture;
-		IStream* pStm;
-		long lWidth, lHeight;
-		long lWidthPixels, lHeightPixels;
-		::HRESULT hr;
+		const Size& s(bitmap.GetSize());
 
-		if(!hGlobal || !(pvData = ::GlobalLock(hGlobal)))
-		{
-			return grAllocError;
-		}
-		std::memcpy(pvData, pMem, dwSize);
-		::GlobalUnlock(hGlobal);
-		if(S_OK != ::CreateStreamOnHGlobal(hGlobal, TRUE, &pStm))
-		{
-			return grNullPointer;
-		}
+		Resize(s);
 
-		hr = ::OleLoadPicture(pStm, long(dwSize), TRUE, ::IID_IPicture,
-			reinterpret_cast<void**>(&pPicture));
-
-		::GlobalFree(hGlobal);
-
-		if(FAILED(hr))
-		{
-			return grIOerror;
-		}
-
-		auto& img(get_pages().get_target_ref());
-
-		pPicture->get_Width(&lWidth);
-		lWidthPixels
-			= ::MulDiv(lWidth, ::GetDeviceCaps(img.m_hDC, LOGPIXELSX), 2540);
-		pPicture->get_Height(&lHeight);
-		lHeightPixels
-			= ::MulDiv(lHeight, ::GetDeviceCaps(img.m_hDC, LOGPIXELSY), 2540);
-		Resize(lWidthPixels, lHeightPixels);
-		pPicture->Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
-			lWidth, -lHeight, {});
-		pPicture->Release();
+		// XXX: Use raw conversion without buffer to improve performance.
+		std::copy_n(CompactPixmap(bitmap).GetBufferPtr(),
+			s.Width * s.Height, sbuf.GetBufferPtr());
 		return grOk;
 	}
+	catch(std::bad_alloc&)
+	{
+		return grAllocError;
+	}
+	catch(std::exception&)
+	{}
 	return grIOerror;
+}
+#else
+graphics_errors
+IMAGE::getimage_b(void* p_pic)
+{
+	auto& pic(*static_cast<::IPicture*>(p_pic));
+	auto& img(get_pages().get_target_ref());
+	long lWidth, lHeight;
+	long lWidthPixels, lHeightPixels;
+
+	pic.get_Width(&lWidth);
+	lWidthPixels
+		= ::MulDiv(lWidth, ::GetDeviceCaps(img.m_hDC, LOGPIXELSX), 2540);
+	pic.get_Height(&lHeight);
+	lHeightPixels
+		= ::MulDiv(lHeight, ::GetDeviceCaps(img.m_hDC, LOGPIXELSY), 2540);
+	Resize(lWidthPixels, lHeightPixels);
+	pic.Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
+		lWidth, -lHeight, {});
+	pic.Release();
+	return grOk;
 }
 #endif
-void
-IMAGE::getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight)
-{
-	if(Resize(srcWidth, srcHeight) == 0)
-		::BitBlt(m_hDC, 0, 0, srcWidth, srcHeight,
-			cimg_ref_c(pSrcImg).m_hDC, srcX, srcY, SRCCOPY);
-}
 
 void
 IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
