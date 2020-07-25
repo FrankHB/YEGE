@@ -17,9 +17,9 @@
 #define ARCH L"x86"
 #endif
 
-#define TOSTRING_(x) #x
-#define TOSTRING(x) TOSTRING_(x)
-#define GCC_VER TOSTRING(__GNUC__) L"." TOSTRING(__GNUC_MINOR__) L"." TOSTRING(__GNUC_PATCHLEVEL__)
+#define EGE_TOSTR_(x) #x
+#define EGE_TOSTR(x) EGE_TOSTR_(x)
+#define GCC_VER EGE_TOSTR(__GNUC__) L"." EGE_TOSTR(__GNUC_MINOR__) L"." EGE_TOSTR(__GNUC_PATCHLEVEL__)
 
 #define EGE_TITLE L"yEGE13.04 GCC" GCC_VER ARCH
 
