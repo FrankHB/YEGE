@@ -10,16 +10,16 @@ namespace ege
 //图片函数
 
 EGEAPI int
-getwidth(IMAGE* pimg = {}); //获取图片宽度
+getwidth(const IMAGE* pimg = {}); //获取图片宽度
 
 EGEAPI int
-getheight(IMAGE* pimg = {}); //获取图片高度
+getheight(const IMAGE* pimg = {}); //获取图片高度
 
 EGEAPI int
-getx(IMAGE* pimg = {}); //获取当前 x 坐标
+getx(const IMAGE* pimg = {}); //获取当前 x 坐标
 
 EGEAPI int
-gety(IMAGE* pimg = {}); //获取当前 y 坐标
+gety(const IMAGE* pimg = {}); //获取当前 y 坐标
 
 
 EGEAPI IMAGE*
@@ -28,10 +28,12 @@ EGEAPI IMAGE*
 newimage(int width, int height);
 
 EGEAPI void
-delimage(IMAGE* pimg);
+delimage(const IMAGE* pimg);
 
 void* EGEAPI
 getbuffer(IMAGE* pimg);
+const void* EGEAPI
+getbuffer(const IMAGE* pimg);
 
 
 //! \pre 间接断言：\c pDstImg 。
@@ -40,15 +42,17 @@ EGEAPI int
 resize(IMAGE* pDstImg, int width, int height); //重设尺寸
 
 EGEAPI void
-getimage(IMAGE* pDstImg, int srcX, int srcY, int srcWidth, int srcHeight);             //从屏幕获取图像
+getimage(IMAGE* pDstImg, int srcX, int srcY, int srcWidth, int srcHeight);
+	//从屏幕获取图像
 EGEAPI void
-getimage(IMAGE* pDstImg, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);   //从另一个 IMAGE* 对象中获取图像
+getimage(IMAGE* pDstImg, const IMAGE* pSrcImg, int srcX, int srcY, int srcWidth,
+	int srcHeight);   //从另一个 IMAGE* 对象中获取图像
 //@}
 
 EGEAPI int
 putimage_transparent(
 	IMAGE* imgdest,         //handle to dest
-	IMAGE* imgsrc,          //handle to source
+	const IMAGE* imgsrc,          //handle to source
 	int nXOriginDest,       //x-coord of destination upper-left corner
 	int nYOriginDest,       //y-coord of destination upper-left corner
 	color_t crTransparent,  //color to make transparent
@@ -61,7 +65,7 @@ putimage_transparent(
 EGEAPI int
 putimage_alphablend(
 	IMAGE* imgdest,         //handle to dest
-	IMAGE* imgsrc,          //handle to source
+	const IMAGE* imgsrc,          //handle to source
 	int nXOriginDest,       //x-coord of destination upper-left corner
 	int nYOriginDest,       //y-coord of destination upper-left corner
 	unsigned char alpha,    //alpha
@@ -74,7 +78,7 @@ putimage_alphablend(
 EGEAPI int
 putimage_alphatransparent(
 	IMAGE* imgdest,         //handle to dest
-	IMAGE* imgsrc,          //handle to source
+	const IMAGE* imgsrc,          //handle to source
 	int nXOriginDest,       //x-coord of destination upper-left corner
 	int nYOriginDest,       //y-coord of destination upper-left corner
 	color_t crTransparent,  //color to make transparent
@@ -88,7 +92,7 @@ putimage_alphatransparent(
 EGEAPI int
 putimage_withalpha(
 	IMAGE* imgdest,         //handle to dest
-	IMAGE* imgsrc,          //handle to source
+	const IMAGE* imgsrc,          //handle to source
 	int nXOriginDest,       //x-coord of destination upper-left corner
 	int nYOriginDest,       //y-coord of destination upper-left corner
 	int nXOriginSrc = 0,    //x-coord of source upper-left corner
@@ -111,7 +115,7 @@ imagefilter_blurring(
 EGEAPI int
 putimage_rotate(
 	IMAGE* imgdest,
-	IMAGE* imgtexture,
+	const IMAGE* imgtexture,
 	int nXOriginDest,
 	int nYOriginDest,
 	float centerx,
@@ -125,7 +129,7 @@ putimage_rotate(
 EGEAPI int
 putimage_rotatezoom(
 	IMAGE* imgdest,
-	IMAGE* imgtexture,
+	const IMAGE* imgtexture,
 	int nXOriginDest,
 	int nYOriginDest,
 	float centerx,

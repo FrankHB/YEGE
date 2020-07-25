@@ -59,7 +59,8 @@ EGEAPI void
 ege_setpattern_none(IMAGE* pimg = {});
 
 EGEAPI void
-ege_setpattern_lineargradient(float x1, float y1, color_t c1, float x2, float y2, color_t c2, IMAGE* pimg = {});
+ege_setpattern_lineargradient(float x1, float y1, color_t c1, float x2,
+	float y2, color_t c2, IMAGE* pimg = {});
 
 EGEAPI void
 ege_setpattern_pathgradient(ege_point center, color_t centercolor, int count,
@@ -71,7 +72,7 @@ ege_setpattern_ellipsegradient(ege_point center, color_t centercolor,
 		IMAGE* pimg = {});
 
 EGEAPI void
-ege_setpattern_texture(IMAGE* srcimg, float x, float y, float w, float h,
+ege_setpattern_texture(const IMAGE* srcimg, float x, float y, float w, float h,
 	IMAGE* pimg = {});
 
 
@@ -82,12 +83,12 @@ EGEAPI void
 ege_gentexture(bool gen, IMAGE* pimg = {});
 
 EGEAPI void
-ege_puttexture(IMAGE* srcimg, float x, float y, float w, float h,
+ege_puttexture(const IMAGE* srcimg, float x, float y, float w, float h,
 	IMAGE* pimg = {});
 EGEAPI void
-ege_puttexture(IMAGE* srcimg, ege_rect dest, IMAGE* pimg = {});
+ege_puttexture(const IMAGE* srcimg, ege_rect dest, IMAGE* pimg = {});
 EGEAPI void
-ege_puttexture(IMAGE* srcimg, ege_rect dest, ege_rect src,
+ege_puttexture(const IMAGE* srcimg, ege_rect dest, ege_rect src,
 	IMAGE* pimg = {});
 
 }

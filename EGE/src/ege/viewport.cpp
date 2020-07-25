@@ -7,9 +7,9 @@ namespace ege
 
 void
 getviewport(int* pleft, int* ptop, int* pright, int* pbottom, int* pclip,
-	IMAGE* pimg)
+	const IMAGE* pimg)
 {
-	auto& vpt(cimg_ref_c(pimg).m_vpt);
+	const auto& vpt(cimg_ref_c(pimg).m_vpt);
 
 	if(pleft)
 		*pleft = vpt.left;

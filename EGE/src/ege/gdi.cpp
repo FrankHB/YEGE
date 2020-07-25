@@ -47,38 +47,39 @@ getimage(IMAGE* pDstImg, const wchar_t* pResType, const wchar_t* pResName, int,
 }
 
 void
-putimage(int dstX, int dstY, IMAGE* pSrcImg, unsigned long dwRop)
+putimage(int dstX, int dstY, const IMAGE* pSrcImg, unsigned long dwRop)
 {
 	Deref(pSrcImg).putimage(dstX, dstY, dwRop);
 }
 void
-putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
+putimage(int dstX, int dstY, int dstWidth, int dstHeight, const IMAGE* pSrcImg,
 	int srcX, int srcY, unsigned long dwRop)
 {
 	Deref(pSrcImg).putimage(dstX, dstY, dstWidth, dstHeight, srcX, srcY, dwRop);
 }
 void
-putimage(IMAGE* pDstImg, int dstX, int dstY, IMAGE* pSrcImg, unsigned long dwRop)
+putimage(IMAGE* pDstImg, int dstX, int dstY, const IMAGE* pSrcImg,
+	unsigned long dwRop)
 {
 	Deref(pSrcImg).putimage(pDstImg, dstX, dstY, dwRop);
 }
 void
 putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
-	IMAGE* pSrcImg, int srcX, int srcY, unsigned long dwRop)
+	const IMAGE* pSrcImg, int srcX, int srcY, unsigned long dwRop)
 {
 	Deref(pSrcImg).putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX,
 		srcY, dwRop);
 }
 void
 putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
-	IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight,
+	const IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight,
 	unsigned long dwRop)
 {
 	Deref(pSrcImg).putimage(pDstImg, dstX, dstY, dstWidth, dstHeight, srcX,
 		srcY, srcWidth, srcHeight, dwRop);
 }
 void
-putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
+putimage(int dstX, int dstY, int dstWidth, int dstHeight, const IMAGE* pSrcImg,
 	int srcX, int srcY, int srcWidth, int srcHeight, unsigned long dwRop)
 {
 	Deref(pSrcImg).putimage({}, dstX, dstY, dstWidth, dstHeight, srcX, srcY,
@@ -86,19 +87,19 @@ putimage(int dstX, int dstY, int dstWidth, int dstHeight, IMAGE* pSrcImg,
 }
 
 int
-saveimage(IMAGE* pimg, const char* filename)
+saveimage(const IMAGE* pimg, const char* filename)
 {
 	return cimg_ref(pimg).saveimage(filename);
 }
 int
-saveimage(IMAGE* pimg, const wchar_t* filename)
+saveimage(const IMAGE* pimg, const wchar_t* filename)
 {
 	return cimg_ref(pimg).saveimage(filename);
 }
 
 
 int
-savepng(IMAGE* pimg, const char* filename, int)
+savepng(const IMAGE* pimg, const char* filename, int)
 {
 #if YEGE_Use_YSLib
 	return cimg_ref(pimg).saveimage(filename, ImageFormat::PNG);
@@ -107,7 +108,7 @@ savepng(IMAGE* pimg, const char* filename, int)
 #endif
 }
 int
-savepng(IMAGE* pimg, const wchar_t* filename, int)
+savepng(const IMAGE* pimg, const wchar_t* filename, int)
 {
 #if YEGE_Use_YSLib
 	return cimg_ref(pimg).saveimage(filename, ImageFormat::PNG);

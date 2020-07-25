@@ -21,7 +21,7 @@ cleardevice(IMAGE* pimg = {});                   //清屏
 //绘图属性
 EGEAPI void
 getlinestyle(int* plinestyle, unsigned short* pupattern = {},
-	int* pthickness = {}, IMAGE* pimg = {}); //获取当前线形
+	int* pthickness = {}, const IMAGE* pimg = {}); //获取当前线形
 
 EGEAPI void
 setlinestyle(int linestyle, unsigned short upattern = 0, int thickness = 1,
@@ -39,13 +39,13 @@ setwritemode(int mode, IMAGE* pimg = {}); //设置绘图位操作模式
 
 //色彩函数
 EGEAPI color_t
-getcolor(IMAGE* pimg = {}); //获取当前绘图前景色
+getcolor(const IMAGE* pimg = {}); //获取当前绘图前景色
 
 EGEAPI color_t
-getfillcolor(IMAGE* pimg = {}); //获取当前绘图填充色
+getfillcolor(const IMAGE* pimg = {}); //获取当前绘图填充色
 
 EGEAPI color_t
-getbkcolor(IMAGE* pimg = {}); //获取当前绘图背景色
+getbkcolor(const IMAGE* pimg = {}); //获取当前绘图背景色
 
 
 EGEAPI void
@@ -74,13 +74,13 @@ setbkmode(int iBkMode, IMAGE* pimg = {});
 //基本绘图函数
 
 EGEAPI color_t
-getpixel(int x, int y, IMAGE* pimg = {}); //获取点的颜色
+getpixel(int x, int y, const IMAGE* pimg = {}); //获取点的颜色
 
 EGEAPI void
 putpixel(int x, int y, color_t color, IMAGE* pimg = {}); //画点
 
 EGEAPI color_t
-getpixel_f(int x, int y, IMAGE* pimg = {}); //获取点的颜色
+getpixel_f(int x, int y, const IMAGE* pimg = {}); //获取点的颜色
 
 EGEAPI void
 putpixel_f(int x, int y, color_t color, IMAGE* pimg = {}); //画点

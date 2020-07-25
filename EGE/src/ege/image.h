@@ -104,7 +104,7 @@ public:
 	}
 
 	void
-	getimage(IMAGE*, int, int, int, int);
+	getimage(const IMAGE*, int, int, int, int);
 	graphics_errors
 	getimage(::HRSRC);
 	graphics_errors
@@ -133,24 +133,25 @@ public:
 	void
 	putimage(IMAGE*, int, int, unsigned long = SRCCOPY) const;
 	void
-	putimage(IMAGE*, int, int, int, int, int, int, unsigned long = SRCCOPY) const;
-	void
-	putimage(IMAGE*, int, int, int, int, int, int, int, int, unsigned long = SRCCOPY)
+	putimage(IMAGE*, int, int, int, int, int, int, unsigned long = SRCCOPY)
 		const;
+	void
+	putimage(IMAGE*, int, int, int, int, int, int, int, int,
+		unsigned long = SRCCOPY) const;
 
 #if YEGE_Use_YSLib
 	int
-	saveimage(const char* filename, ImageFormat = ImageFormat::BMP);
+	saveimage(const char* filename, ImageFormat = ImageFormat::BMP) const;
 	int
-	saveimage(const wchar_t* filename, ImageFormat = ImageFormat::BMP);
+	saveimage(const wchar_t* filename, ImageFormat = ImageFormat::BMP) const;
 #else
 	int
-	saveimage(const char* filename);
+	saveimage(const char* filename) const;
 	int
-	saveimage(const wchar_t* filename);
+	saveimage(const wchar_t* filename) const;
 
 	int
-	savepngimg(std::FILE* fp, int bAlpha);
+	savepngimg(std::FILE* fp, int bAlpha) const;
 #endif
 
 	int
@@ -166,7 +167,7 @@ public:
 		int nYOriginSrc = 0,    // y-coord of source upper-left corner
 		int nWidthSrc = 0,      // width of source rectangle
 		int nHeightSrc = 0      // height of source rectangle
-	);
+	) const;
 
 	int
 	putimage_alphablend(
@@ -178,7 +179,7 @@ public:
 		int nYOriginSrc = 0,    // y-coord of source upper-left corner
 		int nWidthSrc = 0,      // width of source rectangle
 		int nHeightSrc = 0      // height of source rectangle
-	);
+	) const;
 
 	int
 	putimage_alphatransparent(
@@ -191,7 +192,7 @@ public:
 		int nYOriginSrc = 0,    // y-coord of source upper-left corner
 		int nWidthSrc = 0,      // width of source rectangle
 		int nHeightSrc = 0      // height of source rectangle
-	);
+	) const;
 
 	int
 	putimage_withalpha(
@@ -202,7 +203,7 @@ public:
 		int nYOriginSrc = 0,    // y-coord of source upper-left corner
 		int nWidthSrc = 0,      // width of source rectangle
 		int nHeightSrc = 0      // height of source rectangle
-	);
+	) const;
 
 	int
 	putimage_alphafilter(
@@ -214,7 +215,7 @@ public:
 		int nYOriginSrc = 0,    // y-coord of source upper-left corner
 		int nWidthSrc = 0,      // width of source rectangle
 		int nHeightSrc = 0      // height of source rectangle
-	);
+	) const;
 
 	int
 	imagefilter_blurring_4(
@@ -247,7 +248,7 @@ public:
 	);
 
 	int putimage_rotate(
-		IMAGE* imgtexture,
+		const IMAGE* imgtexture,
 		int nXOriginDest,
 		int nYOriginDest,
 		float centerx,
@@ -259,7 +260,7 @@ public:
 	);
 
 	int putimage_rotatezoom(
-		IMAGE* imgtexture,
+		const IMAGE* imgtexture,
 		int nXOriginDest,
 		int nYOriginDest,
 		float centerx,
@@ -275,9 +276,13 @@ public:
 
 IMAGE&
 cimg_ref(IMAGE*);
+const IMAGE&
+cimg_ref(const IMAGE*);
 
 IMAGE&
 cimg_ref_c(IMAGE*);
+const IMAGE&
+cimg_ref_c(const IMAGE*);
 
 } // namespace ege;
 
