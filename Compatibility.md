@@ -36,6 +36,9 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 实现注记：
 
 * 合并部分重复的实现。
+* 重命名部分内部实现使用的宏。
+	* 参见 [wysaid/xege pull request 26](https://github.com/wysaid/xege/pull/26) 。
+* 更新默认窗口标题。
 
 ### 非外部依赖项代码风格和格式
 
