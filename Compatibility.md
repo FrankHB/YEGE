@@ -48,7 +48,8 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 
 具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
 
-* `ExtC`
+* `Ext`
+* `IS`
 
 ## 19.01
 
@@ -353,7 +354,7 @@ EGE 库中加入 `-Wall -Wextra -Wmissing-include-dirs -Wzero-as-null-pointer-co
 
 字面量 `false` 尽可能用 `{}` 代替。
 
-### 标准库使用
+### 外部依赖项使用
 
 标准库实体名称保证 `std::` 起始或使用 `using` 声明/指示。
 

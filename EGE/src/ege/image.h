@@ -104,11 +104,12 @@ public:
 		return Resize(ToSize(width, height));
 	}
 
-#if YEGE_Use_YSLib
+	void
+	getimage(IMAGE*, int, int, int, int);
 	graphics_errors
-	getimage(HBitmap&&);
+	getimage(::HRSRC);
 	graphics_errors
-	getimage(ystdex::octet*, size_t);
+	getimage(void*, unsigned long);
 	graphics_errors
 	getimage(const char*);
 	graphics_errors
@@ -117,21 +118,13 @@ public:
 	getimage(const char*, const char*);
 	graphics_errors
 	getimage(const wchar_t*, const wchar_t*);
-	void
-	getimage(IMAGE*, int, int, int, int);
+
+#if YEGE_Use_YSLib
+	graphics_errors
+	getimage_b(HBitmap&&);
 #else
-	void
-	getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);
-	int
-	getimage(const char* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
-	int
-	getimage(const wchar_t* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
-	int
-	getimage(const char* pResType, const char* pResName, int zoomWidth = 0, int zoomHeight = 0);
-	int
-	getimage(const wchar_t* pResType, const wchar_t* pResName, int zoomWidth = 0, int zoomHeight = 0);
-	int
-	getimage(void* pMem, long size);
+	graphics_errors
+	getimage_b(void*);
 #endif
 
 	void
