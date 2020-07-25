@@ -27,6 +27,8 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 * 修复函数 `ege_setalpha` 对无效的 `IMAGE`（未成功初始化的图像）缺少检查。
 	* 另见 [wysaid/xege pull request 16](https://github.com/wysaid/xege/pull/16) 。
 * 优化函数 `ege_setalpha` 的实现。
+* 添加小键盘符号键的键码。
+	* 参见 [wysaid/xege pull request 17](https://github.com/wysaid/xege/pull/17) 。
 
 ### 非外部依赖项代码风格和格式
 
