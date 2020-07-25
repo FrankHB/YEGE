@@ -30,6 +30,8 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 	* 参见 [wysaid/xege pull request 16](https://github.com/wysaid/xege/pull/16) 。
 * 添加小键盘符号键的键码。
 	* 参见 [wysaid/xege pull request 17](https://github.com/wysaid/xege/pull/17) 。
+* 确保函数 `setcolor` 和 `setlinestyle` 忽略颜色 alpha 分量。
+	* 参见 [wysaid/xege pull request 20](https://github.com/wysaid/xege/pull/20) 。
 
 实现注记：
 

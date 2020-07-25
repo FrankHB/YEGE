@@ -175,8 +175,8 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 		img.m_linewidth = float(thickness);
 		img.m_linestyle.linestyle = linestyle;
 		img.m_linestyle.upattern = upattern;
-		update_ls_pen(h_dc, RGBTOBGR(img.m_color), linestyle, thickness,
-			upattern);
+		update_ls_pen(h_dc, RGBTOBGR(img.m_color) & 0x00FFFFFF, linestyle,
+			thickness, upattern);
 	}
 }
 
@@ -280,7 +280,7 @@ setcolor(color_t color, IMAGE* pimg)
 
 	if(const auto h_dc = img.getdc())
 	{
-		const auto bgrcolor(RGBTOBGR(color));
+		const auto bgrcolor(RGBTOBGR(color) & 0x00FFFFFF);
 
 		img.m_color = color;
 		update_ls_pen(h_dc, bgrcolor, img.m_linestyle.linestyle,
