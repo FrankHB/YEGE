@@ -35,6 +35,10 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 * 部分函数类型中添加 `const` 并添加若干 `const` 重载函数。
 	* 参见 [wysaid/xege pull request 31](https://github.com/wysaid/xege/pull/31) 。
 	* `getbuffer` 添加重载后分别返回 `void*` 和 `const void*` 。
+* 检查 `resize` 的参数，在等于 0 也抛出 `std::invalid_argument` 异常，因为之前的实现的行为未定义。
+	* 使用 GDI 实现的 [`diWidth` 的宽度不大于 0 时没有显式定义](https://docs.microsoft.com/en-us/previous-versions/dd183376%28v=vs.85%29) 。
+	* [可出现无法预期的行为](https://github.com/wysaid/xege/issues/2)。
+	* 在 ReactOS 的 `CreateDIBSection` 实现中直接转换为 `ULONG` 值，没有检查。
 
 实现注记：
 
@@ -293,6 +297,7 @@ Code::Blocks 。
 * 移除函数 `attachHWND` 以避免潜在的死锁。
 * 函数 `setrendermode` 无效，默认状态统一为 `setrendermode(RENDER_MANUAL)` ；仅为兼容性保留。
 * 移除类型 `LPCALLBACK_PROC` 、`LPMSG_KEY_PROC` 、`LPMSG_MOUSE_PROC` 、`MSG_KEY_PROC` 和 `MSG_MOUSE_PROC` ，其中 `LPCALLBACK_PROC` 可用 `CALLBACK_PROC*` 代替。
+* 检查 `resize` 的参数，若小于 0 抛出 `std::invalid_argument` 异常。
 
 向后（源代码）兼容但不保证向前兼容原始实现的接口：
 

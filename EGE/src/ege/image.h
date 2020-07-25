@@ -20,7 +20,7 @@ namespace ege
 inline Size
 ToSize(int w, int h)
 {
-	if(w < 0 || h < 0)
+	if(w <= 0 || h <= 0)
 		throw std::invalid_argument("ege::ToSize");
 	return {w, h};
 }
