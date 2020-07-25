@@ -20,7 +20,7 @@ struct viewporttype
 
 EGEAPI void
 getviewport(int* pleft, int* ptop, int* pright, int* pbottom,
-	int* pclip = {}, IMAGE* pimg = {}); //获取视图信息
+	int* pclip = {}, const IMAGE* pimg = {}); //获取视图信息
 
 EGEAPI void
 setviewport(int left, int top, int right, int bottom, int clip = 1,

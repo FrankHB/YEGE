@@ -152,7 +152,7 @@ cleardevice(IMAGE* pimg)
 
 void
 getlinestyle(int* plinestyle, unsigned short* pupattern, int* pthickness,
-	IMAGE* pimg)
+	const IMAGE* pimg)
 {
 	auto& img(cimg_ref_c(pimg));
 
@@ -241,9 +241,9 @@ setwritemode(int mode, IMAGE* pimg)
 
 
 color_t
-getcolor(IMAGE* pimg)
+getcolor(const IMAGE* pimg)
 {
-	auto& img(cimg_ref_c(pimg));
+	const auto& img(cimg_ref_c(pimg));
 
 	if(img.getdc())
 	{
@@ -259,15 +259,15 @@ getcolor(IMAGE* pimg)
 }
 
 color_t
-getfillcolor(IMAGE* pimg)
+getfillcolor(const IMAGE* pimg)
 {
-	auto& img(cimg_ref_c(pimg));
+	const auto& img(cimg_ref_c(pimg));
 
 	return img.getdc() ? img.m_fillcolor : color_t(0xFFFFFFFF);
 }
 
 color_t
-getbkcolor(IMAGE* pimg)
+getbkcolor(const IMAGE* pimg)
 {
 	return cimg_ref_c(pimg).m_bk_color;
 }
@@ -355,7 +355,7 @@ setbkmode(int iBkMode, IMAGE* pimg)
 
 
 color_t
-getpixel(int x, int y, IMAGE* pimg)
+getpixel(int x, int y, const IMAGE* pimg)
 {
 	auto& img(cimg_ref_c(pimg));
 
@@ -378,7 +378,7 @@ putpixel(int x, int y, color_t color, IMAGE* pimg)
 }
 
 color_t
-getpixel_f(int x, int y, IMAGE* pimg)
+getpixel_f(int x, int y, const IMAGE* pimg)
 {
 	auto& img(cimg_ref_c(pimg));
 

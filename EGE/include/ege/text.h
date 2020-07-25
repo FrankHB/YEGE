@@ -102,9 +102,9 @@ EGEAPI void
 setfont(const ::LOGFONTW* font, IMAGE* pimg = {}); // 设置当前字体样式
 
 EGEAPI void
-getfont(::LOGFONTA* font, IMAGE* pimg = {});       // 获取当前字体样式
+getfont(::LOGFONTA* font, const IMAGE* pimg = {});       // 获取当前字体样式
 EGEAPI void
-getfont(::LOGFONTW* font, IMAGE* pimg = {});       // 获取当前字体样式
+getfont(::LOGFONTW* font, const IMAGE* pimg = {});       // 获取当前字体样式
 
 
 //高级输入函数

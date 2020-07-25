@@ -568,14 +568,14 @@ setfont(const ::LOGFONTW* font, IMAGE* pimg)
 }
 
 void
-getfont(::LOGFONTA* font, IMAGE* pimg)
+getfont(::LOGFONTA* font, const IMAGE* pimg)
 {
 	::GetObjectA(::HFONT(::GetCurrentObject(cimg_ref_c(pimg).getdc(), OBJ_FONT)),
 		sizeof(::LOGFONTA), font);
 }
 
 void
-getfont(::LOGFONTW* font, IMAGE* pimg)
+getfont(::LOGFONTW* font, const IMAGE* pimg)
 {
 	::GetObjectW(::HFONT(::GetCurrentObject(cimg_ref_c(pimg).getdc(), OBJ_FONT)),
 		sizeof(::LOGFONTA), font);

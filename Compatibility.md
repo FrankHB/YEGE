@@ -32,6 +32,9 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 	* 参见 [wysaid/xege pull request 17](https://github.com/wysaid/xege/pull/17) 。
 * 确保函数 `setcolor` 和 `setlinestyle` 忽略颜色 alpha 分量。
 	* 参见 [wysaid/xege pull request 20](https://github.com/wysaid/xege/pull/20) 。
+* 部分函数类型中添加 `const` 并添加若干 `const` 重载函数。
+	* 参见 [wysaid/xege pull request 31](https://github.com/wysaid/xege/pull/31) 。
+	* `getbuffer` 添加重载后分别返回 `void*` 和 `const void*` 。
 
 实现注记：
 
@@ -298,6 +301,10 @@ Code::Blocks 。
 * 绘图环境设置、控件和音乐 API 补充遗漏的 `EGEAPI` 以便作为 DLL 使用，但 `fps` 类仅头文件实现而例外。
 * 控件基类 `egeControlBase` 的析构函数保证为 `virtual` 。
 * 宏 `EGEAPI` 支持显式导入和导出。
+
+以下 EGE 13.03 之后的 API 没有修改：
+
+* `getbuffer` 的返回类型保持为 `void*` 而不是 `color_t*` 以避免违反严格别名规则。
 
 兼容接口和实现调整:
 

@@ -9,7 +9,7 @@ namespace
 {
 
 ::POINT
-getxy(IMAGE* pimg)
+getxy(const IMAGE* pimg)
 {
 	::POINT pt;
 
@@ -20,25 +20,25 @@ getxy(IMAGE* pimg)
 } // unnamed namespace;
 
 int
-getwidth(IMAGE* pimg)
+getwidth(const IMAGE* pimg)
 {
 	return cimg_ref_c(pimg).GetWidth();
 }
 
 int
-getheight(IMAGE* pimg)
+getheight(const IMAGE* pimg)
 {
 	return cimg_ref_c(pimg).GetHeight();
 }
 
 int
-getx(IMAGE* pimg)
+getx(const IMAGE* pimg)
 {
 	return getxy(pimg).x;
 }
 
 int
-gety(IMAGE* pimg)
+gety(const IMAGE* pimg)
 {
 	return getxy(pimg).y;
 }
@@ -55,13 +55,18 @@ newimage(int width, int height)
 }
 
 void
-delimage(IMAGE* pimg)
+delimage(const IMAGE* pimg)
 {
 	delete pimg;
 }
 
 void*
 getbuffer(IMAGE* pimg)
+{
+	return cimg_ref_c(pimg).getbuffer();
+}
+const void*
+getbuffer(const IMAGE* pimg)
 {
 	return cimg_ref_c(pimg).getbuffer();
 }
@@ -79,7 +84,7 @@ getimage(IMAGE* pDstImg, int srcX, int srcY, int srcWidth, int srcHeight)
 		srcHeight);
 }
 void
-getimage(IMAGE* pDstImg, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth,
+getimage(IMAGE* pDstImg, const IMAGE* pSrcImg, int srcX, int srcY, int srcWidth,
 	int srcHeight)
 {
 	Deref(pDstImg).getimage(pSrcImg, srcX, srcY, srcWidth, srcHeight);
@@ -89,7 +94,7 @@ getimage(IMAGE* pDstImg, IMAGE* pSrcImg, int srcX, int srcY, int srcWidth,
 int
 putimage_transparent(
 	IMAGE* imgdest,         // handle to dest
-	IMAGE* imgsrc,          // handle to source
+	const IMAGE* imgsrc,          // handle to source
 	int nXOriginDest,       // x-coord of destination upper-left corner
 	int nYOriginDest,       // y-coord of destination upper-left corner
 	color_t crTransparent, // color to make transparent
@@ -99,14 +104,15 @@ putimage_transparent(
 	int nHeightSrc          // height of source rectangle
 )
 {
-	return Deref(imgsrc).putimage_transparent(imgdest, nXOriginDest, nYOriginDest,
-		crTransparent, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
+	return Deref(imgsrc).putimage_transparent(imgdest, nXOriginDest,
+		nYOriginDest, crTransparent, nXOriginSrc, nYOriginSrc, nWidthSrc,
+		nHeightSrc);
 }
 
 int
 putimage_alphablend(
 	IMAGE* imgdest,         // handle to dest
-	IMAGE* imgsrc,          // handle to source
+	const IMAGE* imgsrc,          // handle to source
 	int nXOriginDest,       // x-coord of destination upper-left corner
 	int nYOriginDest,       // y-coord of destination upper-left corner
 	unsigned char alpha,    // alpha
@@ -123,7 +129,7 @@ putimage_alphablend(
 int
 putimage_alphatransparent(
 	IMAGE* imgdest,         // handle to dest
-	IMAGE* imgsrc,          // handle to source
+	const IMAGE* imgsrc,          // handle to source
 	int nXOriginDest,       // x-coord of destination upper-left corner
 	int nYOriginDest,       // y-coord of destination upper-left corner
 	color_t crTransparent, // color to make transparent
@@ -142,7 +148,7 @@ putimage_alphatransparent(
 int
 putimage_withalpha(
 	IMAGE* imgdest,         // handle to dest
-	IMAGE* imgsrc,          // handle to source
+	const IMAGE* imgsrc,          // handle to source
 	int nXOriginDest,       // x-coord of destination upper-left corner
 	int nYOriginDest,       // y-coord of destination upper-left corner
 	int nXOriginSrc,        // x-coord of source upper-left corner
