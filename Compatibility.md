@@ -54,6 +54,7 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 	* 参见 [wysaid/xege pull request 26](https://github.com/wysaid/xege/pull/26) 。
 * 更新默认窗口标题。
 * [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 中的宏 `EGEALPHABLEND` 实现为内部函数。
+* 未定义行为断言失败，不保证终止程序外的具体行为，可能[有不同的实现](https://github.com/wysaid/xege/pull/35)。
 
 ### 非外部依赖项代码风格和格式
 
