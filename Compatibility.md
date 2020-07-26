@@ -39,6 +39,11 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 	* 使用 GDI 实现的 [`diWidth` 的宽度不大于 0 时没有显式定义](https://docs.microsoft.com/en-us/previous-versions/dd183376%28v=vs.85%29) 。
 	* [可出现无法预期的行为](https://github.com/wysaid/xege/issues/2)。
 	* 在 ReactOS 的 `CreateDIBSection` 实现中直接转换为 `ULONG` 值，没有检查。
+* 改用误差更小的 alpha 通道混合算法：不调整 `unsigned char` 值的上界。
+	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
+	* 这和模块 `YSLib::Service::YPixel` 的通用实现更接近，利于以后复用。
+* 函数 `putimage_transparent` 仅比较 RGB 颜色。
+	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
 
 实现注记：
 
@@ -46,6 +51,7 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 * 重命名部分内部实现使用的宏。
 	* 参见 [wysaid/xege pull request 26](https://github.com/wysaid/xege/pull/26) 。
 * 更新默认窗口标题。
+* [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 中的宏 `EGEALPHABLEND` 实现为内部函数。
 
 ### 非外部依赖项代码风格和格式
 

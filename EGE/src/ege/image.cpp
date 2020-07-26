@@ -690,13 +690,14 @@ IMAGE::savepngimg(std::FILE* fp, int bAlpha) const
 
 namespace
 {
+
 void
-fix_rect_1size(IMAGE* pdest, const IMAGE* pSrc,
-	int * nXOriginDest,  // x-coord of destination upper-left corner
-	int * nYOriginDest,  // y-coord of destination upper-left corner
-	int * nXOriginSrc,   // x-coord of source upper-left corner
-	int * nYOriginSrc,   // y-coord of source upper-left corner
-	int * nWidthSrc,     // width of source rectangle
+fix_rect_1size(const IMAGE* pdest, const IMAGE* pSrc,
+	int* nXOriginDest,  // x-coord of destination upper-left corner
+	int* nYOriginDest,  // y-coord of destination upper-left corner
+	int* nXOriginSrc,   // x-coord of source upper-left corner
+	int* nYOriginSrc,   // y-coord of source upper-left corner
+	int* nWidthSrc,     // width of source rectangle
 	int* nHeightSrc      // height of source rectangle
 )
 {
@@ -784,6 +785,17 @@ bilinear_interpolation(color_t LT, color_t RT, color_t LB, color_t RB,
 	return (crb | cg) >> 8;
 }
 
+void
+EGEALPHABLEND(unsigned d, unsigned s, BitmapPtr pd, unsigned char alpha)
+	ynothrow
+{
+	auto rb(d & 0x00FF00FF), g(d & 0x0000FF00);
+
+	rb += ((s & 0x00FF00FF) - rb) * alpha >> 8;
+	g += ((s & 0x0000FF00) -  g) * alpha >> 8;
+	*pd = (rb & 0x00FF00FF) | (g & 0x0000FF00) | EGEGET_A(d);
+}
+
 } // unnamed namespace;
 
 int
@@ -814,12 +826,12 @@ IMAGE::putimage_transparent(
 
 	ddx = img.GetWidth() - nWidthSrc;
 	dsx = imgsrc->GetWidth() - nWidthSrc;
-	cr = crTransparent;
+	cr = crTransparent & 0x00FFFFF;
 	for(y = 0; y < nHeightSrc; ++y)
 	{
 		for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
-			if(*psp != cr)
-				*pdp = *psp;
+			if((*psp & 0x00FFFFF) != cr)
+				*pdp = EGECOLORA(*psp, EGEGET_A(*pdp));
 		pdp += ddx;
 		psp += dsx;
 	}
@@ -842,7 +854,6 @@ IMAGE::putimage_alphablend(
 	const IMAGE* imgsrc = this;
 	int y, x;
 	unsigned long ddx, dsx;
-	unsigned long sa = alpha + 1, da = 0xFF - alpha;
 
 	fix_rect_1size(&img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
 		&nYOriginSrc, &nWidthSrc, &nHeightSrc);
@@ -857,14 +868,7 @@ IMAGE::putimage_alphablend(
 	for(y = 0; y < nHeightSrc; ++y)
 	{
 		for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
-		{
-			unsigned long d = *pdp, s = *psp;
-			d = ((d & 0xFF00FF) * da & 0xFF00FF00)
-				| ((d & 0xFF00) * da >> 16 << 16);
-			s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
-				| ((s & 0xFF00) * sa >> 16 << 16);
-			*pdp = (d + s) >> 8;
-		}
+			EGEALPHABLEND(*pdp, *psp, pdp, alpha);
 		pdp += ddx;
 		psp += dsx;
 	}
@@ -889,7 +893,6 @@ IMAGE::putimage_alphatransparent(
 	int y, x;
 	unsigned long ddx, dsx;
 	unsigned long cr;
-	unsigned long sa = alpha + 1, da = 0xFF - alpha;
 
 	fix_rect_1size(&img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
 		&nYOriginSrc, &nWidthSrc, &nHeightSrc);
@@ -901,20 +904,13 @@ IMAGE::putimage_alphatransparent(
 
 	ddx = img.GetWidth() - nWidthSrc;
 	dsx = imgsrc->GetWidth() - nWidthSrc;
-	cr = crTransparent;
+	cr = crTransparent & 0xFFFFFF;
 	for(y = 0; y < nHeightSrc; ++y)
 	{
 		for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
 		{
-			if(*psp != cr)
-			{
-				unsigned long d = *pdp, s = *psp;
-				d = ((d & 0xFF00FF) * da & 0xFF00FF00)
-					| ((d & 0xFF00) * da >> 16 << 16);
-				s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
-					| ((s & 0xFF00) * sa >> 16 << 16);
-				*pdp = (d + s) >> 8;
-			}
+			if((*psp & 0x00FFFFFF) != cr)
+				EGEALPHABLEND(*pdp, *psp, pdp, alpha);
 		}
 		pdp += ddx;
 		psp += dsx;
@@ -948,22 +944,11 @@ IMAGE::putimage_withalpha(
 
 	ddx = img.GetWidth() - nWidthSrc;
 	dsx = imgsrc->GetWidth() - nWidthSrc;
+
 	for(y = 0; y < nHeightSrc; ++y)
 	{
 		for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
-		{
-			unsigned long alpha = *psp >> 24;
-			//if(*psp != cr)
-			{
-				unsigned long sa = alpha + 1, da = 0xFF - alpha;
-				unsigned long d = *pdp, s = *psp;
-				d = ((d & 0xFF00FF) * da & 0xFF00FF00)
-					| ((d & 0xFF00) * da >> 16 << 16);
-				s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
-					| ((s & 0xFF00) * sa >> 16 << 16);
-				*pdp = (d + s) >> 8;
-			}
-		}
+			EGEALPHABLEND(*pdp, *psp, pdp, EGEGET_A(*psp));
 		pdp += ddx;
 		psp += dsx;
 	}
@@ -1003,18 +988,8 @@ IMAGE::putimage_alphafilter(
 	for(y = 0; y < nHeightSrc; ++y)
 	{
 		for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp, ++pap)
-		{
-			unsigned long d = *pdp, s = *psp;
-			if(*pap)
-			{
-				unsigned long sa = (*pap & 0xFF) + 1, da = 0xFF - (*pap & 0xFF);
-				d = ((d & 0xFF00FF) * da & 0xFF00FF00)
-					| ((d & 0xFF00) * da >> 16 << 16);
-				s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
-					| ((s & 0xFF00) * sa >> 16 << 16);
-				*pdp = (d + s) >> 8;
-			}
-		}
+			if(*pap != 0)
+				EGEALPHABLEND(*pdp, *psp, pdp, *pap & 0xFF);
 		pdp += ddx;
 		psp += dsx;
 		pap += dsx;
@@ -1028,9 +1003,9 @@ namespace
 
 void
 fix_rect_0size(IMAGE* pdest,
-			   int * nXOriginDest,  // x-coord of destination upper-left corner
-			   int * nYOriginDest,  // y-coord of destination upper-left corner
-			   int * nWidthDest,     // width of destination rectangle
+			   int* nXOriginDest,  // x-coord of destination upper-left corner
+			   int* nYOriginDest,  // y-coord of destination upper-left corner
+			   int* nWidthDest,     // width of destination rectangle
 			   int* nHeightDest      // height of destination rectangle
 			  )
 {
