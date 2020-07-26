@@ -39,6 +39,9 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 	* 使用 GDI 实现的 [`diWidth` 的宽度不大于 0 时没有显式定义](https://docs.microsoft.com/en-us/previous-versions/dd183376%28v=vs.85%29) 。
 	* [可出现无法预期的行为](https://github.com/wysaid/xege/issues/2)。
 	* 在 ReactOS 的 `CreateDIBSection` 实现中直接转换为 `ULONG` 值，没有检查。
+* 改用误差更小的 alpha 通道混合算法：不调整 `unsigned char` 值的上界。
+	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
+	* 这和模块 YSLib::Service::YPixel 的通用实现更接近，利于以后复用。
 
 实现注记：
 
