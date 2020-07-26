@@ -44,6 +44,8 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 	* 这和模块 `YSLib::Service::YPixel` 的通用实现更接近，利于以后复用。
 * 函数 `putimage_transparent` 仅比较 RGB 颜色。
 	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
+* 添加函数 `putimage_alphafilter` 。
+	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
 
 实现注记：
 

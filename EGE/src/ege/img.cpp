@@ -130,6 +130,15 @@ putimage_withalpha(IMAGE* imgdest, const IMAGE* imgsrc, int nXOriginDest,
 }
 
 int
+putimage_alphafilter(IMAGE* imgdest, const IMAGE* imgsrc, int nXOriginDest,
+	int nYOriginDest, IMAGE* imgalpha, int nXOriginSrc, int nYOriginSrc,
+	int nWidthSrc, int nHeightSrc)
+{
+	return imgsrc->putimage_alphafilter(imgdest, nXOriginDest, nYOriginDest,
+		imgalpha, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
+}
+
+int
 imagefilter_blurring(IMAGE* imgdest, int intensity, int alpha, int nXOriginDest,
 	int nYOriginDest, int nWidthDest, int nHeightDest)
 {
