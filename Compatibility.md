@@ -42,6 +42,8 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 * 改用误差更小的 alpha 通道混合算法：不调整 `unsigned char` 值的上界。
 	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
 	* 这和模块 YSLib::Service::YPixel 的通用实现更接近，利于以后复用。
+* 添加函数 `putimage_alphafilter` 。
+	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
 
 实现注记：
 
