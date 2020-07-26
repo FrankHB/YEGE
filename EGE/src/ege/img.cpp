@@ -92,17 +92,9 @@ getimage(IMAGE* pDstImg, const IMAGE* pSrcImg, int srcX, int srcY, int srcWidth,
 
 
 int
-putimage_transparent(
-	IMAGE* imgdest,         // handle to dest
-	const IMAGE* imgsrc,          // handle to source
-	int nXOriginDest,       // x-coord of destination upper-left corner
-	int nYOriginDest,       // y-coord of destination upper-left corner
-	color_t crTransparent, // color to make transparent
-	int nXOriginSrc,        // x-coord of source upper-left corner
-	int nYOriginSrc,        // y-coord of source upper-left corner
-	int nWidthSrc,          // width of source rectangle
-	int nHeightSrc          // height of source rectangle
-)
+putimage_transparent(IMAGE* imgdest, const IMAGE* imgsrc, int nXOriginDest,
+	int nYOriginDest, color_t crTransparent, int nXOriginSrc, int nYOriginSrc,
+	int nWidthSrc, int nHeightSrc)
 {
 	return Deref(imgsrc).putimage_transparent(imgdest, nXOriginDest,
 		nYOriginDest, crTransparent, nXOriginSrc, nYOriginSrc, nWidthSrc,
@@ -110,35 +102,18 @@ putimage_transparent(
 }
 
 int
-putimage_alphablend(
-	IMAGE* imgdest,         // handle to dest
-	const IMAGE* imgsrc,          // handle to source
-	int nXOriginDest,       // x-coord of destination upper-left corner
-	int nYOriginDest,       // y-coord of destination upper-left corner
-	unsigned char alpha,    // alpha
-	int nXOriginSrc,        // x-coord of source upper-left corner
-	int nYOriginSrc,        // y-coord of source upper-left corner
-	int nWidthSrc,          // width of source rectangle
-	int nHeightSrc          // height of source rectangle
-)
+putimage_alphablend(IMAGE* imgdest, const IMAGE* imgsrc, int nXOriginDest,
+	int nYOriginDest, unsigned char alpha, int nXOriginSrc, int nYOriginSrc,
+	int nWidthSrc, int nHeightSrc)
 {
 	return Deref(imgsrc).putimage_alphablend(imgdest, nXOriginDest,
 		nYOriginDest, alpha, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
 }
 
 int
-putimage_alphatransparent(
-	IMAGE* imgdest,         // handle to dest
-	const IMAGE* imgsrc,          // handle to source
-	int nXOriginDest,       // x-coord of destination upper-left corner
-	int nYOriginDest,       // y-coord of destination upper-left corner
-	color_t crTransparent, // color to make transparent
-	unsigned char alpha,    // alpha
-	int nXOriginSrc,        // x-coord of source upper-left corner
-	int nYOriginSrc,        // y-coord of source upper-left corner
-	int nWidthSrc,          // width of source rectangle
-	int nHeightSrc          // height of source rectangle
-)
+putimage_alphatransparent(IMAGE* imgdest, const IMAGE* imgsrc, int nXOriginDest,
+	int nYOriginDest, color_t crTransparent, unsigned char alpha,
+	int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc)
 {
 	return Deref(imgsrc).putimage_alphatransparent(imgdest, nXOriginDest,
 		nYOriginDest, crTransparent, alpha, nXOriginSrc, nYOriginSrc, nWidthSrc,
@@ -146,31 +121,17 @@ putimage_alphatransparent(
 }
 
 int
-putimage_withalpha(
-	IMAGE* imgdest,         // handle to dest
-	const IMAGE* imgsrc,          // handle to source
-	int nXOriginDest,       // x-coord of destination upper-left corner
-	int nYOriginDest,       // y-coord of destination upper-left corner
-	int nXOriginSrc,        // x-coord of source upper-left corner
-	int nYOriginSrc,        // y-coord of source upper-left corner
-	int nWidthSrc,          // width of source rectangle
-	int nHeightSrc          // height of source rectangle
-)
+putimage_withalpha(IMAGE* imgdest, const IMAGE* imgsrc, int nXOriginDest,
+	int nYOriginDest, int nXOriginSrc, int nYOriginSrc, int nWidthSrc,
+	int nHeightSrc)
 {
 	return Deref(imgsrc).putimage_withalpha(imgdest, nXOriginDest, nYOriginDest,
 		nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc);
 }
 
 int
-imagefilter_blurring(
-	IMAGE* imgdest,         // handle to dest
-	int intensity,
-	int alpha,
-	int nXOriginDest,
-	int nYOriginDest,
-	int nWidthDest,
-	int nHeightDest
-)
+imagefilter_blurring(IMAGE* imgdest, int intensity, int alpha, int nXOriginDest,
+	int nYOriginDest, int nWidthDest, int nHeightDest)
 {
 	return cimg_ref(imgdest).imagefilter_blurring(intensity, alpha,
 		nXOriginDest, nYOriginDest, nWidthDest, nHeightDest);
