@@ -1,7 +1,9 @@
 ﻿#ifndef Inc_ege_msg_h_
 #define Inc_ege_msg_h_
 
-#include <WinDef.h>
+#include <windef.h> // for ::HWND, ::WPARAM, ::LPARAM.
+// NOTE: Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97362.
+#undef __deref
 
 namespace ege
 {

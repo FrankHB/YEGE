@@ -14,7 +14,9 @@
 #	include YFM_Helper_HostedUI
 #	include YFM_Helper_Environment
 #else
-#	include <Windows.h>
+#	include <libloaderapi.h> // for ::GetModuleHandleW;
+// NOTE: Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97362.
+#	undef __deref
 #endif
 
 #define BITMAP_PAGE_SIZE 4

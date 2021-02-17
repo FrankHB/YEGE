@@ -1,7 +1,9 @@
 #include "graphics.h"
 #include <cstdio>
 #include <cstring>
-#include <Windows.h>
+#include <winreg.h> // for RegOpenKeyExA;
+#include <winerror.h> // for ERROR_SUCCESS;
+#include <winbase.h> // for ::CopyFileA;
 
 char installpath[8][MAX_PATH];
 char g_output[1024 * 16];

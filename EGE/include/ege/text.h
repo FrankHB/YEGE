@@ -2,8 +2,10 @@
 #define Inc_ege_text_h_
 
 #include "ege/def.h"
-#include <WinDef.h>
-#include <Wingdi.h>
+#include <windef.h> // for ::POINT used by <wingdi.h>
+// NOTE: Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97362.
+#undef __deref
+#include <wingdi.h> // for ::LOGFONTA, ::LOGFONTW;
 
 namespace ege
 {

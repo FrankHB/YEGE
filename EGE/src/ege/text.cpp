@@ -11,6 +11,7 @@
 #	include YFM_Win32_YCLib_NLS // for platform_ex::MBCSToWCS,
 //	platform_ex::WCSToMBCS;
 #endif
+#include <stringapiset.h> // for MultiByteToWideChar;
 
 namespace ege
 {

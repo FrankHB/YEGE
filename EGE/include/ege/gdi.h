@@ -1,9 +1,11 @@
 ﻿#ifndef Inc_ege_gdi_h_
 #define Inc_ege_gdi_h_
 
-#include "ege/base.h"
-#include <WinDef.h>
-#include <Wingdi.h>
+#include "ege/base.h" // for IMAGE;
+#include <windef.h> // for ::POINT used by <wingdi.h>
+// NOTE: Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97362.
+#undef __deref
+#include <wingdi.h> // for SRCCOPY;
 
 namespace ege
 {

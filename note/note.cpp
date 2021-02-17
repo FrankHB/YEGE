@@ -1,5 +1,4 @@
 #include <graphics.h>
-#include <Windows.h>
 #include <direct.h>
 #include <string.h>
 #include <time.h>
