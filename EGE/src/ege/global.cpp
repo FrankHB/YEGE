@@ -10,6 +10,7 @@
 #include <mutex> // for std::once_flag, std::call_once;
 #include <atomic>
 #include "head.h"
+#include <winbase.h> // for ::EnumResourceNamesW;
 
 #ifdef _WIN64
 #define ARCH L"x64"

@@ -3,13 +3,14 @@
 
 #include "ege/base.h"
 #include "ege/env.h"
-#include <WinDef.h>
-#include <MinWinBase.h>
-#include <Wingdi.h>
-#include <WinUser.h>
+#include <windef.h> // for ::HBITMAP, ::HANDLE, ::HWND, ::HINSTANCE;
+// NOTE: Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97362.
+#undef __deref
+#include <wingdi.h> // for PS_*;
+#include <winuser.h> // for WM_MOUSEWHEEL;
 
 #ifndef WM_MOUSEWHEEL
-#define WM_MOUSEWHEEL                   0x020A
+#	define WM_MOUSEWHEEL                   0x020A
 #endif
 
 namespace ege

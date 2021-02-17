@@ -9,7 +9,9 @@
 #else
 #	include "ege/gapi.h"
 #	include "global.h"
-#	include <Windows.h>
+#	include <windef.h>
+// NOTE: Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97362.
+#	undef __deref
 #endif
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
 #include <gdiplus.h>

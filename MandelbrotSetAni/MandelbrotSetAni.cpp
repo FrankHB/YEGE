@@ -1,13 +1,10 @@
 #include "graphics.h"
-//#include <complex>
 #include <ctime>
-//#include <gmpxx.h>
 #include <cstdio>
 #include <algorithm>
 #include <cstdio>
-#include <Windows.h>
-
-//using namespace std;
+#include <processthreadsapi.h> // for ::GetCurrentProcess;
+#include <winbase.h> // for IDLE_PRIORITY_CLASS;
 
 #define USINGDOUBLE
 

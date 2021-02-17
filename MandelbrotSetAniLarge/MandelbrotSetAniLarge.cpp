@@ -6,7 +6,8 @@
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #include <gmpxx.h>
 #pragma GCC diagnostic pop
-#include <Windows.h>
+#include <processthreadsapi.h> // for ::GetCurrentProcess;
+#include <winbase.h> // for IDLE_PRIORITY_CLASS;
 
 //using namespace std;
 
