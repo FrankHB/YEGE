@@ -3,7 +3,7 @@
 
 #include "ege/ctl.h"
 #include <synchapi.h> // for ::CreateEvent;
-#include <WinBase.h> // for INFINITE;
+#include <winbase.h> // for INFINITE;
 
 namespace ege
 {
