@@ -17,6 +17,9 @@
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-fdata-sections" />
+					<Add option="-ffunction-sections" />
+					<Add option="-Wa,-mbig-obj" />
 					<Add option="-D_GLIBCXX_DEBUG_PEDANTIC" />
 				</Compiler>
 			</Target>
@@ -31,11 +34,16 @@
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
+					<Add option="-fno-enforce-eh-specs" />
 					<Add option="-flto=jobserver" />
+					<Add option="-fdata-sections" />
+					<Add option="-ffunction-sections" />
 					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-flto=jobserver" />
+					<Add option="-Wl,-allow-multiple-definition" />
 				</Linker>
 			</Target>
 			<Target title="debug_DLL">
@@ -47,6 +55,7 @@
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-Wa,-mbig-obj" />
 					<Add option="-D_GLIBCXX_DEBUG_PEDANTIC" />
 				</Compiler>
 				<Linker>
@@ -70,10 +79,13 @@
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-O3" />
+					<Add option="-fno-enforce-eh-specs" />
 					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-flto=jobserver" />
+					<Add option="-Wl,-allow-multiple-definition" />
 					<Add library="png16" />
 					<Add library="z" />
 					<Add library="gdi32" />
@@ -91,31 +103,44 @@
 			<Add option="-Wredundant-decls" />
 			<Add option="-Wcast-align" />
 			<Add option="-Wmissing-declarations" />
-			<Add option="-Wmissing-include-dirs" />
-			<Add option="-Wzero-as-null-pointer-constant" />
 			<Add option="-pedantic-errors" />
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
+			<Add option="-fnew-inheriting-ctors" />
+			<Add option="-fno-strong-eval-order" />
 			<Add option="-std=c++11" />
+			<Add option="-pipe" />
 			<Add option="-Wctor-dtor-privacy" />
-			<Add option="-Winvalid-pch" />
-			<Add option="-Wsign-promo" />
+			<Add option="-Wconditionally-supported" />
 			<Add option="-Wdeprecated" />
 			<Add option="-Wdeprecated-declarations" />
 			<Add option="-Wformat=2" />
-			<Add option="-Wmultichar" />
 			<Add option="-Wno-format-nonliteral" />
-			<Add option="-Wpacked" />
+			<Add option="-Winvalid-pch" />
 			<Add option="-Wlogical-op" />
-			<Add option="-Wtrampolines" />
-			<Add option="-Wconditionally-supported" />
+			<Add option="-Wno-mismatched-tags" />
+			<Add option="-Wmissing-include-dirs" />
+			<Add option="-Wmultichar" />
+			<Add option="-Wno-noexcept-type" />
+			<Add option="-Woverloaded-virtual" />
+			<Add option="-Wpacked" />
+			<Add option="-Wsign-promo" />
 			<Add option="-Wstrict-null-sentinel" />
-			<Add option="-fdata-sections" />
-			<Add option="-ffunction-sections" />
+			<Add option="-Wstringop-overflow=0" />
+			<Add option="-Wsuggest-attribute=noreturn" />
+			<Add option="-Wtrampolines" />
+			<Add option="-Wzero-as-null-pointer-constant" />
 			<Add option="-mthreads" />
-			<Add option="-pipe" />
+			<Add option="-U__GXX_TYPEINFO_EQUALITY_INLINE" />
+			<Add option="-U__GXX_MERGED_TYPEINFO_NAMES" />
+			<Add option="-D__GXX_TYPEINFO_EQUALITY_INLINE=1" />
+			<Add option="-D__GXX_MERGED_TYPEINFO_NAMES=0" />
 			<Add directory="include" />
 		</Compiler>
+		<Linker>
+			<Add option="-Wl,--gc-sections" />
+			<Add option="-pipe" />
+		</Linker>
 		<Unit filename="include/ege.h" />
 		<Unit filename="include/ege/base.h" />
 		<Unit filename="include/ege/button.h" />

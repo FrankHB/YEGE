@@ -15,10 +15,10 @@
 				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-Wa,-mbig-obj" />
 					<Add option="-D_GLIBCXX_DEBUG_PEDANTIC" />
 				</Compiler>
 				<Linker>
-
 					<Add library="..\EGE\debug\libEGE.a" />
 					<Add library="z" />
 					<Add library="png16" />
@@ -40,12 +40,14 @@
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
+					<Add option="-fno-enforce-eh-specs" />
 					<Add option="-flto=jobserver" />
 					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-
+					<Add option="-flto=jobserver" />
+					<Add option="-Wl,-allow-multiple-definition" />
 					<Add library="..\EGE\release\libEGE.a" />
 					<Add library="z" />
 					<Add library="png16" />
@@ -66,6 +68,7 @@
 				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-Wa,-mbig-obj" />
 					<Add option="-D_GLIBCXX_DEBUG_PEDANTIC" />
 				</Compiler>
 				<Linker>
@@ -85,11 +88,14 @@
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
+					<Add option="-fno-enforce-eh-specs" />
 					<Add option="-flto=jobserver" />
 					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-flto=jobserver" />
+					<Add option="-Wl,-allow-multiple-definition" />
 					<Add library="..\EGE\release\EGE.dll" />
 				</Linker>
 				<ExtraCommands>
@@ -100,12 +106,22 @@
 		</Build>
 		<Compiler>
 			<Add option="-pedantic" />
-			<Add option="-std=c++11" />
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
+			<Add option="-fnew-inheriting-ctors" />
+			<Add option="-fno-strong-eval-order" />
+			<Add option="-std=c++11" />
 			<Add option="-mthreads" />
+			<Add option="-U__GXX_TYPEINFO_EQUALITY_INLINE" />
+			<Add option="-U__GXX_MERGED_TYPEINFO_NAMES" />
+			<Add option="-D__GXX_TYPEINFO_EQUALITY_INLINE=1" />
+			<Add option="-D__GXX_MERGED_TYPEINFO_NAMES=0" />
 			<Add directory="../EGE/include" />
 		</Compiler>
+		<Linker>
+			<Add option="-Wl,--gc-sections" />
+			<Add option="-pipe" />
+		</Linker>
 		<Unit filename="MandelbrotSetBase.cpp" />
 		<Extensions>
 			<code_completion />

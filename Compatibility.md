@@ -6,6 +6,18 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 
 ## 主分支版本
 
+### 构建配置
+
+调整部分 Code::Blocks 构建选项：
+
+* EGE 静态库项目中加入编译器选项 `-fdata-sections -ffunction-sections` 。
+* 项目的 release 配置中加入编译器选项 `-fno-enforce-eh-specs`（同 `-DNDEBUG` ）。
+* 项目中加入编译器选项 `fnew-inheriting-ctors -fno-strong-eval-order -U__GXX_TYPEINFO_EQUALITY_INLINE -U__GXX_MERGED_TYPEINFO_NAMES -D__GXX_TYPEINFO_EQUALITY_INLINE=1 -D__GXX_MERGED_TYPEINFO_NAMES=0` 。
+* LTO 选项使用 `-flto=jobserver` 。
+* 添加编译器警告选项（参见实现质量的说明）。
+
+**已知问题** MinGW 工具链在启用 LTO 构建可执行程序时可能[引起可忽略的错误](https://bugs.launchpad.net/gcc-arm-embedded/+bug/1853451)，但错误没有被 Code::Blocks 忽略。这导致生成失败，但实际生成可运行的可执行文件。
+
 ### API 修改
 
 * 函数 `getkey` 支持 `WM_CHAR` 消息。
@@ -55,6 +67,16 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 * 更新默认窗口标题。
 * [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 中的宏 `EGEALPHABLEND` 实现为内部函数。
 * 未定义行为断言失败，不保证终止程序外的具体行为，可能[有不同的实现](https://github.com/wysaid/xege/pull/35)。
+
+### 实现质量
+
+EGE 库中加入 `-Wnon-virtual-dtor -Wredundant-decls -Wcast-align -Wmissing-declarations -pedantic-errors -Wextra -Wall -Wctor-dtor-privacy -Wconditionally-supported -Wdeprecated -Wdeprecated-declarations -Wformat=2 -Wno-format-nonliteral -Winvalid-pch -Wlogical-op -Wmissing-include-dirs -Wmultichar -Woverloaded-virtual -Wpacked -Wsign-promo -Wstrict-null-sentinel -Wstringop-overflow=0 -Wsuggest-attribute=noreturn -Wtrampolines -Wzero-as-null-pointer-constant` 保证无错误和警告。
+
+**注释** 相对之前的版本，添加 `-Woverloaded-virtual -Wstringop-overflow=0 -Wsuggest-attribute=noreturn` 。
+
+依赖 YSLib 时，EGE 库中加入 `-Wfloat-equal` 保证无警告。相对 YSLib 的 G++ 默认警告选项，缺少 `-Wno-mismatched-tags -Wno-noexcept-type -Wsign-conversion -Wdouble-promotion -Wshadow -Wsuggest-attribute=const -Wsuggest-attribute=pure -Wsuggest-final-methods -Wsuggest-final-types` 。
+
+EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题没有加入此选项）。
 
 ### 非外部依赖项代码风格和格式
 
