@@ -6,7 +6,7 @@
 #endif
 
 #if YEGE_Use_YSLib
-#	include <ydef.h>
+#	include <ystdex/cstddef.h> // for ystdex::byte, ystdex::octet;
 
 namespace ege
 {
