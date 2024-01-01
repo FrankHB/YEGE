@@ -3,7 +3,7 @@
 
 #include "ege/def.h"
 #if YEGE_Use_YSLib
-#	include <ysbuild.h>
+#	include <YSBuild.h>
 #else
 #	include <cstdint>
 #endif
