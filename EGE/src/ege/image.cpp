@@ -1492,8 +1492,8 @@ float2int(float f)
 }
 
 void
-draw_flat_scanline(IMAGE* dc_dest, const vector2d * vt, const IMAGE* dc_src,
-	const vector2d * svt, int x1, int x2)
+draw_flat_scanline(IMAGE* dc_dest, const vector2d* vt, const IMAGE* dc_src,
+	const vector2d* svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
@@ -1535,8 +1535,8 @@ draw_flat_scanline(IMAGE* dc_dest, const vector2d * vt, const IMAGE* dc_src,
 }
 
 void
-draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d * vt,
-	const IMAGE* dc_src, const vector2d * svt, int x1, int x2)
+draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d* vt,
+	const IMAGE* dc_src, const vector2d* svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = vt->p[0].x + .5, e = vt->p[1].x + .5,
@@ -1571,8 +1571,8 @@ draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d * vt,
 }
 
 void
-draw_flat_scanline_alpha(IMAGE* dc_dest, const vector2d * vt,
-	const IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
+draw_flat_scanline_alpha(IMAGE* dc_dest, const vector2d* vt,
+	const IMAGE* dc_src, const vector2d* svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
@@ -1616,8 +1616,8 @@ draw_flat_scanline_alpha(IMAGE* dc_dest, const vector2d * vt,
 }
 
 void
-draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d * vt,
-	const IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
+draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d* vt,
+	const IMAGE* dc_src, const vector2d* svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = vt->p[0].x + .5, e = vt->p[1].x + .5,
@@ -1664,7 +1664,7 @@ draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d * vt,
 }
 
 void
-draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, const IMAGE* dc_src,
+draw_flat_scanline_s(IMAGE* dc_dest, const vector2d* vt, const IMAGE* dc_src,
 	const vector2d* svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
@@ -1714,8 +1714,8 @@ draw_flat_scanline_s(IMAGE* dc_dest, const vector2d * vt, const IMAGE* dc_src,
 }
 
 void
-draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt,
-	const IMAGE* dc_src, const vector2d * svt, int x1, int x2)
+draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d* vt,
+	const IMAGE* dc_src, const vector2d* svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
@@ -1764,8 +1764,8 @@ draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d * vt,
 }
 
 void
-draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt,
-	const IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
+draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d* vt,
+	const IMAGE* dc_src, const vector2d* svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
@@ -1822,8 +1822,8 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d * vt,
 }
 
 void
-draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d * vt,
-	const IMAGE* dc_src, const vector2d * svt, int x1, int x2, int alpha)
+draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d* vt,
+	const IMAGE* dc_src, const vector2d* svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
