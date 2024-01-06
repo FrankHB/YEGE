@@ -79,9 +79,10 @@ struct VECTOR3D
 	VECTOR3D&
 	Rotate(float rad, const VECTOR3D& v); //绕任意轴旋转，右手定则，rad为弧度
 	VECTOR3D&
-	Rotate(float rad, float x, float y, float z)
+	Rotate(float rad, float _x, float _y, float _z)
 	{
-		VECTOR3D v(x, y, z);
+		VECTOR3D v(_x, _y, _z);
+
 		return Rotate(rad, v);
 	}
 	VECTOR3D&

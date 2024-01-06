@@ -31,29 +31,20 @@ MUSIC::OpenFile(const char* _szStr)
 	mci_p.lpstrElementName = _szStr;
 	mci_p.lpstrDeviceType = {};
 	mci_p.dwCallback = ::DWORD_PTR(m_dwCallBack);
-
 	if(m_DID != MUSIC_ERROR)
 		Close();
-
-	mciERR = ::mciSendCommandA(
-				 0,
-				 MCI_OPEN,
-				 MCI_NOTIFY | MCI_OPEN_ELEMENT,
-				 ::DWORD_PTR(&mci_p));
-
+	mciERR = ::mciSendCommandA(0, MCI_OPEN, MCI_NOTIFY | MCI_OPEN_ELEMENT,
+		::DWORD_PTR(&mci_p));
 	if(mciERR == 0)
 	{
 		m_DID = mci_p.wDeviceID;
 
 		// Set time format with milliseconds
-		{
-			::MCI_SET_PARMS mci_p{::DWORD_PTR(), MCI_FORMAT_MILLISECONDS, 0UL};
+		::MCI_SET_PARMS mci_sp{::DWORD_PTR(), MCI_FORMAT_MILLISECONDS, 0UL};
 
-			::mciSendCommandW(m_DID, MCI_SET, MCI_NOTIFY | MCI_SET_TIME_FORMAT,
-				::DWORD_PTR(&mci_p));
-		}
+		::mciSendCommandW(m_DID, MCI_SET, MCI_NOTIFY | MCI_SET_TIME_FORMAT,
+			::DWORD_PTR(&mci_sp));
 	}
-
 	return mciERR;
 }
 
@@ -69,23 +60,21 @@ MUSIC::OpenFile(const wchar_t* _szStr)
 	mci_p.lpstrElementName = _szStr;
 	mci_p.lpstrDeviceType = {};
 	mci_p.dwCallback = ::DWORD_PTR(m_dwCallBack);
-
 	if(m_DID != MUSIC_ERROR)
 		Close();
 	mciERR = ::mciSendCommandW(0, MCI_OPEN, MCI_NOTIFY | MCI_OPEN_ELEMENT,
 		::DWORD_PTR(&mci_p));
-
 	if(mciERR == 0)
 	{
 		m_DID = mci_p.wDeviceID;
 
 		// Set time format with milliseconds
-		auto mci_p = ::MCI_SET_PARMS();
+		auto mci_sp = ::MCI_SET_PARMS();
 
-		mci_p.dwTimeFormat = MCI_FORMAT_MILLISECONDS;
+		mci_sp.dwTimeFormat = MCI_FORMAT_MILLISECONDS;
 		//unsigned long dw =
 		::mciSendCommandW(m_DID, MCI_SET, MCI_NOTIFY | MCI_SET_TIME_FORMAT,
-			::DWORD_PTR(&mci_p));
+			::DWORD_PTR(&mci_sp));
 	}
 	return mciERR;
 }
@@ -104,7 +93,6 @@ MUSIC::Play(unsigned long dwFrom, unsigned long dwTo)
 	mci_p.dwFrom = dwFrom;
 	mci_p.dwTo = dwTo;
 	mci_p.dwCallback = ::DWORD_PTR(m_dwCallBack);
-
 	if(dwFrom != MUSIC_ERROR)
 		dwFlag |= MCI_FROM;
 	if(dwTo != MUSIC_ERROR)

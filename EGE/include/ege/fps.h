@@ -25,8 +25,8 @@ public:
 	onDraw(IMAGE* pimg) const
 	{
 		char str[16] = "fps        ", *pstr = str;
-		double fps = getfps() + 0.005;
-		int a = fps, b = (fps - a) * 100;
+		double f = getfps() + 0.005;
+		int a = f, b = (f - a) * 100;
 
 		while(*pstr)
 			++pstr;

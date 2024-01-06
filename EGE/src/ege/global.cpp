@@ -656,16 +656,16 @@ EGEApplication::_on_mouse_button_up(::HWND h_wnd, unsigned msg,
 }
 
 void
-EGEApplication::_on_paint(::HWND hwnd)
+EGEApplication::_on_paint(::HWND h)
 {
 	::PAINTSTRUCT ps;
-	::HDC dc(::BeginPaint(hwnd, &ps));
+	::HDC dc(::BeginPaint(h, &ps));
 	get_pages().paint(dc);
-	::EndPaint(hwnd, &ps);
+	::EndPaint(h, &ps);
 }
 
 ::HCURSOR
-EGEApplication::_on_setcursor(::HWND hwnd)
+EGEApplication::_on_setcursor(::HWND h)
 {
 	if(!mouse_show)
 	{
@@ -673,8 +673,8 @@ EGEApplication::_on_setcursor(::HWND hwnd)
 		::POINT pt;
 
 		::GetCursorPos(&pt);
-		::ScreenToClient(hwnd, &pt);
-		::GetClientRect(hwnd, &rect);
+		::ScreenToClient(h, &pt);
+		::GetClientRect(h, &rect);
 		if(pt.x >= rect.left && pt.x < rect.right
 			&& pt.y >= rect.top && pt.y <= rect.bottom)
 			return {};
