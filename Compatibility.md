@@ -70,11 +70,11 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 
 ### 实现质量
 
-EGE 库中加入 `-Wnon-virtual-dtor -Wredundant-decls -Wcast-align -Wmissing-declarations -pedantic-errors -Wextra -Wall -Wctor-dtor-privacy -Wconditionally-supported -Wdeprecated -Wdeprecated-declarations -Wformat=2 -Wno-format-nonliteral -Winvalid-pch -Wlogical-op -Wmissing-include-dirs -Wmultichar -Woverloaded-virtual -Wpacked -Wsign-promo -Wstrict-null-sentinel -Wstringop-overflow=0 -Wsuggest-attribute=noreturn -Wtrampolines -Wzero-as-null-pointer-constant` 保证无错误和警告。
+EGE 库中加入 `-Wnon-virtual-dtor -Wshadow -Wredundant-decls -Wcast-align -Wmissing-declarations -pedantic-errors -Wextra -Wall -Wctor-dtor-privacy -Wconditionally-supported -Wdeprecated -Wdeprecated-declarations -Wformat=2 -Wno-format-nonliteral -Winvalid-pch -Wlogical-op -Wmissing-include-dirs -Wmultichar -Woverloaded-virtual -Wpacked -Wsign-promo -Wstrict-null-sentinel -Wstringop-overflow=0 -Wsuggest-attribute=noreturn -Wtrampolines -Wzero-as-null-pointer-constant` 保证无错误和警告。
 
-**注释** 相对之前的版本，添加 `-Woverloaded-virtual -Wstringop-overflow=0 -Wsuggest-attribute=noreturn` 。
+**注释** 相对之前的版本，添加 `-Wshadow -Woverloaded-virtual -Wstringop-overflow=0 -Wsuggest-attribute=noreturn` 。
 
-依赖 YSLib 时，EGE 库中加入 `-Wfloat-equal` 保证无警告。相对 YSLib 的 G++ 默认警告选项，缺少 `-Wno-mismatched-tags -Wno-noexcept-type -Wsign-conversion -Wdouble-promotion -Wshadow -Wsuggest-attribute=const -Wsuggest-attribute=pure -Wsuggest-final-methods -Wsuggest-final-types` 。
+依赖 YSLib 时，EGE 库中加入 `-Wfloat-equal` 保证无警告。相对 YSLib 的 G++ 默认警告选项，缺少 `-Wno-mismatched-tags -Wno-noexcept-type -Wsign-conversion -Wdouble-promotion -Wsuggest-attribute=const -Wsuggest-attribute=pure -Wsuggest-final-methods -Wsuggest-final-types` 。
 
 EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题没有加入此选项）。
 
