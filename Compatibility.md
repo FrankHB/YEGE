@@ -27,10 +27,18 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 	* 参见 [wysaid/xege pull request 9](https://github.com/wysaid/xege/pull/9) 。
 * 颜色转换函数添加 `ynothrow` 。
 * 修复函数 `RGBTOBGR` 的参数类型（自从 19.01 ）。
-* 修改 `color_t` 的格式：交换红色和蓝色分量。
-	* 撤销 14.01 的修改，和原始 misakamm/xege 的 `color_t` 一致，而不再和 `::COLORREF` 一致。
-	* 同时修改函数 `EGERGB` 的实现，解决和其它函数的不一致问题。
-	* 修改后的格式和 `YSLib::Pixel` 在 Win32 上的实现以及 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 中的像素格式保持一致，存储格式都为 BGRA8888 。
+* 调整 `color_t` ：
+	* 修改格式：交换红色和蓝色分量。
+		* 撤销自从 14.01 的修改，和原始 misakamm/xege 的 `color_t` 一致，而不再和 `::COLORREF` 一致。
+		* 同时修改函数 `EGERGB` 的实现，解决和其它函数的不一致问题。
+		* 修改后的格式和 `YSLib::Pixel` 在 Win32 上的实现以及 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 中的像素格式保持一致，存储格式都为 BGRA8888 。
+	* 修复不使用 YSLib 时类型 `color_t` 声明（自从 19.01 ），保证是无符号数。
+		* 这个类型不保证是整数，但不使用 YSLib 时当前实现为整数。
+		* 在原始的 EGE 中，这个类型是 `DWORD` 的别名，对支持的 Win32 环境即 `unsigned long` 。
+		* 在 19.01 中，不使用 YSLib 实现时，这个类型是 `int` 的别名。
+			* 虽然使用有符号数仍然二进制兼容，但可能引起非预期的有符号数和无符号数的转换，如 G++ [-Wsign-conversion] 警告。
+			* 因此，有必要修正为无符号数。
+		* 用户代码仍不应预期 `color_t` 和 `color_int_t` 总是相同。
 * 函数 `clearviewport` 使用背景颜色填充。
 	* 参见 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 。
 * 修复函数 `getch` 阻塞不返回（自从 19.01 ）。
@@ -179,7 +187,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 非向后兼容接口（仅当依赖 YSLib 时）：
 
 * `typedef` 类型名 `color_t` 从 `unsigned int` 改为 `YSLib::Drawing::PixelType` 。
-* 使用 YCLib 提供的 `YSLib::Drawing::MonoType` 表示颜色分量。
+* 使用 YCLib 提供的 `YSLib::Drawing::MonoType` 表示颜色分量，代替 `ege::mono_t` 。
 * 使用 `YSLib::Drawing::PixelType::Integer` 表示颜色对应的整数类型。
 	* 注意布局同 `::COLORREF` ，相对原有实现红色和蓝色分量交换，修复了 `<wingdi.h>` 中 RGB 等宏的参数红色和蓝色分量相反的问题。
 * 函数 `savepng` 的表示是否使用 alpha 的参数被忽略。

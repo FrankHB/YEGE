@@ -5,7 +5,7 @@
 
 #define MAP_W 40
 #define MAP_H 30
-const int GCOLOR[]{DARKGRAY, GREEN, RED};
+const unsigned GCOLOR[]{DARKGRAY, GREEN, RED};
 
 int gw, gh;
 

@@ -19,7 +19,7 @@ using YSLib::Drawing::MonoType;
 using YSLib::Drawing::BitmapPtr;
 using YSLib::Drawing::ConstBitmapPtr;
 #else
-using color_t = int;
+using color_t = unsigned;
 using color_int_t = std::uint32_t;
 using AlphaType = octet;
 using MonoType = octet;

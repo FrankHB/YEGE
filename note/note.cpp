@@ -96,9 +96,9 @@ void startInf()
 	th[0].num=0;
 	inf.page=1;
 	inf.box_y=20;
-	inf.color_top=YELLOW;
-	inf.color_btm=RGB(199,233,131);
-	inf.mouse_speed=200;
+	inf.color_top = color_int_t(YELLOW);
+	inf.color_btm = RGB(199,233,131);
+	inf.mouse_speed = 200;
 }
 void putTitle(char *str,int color)
 {
@@ -303,11 +303,12 @@ int main()
 		setcolor(RED);
 		moveWindow(hwnd);
 		doubleThing(inf.page-1);
-		putTitle(th[0].title,BLUE);
-		putThing(inf.screen_x,inf.screen_y,inf.box_y,th[0].thing,RED);
+		putTitle(th[0].title, color_int_t(BLUE));
+		putThing(inf.screen_x, inf.screen_y, inf.box_y, th[0].thing,
+			color_int_t(RED));
 		putTime();
-		drawMouse(mouse(X),mouse(Y),WHITE);
-		if(keystate(VK_ESCAPE)&&keystate(VK_LBUTTON))
+		drawMouse(mouse(X), mouse(Y), color_int_t(WHITE));
+		if(keystate(VK_ESCAPE) && keystate(VK_LBUTTON))
 			break;
 		delay_fps(100);
 		cleardevice();

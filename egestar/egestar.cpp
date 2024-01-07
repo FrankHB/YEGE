@@ -100,10 +100,8 @@ int main(int argc, char* argv[])
 		// œ‘ æ–«–«
 		double dt = 1.0 / fps; //fclock() - dtime;
 		dtime += dt;
-		for(int i = 0; i < g_max; i++)
-		{
-			MoveStar(i, dt);
-		}
+		for(int j = 0; j < g_max; i++)
+			MoveStar(j, dt);
 		// œ‘ æFPS
 		{
 			char str[60];
