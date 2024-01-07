@@ -126,6 +126,7 @@
 			<Add option="-Wno-noexcept-type" />
 			<Add option="-Woverloaded-virtual" />
 			<Add option="-Wpacked" />
+			<Add option="-Wsign-conversion" />
 			<Add option="-Wsign-promo" />
 			<Add option="-Wstrict-null-sentinel" />
 			<Add option="-Wstringop-overflow=0" />

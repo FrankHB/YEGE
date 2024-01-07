@@ -90,7 +90,7 @@ update_ls_pen(::HDC h_dc, ::COLORREF bgrcolor, unsigned long linestyle,
 			return ::ExtCreatePen(ls, thickness, &lbr,
 				upattern2array(upattern, style), style);
 		}
-		return ::ExtCreatePen(ls, thickness, &lbr, 0, {});
+				return ::ExtCreatePen(ls, thickness, &lbr, 0, {});
 	}())
 		::DeleteObject(::SelectObject(h_dc, hpen));
 }
