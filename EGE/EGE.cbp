@@ -115,6 +115,7 @@
 			<Add option="-Wconditionally-supported" />
 			<Add option="-Wdeprecated" />
 			<Add option="-Wdeprecated-declarations" />
+			<Add option="-Wdouble-promotion" />
 			<Add option="-Wformat=2" />
 			<Add option="-Wno-format-nonliteral" />
 			<Add option="-Winvalid-pch" />
