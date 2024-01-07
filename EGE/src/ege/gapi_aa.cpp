@@ -234,7 +234,8 @@ ege_setalpha(int alpha, IMAGE* pimg)
 	{
 		const auto w(img.GetWidth()), h(img.GetHeight());
 		const auto buf(img.getbuffer());
-		typename std::decay<decltype(*buf)>::type a(alpha << 24);
+		typename std::decay<decltype(*buf)>::type
+			a(static_cast<unsigned long>(alpha) << 24);
 
 		yassume(buf);
 		for(typename std::decay<decltype(h)>::type y(0); y < h; ++y)

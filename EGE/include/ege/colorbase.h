@@ -37,7 +37,7 @@ RGBTOBGR(color_int_t color) ynothrow
 yconstfn color_int_t
 EGERGB(MonoType r, MonoType g, MonoType b) ynothrow
 {
-	return (r << 16) | (g << 8) | b;
+	return color_int_t(r << 16) | color_int_t(g << 8) | color_int_t(b);
 }
 
 yconstfn color_int_t

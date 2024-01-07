@@ -90,8 +90,8 @@ IMAGE::IMAGE(const IMAGE& img)
 	: IMAGE(img.m_hDC, img.GetSize())
 {
 	sbuf.UpdateFrom(img.sbuf.GetBufferPtr());
-	::BitBlt(m_hDC, 0, 0, img.GetWidth(), img.GetHeight(), img.m_hDC, 0, 0,
-		SRCCOPY);
+	::BitBlt(m_hDC, 0, 0, int(img.GetWidth()), int(img.GetHeight()), img.m_hDC,
+		0, 0, SRCCOPY);
 }
 IMAGE::IMAGE(IMAGE&& img) ynothrow
 	: sbuf(img.sbuf.GetSize())
@@ -129,13 +129,13 @@ IMAGE::SetViewport(int left, int top, int right, int bottom, int clip)
 	if(m_vpt.top < 0)
 		m_vpt.top = 0;
 	if(m_vpt.right > int(GetWidth()))
-		m_vpt.right = GetWidth();
+		m_vpt.right = int(GetWidth());
 	if(m_vpt.bottom > int(GetHeight()))
-		m_vpt.bottom = GetHeight();
+		m_vpt.bottom = int(GetHeight());
 
 	auto rgn(m_vpt.clipflag ? ::CreateRectRgn(m_vpt.left, m_vpt.top,
-		m_vpt.right, m_vpt.bottom) : ::CreateRectRgn(0, 0, GetWidth(),
-		GetHeight()));
+		m_vpt.right, m_vpt.bottom) : ::CreateRectRgn(0, 0, int(GetWidth()),
+		int(GetHeight())));
 
 	::SelectClipRgn(getdc(), rgn);
 
@@ -164,8 +164,8 @@ IMAGE::swap(IMAGE& img) ynothrow
 void
 IMAGE::gentexture(bool gen)
 {
-	m_texture.reset(gen ? new Gdiplus::Bitmap(GetWidth(), GetHeight(),
-		GetWidth() * 4, PixelFormat32bppARGB,
+	m_texture.reset(gen ? new Gdiplus::Bitmap(int(GetWidth()), int(GetHeight()),
+		int(GetWidth() * 4), PixelFormat32bppARGB,
 		reinterpret_cast<byte*>(getbuffer())) : nullptr);
 }
 
@@ -184,15 +184,15 @@ IMAGE::Refresh(::HBITMAP bitmap)
 			g_font_def = ::HFONT(::GetCurrentObject(m_hDC, OBJ_FONT));
 		}
 		::DeleteObject(hbmp_def);
-		SetViewport(0, 0, GetWidth(), GetHeight(), 1);
+		SetViewport(0, 0, int(GetWidth()), int(GetHeight()), 1);
 		cleardevice(this);
 	}
 	else
 	{
-		const int err(::GetLastError());
+		const auto err(::GetLastError());
 
 		::DeleteDC(m_hDC);
-		return err;
+		return int(err);
 	}
 	return 0;
 }
@@ -502,7 +502,8 @@ IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, int dstWidth, int dstHeight,
 void
 IMAGE::putimage(IMAGE* pDstImg, int dstX, int dstY, unsigned long dwRop) const
 {
-	putimage(pDstImg, dstX, dstY, GetWidth(), GetHeight(), 0, 0, dwRop);
+	putimage(pDstImg, dstX, dstY, int(GetWidth()), int(GetHeight()), 0, 0,
+		dwRop);
 }
 void
 IMAGE::putimage(int dstX, int dstY, int dstWidth, int dstHeight, int srcX,
@@ -549,20 +550,24 @@ saveimagetofile(const IMAGE* pimg, std::FILE* fp)
 	auto bmpfHead = ::BITMAPFILEHEADER();
 	auto bmpinfo = ::BITMAPINFOHEADER();
 	auto& img(Deref(pimg));
-	int pitch = img.GetWidth() * 3, addbit, y, x, zero = 0;
+	auto pitch = img.GetWidth() * 3;
+	int addbit, y, x, zero = 0;
 
-	addbit = 4 - (pitch & 3);
-	if(pitch & 3)
-		pitch = ((pitch + 4) & ~3);
-	else addbit = 0;
-	bmpfHead.bfType = *(WORD*)"BM";
+	if((pitch & 3) != 0)
+	{
+		addbit = 4 - (pitch & 3);
+		pitch = (pitch + 4) & unsigned(~3);
+	}
+	else
+		addbit = 0;
+	bmpfHead.bfType = *reinterpret_cast<const WORD*>("BM");
 	bmpfHead.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 	bmpfHead.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER)
 		+ pitch * img.GetHeight();
 	bmpinfo.biSize = sizeof(BITMAPINFOHEADER);
 	bmpinfo.biBitCount = 24;
-	bmpinfo.biHeight = img.GetHeight();
-	bmpinfo.biWidth = img.GetWidth();
+	bmpinfo.biHeight = long(img.GetHeight());
+	bmpinfo.biWidth = long(img.GetWidth());
 	bmpinfo.biPlanes = 1;
 	bmpinfo.biSizeImage = pitch * img.GetHeight();
 	//bmpinfo.biXPelsPerMeter
@@ -575,13 +580,13 @@ saveimagetofile(const IMAGE* pimg, std::FILE* fp)
 	{
 		for(x = 0; x < SPos(width); ++x)
 		{
-			unsigned long col = img.getbuffer()[y * width + x];
+			unsigned long col = img.getbuffer()[SDst(y) * width + SDst(x)];
 			//col = RGBTOBGR(col);
 			if(std::fwrite(&col, 3, 1, fp) < 1)
 				goto ERROR_BREAK;
 		}
 		if(addbit > 0)
-			std::fwrite(&zero, addbit, 1, fp);
+			std::fwrite(&zero, size_t(addbit), 1, fp);
 	}
 	return 0;
 ERROR_BREAK:
@@ -707,19 +712,19 @@ fix_rect_1size(const IMAGE* pdest, const IMAGE* pSrc,
 	/* default value proc */
 	if(*nWidthSrc == 0)
 	{
-		*nWidthSrc  = pSrc->GetWidth();
-		*nHeightSrc = pSrc->GetHeight();
+		*nWidthSrc = int(pSrc->GetWidth());
+		*nHeightSrc = int(pSrc->GetHeight());
 	}
 	/* fix src rect */
 	if(*nWidthSrc > int(pSrc->GetWidth()))
 	{
-		*nWidthSrc -= *nWidthSrc - pSrc->GetWidth();
-		*nWidthSrc = pSrc->GetWidth();
+		*nWidthSrc -= int(unsigned(*nWidthSrc) - pSrc->GetWidth());
+		*nWidthSrc = int(pSrc->GetWidth());
 	}
 	if(*nHeightSrc > int(pSrc->GetHeight()))
 	{
-		*nHeightSrc -= *nHeightSrc - pSrc->GetHeight();
-		*nHeightSrc = pSrc->GetHeight();
+		*nHeightSrc -= int(unsigned(*nHeightSrc) - pSrc->GetHeight());
+		*nHeightSrc = int(pSrc->GetHeight());
 	}
 	if(*nXOriginSrc < 0)
 	{
@@ -813,19 +818,19 @@ IMAGE::putimage_transparent(
 	auto& img(cimg_ref(imgdest));
 	const IMAGE* imgsrc = this;
 	int y, x;
-	unsigned long ddx, dsx;
+	SDst ddx, dsx;
 	unsigned long cr;
 
 	fix_rect_1size(&img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
 		&nYOriginSrc, &nWidthSrc, &nHeightSrc);
 
-	auto pdp = img.GetBufferPtr() + nYOriginDest * img.GetWidth()
+	auto pdp = img.GetBufferPtr() + unsigned(nYOriginDest) * img.GetWidth()
 		+ nXOriginDest;
-	auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth()
-		+ nXOriginSrc;
+	auto psp = imgsrc->GetBufferPtr() + unsigned(nYOriginSrc)
+		* imgsrc->GetWidth() + nXOriginSrc;
 
-	ddx = img.GetWidth() - nWidthSrc;
-	dsx = imgsrc->GetWidth() - nWidthSrc;
+	ddx = img.GetWidth() - unsigned(nWidthSrc);
+	dsx = imgsrc->GetWidth() - unsigned(nWidthSrc);
 	cr = crTransparent & 0x00FFFFF;
 	for(y = 0; y < nHeightSrc; ++y)
 	{
@@ -858,13 +863,13 @@ IMAGE::putimage_alphablend(
 	fix_rect_1size(&img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
 		&nYOriginSrc, &nWidthSrc, &nHeightSrc);
 
-	auto pdp = img.GetBufferPtr() + nYOriginDest * img.GetWidth()
+	auto pdp = img.GetBufferPtr() + unsigned(nYOriginDest) * img.GetWidth()
 		+ nXOriginDest;
-	auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth()
-		+ nXOriginSrc;
+	auto psp = imgsrc->GetBufferPtr() + unsigned(nYOriginSrc)
+		* imgsrc->GetWidth() + nXOriginSrc;
 
-	ddx = img.GetWidth() - nWidthSrc;
-	dsx = imgsrc->GetWidth() - nWidthSrc;
+	ddx = img.GetWidth() - unsigned(nWidthSrc);
+	dsx = imgsrc->GetWidth() - unsigned(nWidthSrc);
 	for(y = 0; y < nHeightSrc; ++y)
 	{
 		for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp)
@@ -897,13 +902,13 @@ IMAGE::putimage_alphatransparent(
 	fix_rect_1size(&img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
 		&nYOriginSrc, &nWidthSrc, &nHeightSrc);
 
-	auto pdp = img.GetBufferPtr() + nYOriginDest * img.GetWidth()
+	auto pdp = img.GetBufferPtr() + unsigned(nYOriginDest) * img.GetWidth()
 		+ nXOriginDest;
-	auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth()
-		+ nXOriginSrc;
+	auto psp = imgsrc->GetBufferPtr()
+		+ unsigned(nYOriginSrc) * imgsrc->GetWidth() + nXOriginSrc;
 
-	ddx = img.GetWidth() - nWidthSrc;
-	dsx = imgsrc->GetWidth() - nWidthSrc;
+	ddx = img.GetWidth() - unsigned(nWidthSrc);
+	dsx = imgsrc->GetWidth() - unsigned(nWidthSrc);
 	cr = crTransparent & 0xFFFFFF;
 	for(y = 0; y < nHeightSrc; ++y)
 	{
@@ -937,13 +942,13 @@ IMAGE::putimage_withalpha(
 	fix_rect_1size(&img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
 		&nYOriginSrc, &nWidthSrc, &nHeightSrc);
 
-	auto pdp = img.GetBufferPtr() + nYOriginDest * img.GetWidth()
+	auto pdp = img.GetBufferPtr() + unsigned(nYOriginDest) * img.GetWidth()
 		+ nXOriginDest;
-	auto psp = imgsrc->GetBufferPtr() + nYOriginSrc  * imgsrc->GetWidth()
-		+ nXOriginSrc;
+	auto psp = imgsrc->GetBufferPtr()
+		+ unsigned(nYOriginSrc) * imgsrc->GetWidth() + nXOriginSrc;
 
-	ddx = img.GetWidth() - nWidthSrc;
-	dsx = imgsrc->GetWidth() - nWidthSrc;
+	ddx = img.GetWidth() - unsigned(nWidthSrc);
+	dsx = imgsrc->GetWidth() - unsigned(nWidthSrc);
 
 	for(y = 0; y < nHeightSrc; ++y)
 	{
@@ -971,20 +976,20 @@ IMAGE::putimage_alphafilter(
 	const IMAGE* imgsrc = this;
 	int y, x;
 	unsigned long ddx, dsx;
-	//unsigned long sa = alpha + 1, da = 0xFF - alpha;
+	//unsigned long sa = unsigned(alpha) + 1, da = 0xFF - alpha;
 
 	fix_rect_1size(&img, imgsrc, &nXOriginDest, &nYOriginDest, &nXOriginSrc,
 		&nYOriginSrc, &nWidthSrc, &nHeightSrc);
 
-	auto pdp = img.GetBufferPtr() + nYOriginDest * img.GetWidth()
+	auto pdp = img.GetBufferPtr() + unsigned(nYOriginDest) * img.GetWidth()
 		+ nXOriginDest;
-	auto psp = imgsrc->GetBufferPtr() + nYOriginSrc * imgsrc->GetWidth()
-		+ nXOriginSrc;
-	auto pap = imgalpha->GetBufferPtr() + nYOriginSrc * imgalpha->GetWidth()
-		+ nXOriginSrc;
+	auto psp = imgsrc->GetBufferPtr()
+		+ unsigned(nYOriginSrc) * imgsrc->GetWidth() + nXOriginSrc;
+	auto pap = imgalpha->GetBufferPtr()
+		+ unsigned(nYOriginSrc) * imgalpha->GetWidth() + nXOriginSrc;
 
-	ddx = img.GetWidth() - nWidthSrc;
-	dsx = imgsrc->GetWidth() - nWidthSrc;
+	ddx = img.GetWidth() - unsigned(nWidthSrc);
+	dsx = imgsrc->GetWidth() - unsigned(nWidthSrc);
 	for(y = 0; y < nHeightSrc; ++y)
 	{
 		for(x = 0; x < nWidthSrc; ++x, ++psp, ++pdp, ++pap)
@@ -1003,18 +1008,18 @@ namespace
 
 void
 fix_rect_0size(IMAGE* pdest,
-			   int* nXOriginDest,  // x-coord of destination upper-left corner
-			   int* nYOriginDest,  // y-coord of destination upper-left corner
-			   int* nWidthDest,     // width of destination rectangle
-			   int* nHeightDest      // height of destination rectangle
-			  )
+	int* nXOriginDest,  // x-coord of destination upper-left corner
+	int* nYOriginDest,  // y-coord of destination upper-left corner
+	int* nWidthDest,     // width of destination rectangle
+	int* nHeightDest      // height of destination rectangle
+)
 {
 	viewporttype _vpt{0, 0, int(pdest->GetWidth()), int(pdest->GetHeight()), 0};
 
 	if(*nWidthDest == 0)
-		*nWidthDest = pdest->GetWidth();
+		*nWidthDest = int(pdest->GetWidth());
 	if(*nHeightDest == 0)
-		*nHeightDest = pdest->GetHeight();
+		*nHeightDest = int(pdest->GetHeight());
 	if(*nXOriginDest < _vpt.left)
 		*nXOriginDest += _vpt.left - *nXOriginDest;
 	if(*nYOriginDest < _vpt.top)
@@ -1029,13 +1034,13 @@ fix_rect_0size(IMAGE* pdest,
 
 int
 IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
-							  int nYOriginDest, int nWidthDest, int nHeightDest)
+	int nYOriginDest, int nWidthDest, int nHeightDest)
 {
 	std::unique_ptr<unsigned long[]> buff(new unsigned long[8 << 10]);
 	int x2, y2, ix, iy;
-	color_t lsum;
+	color_int_t lsum;
 	unsigned long sumRB, sumG;
-	int ddx, dldx;
+	SPos ddx, dldx;
 	int centerintensity;
 	int intensity2, intensity3, intensity4;
 	int intensity2f, intensity3f, intensity4f;
@@ -1043,10 +1048,10 @@ IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 
 	x2 = nXOriginDest + nWidthDest - 1;
 	y2 = nYOriginDest + nHeightDest - 1;
-	auto pdp = imgdest->GetBufferPtr() + nYOriginDest * imgdest->GetWidth()
-		+ nXOriginDest;
-	ddx = imgdest->GetWidth() - nWidthDest;
-	dldx = imgdest->GetWidth();
+	auto pdp = imgdest->GetBufferPtr()
+		+ unsigned(nYOriginDest) * imgdest->GetWidth() + nXOriginDest;
+	ddx = SPos(imgdest->GetWidth()) - nWidthDest;
+	dldx = SPos(imgdest->GetWidth());
 	centerintensity = (0xFF - intensity) * alpha >> 8;
 	intensity2 = intensity * alpha / 2 >> 8;
 	intensity3 = intensity * alpha / 3 >> 8;
@@ -1059,11 +1064,13 @@ IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 		{
 			sumRB = (pdp[dldx] & 0xFF00FF) + (pdp[1] & 0xFF00FF);
 			sumG = (pdp[dldx] & 0xFF00) + (pdp[1] & 0xFF00);
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity2 + ((sumRB * intensity2f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity2 + ((sumG * intensity2f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity2)
+				+ ((sumRB * unsigned(intensity2f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity2)
+				+ ((sumG * unsigned(intensity2f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
@@ -1072,22 +1079,26 @@ IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 			sumRB = (lsum & 0xFF00FF) + (pdp[dldx] & 0xFF00FF)
 				+ (pdp[1] & 0xFF00FF);
 			sumG = (lsum & 0xFF00) + (pdp[dldx] & 0xFF00) + (pdp[1] & 0xFF00);
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity3 + ((sumRB * intensity3f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity3 + ((sumG * intensity3f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity3)
+				+ ((sumRB * unsigned(intensity3f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity3)
+				+ ((sumG * unsigned(intensity3f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
 		{
 			sumRB = (lsum & 0xFF00FF) + (pdp[dldx] & 0xFF00FF);
 			sumG = (lsum & 0xFF00) + (pdp[dldx] & 0xFF00);
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity2 + ((sumRB * intensity2f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity2 + ((sumG * intensity2f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity2)
+				+ ((sumRB * unsigned(intensity2f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity2)
+				+ ((sumG * unsigned(intensity2f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
@@ -1097,41 +1108,48 @@ IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 	{
 		ix = nXOriginDest;
 		{
-			sumRB = (buff[ix] & 0xFF00FF) + (pdp[dldx] & 0xFF00FF)
+			sumRB = (buff[SDst(ix)] & 0xFF00FF) + (pdp[dldx] & 0xFF00FF)
 				+ (pdp[1] & 0xFF00FF);
-			sumG = (buff[ix] & 0xFF00) + (pdp[dldx] & 0xFF00)
+			sumG = (buff[SDst(ix)] & 0xFF00) + (pdp[dldx] & 0xFF00)
 				+ (pdp[1] & 0xFF00);
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity3 + ((sumRB * intensity3f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity3 + ((sumG * intensity3f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity3)
+				+ ((sumRB * unsigned(intensity3f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity3)
+				+ ((sumG * unsigned(intensity3f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
 		for(ix = nXOriginDest + 1; ix < x2; ++ix)
 		{
-			sumRB = (lsum & 0xFF00FF) + (buff[ix] & 0xFF00FF)
+			sumRB = (lsum & 0xFF00FF) + (buff[SDst(ix)] & 0xFF00FF)
 				+ (pdp[dldx] & 0xFF00FF) + (pdp[1] & 0xFF00FF);
-			sumG = (lsum & 0xFF00) + (buff[ix] & 0xFF00) + (pdp[dldx] & 0xFF00)
-				+ (pdp[1] & 0xFF00);
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity4 + ((sumRB * intensity4f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity4 + ((sumG * intensity4f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			sumG = (lsum & 0xFF00) + (buff[SDst(ix)] & 0xFF00)
+				+ (pdp[dldx] & 0xFF00) + (pdp[1] & 0xFF00);
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity4)
+				+ ((sumRB * unsigned(intensity4f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity4)
+				+ ((sumG * unsigned(intensity4f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
 		{
-			sumRB = (lsum & 0xFF00FF) + (buff[ix] & 0xFF00FF)
+			sumRB = (lsum & 0xFF00FF) + (buff[SDst(ix)] & 0xFF00FF)
 				+ (pdp[dldx] & 0xFF00FF);
-			sumG = (lsum & 0xFF00) + (buff[ix] & 0xFF00) + (pdp[dldx] & 0xFF00);
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity3 + ((sumRB * intensity3f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity3 + ((sumG * intensity3f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			sumG = (lsum & 0xFF00) + (buff[SDst(ix)] & 0xFF00)
+				+ (pdp[dldx] & 0xFF00);
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity3)
+				+ ((sumRB * unsigned(intensity3f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity3)
+				+ ((sumG * unsigned(intensity3f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
@@ -1140,37 +1158,43 @@ IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 	{
 		ix = nXOriginDest;
 		{
-			sumRB = (buff[ix] & 0xFF00FF) + (pdp[1] & 0xFF00FF);
-			sumG = (buff[ix] & 0xFF00) + (pdp[1] & 0xFF00);
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity2 + ((sumRB * intensity2f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity2 + ((sumG * intensity2f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			sumRB = (buff[SDst(ix)] & 0xFF00FF) + (pdp[1] & 0xFF00FF);
+			sumG = (buff[SDst(ix)] & 0xFF00) + (pdp[1] & 0xFF00);
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity2)
+				+ ((sumRB * unsigned(intensity2f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity2)
+				+ ((sumG * unsigned(intensity2f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
 		for(ix = nXOriginDest + 1; ix < x2; ++ix)
 		{
-			sumRB = (lsum & 0xFF00FF) + (buff[ix] & 0xFF00FF)
+			sumRB = (lsum & 0xFF00FF) + (buff[SDst(ix)] & 0xFF00FF)
 				+ (pdp[1] & 0xFF00FF);
-			sumG = (lsum & 0xFF00) + (buff[ix] & 0xFF00) + (pdp[1] & 0xFF00);
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity3 + ((sumRB * intensity3f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity3 + ((sumG * intensity3f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			sumG = (lsum & 0xFF00) + (buff[SDst(ix)] & 0xFF00) + (pdp[1] & 0xFF00);
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity3)
+				+ ((sumRB * unsigned(intensity3f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity3)
+				+ ((sumG * unsigned(intensity3f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
 		{
-			sumRB = (lsum & 0xFF00FF) + (buff[ix] & 0xFF00FF);
-			sumG = (lsum & 0xFF00) + (buff[ix] & 0xFF00);
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity2 + ((sumRB * intensity2f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity2 + ((sumG * intensity2f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			sumRB = (lsum & 0xFF00FF) + (buff[SDst(ix)] & 0xFF00FF);
+			sumG = (lsum & 0xFF00) + (buff[SDst(ix)] & 0xFF00);
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity2)
+				+ ((sumRB * unsigned(intensity2f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity2)
+				+ ((sumG * unsigned(intensity2f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
@@ -1180,19 +1204,13 @@ IMAGE::imagefilter_blurring_4(int intensity, int alpha, int nXOriginDest,
 }
 
 int
-IMAGE::imagefilter_blurring_8(
-	int intensity,
-	int alpha,
-	int nXOriginDest,
-	int nYOriginDest,
-	int nWidthDest,
-	int nHeightDest
-)
+IMAGE::imagefilter_blurring_8(int intensity, int alpha, int nXOriginDest,
+	int nYOriginDest, int nWidthDest, int nHeightDest)
 {
 	std::unique_ptr<unsigned long[]> buff(new unsigned long[8 << 10]);
 	int x2, y2, ix, iy;
-	unsigned long lsum, sumRB, sumG, lbuf;
-	int ddx, dldx;
+	color_int_t lsum, sumRB, sumG, lbuf;
+	SPos ddx, dldx;
 	int centerintensity;
 	int intensity2, intensity3, intensity4;
 	int intensity2f, intensity3f, intensity4f;
@@ -1202,11 +1220,11 @@ IMAGE::imagefilter_blurring_8(
 	x2 = nXOriginDest + nWidthDest - 1;
 	y2 = nYOriginDest + nHeightDest - 1;
 
-	auto pdp = imgdest->GetBufferPtr() + nYOriginDest * imgdest->GetWidth()
-		+ nXOriginDest;
+	auto pdp = imgdest->GetBufferPtr()
+		+ unsigned(nYOriginDest) * imgdest->GetWidth() + nXOriginDest;
 
-	ddx = imgdest->GetWidth() - nWidthDest;
-	dldx = imgdest->GetWidth();
+	ddx = SPos(imgdest->GetWidth()) - nWidthDest;
+	dldx = SPos(imgdest->GetWidth());
 
 	centerintensity = (0xFF - intensity) * alpha >> 8;
 	intensity2 = intensity * alpha / 3 >> 8;
@@ -1219,15 +1237,17 @@ IMAGE::imagefilter_blurring_8(
 		ix = nXOriginDest;
 		{
 			sumRB = (pdp[1] & 0xFF00FF)
-					+ (pdp[dldx] & 0xFF00FF) + (pdp[dldx + 1] & 0xFF00FF);
+				+ (pdp[dldx] & 0xFF00FF) + (pdp[dldx + 1] & 0xFF00FF);
 			sumG = + (pdp[1] & 0xFF00)
-				   + (pdp[dldx] & 0xFF00) + (pdp[dldx + 1] & 0xFF00);
-			lbuf = buff[ix];
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity2 + ((sumRB * intensity2f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity2 + ((sumG * intensity2f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+				+ (pdp[dldx] & 0xFF00) + (pdp[dldx + 1] & 0xFF00);
+			lbuf = buff[SDst(ix)];
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity2)
+				+ ((sumRB * unsigned(intensity2f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity2)
+				+ ((sumG * unsigned(intensity2f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
@@ -1239,12 +1259,14 @@ IMAGE::imagefilter_blurring_8(
 			sumG = (lsum & 0xFF00) + (pdp[1] & 0xFF00)
 				+ (pdp[dldx - 1] & 0xFF00) + (pdp[dldx] & 0xFF00)
 				+ (pdp[dldx + 1] & 0xFF00);
-			lbuf = buff[ix];
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity3 + ((sumRB * intensity3f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity3 + ((sumG * intensity3f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			lbuf = buff[SDst(ix)];
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity3)
+				+ ((sumRB * unsigned(intensity3f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity3)
+				+ ((sumG * unsigned(intensity3f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
@@ -1253,12 +1275,14 @@ IMAGE::imagefilter_blurring_8(
 					+ (pdp[dldx - 1] & 0xFF00FF) + (pdp[dldx] & 0xFF00FF);
 			sumG = (lsum & 0xFF00)
 				   + (pdp[dldx - 1] & 0xFF00) + (pdp[dldx] & 0xFF00);
-			lbuf = buff[ix];
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity2 + ((sumRB * intensity2f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity2 + ((sumG * intensity2f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			lbuf = buff[SDst(ix)];
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity2)
+				+ ((sumRB * unsigned(intensity2f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity2)
+				+ ((sumG * unsigned(intensity2f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
@@ -1268,53 +1292,59 @@ IMAGE::imagefilter_blurring_8(
 	{
 		ix = nXOriginDest;
 		{
-			sumRB = (buff[ix] & 0xFF00FF) + (buff[ix + 1] & 0xFF00FF)
-					+ (pdp[1] & 0xFF00FF)
-					+ (pdp[dldx] & 0xFF00FF) + (pdp[dldx + 1] & 0xFF00FF);
-			sumG = (buff[ix] & 0xFF00) + (buff[ix + 1] & 0xFF00)
-				   + (pdp[1] & 0xFF00)
-				   + (pdp[dldx] & 0xFF00) + (pdp[dldx + 1] & 0xFF00);
-			lbuf = buff[ix];
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity3 + ((sumRB * intensity3f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity3 + ((sumG * intensity3f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			sumRB = (buff[SDst(ix)] & 0xFF00FF)
+				+ (buff[SDst(ix) + 1] & 0xFF00FF) + (pdp[1] & 0xFF00FF)
+				+ (pdp[dldx] & 0xFF00FF) + (pdp[dldx + 1] & 0xFF00FF);
+			sumG = (buff[SDst(ix)] & 0xFF00) + (buff[SDst(ix) + 1] & 0xFF00)
+				+ (pdp[1] & 0xFF00) + (pdp[dldx] & 0xFF00)
+				+ (pdp[dldx + 1] & 0xFF00);
+			lbuf = buff[SDst(ix)];
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity3)
+				+ ((sumRB * unsigned(intensity3f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity3)
+				+ ((sumG * unsigned(intensity3f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
 		for(ix = nXOriginDest + 1; ix < x2; ++ix)
 		{
-			sumRB = (lbuf & 0xFF00FF) + (buff[ix] & 0xFF00FF)
-				+ (buff[ix + 1] & 0xFF00FF) + (lsum & 0xFF00FF)
+			sumRB = (lbuf & 0xFF00FF) + (buff[SDst(ix)] & 0xFF00FF)
+				+ (buff[SDst(ix) + 1] & 0xFF00FF) + (lsum & 0xFF00FF)
 				+ (pdp[1] & 0xFF00FF) + (pdp[dldx - 1] & 0xFF00FF)
 				+ (pdp[dldx] & 0xFF00FF) + (pdp[dldx + 1] & 0xFF00FF);
-			sumG = (lbuf & 0xFF00) + (buff[ix] & 0xFF00)
-				+ (buff[ix + 1] & 0xFF00) + (lsum & 0xFF00) + (pdp[1] & 0xFF00)
-				+ (pdp[dldx - 1] & 0xFF00) + (pdp[dldx] & 0xFF00)
-				+ (pdp[dldx + 1] & 0xFF00);
-			lbuf = buff[ix];
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity4 + ((sumRB * intensity4f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity4 + ((sumG * intensity4f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			sumG = (lbuf & 0xFF00) + (buff[SDst(ix)] & 0xFF00)
+				+ (buff[SDst(ix) + 1] & 0xFF00) + (lsum & 0xFF00)
+				+ (pdp[1] & 0xFF00) + (pdp[dldx - 1] & 0xFF00)
+				+ (pdp[dldx] & 0xFF00) + (pdp[dldx + 1] & 0xFF00);
+			lbuf = buff[SDst(ix)];
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity4)
+				+ ((sumRB * unsigned(intensity4f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity4)
+				+ ((sumG * unsigned(intensity4f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
 		{
-			sumRB = (lbuf & 0xFF00FF) + (buff[ix] & 0xFF00FF)
-					+ (lsum & 0xFF00FF)
-					+ (lbuf & 0xFF00FF) + (pdp[dldx] & 0xFF00FF);
-			sumG = (buff[ix - 1] & 0xFF00) + (buff[ix] & 0xFF00)
-				   + (lsum & 0xFF00)
-				   + (pdp[dldx - 1] & 0xFF00) + (pdp[dldx] & 0xFF00);
-			lbuf = buff[ix];
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity3 + ((sumRB * intensity3f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity3 + ((sumG * intensity3f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			sumRB = (lbuf & 0xFF00FF) + (buff[SDst(ix)] & 0xFF00FF)
+				+ (lsum & 0xFF00FF) + (lbuf & 0xFF00FF)
+				+ (pdp[dldx] & 0xFF00FF);
+			sumG = (buff[SDst(ix) - 1] & 0xFF00) + (buff[SDst(ix)] & 0xFF00)
+				+ (lsum & 0xFF00) + (pdp[SDst(dldx) - 1] & 0xFF00)
+				+ (pdp[dldx] & 0xFF00);
+			lbuf = buff[SDst(ix)];
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity3)
+				+ ((sumRB * unsigned(intensity3f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity3)
+				+ ((sumG * unsigned(intensity3f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
@@ -1323,43 +1353,51 @@ IMAGE::imagefilter_blurring_8(
 	{
 		ix = nXOriginDest;
 		{
-			sumRB = (buff[ix] & 0xFF00FF) + (buff[ix + 1] & 0xFF00FF)
-					+ (pdp[1] & 0xFF00FF);
-			sumG = (buff[ix] & 0xFF00) + (buff[ix + 1] & 0xFF00)
+			sumRB = (buff[SDst(ix)] & 0xFF00FF)
+				+ (buff[SDst(ix) + 1] & 0xFF00FF) + (pdp[1] & 0xFF00FF);
+			sumG = (buff[SDst(ix)] & 0xFF00) + (buff[SDst(ix) + 1] & 0xFF00)
 				   + (pdp[1] & 0xFF00);
-			lbuf = buff[ix];
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity2 + ((sumRB * intensity2f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity2 + ((sumG * intensity2f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			lbuf = buff[SDst(ix)];
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity2)
+				+ ((sumRB * unsigned(intensity2f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity2)
+				+ ((sumG * unsigned(intensity2f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
 		for(ix = nXOriginDest + 1; ix < x2; ++ix)
 		{
-			sumRB = (lbuf & 0xFF00FF) + (buff[ix] & 0xFF00FF)
-				+ (buff[ix + 1] & 0xFF00FF) + (lsum & 0xFF00FF)
+			sumRB = (lbuf & 0xFF00FF) + (buff[SDst(ix)] & 0xFF00FF)
+				+ (buff[SDst(ix) + 1] & 0xFF00FF) + (lsum & 0xFF00FF)
 				+ (pdp[1] & 0xFF00FF);
-			sumG = (lbuf & 0xFF00) + (buff[ix] & 0xFF00)
-				+ (buff[ix + 1] & 0xFF00) + (lsum & 0xFF00) + (pdp[1] & 0xFF00);
-			lbuf = buff[ix];
-			buff[ix] = lsum = *pdp;
-			sumRB = sumRB * intensity3 + ((sumRB * intensity3f >> 8) & 0xFF00FF)
-				+ (lsum & 0xFF00FF) * centerintensity;
-			sumG = sumG * intensity3 + ((sumG * intensity3f >> 8))
-				+ (lsum & 0xFF00) * centerintensity;
+			sumG = (lbuf & 0xFF00) + (buff[SDst(ix)] & 0xFF00)
+				+ (buff[SDst(ix) + 1] & 0xFF00) + (lsum & 0xFF00)
+				+ (pdp[1] & 0xFF00);
+			lbuf = buff[SDst(ix)];
+			buff[SDst(ix)] = lsum = *pdp;
+			sumRB = sumRB * unsigned(intensity3)
+				+ ((sumRB * unsigned(intensity3f) >> 8) & 0xFF00FF)
+				+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+			sumG = sumG * unsigned(intensity3)
+				+ ((sumG * unsigned(intensity3f) >> 8))
+				+ (lsum & 0xFF00) * unsigned(centerintensity);
 			*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 			++pdp;
 		}
-		sumRB = (lbuf & 0xFF00FF) + (buff[ix] & 0xFF00FF) + (lsum & 0xFF00FF);
-		sumG = (lbuf & 0xFF00) + (buff[ix] & 0xFF00) + (lsum & 0xFF00);
-		lbuf = buff[ix];
-		buff[ix] = lsum = *pdp;
-		sumRB = sumRB * intensity2 + ((sumRB * intensity2f >> 8) & 0xFF00FF)
-			+ (lsum & 0xFF00FF) * centerintensity;
-		sumG = sumG * intensity2 + ((sumG * intensity2f >> 8)) + (lsum & 0xFF00)
-			* centerintensity;
+		sumRB = (lbuf & 0xFF00FF) + (buff[SDst(ix)] & 0xFF00FF)
+			+ (lsum & 0xFF00FF);
+		sumG = (lbuf & 0xFF00) + (buff[SDst(ix)] & 0xFF00) + (lsum & 0xFF00);
+		lbuf = buff[SDst(ix)];
+		buff[SDst(ix)] = lsum = *pdp;
+		sumRB = sumRB * unsigned(intensity2)
+			+ ((sumRB * unsigned(intensity2f) >> 8) & 0xFF00FF)
+			+ (lsum & 0xFF00FF) * unsigned(centerintensity);
+		sumG = sumG * unsigned(intensity2)
+			+ ((sumG * unsigned(intensity2f) >> 8))
+			+ (lsum & 0xFF00) * unsigned(centerintensity);
 		*pdp = ((sumRB & 0xFF00FF00) | (sumG & 0xFF0000)) >> 8;
 		++pdp;
 		//pdp += ddx;
@@ -1368,14 +1406,8 @@ IMAGE::imagefilter_blurring_8(
 }
 
 int
-IMAGE::imagefilter_blurring(
-	int intensity,
-	int alpha,
-	int nXOriginDest,
-	int nYOriginDest,
-	int nWidthDest,
-	int nHeightDest
-)
+IMAGE::imagefilter_blurring(int intensity, int alpha, int nXOriginDest,
+	int nYOriginDest, int nWidthDest, int nHeightDest)
 {
 	IMAGE* imgdest = this;
 
@@ -1411,35 +1443,22 @@ IMAGE::imagefilter_blurring(
 }
 
 int
-IMAGE::putimage_rotate(
-	const IMAGE* imgtexture,
-	int nXOriginDest,
-	int nYOriginDest,
-	float centerx,
-	float centery,
-	float radian,
-	int btransparent,           // transparent (1) or not (0)
-	int alpha,                  // in range[0, 256], alpha== -1 means no alpha
-	int smooth
-)
+IMAGE::putimage_rotate(const IMAGE* imgtexture, int nXOriginDest,
+	int nYOriginDest, float centerx, float centery, float radian,
+	int btransparent, // transparent (1) or not (0)
+	int alpha, // in range[0, 256], alpha== -1 means no alpha
+	int smooth)
 {
 	return ege::putimage_rotate(this, imgtexture, nXOriginDest, nYOriginDest,
 		centerx, centery, radian, btransparent, alpha, smooth);
 }
 
 int
-IMAGE::putimage_rotatezoom(
-	const IMAGE* imgtexture,
-	int nXOriginDest,
-	int nYOriginDest,
-	float centerx,
-	float centery,
-	float radian,
-	float zoom,
-	int btransparent,           // transparent (1) or not (0)
-	int alpha,                  // in range[0, 256], alpha== -1 means no alpha
-	int smooth
-)
+IMAGE::putimage_rotatezoom(const IMAGE* imgtexture, int nXOriginDest,
+	int nYOriginDest, float centerx, float centery, float radian,
+	float zoom, int btransparent, // transparent (1) or not (0)
+	int alpha, // in range[0, 256], alpha== -1 means no alpha
+	int smooth)
 {
 	return ege::putimage_rotatezoom(this, imgtexture, nXOriginDest,
 		nYOriginDest, centerx, centery, radian, zoom, btransparent, alpha,
@@ -1498,12 +1517,11 @@ draw_flat_scanline(IMAGE* dc_dest, const vector2d* vt, const IMAGE* dc_src,
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
 		y = float2int(vt->p[0].y), w = e - s;
-	auto lp_dest_bmp_byte
+	auto p_dest_bmp_byte
 		= reinterpret_cast<unsigned long*>(dc_dest->getbuffer());
-	auto lp_src_bmp_byte
+	auto p_src_bmp_byte
 		= reinterpret_cast<unsigned long*>(dc_src->getbuffer());
-	int dest_w = dc_dest->GetWidth();
-	int src_w = dc_src->GetWidth();
+	auto dest_w = dc_dest->GetWidth(), src_w = dc_src->GetWidth();
 
 	if(w > 0)
 	{
@@ -1524,8 +1542,8 @@ draw_flat_scanline(IMAGE* dc_dest, const vector2d* vt, const IMAGE* dc_src,
 		curx += (s - bx) * dx;
 		cury += (s - bx) * dy;
 		for(i = s; i < e; ++i, curx += dx, cury += dy)
-			lp_dest_bmp_byte[dest_w * y + i]
-				= lp_src_bmp_byte[src_w * int(cury) + int(curx)];
+			p_dest_bmp_byte[dest_w * SDst(y) + SDst(i)]
+				= p_src_bmp_byte[src_w * SDst(cury) + SDst(curx)];
 	}
 }
 
@@ -1536,11 +1554,10 @@ draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d* vt,
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int b = vt->p[0].x + .5F, e = vt->p[1].x + .5F,
 		y = vt->p[0].y + .5F, w = e - b;
-	auto lp_dest_bmp_byte = dc_dest->getbuffer();
-	auto lp_src_bmp_byte = dc_src->getbuffer();
+	auto p_dest_bmp_byte = dc_dest->getbuffer();
+	auto p_src_bmp_byte = dc_src->getbuffer();
 	unsigned long col;
-	int dest_w = dc_dest->GetWidth();
-	int src_w = dc_src->GetWidth();
+	auto dest_w = dc_dest->GetWidth(), src_w = dc_src->GetWidth();
 
 	if(w > 0)
 	{
@@ -1561,8 +1578,8 @@ draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d* vt,
 		curx += (b - bx) * dx;
 		cury += (b - bx) * dy;
 		for(i = b; i < e; yunseq(++i, curx += dx, cury += dy))
-			if((col = lp_src_bmp_byte[src_w * int(cury) + int(curx)]))
-				lp_dest_bmp_byte[dest_w * y + i] = col;
+			if((col = p_src_bmp_byte[src_w * SDst(cury) + SDst(curx)]))
+				p_dest_bmp_byte[dest_w * SDst(y) + SDst(i)] = col;
 	}
 }
 
@@ -1573,11 +1590,10 @@ draw_flat_scanline_alpha(IMAGE* dc_dest, const vector2d* vt,
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int b = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
 		y = float2int(vt->p[0].y), w = e - b;
-	unsigned long* lp_dest_bmp_byte = dc_dest->getbuffer();
-	unsigned long* lp_src_bmp_byte = dc_src->getbuffer();
-	unsigned long sa = alpha, da = 0xFF - sa;
-	int dest_w = dc_dest->GetWidth();
-	int src_w = dc_src->GetWidth();
+	unsigned long* p_dest_bmp_byte = dc_dest->getbuffer();
+	unsigned long* p_src_bmp_byte = dc_src->getbuffer();
+	unsigned long sa = unsigned(alpha), da = 0xFF - sa;
+	auto dest_w = dc_dest->GetWidth(), src_w = dc_src->GetWidth();
 
 	if(w > 0)
 	{
@@ -1600,14 +1616,14 @@ draw_flat_scanline_alpha(IMAGE* dc_dest, const vector2d* vt,
 
 		for(i = b; i < e; ++i, curx += dx, cury += dy)
 		{
-			unsigned long d = lp_dest_bmp_byte[dest_w * y + i],
-				s = lp_src_bmp_byte[src_w * int(cury) + int(curx)];
+			unsigned long d = p_dest_bmp_byte[dest_w * SDst(y) + SDst(i)],
+				s = p_src_bmp_byte[src_w * SDst(cury) + SDst(curx)];
 
 			d = ((d & 0xFF00FF) * da & 0xFF00FF00)
 				| ((d & 0xFF00) * da >> 16 << 16);
 			s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
 				| ((s & 0xFF00) * sa >> 16 << 16);
-			lp_dest_bmp_byte[dest_w * y + i] = (d + s) >> 8;
+			p_dest_bmp_byte[dest_w * SDst(y) + SDst(i)] = (d + s) >> 8;
 		}
 	}
 }
@@ -1619,11 +1635,10 @@ draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d* vt,
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int b = vt->p[0].x + .5F, e = vt->p[1].x + .5F,
 		y = vt->p[0].y + .5F, w = e - b;
-	unsigned long* lp_dest_bmp_byte = dc_dest->getbuffer();
-	unsigned long* lp_src_bmp_byte = dc_src->getbuffer();
-	unsigned long sa = alpha, da = 0xFF - sa;
-	int dest_w = dc_dest->GetWidth();
-	int src_w = dc_src->GetWidth();
+	unsigned long* p_dest_bmp_byte = dc_dest->getbuffer();
+	unsigned long* p_src_bmp_byte = dc_src->getbuffer();
+	unsigned long sa = unsigned(alpha), da = 0xFF - sa;
+	auto dest_w = dc_dest->GetWidth(), src_w = dc_src->GetWidth();
 
 	if(w > 0)
 	{
@@ -1645,16 +1660,16 @@ draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d* vt,
 		cury += (b - bx) * dy;
 		for(i = b; i < e; ++i, curx += dx, cury += dy)
 		{
-			unsigned long s = lp_src_bmp_byte[src_w * int(cury) + int(curx)];
+			unsigned long s = p_src_bmp_byte[src_w * SDst(cury) + SDst(curx)];
 
 			if(s != 0)
 			{
-				unsigned long d = lp_dest_bmp_byte[dest_w * y + i];
+				unsigned long d = p_dest_bmp_byte[dest_w * SDst(y) + SDst(i)];
 				d = ((d & 0xFF00FF) * da & 0xFF00FF00)
 					| ((d & 0xFF00) * da >> 16 << 16);
 				s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
 					| ((s & 0xFF00) * sa >> 16 << 16);
-				lp_dest_bmp_byte[dest_w * y + i] = (d + s) >> 8;
+				p_dest_bmp_byte[dest_w * SDst(y) + SDst(i)] = (d + s) >> 8;
 			}
 		}
 	}
@@ -1667,10 +1682,9 @@ draw_flat_scanline_s(IMAGE* dc_dest, const vector2d* vt, const IMAGE* dc_src,
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int b = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
 		y = float2int(vt->p[0].y), w = e - b;
-	unsigned long* lp_dest_bmp_byte = dc_dest->getbuffer();
-	unsigned long* lp_src_bmp_byte = dc_src->getbuffer();
-	int dest_w = dc_dest->GetWidth();
-	int src_w = dc_src->GetWidth();
+	unsigned long* p_dest_bmp_byte = dc_dest->getbuffer();
+	unsigned long* p_src_bmp_byte = dc_src->getbuffer();
+	auto dest_w = dc_dest->GetWidth(), src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
 
 	if(w > 0)
@@ -1695,12 +1709,12 @@ draw_flat_scanline_s(IMAGE* dc_dest, const vector2d* vt, const IMAGE* dc_src,
 		{
 			int ix = curx, iy = cury;
 			double fx(curx - ix), fy = cury - iy;
-			unsigned long* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
-			unsigned long col(bilinear_interpolation(lp_src_byte[0],
-				lp_src_byte[1], lp_src_byte[src_w], lp_src_byte[src_w + 1],
+			auto p_src_byte = p_src_bmp_byte + src_w * SDst(iy) + SDst(ix);
+			unsigned long col(bilinear_interpolation(p_src_byte[0],
+				p_src_byte[1], p_src_byte[src_w], p_src_byte[src_w + 1],
 				fx, fy));
 
-			lp_dest_bmp_byte[dest_w * y + i] = col;
+			p_dest_bmp_byte[dest_w * SDst(y) + SDst(i)] = col;
 		}
 	}
 }
@@ -1712,10 +1726,9 @@ draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d* vt,
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int b = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
 		y = float2int(vt->p[0].y), w = e - b;
-	unsigned long* lp_dest_bmp_byte = dc_dest->getbuffer();
-	unsigned long* lp_src_bmp_byte = dc_src->getbuffer();
-	int dest_w = dc_dest->GetWidth();
-	int src_w = dc_src->GetWidth();
+	unsigned long* p_dest_bmp_byte = dc_dest->getbuffer();
+	unsigned long* p_src_bmp_byte = dc_src->getbuffer();
+	auto dest_w = dc_dest->GetWidth(), src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
 
 	if(w > 0)
@@ -1740,12 +1753,12 @@ draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d* vt,
 		{
 			int ix(curx), iy(cury);
 			float fx(curx - ix), fy = cury - iy;
-			unsigned long* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
+			auto p_src_byte = p_src_bmp_byte + src_w * SDst(iy) + SDst(ix);
 
-			if(unsigned long col = bilinear_interpolation(lp_src_byte[0],
-				lp_src_byte[1], lp_src_byte[src_w], lp_src_byte[src_w + 1],
+			if(unsigned long col = bilinear_interpolation(p_src_byte[0],
+				p_src_byte[1], p_src_byte[src_w], p_src_byte[src_w + 1],
 				fx, fy))
-				lp_dest_bmp_byte[dest_w * y + i] = col;
+				p_dest_bmp_byte[dest_w * SDst(y) + SDst(i)] = col;
 		}
 	}
 }
@@ -1757,11 +1770,10 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d* vt,
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int b = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
 		y = float2int(vt->p[0].y), w = e - b;
-	unsigned long* lp_dest_bmp_byte = dc_dest->getbuffer();
-	unsigned long* lp_src_bmp_byte = dc_src->getbuffer();
-	unsigned long sa = alpha, da = 0xFF - sa;
-	int dest_w = dc_dest->GetWidth();
-	int src_w = dc_src->GetWidth();
+	unsigned long* p_dest_bmp_byte = dc_dest->getbuffer();
+	unsigned long* p_src_bmp_byte = dc_src->getbuffer();
+	unsigned long sa = unsigned(alpha), da = 0xFF - sa;
+	auto dest_w = dc_dest->GetWidth(), src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
 
 	if(w > 0)
@@ -1782,21 +1794,22 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d* vt,
 			e = x2;
 		curx += (b - bx) * dx;
 		cury += (b - bx) * dy;
+
 		for(i = b; i < e; ++i, curx += dx, cury += dy)
 		{
 			int ix(curx), iy(cury);
 			float fx(curx - ix), fy = cury - iy;
-			unsigned long* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
-			unsigned long col(bilinear_interpolation(lp_src_byte[0],
-				lp_src_byte[1], lp_src_byte[src_w], lp_src_byte[src_w + 1],
+			auto p_src_byte = p_src_bmp_byte + src_w * SDst(iy) + SDst(ix);
+			unsigned long col(bilinear_interpolation(p_src_byte[0],
+				p_src_byte[1], p_src_byte[src_w], p_src_byte[src_w + 1],
 				fx, fy));
-			unsigned long d = lp_dest_bmp_byte[dest_w * y + i];
+			unsigned long d = p_dest_bmp_byte[dest_w * SDst(y) + SDst(i)];
 
 			d = (((d & 0xFF00FF) * da & 0xFF00FF00)
 				| ((d & 0xFF00) * da & 0xFF0000)) >> 8;
 			col = (((col & 0xFF00FF) * sa & 0xFF00FF00)
 				| ((col & 0xFF00) * sa & 0xFF0000)) >> 8;
-			lp_dest_bmp_byte[dest_w * y + i] = d + col;
+			p_dest_bmp_byte[dest_w * SDst(y) + SDst(i)] = d + col;
 		}
 	}
 }
@@ -1808,11 +1821,10 @@ draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d* vt,
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int b = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
 		y = float2int(vt->p[0].y), w = e - b;
-	unsigned long* lp_dest_bmp_byte = dc_dest->getbuffer();
-	unsigned long* lp_src_bmp_byte = dc_src->getbuffer();
-	unsigned long sa = alpha, da = 0xFF - sa;
-	int dest_w = dc_dest->GetWidth();
-	int src_w = dc_src->GetWidth();
+	unsigned long* p_dest_bmp_byte = dc_dest->getbuffer();
+	unsigned long* p_src_bmp_byte = dc_src->getbuffer();
+	unsigned long sa = unsigned(alpha), da = 0xFF - sa;
+	auto dest_w = dc_dest->GetWidth(), src_w = dc_src->GetWidth();
 	//int src_h = dc_src->h;
 
 	if(w > 0)
@@ -1837,18 +1849,18 @@ draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d* vt,
 		{
 			int ix(curx), iy(cury);
 			float fx(curx - ix), fy = cury - iy;
-			unsigned long* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
+			auto p_src_byte = p_src_bmp_byte + src_w * SDst(iy) + SDst(ix);
 
 			if(unsigned long col = bilinear_interpolation(
-				lp_src_byte[0], lp_src_byte[1], lp_src_byte[src_w],
-				lp_src_byte[src_w + 1], fx, fy))
+				p_src_byte[0], p_src_byte[1], p_src_byte[src_w],
+				p_src_byte[src_w + 1], fx, fy))
 			{
-				unsigned long d = lp_dest_bmp_byte[dest_w * y + i];
+				unsigned long d = p_dest_bmp_byte[dest_w * SDst(y) + SDst(i)];
 				d = (((d & 0xFF00FF) * da & 0xFF00FF00)
 					| ((d & 0xFF00) * da & 0xFF0000)) >> 8;
 				col = (((col & 0xFF00FF) * sa & 0xFF00FF00)
 					| ((col & 0xFF00) * sa & 0xFF0000)) >> 8;
-				lp_dest_bmp_byte[dest_w * y + i] = d + col;
+				p_dest_bmp_byte[dest_w * SDst(y) + SDst(i)] = d + col;
 			}
 		}
 	}
@@ -2378,11 +2390,11 @@ putimage_trangle(IMAGE* imgdest, const IMAGE* imgtexture,
 	{
 		triangle2d _dt = *dt;
 		triangle2d _tt = *tt;
-		int x1 = 0, y1 = 0, x2 = dc_dest->GetWidth(),
-			y2 = dc_dest->GetHeight(), i;
+		int x1 = 0, y1 = 0, x2 = int(dc_dest->GetWidth()),
+			y2 = int(dc_dest->GetHeight());
 
 		if(smooth)
-			for(i = 0; i < 3; ++i)
+			for(size_t i = 0; i < 3; ++i)
 			{
 				_tt.p[i].x = float2int((_tt.p[i].x
 					* (dc_src->GetWidth() - 2)));
@@ -2390,7 +2402,7 @@ putimage_trangle(IMAGE* imgdest, const IMAGE* imgtexture,
 					* (dc_src->GetHeight() - 2)));
 			}
 		else
-			for(i = 0; i < 3; ++i)
+			for(size_t i = 0; i < 3; ++i)
 			{
 				_tt.p[i].x = float2int((_tt.p[i].x
 					* (dc_src->GetWidth() - 1)));

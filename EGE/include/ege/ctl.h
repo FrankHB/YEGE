@@ -118,7 +118,7 @@ public:
 	}
 	void setrop(int rop)
 	{
-		m_rop = rop;    // 请用枚举类型ROP里所定义的
+		m_rop = static_cast<unsigned long>(rop); // 请用枚举类型ROP里所定义的
 	}
 
 	void directdraw(bool bdraw)

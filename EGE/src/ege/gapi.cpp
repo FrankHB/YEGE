@@ -42,10 +42,10 @@ _save_brush(IMAGE* img, int save)
 	return 0;
 }
 
-::DWORD
-upattern2array(unsigned short upattern, ::DWORD style[]) ynothrow
+unsigned long
+upattern2array(unsigned short upattern, unsigned long style[]) ynothrow
 {
-	::DWORD bn(0), len(1);
+	unsigned long bn(0), len(1);
 	bool st((upattern & 1) != 0);
 
 	for(size_t n(1); n < 16; ++n)
@@ -75,17 +75,17 @@ upattern2array(unsigned short upattern, ::DWORD style[]) ynothrow
 }
 
 void
-update_ls_pen(::HDC h_dc, ::COLORREF bgrcolor, int linestyle, int thickness,
-	int upattern) ynothrow
+update_ls_pen(::HDC h_dc, ::COLORREF bgrcolor, unsigned long linestyle,
+	unsigned long thickness, unsigned short upattern) ynothrow
 {
 	if(const auto hpen = [&]() ynothrow -> ::HPEN{
 		const ::LOGBRUSH lbr{BS_SOLID, bgrcolor, 0};
-		const int
+		const unsigned long
 			ls(linestyle | PS_GEOMETRIC | PS_ENDCAP_ROUND | PS_JOIN_ROUND);
 
 		if(linestyle == USERBIT_LINE)
 		{
-			::DWORD style[20]{0};
+			unsigned long style[20]{0};
 
 			return ::ExtCreatePen(ls, thickness, &lbr,
 				upattern2array(upattern, style), style);
@@ -175,8 +175,9 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 		img.m_linewidth = float(thickness);
 		img.m_linestyle.linestyle = linestyle;
 		img.m_linestyle.upattern = upattern;
-		update_ls_pen(h_dc, RGBTOBGR(img.m_color) & 0x00FFFFFF, linestyle,
-			thickness, upattern);
+		update_ls_pen(h_dc, RGBTOBGR(color_int_t(img.m_color)) & 0x00FFFFFF,
+			static_cast<unsigned long>(linestyle),
+			static_cast<unsigned long>(thickness), upattern);
 	}
 }
 
@@ -191,8 +192,9 @@ setlinewidth(float width, IMAGE* pimg)
 
 		img.m_linestyle.thickness = thickness;
 		img.m_linewidth = width;
-		update_ls_pen(h_dc, RGBTOBGR(img.m_color), img.m_linestyle.linestyle,
-			thickness, img.m_linestyle.upattern);
+		update_ls_pen(h_dc, RGBTOBGR(color_int_t(img.m_color)),
+			static_cast<unsigned long>(img.m_linestyle.linestyle),
+			static_cast<unsigned long>(thickness), img.m_linestyle.upattern);
 	}
 }
 
@@ -201,7 +203,7 @@ setfillstyle(int pattern, color_t color, IMAGE* pimg)
 {
 	auto& img(cimg_ref_c(pimg));
 
-	::LOGBRUSH lbr{0, RGBTOBGR(color), ::UINT_PTR()};
+	::LOGBRUSH lbr{0, RGBTOBGR(color_int_t(color)), ::UINT_PTR()};
 
 	img.m_fillcolor = color;
 	//::SetBkColor(img.getdc(), color);
@@ -225,7 +227,7 @@ setfillstyle(int pattern, color_t color, IMAGE* pimg)
 			HS_DIAGCROSS
 		};
 		lbr.lbStyle = BS_HATCHED;
-		lbr.lbHatch = hatchmap[pattern - 2];
+		lbr.lbHatch = ::ULONG_PTR(hatchmap[pattern - 2]);
 	}
 	else
 		lbr.lbHatch = BS_SOLID;
@@ -255,7 +257,7 @@ getcolor(const IMAGE* pimg)
 		return logPen.lopnColor;
 #endif
 	}
-	return 0xFFFFFFFF;
+	return color_t(0xFFFFFFFF);
 }
 
 color_t
@@ -280,11 +282,12 @@ setcolor(color_t color, IMAGE* pimg)
 
 	if(const auto h_dc = img.getdc())
 	{
-		const auto bgrcolor(RGBTOBGR(color) & 0x00FFFFFF);
+		const auto bgrcolor(RGBTOBGR(color_int_t(color)) & 0x00FFFFFF);
 
 		img.m_color = color;
-		update_ls_pen(h_dc, bgrcolor, img.m_linestyle.linestyle,
-			img.m_linestyle.thickness, img.m_linestyle.upattern);
+		update_ls_pen(h_dc, bgrcolor, static_cast<unsigned long>(
+			img.m_linestyle.linestyle), static_cast<unsigned long>(
+			img.m_linestyle.thickness), img.m_linestyle.upattern);
 		::SetTextColor(h_dc, bgrcolor);
 	}
 }
@@ -294,7 +297,7 @@ setfillcolor(color_t color, IMAGE* pimg)
 {
 	auto& img(cimg_ref_c(pimg));
 
-	::LOGBRUSH lbr{0, RGBTOBGR(color), BS_SOLID};
+	::LOGBRUSH lbr{0, RGBTOBGR(color_int_t(color)), BS_SOLID};
 
 	img.m_fillcolor = color;
 	::HBRUSH hbr = ::CreateBrushIndirect(&lbr);
@@ -314,7 +317,7 @@ setbkcolor(color_t color, IMAGE* pimg)
 		color_t col = img.m_bk_color;
 
 		img.m_bk_color = color;
-		::SetBkColor(img.getdc(), RGBTOBGR(color));
+		::SetBkColor(img.getdc(), RGBTOBGR(color_int_t(color)));
 		for(size_t n = 0; n < size; ++n, ++p)
 			if(*p == col)
 				*p = color;
@@ -331,7 +334,7 @@ setbkcolor_f(color_t color, IMAGE* pimg)
 	if(const auto dc = img.getdc())
 	{
 		img.m_bk_color = color;
-		::SetBkColor(dc, RGBTOBGR(color));
+		::SetBkColor(dc, RGBTOBGR(color_int_t(color)));
 	}
 }
 
@@ -341,7 +344,7 @@ setfontbkcolor(color_t color, IMAGE* pimg)
 	auto& img(cimg_ref(pimg));
 
 	if(const auto dc = img.getdc())
-		::SetBkColor(dc, RGBTOBGR(color));
+		::SetBkColor(dc, RGBTOBGR(color_int_t(color)));
 }
 
 void
@@ -363,7 +366,7 @@ getpixel(int x, int y, const IMAGE* pimg)
 	y += img.m_vpt.top;
 	return color_t(x < 0 || y < 0 || x >= int(img.GetWidth())
 		|| y >= int(img.GetHeight()) ? 0
-		: img.getbuffer()[y * img.GetWidth() + x]);
+		: img.getbuffer()[SDst(y) * img.GetWidth() + SDst(x)]);
 }
 
 void
@@ -374,7 +377,7 @@ putpixel(int x, int y, color_t color, IMAGE* pimg)
 	x += img.m_vpt.left;
 	y += img.m_vpt.top;
 	if(!(x < 0 || y < 0 || x >= img.m_vpt.right || y >= img.m_vpt.bottom))
-		img.getbuffer()[y * img.GetWidth() + x] = color;
+		img.getbuffer()[SDst(y) * img.GetWidth() + SDst(x)] = color;
 }
 
 color_t
@@ -382,7 +385,7 @@ getpixel_f(int x, int y, const IMAGE* pimg)
 {
 	auto& img(cimg_ref_c(pimg));
 
-	return img.getbuffer()[y * img.GetWidth() + x];
+	return img.getbuffer()[SDst(y) * img.GetWidth() + SDst(x)];
 }
 
 void
@@ -390,7 +393,7 @@ putpixel_f(int x, int y, color_t color, IMAGE* pimg)
 {
 	auto& img(cimg_ref(pimg));
 
-	img.getbuffer()[y * img.GetWidth() + x] = color;
+	img.getbuffer()[SDst(y) * img.GetWidth() + SDst(x)] = color;
 }
 
 void
@@ -399,17 +402,17 @@ putpixels(int nPoint, int* pPoints, IMAGE* pimg)
 	auto& img(cimg_ref(pimg));
 
 	int x, y, c;
-	unsigned long* pb
-		= &img.getbuffer()[img.m_vpt.top * img.GetWidth() + img.m_vpt.left];
-	int w = img.m_vpt.right - img.m_vpt.left, h = img.m_vpt.bottom
-		- img.m_vpt.top;
-	int tw = img.GetWidth();
+	auto pb = &img.getbuffer()[SDst(img.m_vpt.top) * img.GetWidth()
+		+ SDst(img.m_vpt.left)];
+	auto w = img.m_vpt.right - img.m_vpt.left,
+		h = img.m_vpt.bottom - img.m_vpt.top;
+	const auto tw(img.GetWidth());
 
 	for(int n = 0; n < nPoint; ++n, pPoints += 3)
 	{
 		x = pPoints[0], y = pPoints[1], c = pPoints[2];
 		if(!(x < 0 || y < 0 || x >= w || y >= h))
-			pb[y * tw + x] = c;
+			pb[SDst(y) * tw + SDst(x)] = color_int_t(c);
 	}
 }
 
@@ -417,10 +420,11 @@ void
 putpixels_f(int nPoint, int* pPoints, IMAGE* pimg)
 {
 	auto& img(cimg_ref(pimg));
-	const int tw(img.GetWidth());
+	const auto tw(img.GetWidth());
 
 	for(int n = 0; n < nPoint; ++n, pPoints += 3)
-		img.getbuffer()[pPoints[1] * tw + pPoints[0]] = pPoints[2];
+		img.getbuffer()[SDst(pPoints[1]) * tw + SDst(pPoints[0])]
+			= color_int_t(pPoints[2]);
 }
 
 
@@ -480,7 +484,7 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 	auto col(getcolor(Nonnull(img)));
 	color_t endp(0);
 	auto pBuffer(reinterpret_cast<color_t*>(img->getbuffer()));
-	int rw = img->GetWidth();
+	const auto rw(img->GetWidth());
 
 	if(x1 > x2)
 	{
@@ -546,11 +550,11 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 			bswap = 0;
 	}
 	if(bswap)
-		endp = pBuffer[bswap == 1 ? int(y1) * rw + int(x1)
-			: int(y2) * rw + int(x2)];
-	if(y2 - y1 > fabs(x2 - x1))
+		endp = pBuffer[bswap == 1 ? SDst(y1) * rw + SDst(x1)
+			: SDst(y2) * rw + SDst(x2)];
+	if(y2 - y1 > std::fabs(x2 - x1))
 	{
-		int y(y1 + 0.9f);
+		int y(y1 + 0.9F);
 		int ye(y2);
 		float x, dx;
 
@@ -563,7 +567,7 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 		if(ye < y2)
 			bswap = 0;
 		for(; y <= ye; ++y, x += dx)
-			pBuffer[y * rw + int(x)] = col;
+			pBuffer[SDst(y) * rw + SDst(x)] = col;
 	}
 	else
 	{
@@ -575,7 +579,7 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 				bswap ^= 3;
 		}
 
-		int x(x1 + 0.9f);
+		int x(x1 + 0.9F);
 		int xe(x2);
 		float y, dy;
 
@@ -588,11 +592,11 @@ line_base(float x1, float y1, float x2, float y2, IMAGE* img)
 		if(xe < x2)
 			bswap = 0;
 		for(; x <= xe; ++x, y += dy)
-			pBuffer[int(y) * rw + x] = col;
+			pBuffer[SDst(y) * rw + SDst(x)] = col;
 	}
 	if(bswap)
-		pBuffer[bswap == 1 ? int(y1) * rw + int(x1)
-			: int(y2) * rw + int(x2)] = endp;
+		pBuffer[bswap == 1 ? SDst(y1) * rw + SDst(x1)
+			: SDst(y2) * rw + SDst(x2)] = endp;
 }
 
 } // unnamed namespace;
@@ -782,12 +786,12 @@ drawpoly(int numpoints, const int* polypoints, IMAGE* pimg)
 void
 drawlines(int numlines, const int* polypoints, IMAGE* pimg)
 {
-	const auto pl(make_unique<unsigned long[]>(numlines));
+	const auto pl(make_unique<unsigned long[]>(size_t(numlines)));
 
-	for(int i = 0; i < numlines; ++i)
+	for(size_t i = 0; i < size_t(numlines); ++i)
 		pl[i] = 2;
-	::PolyPolyline(cimg_ref(pimg).getdc(),
-		reinterpret_cast<const ::POINT*>(polypoints), &pl[0], numlines);
+	::PolyPolyline(cimg_ref(pimg).getdc(), reinterpret_cast<const ::POINT*>(
+		polypoints), &pl[0], static_cast<unsigned long>(numlines));
 }
 
 void
@@ -796,7 +800,8 @@ drawbezier(int numpoints, const int* polypoints, IMAGE* pimg)
 	if(numpoints % 3 != 1)
 		numpoints = numpoints - (numpoints + 2) % 3;
 	::PolyBezier(cimg_ref(pimg).getdc(),
-		reinterpret_cast<const ::POINT*>(polypoints), numpoints);
+		reinterpret_cast<const ::POINT*>(polypoints),
+		static_cast<unsigned long>(numpoints));
 }
 
 void
@@ -811,10 +816,10 @@ fillpoly_gradient(int numpoints, const ege_colpoint* polypoints, IMAGE* pimg)
 {
 	if(numpoints >= 3)
 	{
-		auto vert(make_unique<::TRIVERTEX[]>(numpoints));
-		auto tri(make_unique<::GRADIENT_TRIANGLE[]>(numpoints - 2));
+		auto vert(make_unique<::TRIVERTEX[]>(size_t(numpoints)));
+		auto tri(make_unique<::GRADIENT_TRIANGLE[]>(size_t(numpoints) - 2));
 
-		for(int i = 0; i < numpoints; ++i)
+		for(size_t i = 0; i < size_t(numpoints); ++i)
 		{
 			vert[i].x = long(polypoints[i].x);
 			vert[i].y = long(polypoints[i].y);
@@ -824,21 +829,23 @@ fillpoly_gradient(int numpoints, const ege_colpoint* polypoints, IMAGE* pimg)
 			//vert[i].Alpha = EGEGET_A(polypoints[i].color) << 8;
 			vert[i].Alpha = 0;
 		}
-		for(int j = 0; j < numpoints - 2; ++j)
+		for(size_t j = 0; j < size_t(numpoints) - 2; ++j)
 		{
 			tri[j].Vertex1 = j;
 			tri[j].Vertex2 = j + 1;
 			tri[j].Vertex3 = j + 2;
 		}
-		::GradientFill(cimg_ref(pimg).getdc(), &vert[0], numpoints,
-			&tri[0], numpoints - 2, GRADIENT_FILL_TRIANGLE);
+		::GradientFill(cimg_ref(pimg).getdc(), &vert[0],
+			static_cast<unsigned long>(numpoints), &tri[0],
+			 size_t(numpoints) - 2, GRADIENT_FILL_TRIANGLE);
 	}
 }
 
 void
 floodfill(int x, int y, int border, IMAGE* pimg)
 {
-	::FloodFill(cimg_ref(pimg).getdc(), x, y, border);
+	::FloodFill(cimg_ref(pimg).getdc(), x, y,
+		static_cast<unsigned long>(border));
 }
 
 void

@@ -159,7 +159,7 @@ private_textout(IMAGE& img, const char* textstring, int x, int y, int horiz,
 	{
 		if(img.m_texttype.vert == CENTER_TEXT)
 			y -= textheight(textstring, &img) / 2;
-		TextOutA(img.getdc(), x, y, textstring, std::strlen(textstring));
+		TextOutA(img.getdc(), x, y, textstring, int(std::strlen(textstring)));
 	}
 }
 
@@ -354,7 +354,7 @@ textwidth(const char* textstring, IMAGE* pimg)
 	SIZE sz;
 
 	::GetTextExtentPoint32A(cimg_ref_c(pimg).getdc(), textstring,
-		std::strlen(textstring), &sz);
+		int(std::strlen(textstring)), &sz);
 	return sz.cx;
 }
 
@@ -390,7 +390,7 @@ textheight(const char* textstring, IMAGE* pimg)
 	SIZE sz;
 
 	::GetTextExtentPoint32A(cimg_ref_c(pimg).getdc(), textstring,
-		std::strlen(textstring), &sz);
+		int(std::strlen(textstring)), &sz);
 	return sz.cy;
 }
 
@@ -608,7 +608,7 @@ inputbox_getline(const char* title, const char* text, char* buf, int len)
 	unique_ptr<wchar_t[]> wbuf(new wchar_t[len * 2]);
 #endif
 
-	const auto _buf(make_unique<wchar_t[]>(len));
+	const auto _buf(make_unique<wchar_t[]>(size_t(len)));
 	wchar_t _title[256], _text[256];
 
 	::MultiByteToWideChar(CP_ACP, 0, title, -1, _title, 256);

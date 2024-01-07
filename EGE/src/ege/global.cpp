@@ -312,7 +312,7 @@ EGEApplication::_get_input(get_input_op op)
 							}));
 
 							if(k != 0xFFFFFFFF)
-								return k;
+								return int(k);
 						}
 					}
 				} while(_is_run() && _waitdealmessage());
@@ -505,8 +505,8 @@ EGEApplication::_init_graph_x()
 #else
 			&init_finish]{
 			hwnd = ::CreateWindowExW(g_wstyle_ex, window_class_name,
-				window_caption, g_wstyle & ~WS_VISIBLE, g_wpos_x, g_wpos_y,
-				dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
+				window_caption, g_wstyle & unsigned(~WS_VISIBLE), g_wpos_x,
+				g_wpos_y, dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
 				dc_h + ::GetSystemMetrics(SM_CYFRAME)
 				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, HWND_DESKTOP,
 #endif

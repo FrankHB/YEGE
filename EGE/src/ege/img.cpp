@@ -22,13 +22,13 @@ getxy(const IMAGE* pimg)
 int
 getwidth(const IMAGE* pimg)
 {
-	return cimg_ref_c(pimg).GetWidth();
+	return int(cimg_ref_c(pimg).GetWidth());
 }
 
 int
 getheight(const IMAGE* pimg)
 {
-	return cimg_ref_c(pimg).GetHeight();
+	return int(cimg_ref_c(pimg).GetHeight());
 }
 
 int
