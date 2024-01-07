@@ -1,6 +1,7 @@
 #include "graphics.h"
 #include <complex>
 #include <ctime>
+#include <cstdio>
 
 #define USE_MPF 1
 
@@ -503,8 +504,6 @@ DrawEx(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 	g_udlist.swap();
 }
 
-#include <cstdio>
-
 // Ö÷º¯Êý
 
 int
@@ -618,15 +617,15 @@ main()
 						  d = to.real() - from.real();
 #if USE_MPF
 					gmp_sprintf(str, "%.500Ff", x.get_mpf_t());
-					fprintf(fp, "%s\n", str);
+					std::fprintf(fp, "%s\n", str);
 					gmp_sprintf(str, "%.500Ff", y.get_mpf_t());
-					fprintf(fp, "%s\n", str);
+					std::fprintf(fp, "%s\n", str);
 					gmp_sprintf(str, "%.500Ff", d.get_mpf_t());
 #else
 					std::sprintf(str, "%.15lf", x);
-					fprintf(fp, "%s\n", str);
+					std::fprintf(fp, "%s\n", str);
 					std::sprintf(str, "%.15lf", y);
-					fprintf(fp, "%s\n", str);
+					std::fprintf(fp, "%s\n", str);
 					std::sprintf(str, "%.15lf", d);
 #endif
 					std::fclose(fp);

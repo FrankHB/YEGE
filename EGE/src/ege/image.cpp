@@ -249,7 +249,7 @@ IMAGE::getpngimg(std::FILE* fp)
 
 		if(isn_png)
 			return grIOerror;
-		fseek(fp, 0, SEEK_SET);
+		std::fseek(fp, 0, SEEK_SET);
 	}
 
 	pic_ptr = ::png_create_read_struct(PNG_LIBPNG_VER_STRING, {}, {}, {});
@@ -560,11 +560,12 @@ saveimagetofile(const IMAGE* pimg, std::FILE* fp)
 	}
 	else
 		addbit = 0;
-	bmpfHead.bfType = *reinterpret_cast<const WORD*>("BM");
-	bmpfHead.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
-	bmpfHead.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER)
+	bmpfHead.bfType = *reinterpret_cast<const unsigned short*>("BM");
+	bmpfHead.bfOffBits
+		= sizeof(::BITMAPFILEHEADER) + sizeof(::BITMAPINFOHEADER);
+	bmpfHead.bfSize = sizeof(::BITMAPFILEHEADER) + sizeof(::BITMAPINFOHEADER)
 		+ pitch * img.GetHeight();
-	bmpinfo.biSize = sizeof(BITMAPINFOHEADER);
+	bmpinfo.biSize = sizeof(::BITMAPINFOHEADER);
 	bmpinfo.biBitCount = 24;
 	bmpinfo.biHeight = long(img.GetHeight());
 	bmpinfo.biWidth = long(img.GetWidth());

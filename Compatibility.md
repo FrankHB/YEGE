@@ -67,6 +67,11 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 * 添加函数 `putimage_alphafilter` 。
 	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
 
+兼容实现调整：
+
+* 替换以下 Windows SDK 类型：
+	* `WORD` → `unsigned short` 。
+
 实现注记：
 
 * 合并部分重复的实现。
@@ -95,8 +100,11 @@ EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题�
 
 具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
 
+* `BITMAPINFO`
+* `BITMAPFILEHEADER`
 * `Ext`
 * `IS`
+* `TextOut`
 
 ## 19.01
 

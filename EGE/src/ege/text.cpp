@@ -159,7 +159,7 @@ private_textout(IMAGE& img, const char* textstring, int x, int y, int horiz,
 	{
 		if(img.m_texttype.vert == CENTER_TEXT)
 			y -= textheight(textstring, &img) / 2;
-		TextOutA(img.getdc(), x, y, textstring, int(std::strlen(textstring)));
+		::TextOutA(img.getdc(), x, y, textstring, int(std::strlen(textstring)));
 	}
 }
 
@@ -188,7 +188,7 @@ private_textout(IMAGE& img, const wchar_t* textstring, int x, int y, int horiz,
 	{
 		if(img.m_texttype.vert == CENTER_TEXT)
 			y -= textheight(textstring, &img) / 2;
-		TextOutW(img.getdc(), x, y, textstring, ::lstrlenW(textstring));
+		::TextOutW(img.getdc(), x, y, textstring, ::lstrlenW(textstring));
 	}
 }
 
