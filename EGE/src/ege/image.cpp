@@ -1488,7 +1488,7 @@ namespace
 int
 float2int(float f)
 {
-	return f >= 0 ? int(f + .5) : int(f - .5);
+	return f >= 0.F ? int(f + .5F) : int(f - .5F);
 }
 
 void
@@ -1498,8 +1498,10 @@ draw_flat_scanline(IMAGE* dc_dest, const vector2d* vt, const IMAGE* dc_src,
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
 	int s = float2int(vt->p[0].x), e = float2int(vt->p[1].x),
 		y = float2int(vt->p[0].y), w = e - s;
-	auto lp_dest_bmp_byte = reinterpret_cast<unsigned long*>(dc_dest->getbuffer());
-	auto lp_src_bmp_byte = reinterpret_cast<unsigned long*>(dc_src->getbuffer());
+	auto lp_dest_bmp_byte
+		= reinterpret_cast<unsigned long*>(dc_dest->getbuffer());
+	auto lp_src_bmp_byte
+		= reinterpret_cast<unsigned long*>(dc_src->getbuffer());
 	int dest_w = dc_dest->GetWidth();
 	int src_w = dc_src->GetWidth();
 
@@ -1507,30 +1509,23 @@ draw_flat_scanline(IMAGE* dc_dest, const vector2d* vt, const IMAGE* dc_src,
 	{
 		int i, bx = s;
 		vector2d _svt = *svt;
+
 		_svt.p[0].x += (s - vt->p[0].x) * rw / dw;
 		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
-		{
-			float curx = _svt.p[0].x + .5f, cury = _svt.p[0].y + .5f;
-			float dx = (_svt.p[1].x - _svt.p[0].x) / w;
-			float dy = (_svt.p[1].y - _svt.p[0].y) / w;
 
-			if(s < x1)
-			{
-				s = x1;
-			}
-			if(e > x2)
-			{
-				e = x2;
-			}
-			curx += (s - bx) * dx;
-			cury += (s - bx) * dy;
+		float curx = _svt.p[0].x + .5F, cury = _svt.p[0].y + .5F,
+			dx = (_svt.p[1].x - _svt.p[0].x) / w,
+			dy = (_svt.p[1].y - _svt.p[0].y) / w;
 
-			for(i = s; i < e; ++i, curx += dx, cury += dy)
-			{
-				lp_dest_bmp_byte[dest_w * y + i]
-					= lp_src_bmp_byte[src_w * int(cury) + int(curx)];
-			}
-		}
+		if(s < x1)
+			s = x1;
+		if(e > x2)
+			e = x2;
+		curx += (s - bx) * dx;
+		cury += (s - bx) * dy;
+		for(i = s; i < e; ++i, curx += dx, cury += dy)
+			lp_dest_bmp_byte[dest_w * y + i]
+				= lp_src_bmp_byte[src_w * int(cury) + int(curx)];
 	}
 }
 
@@ -1539,8 +1534,8 @@ draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d* vt,
 	const IMAGE* dc_src, const vector2d* svt, int x1, int x2)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int b = vt->p[0].x + .5, e = vt->p[1].x + .5,
-		y = vt->p[0].y + .5, w = e - b;
+	int b = vt->p[0].x + .5F, e = vt->p[1].x + .5F,
+		y = vt->p[0].y + .5F, w = e - b;
 	auto lp_dest_bmp_byte = dc_dest->getbuffer();
 	auto lp_src_bmp_byte = dc_src->getbuffer();
 	unsigned long col;
@@ -1555,9 +1550,9 @@ draw_flat_scanline_transparent(IMAGE* dc_dest, const vector2d* vt,
 		_svt.p[0].x += (b - vt->p[0].x) * rw / dw;
 		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
 
-		float curx = _svt.p[0].x + .5f, cury = _svt.p[0].y + .5f;
-		float dx = (_svt.p[1].x - _svt.p[0].x) / w;
-		float dy = (_svt.p[1].y - _svt.p[0].y) / w;
+		float curx = _svt.p[0].x + .5F, cury = _svt.p[0].y + .5F,
+			dx = (_svt.p[1].x - _svt.p[0].x) / w,
+			dy = (_svt.p[1].y - _svt.p[0].y) / w;
 
 		if(b < x1)
 			b = x1;
@@ -1588,31 +1583,31 @@ draw_flat_scanline_alpha(IMAGE* dc_dest, const vector2d* vt,
 	{
 		int i, bx = b;
 		vector2d _svt = *svt;
+
 		_svt.p[0].x += (b - vt->p[0].x) * rw / dw;
 		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
+
+		float curx = _svt.p[0].x + .5F, cury = _svt.p[0].y + .5F,
+			dx = (_svt.p[1].x - _svt.p[0].x) / w,
+			dy = (_svt.p[1].y - _svt.p[0].y) / w;
+
+		if(b < x1)
+			b = x1;
+		if(e > x2)
+			e = x2;
+		curx += (b - bx) * dx;
+		cury += (b - bx) * dy;
+
+		for(i = b; i < e; ++i, curx += dx, cury += dy)
 		{
-			float curx = _svt.p[0].x + .5f, cury = _svt.p[0].y + .5f;
-			float dx = (_svt.p[1].x - _svt.p[0].x) / w;
-			float dy = (_svt.p[1].y - _svt.p[0].y) / w;
+			unsigned long d = lp_dest_bmp_byte[dest_w * y + i],
+				s = lp_src_bmp_byte[src_w * int(cury) + int(curx)];
 
-			if(b < x1)
-				b = x1;
-			if(e > x2)
-				e = x2;
-			curx += (b - bx) * dx;
-			cury += (b - bx) * dy;
-
-			for(i = b; i < e; ++i, curx += dx, cury += dy)
-			{
-				unsigned long d = lp_dest_bmp_byte[dest_w * y + i],
-					s = lp_src_bmp_byte[src_w * int(cury) + int(curx)];
-
-				d = ((d & 0xFF00FF) * da & 0xFF00FF00)
-					| ((d & 0xFF00) * da >> 16 << 16);
-				s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
-					| ((s & 0xFF00) * sa >> 16 << 16);
-				lp_dest_bmp_byte[dest_w * y + i] = (d + s) >> 8;
-			}
+			d = ((d & 0xFF00FF) * da & 0xFF00FF00)
+				| ((d & 0xFF00) * da >> 16 << 16);
+			s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
+				| ((s & 0xFF00) * sa >> 16 << 16);
+			lp_dest_bmp_byte[dest_w * y + i] = (d + s) >> 8;
 		}
 	}
 }
@@ -1622,8 +1617,8 @@ draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d* vt,
 	const IMAGE* dc_src, const vector2d* svt, int x1, int x2, int alpha)
 {
 	float dw = vt->p[1].x - vt->p[0].x, rw = svt->p[1].x - svt->p[0].x;
-	int b = vt->p[0].x + .5, e = vt->p[1].x + .5,
-		y = vt->p[0].y + .5, w = e - b;
+	int b = vt->p[0].x + .5F, e = vt->p[1].x + .5F,
+		y = vt->p[0].y + .5F, w = e - b;
 	unsigned long* lp_dest_bmp_byte = dc_dest->getbuffer();
 	unsigned long* lp_src_bmp_byte = dc_src->getbuffer();
 	unsigned long sa = alpha, da = 0xFF - sa;
@@ -1634,32 +1629,32 @@ draw_flat_scanline_alphatrans(IMAGE* dc_dest, const vector2d* vt,
 	{
 		int i, bx = b;
 		vector2d _svt = *svt;
+
 		_svt.p[0].x += (b - vt->p[0].x) * rw / dw;
 		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
+
+		float curx = _svt.p[0].x + .5F, cury = _svt.p[0].y + .5F,
+			dx = (_svt.p[1].x - _svt.p[0].x) / w,
+			dy = (_svt.p[1].y - _svt.p[0].y) / w;
+
+		if(b < x1)
+			b = x1;
+		if(e > x2)
+			e = x2;
+		curx += (b - bx) * dx;
+		cury += (b - bx) * dy;
+		for(i = b; i < e; ++i, curx += dx, cury += dy)
 		{
-			float curx = _svt.p[0].x + .5f, cury = _svt.p[0].y + .5f,
-				dx = (_svt.p[1].x - _svt.p[0].x) / w,
-				dy = (_svt.p[1].y - _svt.p[0].y) / w;
+			unsigned long s = lp_src_bmp_byte[src_w * int(cury) + int(curx)];
 
-			if(b < x1)
-				b = x1;
-			if(e > x2)
-				e = x2;
-			curx += (b - bx) * dx;
-			cury += (b - bx) * dy;
-			for(i = b; i < e; ++i, curx += dx, cury += dy)
+			if(s != 0)
 			{
-				unsigned long s = lp_src_bmp_byte[src_w * int(cury) + int(curx)];
-
-				if(s != 0)
-				{
-					unsigned long d = lp_dest_bmp_byte[dest_w * y + i];
-					d = ((d & 0xFF00FF) * da & 0xFF00FF00)
-						| ((d & 0xFF00) * da >> 16 << 16);
-					s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
-						| ((s & 0xFF00) * sa >> 16 << 16);
-					lp_dest_bmp_byte[dest_w * y + i] = (d + s) >> 8;
-				}
+				unsigned long d = lp_dest_bmp_byte[dest_w * y + i];
+				d = ((d & 0xFF00FF) * da & 0xFF00FF00)
+					| ((d & 0xFF00) * da >> 16 << 16);
+				s = ((s & 0xFF00FF) * sa & 0xFF00FF00)
+					| ((s & 0xFF00) * sa >> 16 << 16);
+				lp_dest_bmp_byte[dest_w * y + i] = (d + s) >> 8;
 			}
 		}
 	}
@@ -1685,28 +1680,27 @@ draw_flat_scanline_s(IMAGE* dc_dest, const vector2d* vt, const IMAGE* dc_src,
 
 		_svt.p[0].x += (b - vt->p[0].x) * rw / dw;
 		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
+
+		float curx = _svt.p[0].x, cury = _svt.p[0].y,
+			dx = (_svt.p[1].x - _svt.p[0].x) / w,
+			dy = (_svt.p[1].y - _svt.p[0].y) / w;
+
+		if(b < x1)
+			b = x1;
+		if(e > x2)
+			e = x2;
+		curx += (b - bx) * dx;
+		cury += (b - bx) * dy;
+		for(i = b; i < e; ++i, curx += dx, cury += dy)
 		{
-			float curx = _svt.p[0].x, cury = _svt.p[0].y,
-				dx = (_svt.p[1].x - _svt.p[0].x) / w,
-				dy = (_svt.p[1].y - _svt.p[0].y) / w;
+			int ix = curx, iy = cury;
+			double fx(curx - ix), fy = cury - iy;
+			unsigned long* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
+			unsigned long col(bilinear_interpolation(lp_src_byte[0],
+				lp_src_byte[1], lp_src_byte[src_w], lp_src_byte[src_w + 1],
+				fx, fy));
 
-			if(b < x1)
-				b = x1;
-			if(e > x2)
-				e = x2;
-			curx += (b - bx) * dx;
-			cury += (b - bx) * dy;
-			for(i = b; i < e; ++i, curx += dx, cury += dy)
-			{
-				int ix = curx, iy = cury;
-				double fx(curx - ix), fy = cury - iy;
-				unsigned long* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
-				unsigned long col(bilinear_interpolation(lp_src_byte[0],
-					lp_src_byte[1], lp_src_byte[src_w], lp_src_byte[src_w + 1],
-					fx, fy));
-
-				lp_dest_bmp_byte[dest_w * y + i] = col;
-			}
+			lp_dest_bmp_byte[dest_w * y + i] = col;
 		}
 	}
 }
@@ -1731,28 +1725,27 @@ draw_flat_scanline_transparent_s(IMAGE* dc_dest, const vector2d* vt,
 
 		_svt.p[0].x += (b - vt->p[0].x) * rw / dw;
 		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
+
+		float curx = _svt.p[0].x, cury = _svt.p[0].y,
+			dx = (_svt.p[1].x - _svt.p[0].x) / w,
+			dy = (_svt.p[1].y - _svt.p[0].y) / w;
+
+		if(b < x1)
+			b = x1;
+		if(e > x2)
+			e = x2;
+		curx += (b - bx) * dx;
+		cury += (b - bx) * dy;
+		for(i = b; i < e; ++i, curx += dx, cury += dy)
 		{
-			float curx = _svt.p[0].x, cury = _svt.p[0].y,
-				dx = (_svt.p[1].x - _svt.p[0].x) / w,
-				dy = (_svt.p[1].y - _svt.p[0].y) / w;
+			int ix(curx), iy(cury);
+			float fx(curx - ix), fy = cury - iy;
+			unsigned long* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
 
-			if(b < x1)
-				b = x1;
-			if(e > x2)
-				e = x2;
-			curx += (b - bx) * dx;
-			cury += (b - bx) * dy;
-			for(i = b; i < e; ++i, curx += dx, cury += dy)
-			{
-				int ix(curx), iy(cury);
-				float fx(curx - ix), fy = cury - iy;
-				unsigned long* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
-
-				if(unsigned long col = bilinear_interpolation(lp_src_byte[0],
-					lp_src_byte[1], lp_src_byte[src_w], lp_src_byte[src_w + 1],
-					fx, fy))
-					lp_dest_bmp_byte[dest_w * y + i] = col;
-			}
+			if(unsigned long col = bilinear_interpolation(lp_src_byte[0],
+				lp_src_byte[1], lp_src_byte[src_w], lp_src_byte[src_w + 1],
+				fx, fy))
+				lp_dest_bmp_byte[dest_w * y + i] = col;
 		}
 	}
 }
@@ -1778,34 +1771,32 @@ draw_flat_scanline_alpha_s(IMAGE* dc_dest, const vector2d* vt,
 
 		_svt.p[0].x += (b - vt->p[0].x) * rw / dw;
 		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
+
+		float curx = _svt.p[0].x, cury = _svt.p[0].y,
+			dx = (_svt.p[1].x - _svt.p[0].x) / w,
+			dy = (_svt.p[1].y - _svt.p[0].y) / w;
+
+		if(b < x1)
+			b = x1;
+		if(e > x2)
+			e = x2;
+		curx += (b - bx) * dx;
+		cury += (b - bx) * dy;
+		for(i = b; i < e; ++i, curx += dx, cury += dy)
 		{
-			float curx = _svt.p[0].x, cury = _svt.p[0].y;
-			float dx = (_svt.p[1].x - _svt.p[0].x) / w;
-			float dy = (_svt.p[1].y - _svt.p[0].y) / w;
+			int ix(curx), iy(cury);
+			float fx(curx - ix), fy = cury - iy;
+			unsigned long* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
+			unsigned long col(bilinear_interpolation(lp_src_byte[0],
+				lp_src_byte[1], lp_src_byte[src_w], lp_src_byte[src_w + 1],
+				fx, fy));
+			unsigned long d = lp_dest_bmp_byte[dest_w * y + i];
 
-			if(b < x1)
-				b = x1;
-			if(e > x2)
-				e = x2;
-			curx += (b - bx) * dx;
-			cury += (b - bx) * dy;
-
-			for(i = b; i < e; ++i, curx += dx, cury += dy)
-			{
-				int ix(curx), iy(cury);
-				float fx(curx - ix), fy = cury - iy;
-				unsigned long* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
-				unsigned long col(bilinear_interpolation(lp_src_byte[0],
-					lp_src_byte[1], lp_src_byte[src_w], lp_src_byte[src_w + 1],
-					fx, fy));
-				unsigned long d = lp_dest_bmp_byte[dest_w * y + i];
-
-				d = (((d & 0xFF00FF) * da & 0xFF00FF00)
-					| ((d & 0xFF00) * da & 0xFF0000)) >> 8;
-				col = (((col & 0xFF00FF) * sa & 0xFF00FF00)
-					| ((col & 0xFF00) * sa & 0xFF0000)) >> 8;
-				lp_dest_bmp_byte[dest_w * y + i] = d + col;
-			}
+			d = (((d & 0xFF00FF) * da & 0xFF00FF00)
+				| ((d & 0xFF00) * da & 0xFF0000)) >> 8;
+			col = (((col & 0xFF00FF) * sa & 0xFF00FF00)
+				| ((col & 0xFF00) * sa & 0xFF0000)) >> 8;
+			lp_dest_bmp_byte[dest_w * y + i] = d + col;
 		}
 	}
 }
@@ -1831,34 +1822,33 @@ draw_flat_scanline_alphatrans_s(IMAGE* dc_dest, const vector2d* vt,
 
 		_svt.p[0].x += (b - vt->p[0].x) * rw / dw;
 		_svt.p[1].x += (e - vt->p[1].x) * rw / dw;
+
+		float curx = _svt.p[0].x, cury = _svt.p[0].y,
+			dx = (_svt.p[1].x - _svt.p[0].x) / w,
+			dy = (_svt.p[1].y - _svt.p[0].y) / w;
+
+		if(b < x1)
+			b = x1;
+		if(e > x2)
+			e = x2;
+		curx += (b - bx) * dx;
+		cury += (b - bx) * dy;
+		for(i = b; i < e; ++i, curx += dx, cury += dy)
 		{
-			float curx = _svt.p[0].x, cury = _svt.p[0].y;
-			float dx = (_svt.p[1].x - _svt.p[0].x) / w;
-			float dy = (_svt.p[1].y - _svt.p[0].y) / w;
+			int ix(curx), iy(cury);
+			float fx(curx - ix), fy = cury - iy;
+			unsigned long* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
 
-			if(b < x1)
-				b = x1;
-			if(e > x2)
-				e = x2;
-			curx += (b - bx) * dx;
-			cury += (b - bx) * dy;
-			for(i = b; i < e; ++i, curx += dx, cury += dy)
+			if(unsigned long col = bilinear_interpolation(
+				lp_src_byte[0], lp_src_byte[1], lp_src_byte[src_w],
+				lp_src_byte[src_w + 1], fx, fy))
 			{
-				int ix(curx), iy(cury);
-				float fx(curx - ix), fy = cury - iy;
-				unsigned long* lp_src_byte = lp_src_bmp_byte + src_w * iy + ix;
-
-				if(unsigned long col = bilinear_interpolation(
-					lp_src_byte[0], lp_src_byte[1], lp_src_byte[src_w],
-					lp_src_byte[src_w + 1], fx, fy))
-				{
-					unsigned long d = lp_dest_bmp_byte[dest_w * y + i];
-					d = (((d & 0xFF00FF) * da & 0xFF00FF00)
-						| ((d & 0xFF00) * da & 0xFF0000)) >> 8;
-					col = (((col & 0xFF00FF) * sa & 0xFF00FF00)
-						| ((col & 0xFF00) * sa & 0xFF0000)) >> 8;
-					lp_dest_bmp_byte[dest_w * y + i] = d + col;
-				}
+				unsigned long d = lp_dest_bmp_byte[dest_w * y + i];
+				d = (((d & 0xFF00FF) * da & 0xFF00FF00)
+					| ((d & 0xFF00) * da & 0xFF0000)) >> 8;
+				col = (((col & 0xFF00FF) * sa & 0xFF00FF00)
+					| ((col & 0xFF00) * sa & 0xFF0000)) >> 8;
+				lp_dest_bmp_byte[dest_w * y + i] = d + col;
 			}
 		}
 	}
@@ -1891,98 +1881,29 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt,
 		swap(t2d.p[1], t2d.p[2]);
 		swap(t3d.p[1], t3d.p[2]);
 	}
-	{
-		float dd;
-		int b = float2int(t2d.p[0].y), e = float2int(t2d.p[2].y), h,
-			m = float2int(t2d.p[1].y), rs, re, i, lh, rh;
-		//	float dm = t2d.p[1].y;
-		point2d pl, pr;
-		point2d spl, spr;
 
-		pl.x = t2d.p[1].x - t2d.p[0].x;
-		pr.x = t2d.p[2].x - t2d.p[0].x;
-		pl.y = t2d.p[1].y - t2d.p[0].y;
-		pr.y = t2d.p[2].y - t2d.p[0].y;
-		spl.x = t3d.p[1].x - t3d.p[0].x;
-		spr.x = t3d.p[2].x - t3d.p[0].x;
-		spl.y = t3d.p[1].y - t3d.p[0].y;
-		spr.y = t3d.p[2].y - t3d.p[0].y;
-		//	float dh = dm - b;
-		h = m - b;
-		rs = b;
-		if(b < y1)
-			b = y1;
-		if(m >= y2)
-			m = y2;
-		/*	if(pl.y > pr.y)
-			{
-				dd = pr.y / pl.y;
-				pl.x *= dd;
-				spl.x *= dd;
-				spl.y *= dd;
-			}
-			else
-			{
-				dd = pl.y / pr.y;
-				pr.x *= dd;
-				spr.x *= dd;
-				spr.y *= dd;
-			}
-		*/
-		if(pl.x > pr.x)
-		{
-			swap(pl, pr);
-			swap(spl, spr);
-		}
-		lh = float2int((pl.y + t2d.p[0].y))
-			 - float2int((t2d.p[0].y));
-		rh = float2int((pr.y + t2d.p[0].y))
-			 - float2int((t2d.p[0].y));
-		if(h > 0)
-			for(i = b; i < m; ++i)
-			{
-				vector2d vt;
-				vector2d svt;
-				//float dt = (i - rs) / h;
-				float dlt = (i - rs) / lh;
-				float drt = (i - rs) / rh;
+	float dd;
+	int b = float2int(t2d.p[0].y), e = float2int(t2d.p[2].y), h,
+		m = float2int(t2d.p[1].y), rs, re, i, lh, rh;
+	//	float dm = t2d.p[1].y;
+	point2d pl, pr, spl, spr;
 
-				/*
-				vt.p[0].x = t2d.p[0].x + pl.x * dt;
-				vt.p[1].x = t2d.p[0].x + pr.x * dt;
-				vt.p[0].y = vt.p[1].y = i;
-
-				svt.p[0].x = t3d.p[0].x + spl.x * dt;
-				svt.p[1].x = t3d.p[0].x + spr.x * dt;
-				svt.p[0].y = t3d.p[0].y + spl.y * dt;
-				svt.p[1].y = t3d.p[0].y + spr.y * dt;
-				// */
-				vt.p[0].x = t2d.p[0].x + pl.x * dlt;
-				vt.p[1].x = t2d.p[0].x + pr.x * drt;
-				vt.p[0].y = vt.p[1].y = (i);
-				svt.p[0].x = t3d.p[0].x + spl.x * dlt;
-				svt.p[1].x = t3d.p[0].x + spr.x * drt;
-				svt.p[0].y = t3d.p[0].y + spl.y * dlt;
-				svt.p[1].y = t3d.p[0].y + spr.y * drt;
-				if(b_alpha)
-				{
-					if(transparent)
-						draw_flat_scanline_alphatrans(dc_dest, &vt, dc_src,
-							&svt, x1, x2, alpha);
-					else
-						draw_flat_scanline_alpha(dc_dest, &vt, dc_src, &svt,
-							x1, x2, alpha);
-				}
-				else
-				{
-					if(transparent)
-						draw_flat_scanline_transparent(dc_dest, &vt, dc_src,
-							&svt, x1, x2);
-					else
-						draw_flat_scanline(dc_dest, &vt, dc_src, &svt, x1, x2);
-				}
-			}
-		if(pl.y > pr.y)
+	pl.x = t2d.p[1].x - t2d.p[0].x;
+	pr.x = t2d.p[2].x - t2d.p[0].x;
+	pl.y = t2d.p[1].y - t2d.p[0].y;
+	pr.y = t2d.p[2].y - t2d.p[0].y;
+	spl.x = t3d.p[1].x - t3d.p[0].x;
+	spr.x = t3d.p[2].x - t3d.p[0].x;
+	spl.y = t3d.p[1].y - t3d.p[0].y;
+	spr.y = t3d.p[2].y - t3d.p[0].y;
+	//	float dh = dm - b;
+	h = m - b;
+	rs = b;
+	if(b < y1)
+		b = y1;
+	if(m >= y2)
+		m = y2;
+	/*	if(pl.y > pr.y)
 		{
 			dd = pr.y / pl.y;
 			pl.x *= dd;
@@ -1996,23 +1917,47 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt,
 			spr.x *= dd;
 			spr.y *= dd;
 		}
-		if(m >= y1 && m < y2 && m < e)
+	*/
+	if(pl.x > pr.x)
+	{
+		swap(pl, pr);
+		swap(spl, spr);
+	}
+	lh = float2int((pl.y + t2d.p[0].y))
+			- float2int((t2d.p[0].y));
+	rh = float2int((pr.y + t2d.p[0].y))
+			- float2int((t2d.p[0].y));
+	if(h > 0)
+		for(i = b; i < m; ++i)
 		{
 			vector2d vt;
 			vector2d svt;
+			//float dt = (i - rs) / h;
+			float dlt = (i - rs) / lh;
+			float drt = (i - rs) / rh;
 
-			vt.p[0].x = t2d.p[0].x + pl.x;
-			vt.p[1].x = t2d.p[0].x + pr.x;
-			vt.p[0].y = vt.p[1].y = (m);
-			svt.p[0].x = t3d.p[0].x + spl.x;
-			svt.p[1].x = t3d.p[0].x + spr.x;
-			svt.p[0].y = t3d.p[0].y + spl.y;
-			svt.p[1].y = t3d.p[0].y + spr.y;
+			/*
+			vt.p[0].x = t2d.p[0].x + pl.x * dt;
+			vt.p[1].x = t2d.p[0].x + pr.x * dt;
+			vt.p[0].y = vt.p[1].y = i;
+
+			svt.p[0].x = t3d.p[0].x + spl.x * dt;
+			svt.p[1].x = t3d.p[0].x + spr.x * dt;
+			svt.p[0].y = t3d.p[0].y + spl.y * dt;
+			svt.p[1].y = t3d.p[0].y + spr.y * dt;
+			// */
+			vt.p[0].x = t2d.p[0].x + pl.x * dlt;
+			vt.p[1].x = t2d.p[0].x + pr.x * drt;
+			vt.p[0].y = vt.p[1].y = (i);
+			svt.p[0].x = t3d.p[0].x + spl.x * dlt;
+			svt.p[1].x = t3d.p[0].x + spr.x * drt;
+			svt.p[0].y = t3d.p[0].y + spl.y * dlt;
+			svt.p[1].y = t3d.p[0].y + spr.y * drt;
 			if(b_alpha)
 			{
 				if(transparent)
-					draw_flat_scanline_alphatrans(dc_dest, &vt, dc_src, &svt,
-						x1, x2, alpha);
+					draw_flat_scanline_alphatrans(dc_dest, &vt, dc_src,
+						&svt, x1, x2, alpha);
 				else
 					draw_flat_scanline_alpha(dc_dest, &vt, dc_src, &svt,
 						x1, x2, alpha);
@@ -2020,95 +1965,138 @@ draw_flat_trangle_alpha(IMAGE* dc_dest, const triangle2d * dt,
 			else
 			{
 				if(transparent)
-					draw_flat_scanline_transparent(dc_dest, &vt, dc_src, &svt,
-						x1, x2);
+					draw_flat_scanline_transparent(dc_dest, &vt, dc_src,
+						&svt, x1, x2);
 				else
 					draw_flat_scanline(dc_dest, &vt, dc_src, &svt, x1, x2);
 			}
 		}
-		pl.x = t2d.p[0].x - t2d.p[2].x;
-		pr.x = t2d.p[1].x - t2d.p[2].x;
-		pl.y = t2d.p[0].y - t2d.p[2].y;
-		pr.y = t2d.p[1].y - t2d.p[2].y;
-		spl.x = t3d.p[0].x - t3d.p[2].x;
-		spr.x = t3d.p[1].x - t3d.p[2].x;
-		spl.y = t3d.p[0].y - t3d.p[2].y;
-		spr.y = t3d.p[1].y - t3d.p[2].y;
-		//	dh = e - dm;
-		h = e - m;
-		re = e;
-		if(m < y1)
-			m = y1 - 1;
-		if(e >= y2)
-			e = y2 - 1;
-		/*	if(pl.y < pr.y)
+	if(pl.y > pr.y)
+	{
+		dd = pr.y / pl.y;
+		pl.x *= dd;
+		spl.x *= dd;
+		spl.y *= dd;
+	}
+	else
+	{
+		dd = pl.y / pr.y;
+		pr.x *= dd;
+		spr.x *= dd;
+		spr.y *= dd;
+	}
+	if(m >= y1 && m < y2 && m < e)
+	{
+		vector2d vt;
+		vector2d svt;
+
+		vt.p[0].x = t2d.p[0].x + pl.x;
+		vt.p[1].x = t2d.p[0].x + pr.x;
+		vt.p[0].y = vt.p[1].y = (m);
+		svt.p[0].x = t3d.p[0].x + spl.x;
+		svt.p[1].x = t3d.p[0].x + spr.x;
+		svt.p[0].y = t3d.p[0].y + spl.y;
+		svt.p[1].y = t3d.p[0].y + spr.y;
+		if(b_alpha)
+		{
+			if(transparent)
+				draw_flat_scanline_alphatrans(dc_dest, &vt, dc_src, &svt,
+					x1, x2, alpha);
+			else
+				draw_flat_scanline_alpha(dc_dest, &vt, dc_src, &svt,
+					x1, x2, alpha);
+		}
+		else
+		{
+			if(transparent)
+				draw_flat_scanline_transparent(dc_dest, &vt, dc_src, &svt,
+					x1, x2);
+			else
+				draw_flat_scanline(dc_dest, &vt, dc_src, &svt, x1, x2);
+		}
+	}
+	pl.x = t2d.p[0].x - t2d.p[2].x;
+	pr.x = t2d.p[1].x - t2d.p[2].x;
+	pl.y = t2d.p[0].y - t2d.p[2].y;
+	pr.y = t2d.p[1].y - t2d.p[2].y;
+	spl.x = t3d.p[0].x - t3d.p[2].x;
+	spr.x = t3d.p[1].x - t3d.p[2].x;
+	spl.y = t3d.p[0].y - t3d.p[2].y;
+	spr.y = t3d.p[1].y - t3d.p[2].y;
+	//	dh = e - dm;
+	h = e - m;
+	re = e;
+	if(m < y1)
+		m = y1 - 1;
+	if(e >= y2)
+		e = y2 - 1;
+	/*	if(pl.y < pr.y)
+		{
+			dd = pr.y / pl.y;
+			pl.x *= dd;
+			spl.x *= dd;
+			spl.y *= dd;
+		}
+		else
+		{
+			dd = pl.y / pr.y;
+			pr.x *= dd;
+			spr.x *= dd;
+			spr.y *= dd;
+		}
+	*/
+	if(pl.x > pr.x)
+	{
+		swap(pl, pr);
+		swap(spl, spr);
+	}
+	lh = float2int((t2d.p[2].y))
+			- float2int((pl.y + t2d.p[2].y));
+	rh = float2int((t2d.p[2].y))
+			- float2int((pr.y + t2d.p[2].y));
+	if(h > 0)
+		for(i = e; i > m; --i)
+		{
+			vector2d vt;
+			vector2d svt;
+			//float dt = (re - i) / h;
+			float dlt = (re - i) / lh;
+			float drt = (re - i) / rh;
+			/*
+			vt.p[0].x = t2d.p[2].x + pl.x * dt;
+			vt.p[1].x = t2d.p[2].x + pr.x * dt;
+			vt.p[0].y = vt.p[1].y = i;
+
+			svt.p[0].x = t3d.p[2].x + spl.x * dt;
+			svt.p[1].x = t3d.p[2].x + spr.x * dt;
+			svt.p[0].y = t3d.p[2].y + spl.y * dt;
+			svt.p[1].y = t3d.p[2].y + spr.y * dt;
+			// */
+			vt.p[0].x = t2d.p[2].x + pl.x * dlt;
+			vt.p[1].x = t2d.p[2].x + pr.x * drt;
+			vt.p[0].y = vt.p[1].y = (i);
+			svt.p[0].x = t3d.p[2].x + spl.x * dlt;
+			svt.p[1].x = t3d.p[2].x + spr.x * drt;
+			svt.p[0].y = t3d.p[2].y + spl.y * dlt;
+			svt.p[1].y = t3d.p[2].y + spr.y * drt;
+			if(b_alpha)
 			{
-				dd = pr.y / pl.y;
-				pl.x *= dd;
-				spl.x *= dd;
-				spl.y *= dd;
+				if(transparent)
+					draw_flat_scanline_alphatrans(dc_dest, &vt, dc_src,
+						&svt, x1, x2, alpha);
+				else
+					draw_flat_scanline_alpha(dc_dest, &vt, dc_src, &svt, x1,
+						x2, alpha);
 			}
 			else
 			{
-				dd = pl.y / pr.y;
-				pr.x *= dd;
-				spr.x *= dd;
-				spr.y *= dd;
-			}
-		*/
-		if(pl.x > pr.x)
-		{
-			swap(pl, pr);
-			swap(spl, spr);
-		}
-		lh = float2int((t2d.p[2].y))
-			 - float2int((pl.y + t2d.p[2].y));
-		rh = float2int((t2d.p[2].y))
-			 - float2int((pr.y + t2d.p[2].y));
-		if(h > 0)
-			for(i = e; i > m; --i)
-			{
-				vector2d vt;
-				vector2d svt;
-				//float dt = (re - i) / h;
-				float dlt = (re - i) / lh;
-				float drt = (re - i) / rh;
-				/*
-				vt.p[0].x = t2d.p[2].x + pl.x * dt;
-				vt.p[1].x = t2d.p[2].x + pr.x * dt;
-				vt.p[0].y = vt.p[1].y = i;
-
-				svt.p[0].x = t3d.p[2].x + spl.x * dt;
-				svt.p[1].x = t3d.p[2].x + spr.x * dt;
-				svt.p[0].y = t3d.p[2].y + spl.y * dt;
-				svt.p[1].y = t3d.p[2].y + spr.y * dt;
-				// */
-				vt.p[0].x = t2d.p[2].x + pl.x * dlt;
-				vt.p[1].x = t2d.p[2].x + pr.x * drt;
-				vt.p[0].y = vt.p[1].y = (i);
-				svt.p[0].x = t3d.p[2].x + spl.x * dlt;
-				svt.p[1].x = t3d.p[2].x + spr.x * drt;
-				svt.p[0].y = t3d.p[2].y + spl.y * dlt;
-				svt.p[1].y = t3d.p[2].y + spr.y * drt;
-				if(b_alpha)
-				{
-					if(transparent)
-						draw_flat_scanline_alphatrans(dc_dest, &vt, dc_src,
-							&svt, x1, x2, alpha);
-					else
-						draw_flat_scanline_alpha(dc_dest, &vt, dc_src, &svt, x1,
-							x2, alpha);
-				}
+				if(transparent)
+					draw_flat_scanline_transparent(dc_dest, &vt, dc_src,
+						&svt, x1, x2);
 				else
-				{
-					if(transparent)
-						draw_flat_scanline_transparent(dc_dest, &vt, dc_src,
-							&svt, x1, x2);
-					else
-						draw_flat_scanline(dc_dest, &vt, dc_src, &svt, x1, x2);
-				}
+					draw_flat_scanline(dc_dest, &vt, dc_src, &svt, x1, x2);
 			}
-	}
+		}
 }
 
 void
@@ -2138,170 +2126,31 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt,
 		swap(t2d.p[1], t2d.p[2]);
 		swap(t3d.p[1], t3d.p[2]);
 	}
-	{
-		float dd;
-		int b = float2int(t2d.p[0].y), e = float2int(t2d.p[2].y),
-			h, m = float2int(t2d.p[1].y), rs, re, i, lh, rh;
-		//	float dm = t2d.p[1].y;
-		//	float dh;
-		point2d pl, pr;
-		point2d spl, spr;
 
-		pl.x = t2d.p[1].x - t2d.p[0].x;
-		pr.x = t2d.p[2].x - t2d.p[0].x;
-		pl.y = t2d.p[1].y - t2d.p[0].y;
-		pr.y = t2d.p[2].y - t2d.p[0].y;
-		spl.x = t3d.p[1].x - t3d.p[0].x;
-		spr.x = t3d.p[2].x - t3d.p[0].x;
-		spl.y = t3d.p[1].y - t3d.p[0].y;
-		spr.y = t3d.p[2].y - t3d.p[0].y;
-		//	dh = dm - b;
-		h = m - b;
-		rs = b;
-		if(b < y1)
-			b = y1;
-		if(m >= y2)
-			m = y2;
-		/*	if(pl.y > pr.y)
-			{
-				dd = pr.y / pl.y;
-				pl.x *= dd;
-				spl.x *= dd;
-				spl.y *= dd;
-			}
-			else
-			{
-				dd = pl.y / pr.y;
-				pr.x *= dd;
-				spr.x *= dd;
-				spr.y *= dd;
-			}
-		*/
-		if(pl.x > pr.x)
-		{
-			swap(pl, pr);
-			swap(spl, spr);
-		}
-		lh = float2int((pl.y + t2d.p[0].y))
-			 - float2int((t2d.p[0].y));
-		rh = float2int((pr.y + t2d.p[0].y))
-			 - float2int((t2d.p[0].y));
-		if(h > 0)
-		{
-			for(i = b; i < m; ++i)
-			{
-				vector2d vt;
-				vector2d svt;
-				//float dt = (i - rs) / h;
-				float dlt = (i - rs) / lh;
-				float drt = (i - rs) / rh;
+	float dd;
+	int b = float2int(t2d.p[0].y), e = float2int(t2d.p[2].y),
+		h, m = float2int(t2d.p[1].y), rs, re, i, lh, rh;
+	//	float dm = t2d.p[1].y;
+	//	float dh;
+	point2d pl, pr;
+	point2d spl, spr;
 
-				/*
-				vt.p[0].x = t2d.p[0].x + pl.x * dt;
-				vt.p[1].x = t2d.p[0].x + pr.x * dt;
-				vt.p[0].y = vt.p[1].y = i;
-
-				svt.p[0].x = t3d.p[0].x + spl.x * dt;
-				svt.p[1].x = t3d.p[0].x + spr.x * dt;
-				svt.p[0].y = t3d.p[0].y + spl.y * dt;
-				svt.p[1].y = t3d.p[0].y + spr.y * dt;
-				// */
-				vt.p[0].x = t2d.p[0].x + pl.x * dlt;
-				vt.p[1].x = t2d.p[0].x + pr.x * drt;
-				vt.p[0].y = vt.p[1].y = (i);
-
-				svt.p[0].x = t3d.p[0].x + spl.x * dlt;
-				svt.p[1].x = t3d.p[0].x + spr.x * drt;
-				svt.p[0].y = t3d.p[0].y + spl.y * dlt;
-				svt.p[1].y = t3d.p[0].y + spr.y * drt;
-
-				if(b_alpha)
-				{
-					if(transparent)
-						draw_flat_scanline_alphatrans_s(dc_dest, &vt, dc_src,
-							&svt, x1, x2, alpha);
-					else
-						draw_flat_scanline_alpha_s(dc_dest, &vt, dc_src, &svt,
-							x1, x2, alpha);
-				}
-				else
-				{
-					if(transparent)
-						draw_flat_scanline_transparent_s(dc_dest, &vt, dc_src,
-							&svt, x1, x2);
-					else
-						draw_flat_scanline_s(dc_dest, &vt, dc_src, &svt, x1,
-							x2);
-				}
-			}
-		}
-		if(pl.y > pr.y)
-		{
-			dd = pr.y / pl.y;
-			pl.x *= dd;
-			spl.x *= dd;
-			spl.y *= dd;
-		}
-		else
-		{
-			dd = pl.y / pr.y;
-			pr.x *= dd;
-			spr.x *= dd;
-			spr.y *= dd;
-		}
-		if(m >= y1 && m < y2 && m < e)
-		{
-			vector2d vt;
-			vector2d svt;
-
-			vt.p[0].x = t2d.p[0].x + pl.x;
-			vt.p[1].x = t2d.p[0].x + pr.x;
-			vt.p[0].y = vt.p[1].y = (m);
-
-			svt.p[0].x = t3d.p[0].x + spl.x;
-			svt.p[1].x = t3d.p[0].x + spr.x;
-			svt.p[0].y = t3d.p[0].y + spl.y;
-			svt.p[1].y = t3d.p[0].y + spr.y;
-
-			if(b_alpha)
-			{
-				if(transparent)
-					draw_flat_scanline_alphatrans_s(dc_dest, &vt, dc_src, &svt,
-						x1, x2, alpha);
-				else
-					draw_flat_scanline_alpha_s(dc_dest, &vt, dc_src, &svt, x1,
-						x2, alpha);
-			}
-			else
-			{
-				if(transparent)
-					draw_flat_scanline_transparent_s(dc_dest, &vt, dc_src, &svt,
-						x1, x2);
-				else
-					draw_flat_scanline_s(dc_dest, &vt, dc_src, &svt, x1, x2);
-			}
-		}
-		pl.x = t2d.p[0].x - t2d.p[2].x;
-		pr.x = t2d.p[1].x - t2d.p[2].x;
-		pl.y = t2d.p[0].y - t2d.p[2].y;
-		pr.y = t2d.p[1].y - t2d.p[2].y;
-		spl.x = t3d.p[0].x - t3d.p[2].x;
-		spr.x = t3d.p[1].x - t3d.p[2].x;
-		spl.y = t3d.p[0].y - t3d.p[2].y;
-		spr.y = t3d.p[1].y - t3d.p[2].y;
-
-		//	dh = e - dm;
-		h = e - m;
-		re = e;
-		if(m < y1)
-		{
-			m = y1 - 1;
-		}
-		if(e >= y2)
-		{
-			e = y2 - 1;
-		}
-	/*	if(pl.y < pr.y)
+	pl.x = t2d.p[1].x - t2d.p[0].x;
+	pr.x = t2d.p[2].x - t2d.p[0].x;
+	pl.y = t2d.p[1].y - t2d.p[0].y;
+	pr.y = t2d.p[2].y - t2d.p[0].y;
+	spl.x = t3d.p[1].x - t3d.p[0].x;
+	spr.x = t3d.p[2].x - t3d.p[0].x;
+	spl.y = t3d.p[1].y - t3d.p[0].y;
+	spr.y = t3d.p[2].y - t3d.p[0].y;
+	//	dh = dm - b;
+	h = m - b;
+	rs = b;
+	if(b < y1)
+		b = y1;
+	if(m >= y2)
+		m = y2;
+	/*	if(pl.y > pr.y)
 		{
 			dd = pr.y / pl.y;
 			pl.x *= dd;
@@ -2316,81 +2165,214 @@ draw_flat_trangle_alpha_s(IMAGE* dc_dest, const triangle2d * dt,
 			spr.y *= dd;
 		}
 	*/
-		if(pl.x > pr.x)
+	if(pl.x > pr.x)
+	{
+		swap(pl, pr);
+		swap(spl, spr);
+	}
+	lh = float2int((pl.y + t2d.p[0].y))
+			- float2int((t2d.p[0].y));
+	rh = float2int((pr.y + t2d.p[0].y))
+			- float2int((t2d.p[0].y));
+	if(h > 0)
+	{
+		for(i = b; i < m; ++i)
 		{
-			swap(pl, pr);
-			swap(spl, spr);
-		}
-		lh = float2int(float(t2d.p[2].y))
-			- float2int(float(pl.y + t2d.p[2].y));
-		rh = float2int(float(t2d.p[2].y))
-			- float2int(float(pr.y + t2d.p[2].y));
-		if(h > 0)
-		{
-			for(i = e; i > m; --i)
+			vector2d vt;
+			vector2d svt;
+			//float dt = (i - rs) / h;
+			float dlt = (i - rs) / lh;
+			float drt = (i - rs) / rh;
+
+			/*
+			vt.p[0].x = t2d.p[0].x + pl.x * dt;
+			vt.p[1].x = t2d.p[0].x + pr.x * dt;
+			vt.p[0].y = vt.p[1].y = i;
+
+			svt.p[0].x = t3d.p[0].x + spl.x * dt;
+			svt.p[1].x = t3d.p[0].x + spr.x * dt;
+			svt.p[0].y = t3d.p[0].y + spl.y * dt;
+			svt.p[1].y = t3d.p[0].y + spr.y * dt;
+			// */
+			vt.p[0].x = t2d.p[0].x + pl.x * dlt;
+			vt.p[1].x = t2d.p[0].x + pr.x * drt;
+			vt.p[0].y = vt.p[1].y = (i);
+
+			svt.p[0].x = t3d.p[0].x + spl.x * dlt;
+			svt.p[1].x = t3d.p[0].x + spr.x * drt;
+			svt.p[0].y = t3d.p[0].y + spl.y * dlt;
+			svt.p[1].y = t3d.p[0].y + spr.y * drt;
+
+			if(b_alpha)
 			{
-				vector2d vt;
-				vector2d svt;
-				//float dt = (re - i) / h;
-				float dlt = (re - i) / lh;
-				float drt = (re - i) / rh;
-
-				/*
-				vt.p[0].x = t2d.p[2].x + pl.x * dt;
-				vt.p[1].x = t2d.p[2].x + pr.x * dt;
-				vt.p[0].y = vt.p[1].y = i;
-
-				svt.p[0].x = t3d.p[2].x + spl.x * dt;
-				svt.p[1].x = t3d.p[2].x + spr.x * dt;
-				svt.p[0].y = t3d.p[2].y + spl.y * dt;
-				svt.p[1].y = t3d.p[2].y + spr.y * dt;
-				// */
-				vt.p[0].x = t2d.p[2].x + pl.x * dlt;
-				vt.p[1].x = t2d.p[2].x + pr.x * drt;
-				vt.p[0].y = vt.p[1].y = (i);
-
-				svt.p[0].x = t3d.p[2].x + spl.x * dlt;
-				svt.p[1].x = t3d.p[2].x + spr.x * drt;
-				svt.p[0].y = t3d.p[2].y + spl.y * dlt;
-				svt.p[1].y = t3d.p[2].y + spr.y * drt;
-
-
-				if(b_alpha)
-				{
-					if(transparent)
-						draw_flat_scanline_alphatrans_s(dc_dest, &vt, dc_src,
-							&svt, x1, x2, alpha);
-					else
-						draw_flat_scanline_alpha_s(dc_dest, &vt, dc_src, &svt,
-							x1, x2, alpha);
-				}
+				if(transparent)
+					draw_flat_scanline_alphatrans_s(dc_dest, &vt, dc_src,
+						&svt, x1, x2, alpha);
 				else
-				{
-					if(transparent)
-						draw_flat_scanline_transparent_s(dc_dest, &vt, dc_src,
-							&svt, x1, x2);
-					else
-						draw_flat_scanline_s(dc_dest, &vt, dc_src, &svt, x1,
-							x2);
-				}
+					draw_flat_scanline_alpha_s(dc_dest, &vt, dc_src, &svt,
+						x1, x2, alpha);
+			}
+			else
+			{
+				if(transparent)
+					draw_flat_scanline_transparent_s(dc_dest, &vt, dc_src,
+						&svt, x1, x2);
+				else
+					draw_flat_scanline_s(dc_dest, &vt, dc_src, &svt, x1,
+						x2);
+			}
+		}
+	}
+	if(pl.y > pr.y)
+	{
+		dd = pr.y / pl.y;
+		pl.x *= dd;
+		spl.x *= dd;
+		spl.y *= dd;
+	}
+	else
+	{
+		dd = pl.y / pr.y;
+		pr.x *= dd;
+		spr.x *= dd;
+		spr.y *= dd;
+	}
+	if(m >= y1 && m < y2 && m < e)
+	{
+		vector2d vt;
+		vector2d svt;
+
+		vt.p[0].x = t2d.p[0].x + pl.x;
+		vt.p[1].x = t2d.p[0].x + pr.x;
+		vt.p[0].y = vt.p[1].y = (m);
+
+		svt.p[0].x = t3d.p[0].x + spl.x;
+		svt.p[1].x = t3d.p[0].x + spr.x;
+		svt.p[0].y = t3d.p[0].y + spl.y;
+		svt.p[1].y = t3d.p[0].y + spr.y;
+
+		if(b_alpha)
+		{
+			if(transparent)
+				draw_flat_scanline_alphatrans_s(dc_dest, &vt, dc_src, &svt,
+					x1, x2, alpha);
+			else
+				draw_flat_scanline_alpha_s(dc_dest, &vt, dc_src, &svt, x1,
+					x2, alpha);
+		}
+		else
+		{
+			if(transparent)
+				draw_flat_scanline_transparent_s(dc_dest, &vt, dc_src, &svt,
+					x1, x2);
+			else
+				draw_flat_scanline_s(dc_dest, &vt, dc_src, &svt, x1, x2);
+		}
+	}
+	pl.x = t2d.p[0].x - t2d.p[2].x;
+	pr.x = t2d.p[1].x - t2d.p[2].x;
+	pl.y = t2d.p[0].y - t2d.p[2].y;
+	pr.y = t2d.p[1].y - t2d.p[2].y;
+	spl.x = t3d.p[0].x - t3d.p[2].x;
+	spr.x = t3d.p[1].x - t3d.p[2].x;
+	spl.y = t3d.p[0].y - t3d.p[2].y;
+	spr.y = t3d.p[1].y - t3d.p[2].y;
+
+	//	dh = e - dm;
+	h = e - m;
+	re = e;
+	if(m < y1)
+	{
+		m = y1 - 1;
+	}
+	if(e >= y2)
+	{
+		e = y2 - 1;
+	}
+/*	if(pl.y < pr.y)
+	{
+		dd = pr.y / pl.y;
+		pl.x *= dd;
+		spl.x *= dd;
+		spl.y *= dd;
+	}
+	else
+	{
+		dd = pl.y / pr.y;
+		pr.x *= dd;
+		spr.x *= dd;
+		spr.y *= dd;
+	}
+*/
+	if(pl.x > pr.x)
+	{
+		swap(pl, pr);
+		swap(spl, spr);
+	}
+	lh = float2int(float(t2d.p[2].y))
+		- float2int(float(pl.y + t2d.p[2].y));
+	rh = float2int(float(t2d.p[2].y))
+		- float2int(float(pr.y + t2d.p[2].y));
+	if(h > 0)
+	{
+		for(i = e; i > m; --i)
+		{
+			vector2d vt;
+			vector2d svt;
+			//float dt = (re - i) / h;
+			float dlt = (re - i) / lh;
+			float drt = (re - i) / rh;
+
+			/*
+			vt.p[0].x = t2d.p[2].x + pl.x * dt;
+			vt.p[1].x = t2d.p[2].x + pr.x * dt;
+			vt.p[0].y = vt.p[1].y = i;
+
+			svt.p[0].x = t3d.p[2].x + spl.x * dt;
+			svt.p[1].x = t3d.p[2].x + spr.x * dt;
+			svt.p[0].y = t3d.p[2].y + spl.y * dt;
+			svt.p[1].y = t3d.p[2].y + spr.y * dt;
+			// */
+			vt.p[0].x = t2d.p[2].x + pl.x * dlt;
+			vt.p[1].x = t2d.p[2].x + pr.x * drt;
+			vt.p[0].y = vt.p[1].y = (i);
+
+			svt.p[0].x = t3d.p[2].x + spl.x * dlt;
+			svt.p[1].x = t3d.p[2].x + spr.x * drt;
+			svt.p[0].y = t3d.p[2].y + spl.y * dlt;
+			svt.p[1].y = t3d.p[2].y + spr.y * drt;
+
+
+			if(b_alpha)
+			{
+				if(transparent)
+					draw_flat_scanline_alphatrans_s(dc_dest, &vt, dc_src,
+						&svt, x1, x2, alpha);
+				else
+					draw_flat_scanline_alpha_s(dc_dest, &vt, dc_src, &svt,
+						x1, x2, alpha);
+			}
+			else
+			{
+				if(transparent)
+					draw_flat_scanline_transparent_s(dc_dest, &vt, dc_src,
+						&svt, x1, x2);
+				else
+					draw_flat_scanline_s(dc_dest, &vt, dc_src, &svt, x1,
+						x2);
 			}
 		}
 	}
 }
 
 int
-putimage_trangle(
-	IMAGE* imgdest,
-	const IMAGE* imgtexture,
+putimage_trangle(IMAGE* imgdest, const IMAGE* imgtexture,
 	const triangle2d * dt,// dest trangle, original
 	const triangle2d * tt,// textture trangle uv 0.0 - 1.0
-	int btransparent,
-	int alpha,
-	int smooth
-)
+	int btransparent, int alpha, int smooth)
 {
 	auto dc_dest = imgdest;
-	auto dc_src  = imgtexture;
+	auto dc_src = imgtexture;
 
 	if(dc_dest)
 	{
@@ -2400,7 +2382,6 @@ putimage_trangle(
 			y2 = dc_dest->GetHeight(), i;
 
 		if(smooth)
-		{
 			for(i = 0; i < 3; ++i)
 			{
 				_tt.p[i].x = float2int((_tt.p[i].x
@@ -2408,7 +2389,6 @@ putimage_trangle(
 				_tt.p[i].y = float2int((_tt.p[i].y
 					* (dc_src->GetHeight() - 2)));
 			}
-		}
 		else
 			for(i = 0; i < 3; ++i)
 			{
@@ -2442,8 +2422,7 @@ putimage_rotate(IMAGE* imgdest, const IMAGE* imgtexture, int nXOriginDest,
 	auto& dc_dest(cimg_ref(imgdest));
 	auto dc_src(imgtexture);
 
-	triangle2d _tt[2];
-	triangle2d _dt[2];
+	triangle2d _tt[2], _dt[2];
 	double dx, dy, cr = std::cos(radian), sr = -std::sin(radian);
 	int i, j;
 
@@ -2465,12 +2444,12 @@ putimage_rotate(IMAGE* imgdest, const IMAGE* imgtexture, int nXOriginDest,
 				* (dc_src->GetWidth());
 			_dt[j].p[i].y = (_dt[j].p[i].y - centery)
 				* (dc_src->GetHeight());
-			dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
-			dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
-			_dt[j].p[i].x = float(float2int(float((dx + nXOriginDest)
-				+ FLT_EPSILON)));
-			_dt[j].p[i].y = float(float2int(float((dy + nYOriginDest)
-				+ FLT_EPSILON)));
+			dx = cr * double(_dt[j].p[i].x) - sr * double(_dt[j].p[i].y);
+			dy = sr * double(_dt[j].p[i].x) + cr * double(_dt[j].p[i].y);
+			_dt[j].p[i].x
+				= float(float2int(float(dx + nXOriginDest) + FLT_EPSILON));
+			_dt[j].p[i].y
+				= float(float2int(float(dy + nYOriginDest) + FLT_EPSILON));
 		}
 	putimage_trangle(&dc_dest, imgtexture, &_dt[0], &_tt[0], btransparent,
 		alpha, smooth);
@@ -2489,10 +2468,10 @@ putimage_rotatezoom(IMAGE* imgdest, const IMAGE* imgtexture, int nXOriginDest,
 	auto& dc_dest(cimg_ref(imgdest));
 	auto dc_src = imgtexture;
 
-	triangle2d _tt[2];
-	triangle2d _dt[2];
+	triangle2d _tt[2], _dt[2];
 	double dx, dy, cr = std::cos(radian), sr = -std::sin(radian);
 	int i, j;
+
 	_tt[0].p[0].x = 0;
 	_tt[0].p[0].y = 0;
 	_tt[0].p[1].x = 0;
@@ -2507,16 +2486,16 @@ putimage_rotatezoom(IMAGE* imgdest, const IMAGE* imgtexture, int nXOriginDest,
 	for(j = 0; j < 2; ++j)
 		for(i = 0; i < 3; ++i)
 		{
-			_dt[j].p[i].x = (_dt[j].p[i].x - centerx)
+			_dt[j].p[i].x = double(_dt[j].p[i].x - centerx)
 				* (dc_src->GetWidth());
-			_dt[j].p[i].y = (_dt[j].p[i].y - centery)
+			_dt[j].p[i].y = double(_dt[j].p[i].y - centery)
 				* (dc_src->GetHeight());
-			dx = cr * _dt[j].p[i].x - sr * _dt[j].p[i].y;
-			dy = sr * _dt[j].p[i].x + cr * _dt[j].p[i].y;
-			_dt[j].p[i].x = float(float2int(float((dx * zoom + nXOriginDest)
-				+ FLT_EPSILON)));
-			_dt[j].p[i].y = float(float2int(float((dy * zoom + nYOriginDest)
-				+ FLT_EPSILON)));
+			dx = cr * double(_dt[j].p[i].x) - sr * double(_dt[j].p[i].y);
+			dy = sr * double(_dt[j].p[i].x) + cr * double(_dt[j].p[i].y);
+			_dt[j].p[i].x = float(float2int(float(dx) * zoom + nXOriginDest
+				+ FLT_EPSILON));
+			_dt[j].p[i].y = float(float2int(float(dy) * zoom + nYOriginDest
+				+ FLT_EPSILON));
 		}
 	putimage_trangle(&dc_dest, imgtexture, &_dt[0], &_tt[0], btransparent,
 		alpha, smooth);

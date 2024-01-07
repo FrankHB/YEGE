@@ -627,7 +627,8 @@ lineto_f(float x, float y, IMAGE* pimg)
 }
 
 
-void rectangle(int left, int top, int right, int bottom, IMAGE* pimg)
+void
+rectangle(int left, int top, int right, int bottom, IMAGE* pimg)
 {
 	auto& img(cimg_ref(pimg));
 
@@ -661,7 +662,7 @@ void
 ellipse(int x, int y, int stangle, int endangle, int xradius, int yradius,
 	IMAGE* pimg)
 {
-	const auto sr(stangle / 180.0 * PI), er(endangle / 180.0 * PI);
+	const auto sr(stangle / 180. * PI), er(endangle / 180. * PI);
 
 	::Arc(cimg_ref(pimg).getdc(), x - xradius, y - yradius,
 		x + xradius, y + yradius, x + xradius * std::cos(sr),
@@ -682,7 +683,7 @@ void
 sector(int x, int y, int stangle, int endangle, int xradius, int yradius,
 	IMAGE* pimg)
 {
-	const auto sr(stangle / 180.0 * PI), er(endangle / 180.0 * PI);
+	const auto sr(stangle / 180. * PI), er(endangle / 180. * PI);
 
 	::Pie(cimg_ref(pimg).getdc(), x - xradius, y - yradius,
 		x + xradius, y + yradius, x + xradius * std::cos(sr), y - yradius
@@ -713,7 +714,8 @@ void
 ellipsef(float x, float y, float stangle, float endangle, float xradius,
 	float yradius, IMAGE* pimg)
 {
-	const auto sr(stangle / 180.0 * PI), er(endangle / 180.0 * PI);
+	const auto sr(stangle / 180.F * float(PI)),
+		er(endangle / 180.F * float(PI));
 
 	::Arc(cimg_ref(pimg).getdc(), x - xradius, y - yradius,
 		x + xradius, y + yradius, x + xradius * std::cos(sr), y - yradius
@@ -731,7 +733,8 @@ void
 sectorf(float x, float y, float stangle, float endangle, float xradius,
 	float yradius, IMAGE* pimg)
 {
-	const auto sr(stangle / 180.0 * PI), er(endangle / 180.0 * PI);
+	const auto sr(stangle / 180.F * float(PI)),
+		er(endangle / 180.F * float(PI));
 
 	::Pie(cimg_ref(pimg).getdc(), x - xradius, y - yradius,
 		x + xradius, y + yradius, x + xradius * std::cos(sr), y - yradius
@@ -755,11 +758,8 @@ bar3d(int x1, int y1, int x2, int y2, int depth, int topflag, IMAGE* pimg)
 	--x2;
 	--y2;
 
-	const int pt[20]{
-		x2, y2, x2, y1, x1, y1, x1, y2, x2, y2,
-		x2 + depth, y2 - depth, x2 + depth, y1 - depth, x1 + depth, y1 - depth,
-		x1, y1,
-	};
+	const int pt[20]{x2, y2, x2, y1, x1, y1, x1, y2, x2, y2, x2 + depth,
+		y2 - depth, x2 + depth, y1 - depth, x1 + depth, y1 - depth, x1, y1};
 
 	bar(x1, y1, x2, y2, pimg);
 	if(topflag)

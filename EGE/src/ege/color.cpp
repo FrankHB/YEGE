@@ -27,17 +27,17 @@ rgb2hsl_impl(float r, float g, float b)
 	float rh, rs, rl;
 
 	rl = (*dp[0] + *dp[2]) / 2;
-	if(rl < 1e-2f)
+	if(rl < 1e-2F)
 		return {0, 0, 0};
-	if(rl > 0.99)
+	if(rl > 0.99F)
 		return {0, 0, 1};
-	if(fabs(rl - 0.5) < 1e-2)
-		rl = 0.5;
+	if(std::fabs(rl - .5F) < 1e-2F)
+		rl = .5F;
 #define BLACKUNFORMAT(c, v) ((c)/((v)*2))
 #define WHITEUNFORMAT(c, v) (1-(1-c)/((1-(v))*2))
-	if(rl == 0.5)
+	if(rl == .5F)
 		;
-	else if(rl < 0.5)
+	else if(rl < .5F)
 	{
 		for(int n = 0; n < 3; ++n)
 		{
@@ -58,7 +58,7 @@ rgb2hsl_impl(float r, float g, float b)
 #undef BLACKUNFORMAT
 #undef WHITEUNFORMAT
 	rs = *dp[2] * 2 - 1;
-	if(rs < 1e-2)
+	if(rs < 1e-2F)
 		return {0, rs, rl};
 #define SATUNFORMAT(c, s) (((c)-.5F)/(s)+.5F)
 	for(int n = 0; n < 3; ++n)
@@ -120,20 +120,19 @@ std::array<MonoType, 3>
 HSV_TO_RGB(float ih, float is, float iv)
 {
 	float R = 0, G = 0, B = 0;
-	int k;
-	float aa, bb, cc, f;
-	if(is <= 0.0)
+
+	if(is <= 0.F)
 		R = G = B = iv;
 	else
 	{
-		if(ih == 1.0)
-			ih = 0.0;
-		ih *= 6.0;
-		k = int(floor(ih)); // ??
-		f = ih - k;
-		aa = iv * (1.F - is);
-		bb = iv * (1.F - is * f);
-		cc = iv * (1.F - (is * (1.F - f)));
+		if(ih == 1.F)
+			ih = 0.F;
+		ih *= 6.F;
+
+		int k = int(floor(ih)); // ??
+		float f = ih - k, aa = iv * (1.F - is), bb = iv * (1.F - is * f),
+			cc = iv * (1.F - (is * (1.F - f)));
+
 		switch(k)
 		{
 		case 0:
