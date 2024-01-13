@@ -1,6 +1,6 @@
 ﻿# 概要
 
-YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，提供兼容特性。
+　　YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，提供兼容特性。
 
 # 版本历史
 
@@ -8,7 +8,7 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 
 ### 构建配置
 
-调整部分 Code::Blocks 构建选项：
+　　调整部分 Code::Blocks 构建选项：
 
 * EGE 静态库项目中加入编译器选项 `-fdata-sections -ffunction-sections` 。
 * 项目的 release 配置中加入编译器选项 `-fno-enforce-eh-specs`（同 `-DNDEBUG` ）。
@@ -67,12 +67,12 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 * 添加函数 `putimage_alphafilter` 。
 	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
 
-兼容实现调整：
+　　兼容实现调整：
 
 * 替换以下 Windows SDK 类型：
 	* `WORD` → `unsigned short` 。
 
-实现注记：
+　　实现注记：
 
 * 合并部分重复的实现。
 * 重命名部分内部实现使用的宏。
@@ -83,13 +83,13 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 
 ### 实现质量
 
-EGE 库中加入 `-Wnon-virtual-dtor -Wshadow -Wredundant-decls -Wcast-align -Wmissing-declarations -pedantic-errors -Wextra -Wall -Wctor-dtor-privacy -Wconditionally-supported -Wdeprecated -Wdeprecated-declarations -Wformat=2 -Wno-format-nonliteral -Winvalid-pch -Wlogical-op -Wmissing-include-dirs -Wmultichar -Woverloaded-virtual -Wpacked -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstringop-overflow=0 -Wsuggest-attribute=noreturn -Wtrampolines -Wzero-as-null-pointer-constant` 保证无错误和警告。
+　　EGE 库中加入 `-Wnon-virtual-dtor -Wshadow -Wredundant-decls -Wcast-align -Wmissing-declarations -pedantic-errors -Wextra -Wall -Wctor-dtor-privacy -Wconditionally-supported -Wdeprecated -Wdeprecated-declarations -Wformat=2 -Wno-format-nonliteral -Winvalid-pch -Wlogical-op -Wmissing-include-dirs -Wmultichar -Woverloaded-virtual -Wpacked -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstringop-overflow=0 -Wsuggest-attribute=noreturn -Wtrampolines -Wzero-as-null-pointer-constant` 保证无错误和警告。
 
 **注释** 相对之前的版本，添加 `-Wshadow -Woverloaded-virtual -Wsign-conversion -Wstringop-overflow=0 -Wsuggest-attribute=noreturn` 。
 
-依赖 YSLib 时，EGE 库中加入 `-Wfloat-equal` 保证无警告。相对 YSLib 的 G++ 默认警告选项，缺少 `-Wno-mismatched-tags -Wno-noexcept-type -Wdouble-promotion -Wsuggest-attribute=const -Wsuggest-attribute=pure -Wsuggest-final-methods -Wsuggest-final-types` 。
+　　依赖 YSLib 时，EGE 库中加入 `-Wfloat-equal` 保证无警告。相对 YSLib 的 G++ 默认警告选项，缺少 `-Wno-mismatched-tags -Wno-noexcept-type -Wdouble-promotion -Wsuggest-attribute=const -Wsuggest-attribute=pure -Wsuggest-final-methods -Wsuggest-final-types` 。
 
-EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题没有加入此选项）。
+　　EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题没有加入此选项）。
 
 ### 非外部依赖项代码风格和格式
 
@@ -98,7 +98,7 @@ EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题�
 
 ### 外部依赖项全局名称
 
-具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
+　　具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
 
 * `BITMAPINFO`
 * `BITMAPFILEHEADER`
@@ -108,13 +108,13 @@ EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题�
 
 ## 19.01
 
-YEGE 19.01 以 YEGE 14.01 为基础修改。
+　　YEGE 19.01 以 YEGE 14.01 为基础修改。
 
 ### 限制实现需求
 
-依赖 [YSLib](https://bitbucket.org/FrankHB/yslib)（见下文）时，要求 MinGW G++ 5.3.0 或以上。YSLib 提供的库 YBase 和 YFramework 的 API 需要满足最低实现支持。以后的版本可能提升实现的支持要求。
+　　依赖 [YSLib](https://bitbucket.org/FrankHB/yslib)（见下文）时，要求 MinGW G++ 5.3.0 或以上。YSLib 提供的库 YBase 和 YFramework 的 API 需要满足最低实现支持。以后的版本可能提升实现的支持要求。
 
-只测试 MinGW-W64（使用同 YSLib 项目相同的 [MSYS2](https://www.msys2.org/) 基础环境）。未测试 [MinGW.org](http://mingw.org/) 的运行时。
+　　只测试 MinGW-W64（使用同 YSLib 项目相同的 [MSYS2](https://www.msys2.org/) 基础环境）。未测试 [MinGW.org](http://mingw.org/) 的运行时。
 
 ### 依赖项更改
 
@@ -125,11 +125,11 @@ YEGE 19.01 以 YEGE 14.01 为基础修改。
 
 ### API 修改
 
-接口扩充：
+　　接口扩充：
 
 * 在 `ege` 命名空间提供类型别名 `color_int_t` 和 `MonoType` 表示颜色转换整数类型和分量类型。
 
-YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
+　　YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 
 * 提供和 YBase 兼容的伪关键字宏 `yconstfn` 、`yconstexpr` 和 `ynothrow` ，分别替换为 `constexpr` 、`constexpr` 和 `noexcept` 。
 * 提供和 YBase 兼容的伪关键字宏 `yconstraint` 和 `yassume` 替换 `assert` 。
@@ -168,7 +168,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 	* 仅实现判断 GCC ，不确定版本。
 * 在 `ege` 命名空间提供和 YCLib 兼容的类 `ScreenBuffer` ，但成员 `Premultiply` 、`UpdatePremultipliedTo` 和 `UpdateTo` 除外。
 
-非向后兼容接口：
+　　非向后兼容接口：
 
 * 添加 `linestyletype` 和 `EGEMSG` 的构造函数，只支持默认构造和提供所有成员的初始化。
 * 宏 `RGBTOBGR` 、`EGERGB` 、`EGERGBA` 、`EGEARGB` 、`EGEACOLOR` 、`EGECOLORA` 、`EGEGET_R` 、`EGEGET_G` 、`EGEGET_B` 、`EGEGET_A` 、`EGEGRAY` 、`EGEGRAYA` 和 `EGEAGRAY` 变更为 `ege` 命名空间内的函数。
@@ -192,7 +192,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 * 移除枚举 `graphics_drivers` 、`message_event` 和 `message_mouse` 。
 * 函数 `resize` 调用后状态未指定，不保证填充背景色。
 
-非向后兼容接口（仅当依赖 YSLib 时）：
+　　非向后兼容接口（仅当依赖 YSLib 时）：
 
 * `typedef` 类型名 `color_t` 从 `unsigned int` 改为 `YSLib::Drawing::PixelType` 。
 * 使用 YCLib 提供的 `YSLib::Drawing::MonoType` 表示颜色分量，代替 `ege::mono_t` 。
@@ -213,7 +213,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 * 设置图像大小不依赖公共 `API` 。
 * 设置图像页面时检查越界并忽略越界访问。
 
-兼容接口和实现调整：
+　　兼容接口和实现调整：
 
 * 替换以下 Windows SDK 类型：
 	* `VOID` → `void` 。
@@ -225,7 +225,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 * 所有同名 `typedef` 结构体名称或 `typedef` 匿名结构体调整为非 `typedef` 结构体类型名。
 * 宏 `EGEAPI` 调整至返回值前；移除函数形参中不必要的 `const` 。
 
-修复错误实现：
+　　修复错误实现：
 
 * 修复绘制时遗漏调用 `::EndPaint`（此 bug 在 EGE 15.04 修复）。
 * 修复退出时遗漏清理 GDI+ 。
@@ -239,7 +239,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 * 修复函数 `flushkey` 和 `flushmouse` 调用可能被中断导致队列非空。
 * 修复函数 `inputbox_getline` 未检查分配存储失败。
 
-实现注记：
+　　实现注记：
 
 * 返回指针的内联函数 `CONVERT_IMAGE` 和 `CONVERT_IMAGE_CONST` 改用返回引用的非内联函数 `cimg_ref` 和 `cimg_ref_c` 替代。
 * 移除不符合标准的保留名称 `_RGBtoHSL` 和 `_HSLtoRGB` 的使用。
@@ -252,7 +252,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 * 简化绘图 API 实现。
 * 使用 YSLib 兼容的 `ScreenBuffer` 实现类 `IMAGE` 。
 
-实现注记（仅当依赖 YSLib 时）：
+　　实现注记（仅当依赖 YSLib 时）：
 
 * 使用 `YSLib::Drawing` 实现函数 `rgb2hsl` 、`hsl2rgb` 、`rgb2hsv` 和 `hsv2rgb`（不保证精度完全一致）。
 * 使用 `YSLib::Adaptor::Image` 模块提供的接口代替 OLE 和 libpng 实现图像读取操作。
@@ -261,19 +261,19 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 
 ### 实现质量
 
-EGE 库中加入 `-Wall -Wcast-align -Wconditionally-supported -Wctor-dtor-privacy -Wdeprecated -Wdeprecated-declarations -Wextra -Wformat=2 -Winvalid-pch -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wmultichar -Wno-format-nonliteral -Wnon-virtual-dtor -Wpacked -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wtrampolines -Wzero-as-null-pointer-constant -pedantic-errors` 保证无错误和警告。
+　　EGE 库中加入 `-Wall -Wcast-align -Wconditionally-supported -Wctor-dtor-privacy -Wdeprecated -Wdeprecated-declarations -Wextra -Wformat=2 -Winvalid-pch -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wmultichar -Wno-format-nonliteral -Wnon-virtual-dtor -Wpacked -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wtrampolines -Wzero-as-null-pointer-constant -pedantic-errors` 保证无错误和警告。
 
-依赖 YSLib 时，EGE 库中加入 `-Wfloat-equal` 保证无警告。
+　　依赖 YSLib 时，EGE 库中加入 `-Wfloat-equal` 保证无警告。
 
-EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题没有加入此选项）。
+　　EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题没有加入此选项）。
 
 ### 非外部依赖项代码风格和格式
 
-主函数不使用冗余形参和返回语句。
+　　主函数不使用冗余形参和返回语句。
 
 ### 外部依赖项全局名称
 
-具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
+　　具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
 
 * `HMENU`
 * `LRES`
@@ -281,9 +281,9 @@ EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题�
 * `SetLayeredWindowAttributes`
 * `SetStretch`
 
-扩展 `OleLoadPicturePath` 到 `OleLoadPicturePath` 前缀的外部依赖项全局名称在使用时前缀 `::` 。
+　　扩展 `OleLoadPicturePath` 到 `OleLoadPicturePath` 前缀的外部依赖项全局名称在使用时前缀 `::` 。
 
-以下过时的前缀的外部依赖项全局名称在使用时不再需要附加前缀 `::` ：
+　　以下过时的前缀的外部依赖项全局名称在使用时不再需要附加前缀 `::` ：
 
 * `HEVENT`
 * `HRGN`
@@ -294,29 +294,29 @@ EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题�
 * `TCHA`
 * `wsprintfW`
 
-添加以下所列外部依赖项全局名称在使用时不再需要附加前缀 `::` ：
+　　添加以下所列外部依赖项全局名称在使用时不再需要附加前缀 `::` ：
 
 * `BYTE`
 
-过时的外部依赖项全局名称在使用时不再需要附加前缀 `::` ：
+　　过时的外部依赖项全局名称在使用时不再需要附加前缀 `::` ：
 
 * `access`
 
 ## 14.01
 
-YEGE 19.01 以 EGE 13.03 为基础修改。
+　　YEGE 19.01 以 EGE 13.03 为基础修改。
 
 ### 增加 IDE 支持
 
-Code::Blocks 。
+　　Code::Blocks 。
 
 ### 限制实现需求
 
-限 MinGW G++ 4.8.0 或以上，需要 `-std=c++11` 支持。使用了 `std::thread` ，需要 POSIX 线程模型。
+　　限 MinGW G++ 4.8.0 或以上，需要 `-std=c++11` 支持。使用了 `std::thread` ，需要 POSIX 线程模型。
 
-（其它版本未测试，但至少需要 `-std=c++0x` 的 `auto` 、`nullptr` 、lambda 表达式和初始化列表等 C++11 特性支持，且若在 Code::Blocks 项目使用，需要去除 `debug` 的 `-Og` 选项。）
+　　（其它版本未测试，但至少需要 `-std=c++0x` 的 `auto` 、`nullptr` 、lambda 表达式和初始化列表等 C++11 特性支持，且若在 Code::Blocks 项目使用，需要去除 `debug` 的 `-Og` 选项。）
 
-只测试 MinGW-W64 。未测试 MinGW.org 的运行时。
+　　只测试 MinGW-W64 。未测试 MinGW.org 的运行时。
 
 ### 依赖项更改
 
@@ -326,7 +326,7 @@ Code::Blocks 。
 
 ### API 修改
 
-非向后兼容接口：
+　　非向后兼容接口：
 
 * 入口统一为 `::main` 。
 * 编译为 DLL 无需定义宏。
@@ -347,7 +347,7 @@ Code::Blocks 。
 * 移除类型 `LPCALLBACK_PROC` 、`LPMSG_KEY_PROC` 、`LPMSG_MOUSE_PROC` 、`MSG_KEY_PROC` 和 `MSG_MOUSE_PROC` ，其中 `LPCALLBACK_PROC` 可用 `CALLBACK_PROC*` 代替。
 * 检查 `resize` 的参数，若小于 0 抛出 `std::invalid_argument` 异常。
 
-向后（源代码）兼容但不保证向前兼容原始实现的接口：
+　　向后（源代码）兼容但不保证向前兼容原始实现的接口：
 
 * `delay_fps` 和 `delay_jfps` 仅保留 `double` 重载版本。
 * 部分函数（包括 `mousepos` 等）加入断言检查参数。
@@ -355,11 +355,11 @@ Code::Blocks 。
 * 控件基类 `egeControlBase` 的析构函数保证为 `virtual` 。
 * 宏 `EGEAPI` 支持显式导入和导出。
 
-以下 EGE 13.03 之后的 API 没有修改：
+　　以下 EGE 13.03 之后的 API 没有修改：
 
 * `getbuffer` 的返回类型保持为 `void*` 而不是 `color_t*` 以避免违反严格别名规则。
 
-兼容接口和实现调整:
+　　兼容接口和实现调整:
 
 * 替换以下 Windows SDK 类型：
 	* `CHAR` → `char` 。
@@ -371,7 +371,7 @@ Code::Blocks 。
 * 所有同名 `typedef` 结构体名称或 `typedef` 匿名结构体调整为非 `typedef` 结构体类型名。
 * 宏 `EGEAPI` 调整至返回值前；移除函数形参中不必要的 `const` 。
 
-实现注记：
+　　实现注记：
 
 * 随机数改用 C++11 标准库 `<random>` 实现。
 * 移除的 `Array` 和 `Set` 模板改用 `std::vector` 和 `std::set` 代替。
@@ -400,27 +400,27 @@ Code::Blocks 。
 
 ### 实现质量
 
-EGE 库中加入 `-Wall -Wextra -Wmissing-include-dirs -Wzero-as-null-pointer-constant -pedantic-errors` 保证无错误和警告。
+　　EGE 库中加入 `-Wall -Wextra -Wmissing-include-dirs -Wzero-as-null-pointer-constant -pedantic-errors` 保证无错误和警告。
 
-其它项目中加入 `-Wall -Wextra -pedantic` 保证无警告。
+　　其它项目中加入 `-Wall -Wextra -pedantic` 保证无警告。
 
 ### 非外部依赖项代码风格和格式
 
-`{` 之前不邻接空格。
+　　`{` 之前不邻接空格。
 
-指针和空指针的相等比较用 `!` 操作符代替，不等比较使用 `bool` 转换代替。
+　　指针和空指针的相等比较用 `!` 操作符代替，不等比较使用 `bool` 转换代替。
 
-尽可能使用 `{}` 代替 `NULL` 或其它形式的空指针常量；无法使用 `{}` 的用 `nullptr` 代替。
+　　尽可能使用 `{}` 代替 `NULL` 或其它形式的空指针常量；无法使用 `{}` 的用 `nullptr` 代替。
 
-字面量 `false` 尽可能用 `{}` 代替。
+　　字面量 `false` 尽可能用 `{}` 代替。
 
 ### 外部依赖项使用
 
-标准库实体名称保证 `std::` 起始或使用 `using` 声明/指示。
+　　标准库实体名称保证 `std::` 起始或使用 `using` 声明/指示。
 
-使用 C++ 标准库头文件而不是 C 标准库头文件。
+　　使用 C++ 标准库头文件而不是 C 标准库头文件。
 
-具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
+　　具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
 
 * `_wf`
 * `Arc`
@@ -507,7 +507,7 @@ EGE 库中加入 `-Wall -Wextra -Wmissing-include-dirs -Wzero-as-null-pointer-co
 * `mciSend`
 * `png_`
 
-以下所列外部依赖项全局名称在使用时附加前缀 :: ：
+　　以下所列外部依赖项全局名称在使用时附加前缀 :: ：
 
 * `HWND`
 * `MSG`
