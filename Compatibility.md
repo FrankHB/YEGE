@@ -2,6 +2,26 @@
 
 　　YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，提供兼容特性。
 
+# 设计计划
+
+## 非兼容特性
+
+　　以下 [wysaid/xege](https://github.com/wysaid/xege) 特性在当前设计中没有计划支持：
+
+* 新增带有不同字符串参数的 API ：
+	* [`ege::ege_drawtext`](https://github.com/wysaid/xege/pull/20) 。
+* [wysaid/xege pull request 25](https://github.com/wysaid/xege/pull/25) 中的部分特性：
+	* 初始化选项 `INIT_UNICODE` ，可由使用者选择创建 Unicode 窗口。
+
+　　以下 [wysaid/xege](https://github.com/wysaid/xege) 特性具有类似但不同的设计和实现：
+
+* [将 `EgeControlBase` 移出 `ege.h`](https://github.com/wysaid/xege/pull/24) 。
+	* YEGE 中已在不同的头文件。
+	* 因为其它被间接包含的头文件也不在 `ege.h` 中，仍需 `ege/` ，YEGE 不支持单独分发 `ege.h` 。
+* [部分重构 `IMAGE` 类](https://github.com/wysaid/xege/pull/28)。
+	* 对[相关初始化问题的修复](https://github.com/wysaid/xege/issues/2)仍然在逻辑上存在缺陷。
+		* YEGE 重构的方式不同，不支持初始化前使用资源。
+
 # 版本历史
 
 ## 主分支版本
