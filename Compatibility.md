@@ -52,6 +52,8 @@
 		* 修改格式：交换红色和蓝色分量。
 			* 撤销自从 14.01 的修改，和原始 misakamm/xege 的 `color_t` 一致，而不再和 `::COLORREF` 一致。
 			* 同时修改函数 `EGERGB` 的实现，解决和其它函数的不一致问题。
+			* 同时撤销函数 `setlinestyle` 、`setfillstyle` 、`setcolor` 、`setbkcolor` 、`setbkcolor_f` 、`setfontbkcolor` 、`floodfill` 和 `floodfillsurface` 的实现修改。
+				* 注意 `putpixels` 和 `putpixels_f` 保持不变。
 			* 修改后的格式和 `YSLib::Pixel` 在 Win32 上的实现以及 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 中的像素格式保持一致，存储格式都为 BGRA8888 。
 		* 修复不使用 YSLib 时类型 `color_t` 声明（自从 19.01 ），保证是无符号数。
 			* 这个类型不保证是整数，但不使用 YSLib 时当前实现为整数。
@@ -78,6 +80,7 @@
 	* 参见 [wysaid/xege pull request 17](https://github.com/wysaid/xege/pull/17) 。
 * 确保函数 `setcolor` 和 `setlinestyle` 忽略颜色 alpha 分量。
 	* 参见 [wysaid/xege pull request 20](https://github.com/wysaid/xege/pull/20) 。
+	* 参见 [wysaid/xege pull request 29](https://github.com/wysaid/xege/pull/29) 。
 * 部分函数类型中添加 `const` 并添加若干 `const` 重载函数。
 	* 参见 [wysaid/xege pull request 31](https://github.com/wysaid/xege/pull/31) 。
 	* `getbuffer` 添加重载后分别返回 `void*` 和 `const void*` 。
@@ -92,6 +95,8 @@
 	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
 * 添加函数 `putimage_alphafilter` 。
 	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
+* 修复函数 `setlinestyle` 、`setfillstyle` 、`setcolor` 、`setbkcolor` 、`setbkcolor_f` 、`setfontbkcolor` 、`floodfill` 和 `floodfillsurface` 的实现没有忽略 alpha 值。	
+	* 参见 [wysaid/xege pull request 29](https://github.com/wysaid/xege/pull/29) 。
 
 　　兼容实现调整：
 

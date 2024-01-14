@@ -192,7 +192,7 @@ setlinewidth(float width, IMAGE* pimg)
 
 		img.m_linestyle.thickness = thickness;
 		img.m_linewidth = width;
-		update_ls_pen(h_dc, RGBTOBGR(color_int_t(img.m_color)),
+		update_ls_pen(h_dc, ARGBTOZBGR(color_int_t(img.m_color)),
 			static_cast<unsigned long>(img.m_linestyle.linestyle),
 			static_cast<unsigned long>(thickness), img.m_linestyle.upattern);
 	}
@@ -203,7 +203,7 @@ setfillstyle(int pattern, color_t color, IMAGE* pimg)
 {
 	auto& img(cimg_ref_c(pimg));
 
-	::LOGBRUSH lbr{0, RGBTOBGR(color_int_t(color)), ::UINT_PTR()};
+	::LOGBRUSH lbr{0, ARGBTOZBGR(color_int_t(color)), ::UINT_PTR()};
 
 	img.m_fillcolor = color;
 	//::SetBkColor(img.getdc(), color);
@@ -282,9 +282,9 @@ setcolor(color_t color, IMAGE* pimg)
 
 	if(const auto h_dc = img.getdc())
 	{
-		const auto bgrcolor(ARGBTOZBGR(color_int_t(color));
+		const auto bgrcolor(ARGBTOZBGR(color_int_t(color)));
 
-		img.m_color = color;
+		img.m_color = ARGBTOZBGR(color);
 		update_ls_pen(h_dc, bgrcolor, static_cast<unsigned long>(
 			img.m_linestyle.linestyle), static_cast<unsigned long>(
 			img.m_linestyle.thickness), img.m_linestyle.upattern);
@@ -297,7 +297,7 @@ setfillcolor(color_t color, IMAGE* pimg)
 {
 	auto& img(cimg_ref_c(pimg));
 
-	::LOGBRUSH lbr{0, RGBTOBGR(color_int_t(color)), BS_SOLID};
+	::LOGBRUSH lbr{0, ARGBTOZBGR(color_int_t(color)), BS_SOLID};
 
 	img.m_fillcolor = color;
 	::HBRUSH hbr = ::CreateBrushIndirect(&lbr);
@@ -317,7 +317,7 @@ setbkcolor(color_t color, IMAGE* pimg)
 		color_t col = img.m_bk_color;
 
 		img.m_bk_color = color;
-		::SetBkColor(img.getdc(), RGBTOBGR(color_int_t(color)));
+		::SetBkColor(img.getdc(), ARGBTOZBGR(color_int_t(color)));
 		for(size_t n = 0; n < size; ++n, ++p)
 			if(*p == col)
 				*p = color;
@@ -334,7 +334,7 @@ setbkcolor_f(color_t color, IMAGE* pimg)
 	if(const auto dc = img.getdc())
 	{
 		img.m_bk_color = color;
-		::SetBkColor(dc, RGBTOBGR(color_int_t(color)));
+		::SetBkColor(dc, ARGBTOZBGR(color_int_t(color)));
 	}
 }
 
@@ -344,7 +344,7 @@ setfontbkcolor(color_t color, IMAGE* pimg)
 	auto& img(cimg_ref(pimg));
 
 	if(const auto dc = img.getdc())
-		::SetBkColor(dc, RGBTOBGR(color_int_t(color)));
+		::SetBkColor(dc, ARGBTOZBGR(color_int_t(color)));
 }
 
 void
@@ -845,14 +845,14 @@ void
 floodfill(int x, int y, int border, IMAGE* pimg)
 {
 	::FloodFill(cimg_ref(pimg).getdc(), x, y,
-		static_cast<unsigned long>(border));
+		ARGBTOZBGR(color_int_t(border)));
 }
 
 void
 floodfillsurface(int x, int y, color_t areacolor, IMAGE* pimg)
 {
-	::ExtFloodFill(cimg_ref(pimg).getdc(), x, y, areacolor,
-		FLOODFILLSURFACE);
+	::ExtFloodFill(cimg_ref(pimg).getdc(), x, y,
+		ARGBTOZBGR(color_int_t(areacolor)), FLOODFILLSURFACE);
 }
 
 } // namespace ege;
