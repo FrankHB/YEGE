@@ -41,25 +41,25 @@ EGERGB(MonoType r, MonoType g, MonoType b) ynothrow
 }
 
 yconstfn color_int_t
-EGERGBA(MonoType r, MonoType g, MonoType b, MonoType a) ynothrow
+EGERGBA(MonoType r, MonoType g, MonoType b, AlphaType a) ynothrow
 {
 	return EGERGB(r, g, b) | a << 24;
 }
 
 yconstfn color_int_t
-EGEARGB(MonoType a, MonoType r, MonoType g, MonoType b) ynothrow
+EGEARGB(AlphaType a, MonoType r, MonoType g, MonoType b) ynothrow
 {
 	return EGERGB(r, g, b) | a << 24;
 }
 
 yconstfn color_int_t
-EGEACOLOR(MonoType a, color_int_t color) ynothrow
+EGEACOLOR(AlphaType a, color_int_t color) ynothrow
 {
 	return (color & 0xFFFFFF) | (a << 24);
 }
 
 yconstfn color_int_t
-EGECOLORA(MonoType a, color_int_t color) ynothrow
+EGECOLORA(AlphaType a, color_int_t color) ynothrow
 {
 	return (color & 0xFFFFFF) | (a << 24);
 }
@@ -82,7 +82,7 @@ EGEGET_B(color_int_t c) ynothrow
 	return c & 0xFF;
 }
 
-yconstfn MonoType
+yconstfn AlphaType
 EGEGET_A(color_int_t c) ynothrow
 {
 	return (c >> 24) & 0xFF;
@@ -95,13 +95,13 @@ EGEGRAY(color_int_t gray) ynothrow
 }
 
 yconstfn color_int_t
-EGEGRAYA(color_int_t gray, MonoType a) ynothrow
+EGEGRAYA(color_int_t gray, AlphaType a) ynothrow
 {
 	return EGEGRAY(gray) | (a << 24);
 }
 
 yconstfn color_int_t
-EGEAGRAY(MonoType a, color_int_t gray) ynothrow
+EGEAGRAY(AlphaType a, color_int_t gray) ynothrow
 {
 	return EGEGRAY(gray) | (a << 24);
 }

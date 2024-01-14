@@ -60,6 +60,8 @@
 				* 虽然使用有符号数仍然二进制兼容，但可能引起非预期的有符号数和无符号数的转换，如 G++ [-Wsign-conversion] 警告。
 				* 因此，有必要修正为无符号数。
 			* 用户代码仍不应预期 `color_t` 和 `color_int_t` 总是相同。
+	* 修复函数 `EGERGBA`、`EGEARGB`、`EGEACOLOR`、`EGECOLORA`、`EGEGET_A`、`EGEGRAYA` 和 `EGEAGRAY` 关于 alpha 分量的类型 `MonoType` 为 `AlphaType` 。
+		* 因为当前 `MonoType` 和 `AlphaType` 都是 `octet` 的别名，不影响用户源代码和目标代码的兼容性。
 * 函数 `clearviewport` 使用背景颜色填充。
 	* 参见 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 。
 * 修复函数 `getch` 阻塞不返回（自从 19.01 ）。
