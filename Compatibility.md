@@ -46,28 +46,30 @@
 	* 参见 [wysaid/xege pull request 5](https://github.com/wysaid/xege/pull/5) 。
 	* 参见 [wysaid/xege pull request 9](https://github.com/wysaid/xege/pull/9) 。
 * 颜色转换函数添加 `ynothrow` 。
-* 修复函数 `RGBTOBGR` 的参数类型（自从 19.01 ）。
-* 调整 `color_t` ：
-	* 修改格式：交换红色和蓝色分量。
-		* 撤销自从 14.01 的修改，和原始 misakamm/xege 的 `color_t` 一致，而不再和 `::COLORREF` 一致。
-		* 同时修改函数 `EGERGB` 的实现，解决和其它函数的不一致问题。
-		* 修改后的格式和 `YSLib::Pixel` 在 Win32 上的实现以及 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 中的像素格式保持一致，存储格式都为 BGRA8888 。
-	* 修复不使用 YSLib 时类型 `color_t` 声明（自从 19.01 ），保证是无符号数。
-		* 这个类型不保证是整数，但不使用 YSLib 时当前实现为整数。
-		* 在原始的 EGE 中，这个类型是 `DWORD` 的别名，对支持的 Win32 环境即 `unsigned long` 。
-		* 在 19.01 中，不使用 YSLib 实现时，这个类型是 `int` 的别名。
-			* 虽然使用有符号数仍然二进制兼容，但可能引起非预期的有符号数和无符号数的转换，如 G++ [-Wsign-conversion] 警告。
-			* 因此，有必要修正为无符号数。
-		* 用户代码仍不应预期 `color_t` 和 `color_int_t` 总是相同。
+* 调整和修复颜色和转换 API ：
+	* 修复函数 `RGBTOBGR` 的参数类型（自从 19.01 ）。
+	* 调整 `color_t` ：
+		* 修改格式：交换红色和蓝色分量。
+			* 撤销自从 14.01 的修改，和原始 misakamm/xege 的 `color_t` 一致，而不再和 `::COLORREF` 一致。
+			* 同时修改函数 `EGERGB` 的实现，解决和其它函数的不一致问题。
+			* 修改后的格式和 `YSLib::Pixel` 在 Win32 上的实现以及 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 中的像素格式保持一致，存储格式都为 BGRA8888 。
+		* 修复不使用 YSLib 时类型 `color_t` 声明（自从 19.01 ），保证是无符号数。
+			* 这个类型不保证是整数，但不使用 YSLib 时当前实现为整数。
+			* 在原始的 EGE 中，这个类型是 `DWORD` 的别名，对支持的 Win32 环境即 `unsigned long` 。
+			* 在 19.01 中，不使用 YSLib 实现时，这个类型是 `int` 的别名。
+				* 虽然使用有符号数仍然二进制兼容，但可能引起非预期的有符号数和无符号数的转换，如 G++ [-Wsign-conversion] 警告。
+				* 因此，有必要修正为无符号数。
+			* 用户代码仍不应预期 `color_t` 和 `color_int_t` 总是相同。
 * 函数 `clearviewport` 使用背景颜色填充。
 	* 参见 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 。
 * 修复函数 `getch` 阻塞不返回（自从 19.01 ）。
 * 修复函数 `setcolor` 、`setlinestyle` 和 `setlinewidth` 并简化实现。
 	* 参见 [wysaid/xege pull request 13](https://github.com/wysaid/xege/pull/13) 。
-* 修复函数 `ege_setalpha` 对无效的 `IMAGE`（未成功初始化的图像）缺少检查。
-	* 另见 [wysaid/xege pull request 16](https://github.com/wysaid/xege/pull/16) 。
-* 优化函数 `ege_setalpha` 的实现。
-	* 参见 [wysaid/xege pull request 16](https://github.com/wysaid/xege/pull/16) 。
+* 函数 `ege_setalpha` ：
+	* 修复对无效的 `IMAGE`（未成功初始化的图像）缺少检查。
+		* 另见 [wysaid/xege pull request 16](https://github.com/wysaid/xege/pull/16) 。
+	* 优化实现。
+		* 参见 [wysaid/xege pull request 16](https://github.com/wysaid/xege/pull/16) 。
 * 添加小键盘符号键的键码。
 	* 参见 [wysaid/xege pull request 17](https://github.com/wysaid/xege/pull/17) 。
 * 确保函数 `setcolor` 和 `setlinestyle` 忽略颜色 alpha 分量。
