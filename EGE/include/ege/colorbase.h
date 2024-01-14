@@ -42,21 +42,16 @@ RGBTOBGR(color_int_t color) ynothrow
 }
 
 yconstfn color_int_t
-EGERGB(MonoType r, MonoType g, MonoType b) ynothrow
-{
-	return color_int_t(r << 16) | color_int_t(g << 8) | color_int_t(b);
-}
-
-yconstfn color_int_t
 EGERGBA(MonoType r, MonoType g, MonoType b, AlphaType a) ynothrow
 {
-	return EGERGB(r, g, b) | a << 24;
+	return
+		color_int_t(r << 16) | color_int_t(g << 8) | color_int_t(b) | a << 24;
 }
 
 yconstfn color_int_t
 EGEARGB(AlphaType a, MonoType r, MonoType g, MonoType b) ynothrow
 {
-	return EGERGB(r, g, b) | a << 24;
+	return ege::EGERGBA(r, g, b, a);
 }
 
 yconstfn color_int_t
@@ -69,6 +64,12 @@ yconstfn color_int_t
 EGECOLORA(AlphaType a, color_int_t color) ynothrow
 {
 	return (color & 0xFFFFFF) | (a << 24);
+}
+
+yconstfn color_int_t
+EGERGB(MonoType r, MonoType g, MonoType b) ynothrow
+{
+	return EGERGBA(r, g, b, 0xFF);
 }
 
 yconstfn MonoType

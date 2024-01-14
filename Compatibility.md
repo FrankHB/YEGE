@@ -66,6 +66,9 @@
 		* 因为当前 `MonoType` 和 `AlphaType` 都是 `octet` 的别名，不影响用户源代码和目标代码的兼容性。
 	* 添加函数 `ARGBTOZBGR` 。
 		* 参见 [wysaid/xege pull request 29](https://github.com/wysaid/xege/pull/29) ；此处不是宏而是函数。
+	* 设置函数 `EGERGB` 的结果 alpha 值为 `0xFF` 。
+		* 这和 `YSLib::Drawing::Color` 仅使用 RGB 值初始化的行为一致。
+		* 另见 [wysaid/xege pull request 29](https://github.com/wysaid/xege/pull/29) 。
 * 函数 `clearviewport` 使用背景颜色填充。
 	* 参见 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 。
 * 修复函数 `getch` 阻塞不返回（自从 19.01 ）。
