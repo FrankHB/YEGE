@@ -1,4 +1,4 @@
-﻿#include "ege/gapi.h"
+﻿#include "ege/gapi.h" // for ARGBTOZBGR;
 #include "global.h"
 #include "image.h"
 #include <utility> // for std::swap;
@@ -175,7 +175,7 @@ setlinestyle(int linestyle, unsigned short upattern, int thickness, IMAGE* pimg)
 		img.m_linewidth = float(thickness);
 		img.m_linestyle.linestyle = linestyle;
 		img.m_linestyle.upattern = upattern;
-		update_ls_pen(h_dc, RGBTOBGR(color_int_t(img.m_color)) & 0x00FFFFFF,
+		update_ls_pen(h_dc, ARGBTOZBGR(color_int_t(img.m_color)),
 			static_cast<unsigned long>(linestyle),
 			static_cast<unsigned long>(thickness), upattern);
 	}
@@ -282,7 +282,7 @@ setcolor(color_t color, IMAGE* pimg)
 
 	if(const auto h_dc = img.getdc())
 	{
-		const auto bgrcolor(RGBTOBGR(color_int_t(color)) & 0x00FFFFFF);
+		const auto bgrcolor(ARGBTOZBGR(color_int_t(color));
 
 		img.m_color = color;
 		update_ls_pen(h_dc, bgrcolor, static_cast<unsigned long>(
