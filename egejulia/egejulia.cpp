@@ -69,12 +69,15 @@ double col_r = 28, col_g = 16, col_b = 32;
 double col_ar = 0, col_ag = 0, col_ab = 128;
 
 const double gc_lb = log(2.0);
-double log2(double d)
+
+double
+log2(double d)
 {
 	return log(d) / gc_lb;
 }
 
-void InitLog()
+void
+InitLog()
 {
 	for(int i = 0; i < (18 * 18) * 32; ++i)
 	{
@@ -83,16 +86,20 @@ void InitLog()
 	}
 }
 
-int iterToColor(double iter)
+int
+iterToColor(double iter)
 {
-	return (int)(fabs(fmod(iter + 255, 510) - 255));
+	return int(std::fabs(std::fmod(iter + 255, 510) - 255));
 }
 
-COLORREF colorMap(COMPLEX z, int iteration)
+::COLORREF
+colorMap(COMPLEX z, int iteration)
 {
-	double r = z.re * z.re + z.im * z.im;
-	r = iteration + logmap[(int)(r * col_ins)];
-	return RGB(iterToColor(r * col_r + col_ar), iterToColor(r * col_g + col_ag), iterToColor(r * col_b + col_ab));
+	double r = iteration
+		+ logmap[int(double(z.re * z.re + z.im * z.im) * col_ins)];
+
+	return RGB(iterToColor(r * col_r + col_ar), iterToColor(r * col_g + col_ag),
+		iterToColor(r * col_b + col_ab));
 }
 
 int g_mi[BF_H][BF_W];
@@ -114,23 +121,30 @@ struct updatelist
 	::POINT m_list[2][1920 * 1920];
 	int nBeg, nLen;
 	int nLen_n;
+
 	updatelist()
 	{
 		clear();
 	}
-	void clear()
+
+	void
+	clear()
 	{
 		p = m_list[0];
 		pn = m_list[1];
 		nBeg = nLen = nLen_n = 0;
 	}
-	void push(int x, int y)
+
+	void
+	push(int x, int y)
 	{
 		pn[nLen_n].x = x;
 		pn[nLen_n].y = y;
 		++nLen_n;
 	}
-	int pop(int* x, int* y)
+
+	int
+	pop(int* x, int* y)
 	{
 		if(nBeg == nLen) return 0;
 		*x = p[nBeg].x;
@@ -138,7 +152,9 @@ struct updatelist
 		++nBeg;
 		return 1;
 	}
-	void swap()
+
+	void
+	swap()
 	{
 		nBeg = 0;
 		nLen = nLen_n;
@@ -152,29 +168,32 @@ updatelist& g_udlist = *g_pudlist;
 state* g_st = {};
 
 
-void addpoint(int x, int y, int = -1)
+void
+addpoint(int x, int y, int = -1)
 {
-	if(x < 0 || x >= BF_W || y < 0 || y >= BF_H) return;
+	if(x < 0 || x >= BF_W || y < 0 || y >= BF_H)
+		return;
 	if(pMap[y][x].ed == 0)
-	{
 		g_udlist.push(x, y);
-	}
 }
 
-void jaddpoint(int x, int y, int = -1)
+void
+jaddpoint(int x, int y, int = -1)
 {
-	if(x < 0 || x >= g_w || y < 0 || y >= g_h) return;
+	if(x < 0 || x >= g_w || y < 0 || y >= g_h)
+		return;
 	if(g_st[y * g_w + x].ed == 0)
-	{
 		g_udlist.push(x, y);
-	}
 }
 
-int MandelbrotEx(state& z)
+int
+MandelbrotEx(state& z)
 {
-	if(z.iter >= 64) return z.iter;
+	if(z.iter >= 64)
+		return z.iter;
 	int k = 64;
 	int b = k;
+
 	while(k > 0)
 	{
 		--k;
@@ -189,14 +208,17 @@ int MandelbrotEx(state& z)
 	return z.iter;
 }
 
-int kbmouhit()
+int
+kbmouhit()
 {
-	if(kbmsg()) return 1;
+	if(kbmsg())
+		return 1;
 	//return kbhit() || MouseHit();
 	return 0;
 }
 
-int MDraw(double fromx, double fromy, double tox, double toy)
+int
+MDraw(double fromx, double fromy, double tox, double toy)
 {
 	std::clock();
 
@@ -218,11 +240,11 @@ int MDraw(double fromx, double fromy, double tox, double toy)
 			}
 			if(p.ed == 0)
 			{
-				int k;
-				k = MandelbrotEx(p);
+				int k = MandelbrotEx(p);
+
 				if(p.ed)
 				{
-					ret++;
+					++ret;
 					{
 						addpoint(x, y - 1, k);
 						addpoint(x, y + 1, k);
@@ -238,11 +260,10 @@ int MDraw(double fromx, double fromy, double tox, double toy)
 					}// */
 				}
 				else
-				{
 					addpoint(x, y);
-				}
 			}
-			if(kbmouhit()) break;
+			if(kbmouhit())
+				break;
 		}
 	}
 	g_udlist.swap();
@@ -252,15 +273,18 @@ int MDraw(double fromx, double fromy, double tox, double toy)
 int g_updatepoint = 0;
 
 // 绘制 Julia Set
-int JDraw(COMPLEX c, double fromx, double fromy, double tox, double toy, double sr, double cr)
+int
+JDraw(COMPLEX c, double fromx, double fromy, double tox, double toy, double sr,
+	double cr)
 {
 	int ret = 0;
 	state* st = g_st - 1;
 	clock_t tt = std::clock();
+
 	g_updatepoint = 0;
-	for(int y = 0; y < g_h; y++)
+	for(int y = 0; y < g_h; ++y)
 	{
-		for(int x = 0; x < g_w; x++)
+		for(int x = 0; x < g_w; ++x)
 		{
 			++st;
 			if(st->ed)
@@ -273,6 +297,7 @@ int JDraw(COMPLEX c, double fromx, double fromy, double tox, double toy, double 
 			{
 				double re = fromx + (tox - fromx) * (x / (double)g_w);
 				double im = fromy + (toy - fromy) * (y / (double)g_h);
+
 				z.re = cr * re + sr * im;
 				z.im = sr * re - cr * im;
 			}
@@ -280,36 +305,29 @@ int JDraw(COMPLEX c, double fromx, double fromy, double tox, double toy, double 
 			{
 				//z = st->z;
 			}
-			st->iter++;
+			++st->iter;
 			{
 				z = z * z + c;
 				if(z.re * z.re + z.im * z.im > bilout)
-				{
 					st->ed = 1;
-				}
 			}
 			++ret;
 			if(st->ed)
 			{
-				COLORREF c = 0;
-				c = colorMap(z, st->iter);
-				putpixel(x, y, c);
+				putpixel(x, y, colorMap(z, st->iter));
 				g_updatepoint += 1;
 			}
 			else if(st->iter == 1)
 			{
-				COLORREF c = 0;
-				//c = colorMap(z, st->iter);
-				putpixel_f(x, y, c);
+			//	putpixel_f(x, y, colorMap(z, st->iter));
+				putpixel_f(x, y, 0);
 			}
 		}
 		if(std::clock() - tt > 10)
 		{
 			tt = std::clock();
 			if(kbmouhit())
-			{
 				return -1;
-			}
 		}
 	}
 	return ret;
@@ -346,9 +364,7 @@ int JDrawA(COMPLEX c, double, double, double, double)
 				ret ++;
 				if(p.ed)
 				{
-					COLORREF c = 0;
-					c = colorMap(p.z, k);
-					putpixel(x, y, c);
+					putpixel(x, y, colorMap(p.z, k));
 					g_updatepoint += 1;
 				}
 				else
@@ -397,11 +413,15 @@ int main()
 	g_h = getheight({});
 	g_st = (state*)malloc(g_w * g_h * sizeof(state));
 	COMPLEX c{0.262, 0.002}, z{0, 0};
-	double r = 1.5, d = g_w / (double)g_h, rotate = 0, sr = std::sin(rotate), cr = std::cos(rotate);
+	double r = 1.5, d = g_w / (double)g_h, rotate = 0,
+		sr = std::sin(rotate), cr = std::cos(rotate);
+
 	init_st(g_w, g_h);
+
 	int n_update = 0;
 	double ftime = fclock();
-	double dc = 64, dca = 128, db = 16;
+	const double dc = 64, dca = 128, db = 16;
+
 	col_r = randomf() * dc + db;
 	col_g = randomf() * dc + db;
 	col_b = randomf() * dc + db;
@@ -416,7 +436,8 @@ int main()
 
 		if(loop <= 4)
 		{
-			ret = JDraw(c, z.re - r * d, z.im - r, z.re + r * d, z.im + r, sr, cr);
+			ret = JDraw(c, z.re - r * d, z.im - r, z.re + r * d, z.im + r, sr,
+				cr);
 			if(loop == 4)
 			{
 				g_udlist.swap();
@@ -473,9 +494,6 @@ int main()
 						return 0;
 				}
 			}
-
-			double dc = 64, dca = 128, db = 16;
-
 			col_r = randomf() * dc + db;
 			col_g = randomf() * dc + db;
 			col_b = randomf() * dc + db;
