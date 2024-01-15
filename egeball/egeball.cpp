@@ -28,8 +28,7 @@ struct Obj
 	int color;
 
 	Obj()
-		: color(
-		EGEAGRAY(0xFF, hsv2rgb(random(10000) * 360.F / 10000, 1.F, 1.F)))
+		: color(hsv2rgb(random(10000) * 360.F / 10000, 1.F, 1.F))
 	{}
 
 	void
