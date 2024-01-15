@@ -12,6 +12,9 @@
 	* [`ege::ege_drawtext`](https://github.com/wysaid/xege/pull/20) 。
 * [wysaid/xege pull request 25](https://github.com/wysaid/xege/pull/25) 中的部分特性：
 	* 初始化选项 `INIT_UNICODE` ，可由使用者选择创建 Unicode 窗口。
+* [wysaid/xege pull request 29](https://github.com/wysaid/xege/pull/29) 中的部分特性：
+	* 移除宏 `RGBTOBGR` 。
+		* YEGE 在命名空间 `ege` 保留同名函数。
 
 　　以下 [wysaid/xege](https://github.com/wysaid/xege) 特性具有类似但不同的设计和实现：
 
