@@ -581,8 +581,8 @@ saveimagetofile(const IMAGE* pimg, std::FILE* fp)
 	{
 		for(x = 0; x < SPos(width); ++x)
 		{
-			unsigned long col = img.getbuffer()[SDst(y) * width + SDst(x)];
-			//col = RGBTOBGR(col);
+			const auto col(img.getbuffer()[SDst(y) * width + SDst(x)]);
+
 			if(std::fwrite(&col, 3, 1, fp) < 1)
 				goto ERROR_BREAK;
 		}
