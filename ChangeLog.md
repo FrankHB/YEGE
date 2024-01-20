@@ -15,6 +15,8 @@
 * [wysaid/xege pull request 29](https://github.com/wysaid/xege/pull/29) 中的部分特性：
 	* 移除宏 `RGBTOBGR` 。
 		* YEGE 在命名空间 `ege` 保留同名函数。
+* [wysaid/xege pull request 82](https://github.com/wysaid/xege/pull/82) 中的部分特性：
+	* 函数 `resize_f` 。
 
 　　以下 [wysaid/xege](https://github.com/wysaid/xege) 特性具有类似但不同的设计和实现：
 
@@ -24,7 +26,10 @@
 * [部分重构 `IMAGE` 类](https://github.com/wysaid/xege/pull/28)。
 	* 对[相关初始化问题的修复](https://github.com/wysaid/xege/issues/2)仍然在逻辑上存在缺陷。
 		* YEGE 重构的方式不同，不支持初始化前使用资源。
-
+	* 调整大小的具有不同的作用（对函数 `resize` 可见）：
+		* [wysaid/xege 修改不初始化背景](https://github.com/wysaid/xege/commit/16cfad18cc847e7c525975c1f060a1bf0b18b9f8)，但[之后又被撤销](https://github.com/wysaid/xege/pull/82)。
+		* YEGE 调整对应大小时使用 `ScreenBuffer` ，内容未指定。
+		
 # 版本历史
 
 ## 主分支版本
