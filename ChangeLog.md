@@ -8,15 +8,34 @@
 
 　　以下 [wysaid/xege](https://github.com/wysaid/xege) 特性在当前设计中没有计划支持：
 
-* 新增带有不同字符串参数的 API ：
-	* [`ege::ege_drawtext`](https://github.com/wysaid/xege/pull/20) 。
-* [wysaid/xege pull request 25](https://github.com/wysaid/xege/pull/25) 中的部分特性：
-	* 初始化选项 `INIT_UNICODE` ，可由使用者选择创建 Unicode 窗口。
+* 新增 API ：
+	* 带有不同字符串参数的[函数 `ege_drawtext`](https://github.com/wysaid/xege/pull/20) 。
+	* [wysaid/xege pull request 25](https://github.com/wysaid/xege/pull/25) 中的部分特性：
+		* 初始化选项 `INIT_UNICODE` ，可由使用者选择创建 Unicode 窗口。
+		* 函数 `w2mb` 。
+	* [wysaid/xege pull request 32](https://github.com/wysaid/xege/pull/32) 中的特性：
+		* 函数 `mb2w` 。
+	* [wysaid/xege pull request 82](https://github.com/wysaid/xege/pull/82) 中的部分特性：
+		* 函数 `resize_f` 。
 * [wysaid/xege pull request 29](https://github.com/wysaid/xege/pull/29) 中的部分特性：
 	* 移除宏 `RGBTOBGR` 。
 		* YEGE 在命名空间 `ege` 保留同名函数。
-* [wysaid/xege pull request 82](https://github.com/wysaid/xege/pull/82) 中的部分特性：
-	* 函数 `resize_f` 。
+* [检查函数 `getimage` 的参数](https://github.com/wysaid/xege/pull/35)。
+	* YEGE 使用仅在调试模式生效的断言。
+* 不同的构建环境：
+	* [使用 CMake 作为构建系统](https://github.com/wysaid/xege/pull/10)。
+	* 基于自动配置检查的[选择性构建](https://github.com/wysaid/xege/commit/29808044ffac17cf1c2271609fb8a64816bd5f0d)。
+	* [持续集成](https://github.com/wysaid/xege/pull/38)。
+
+　　以下 [wysaid/xege](https://github.com/wysaid/xege) 特性在当前设计中暂不支持，可能会在以后支持：
+
+* [wysaid/xege pull request 21](https://github.com/wysaid/xege/pull/21) 中的部分特性：
+	* 支持[加载资源中 PNG 文件](https://github.com/wysaid/xege/pull/21/commits/eaba380a3b07d46263090a7e5064571ffc5af8d7)。
+* [wysaid/xege pull request 22](https://github.com/wysaid/xege/pull/22) 和 [wysaid/xege pull request 23](https://github.com/wysaid/xege/pull/23) 中的特性。
+* [wysaid/xege pull request 25](https://github.com/wysaid/xege/pull/25) 中的部分特性：
+	* 函数 `seticon` 支持通过传入图标资源 ID 设置 EGE 窗口图标。
+	* 允许在函数 `initgraph` 之前调用函数 `setcaption` 或 `seticon` 。
+* [wysaid/xege pull request 33](https://github.com/wysaid/xege/pull/33) 中的特性。
 
 　　以下 [wysaid/xege](https://github.com/wysaid/xege) 特性具有类似但不同的设计和实现：
 
@@ -29,7 +48,10 @@
 	* 调整大小的具有不同的作用（对函数 `resize` 可见）：
 		* [wysaid/xege 修改不初始化背景](https://github.com/wysaid/xege/commit/16cfad18cc847e7c525975c1f060a1bf0b18b9f8)，但[之后又被撤销](https://github.com/wysaid/xege/pull/82)。
 		* YEGE 调整对应大小时使用 `ScreenBuffer` ，内容未指定。
-		
+* [wysaid/xege pull request 34](https://github.com/wysaid/xege/pull/34) 中的特性和对 BGI 兼容的[函数 `initgraph` 重载的参数类型 `char*` 修改为 `const char*`](https://github.com/wysaid/xege/commit/85d841ffc03496ae7fb71e75ae33199c6687f3c2) ：
+	* 因为 YEGE 不支持 BGI 函数重载，没有需要修复的初始化行为。
+	* YEGE 不使用 `-1` 作为模式（使用 `-1` 作为模式可能会影响初始化状态，未在 wysaid/xege 文档中说明）；这也[在之后被撤销](https://github.com/wysaid/xege/commit/85d841ffc03496ae7fb71e75ae33199c6687f3c2)。
+
 # 版本历史
 
 ## 主分支版本
@@ -125,6 +147,7 @@
 * 更新默认窗口标题。
 * [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 中的宏 `EGEALPHABLEND` 实现为内部函数。
 * 未定义行为断言失败，不保证终止程序外的具体行为，可能[有不同的实现](https://github.com/wysaid/xege/pull/35)。
+* [wysaid/xege pull request 36](https://github.com/wysaid/xege/pull/36) 中的宏 `INITGRAPH(x, y)` 和 `INITGRAPH3(x, y, f)` 自从 14.01 已被移除。
 
 ### 实现质量
 
