@@ -464,16 +464,17 @@ graphics_errors
 IMAGE::getimage_b(void* p_pic)
 {
 	auto& pic(*static_cast<::IPicture*>(p_pic));
-	auto& img(get_pages().get_target_ref());
 	long lWidth, lHeight;
-	long lWidthPixels, lHeightPixels;
 
 	pic.get_Width(&lWidth);
-	lWidthPixels
-		= ::MulDiv(lWidth, ::GetDeviceCaps(img.m_hDC, LOGPIXELSX), 2540);
 	pic.get_Height(&lHeight);
-	lHeightPixels
-		= ::MulDiv(lHeight, ::GetDeviceCaps(img.m_hDC, LOGPIXELSY), 2540);
+
+	const auto sdc(::GetDC({}));
+	const long lWidthPixels(::MulDiv(lWidth, ::GetDeviceCaps(sdc, LOGPIXELSX),
+		2540)), lHeightPixels(
+		::MulDiv(lHeight, ::GetDeviceCaps(sdc, LOGPIXELSY), 2540));
+
+	::ReleaseDC({}, sdc);
 	Resize(lWidthPixels, lHeightPixels);
 	pic.Render(m_hDC, 0, 0, lWidthPixels, lHeightPixels, 0, lHeight,
 		lWidth, -lHeight, {});

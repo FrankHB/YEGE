@@ -108,6 +108,9 @@
 	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
 * 修复函数 `setlinestyle` 、`setfillstyle` 、`setcolor` 、`setbkcolor` 、`setbkcolor_f` 、`setfontbkcolor` 、`floodfill` 和 `floodfillsurface` 的实现没有忽略 alpha 值。	
 	* 参见 [wysaid/xege pull request 29](https://github.com/wysaid/xege/pull/29) 。
+* 函数 `getimage` 支持在通过函数 `initgraph` 初始化前调用。
+	* 参见 [wysaid/xege pull request 41](https://github.com/wysaid/xege/pull/41) 。
+	* 使用 YEGE 时实现已支持调用。
 
 　　兼容实现调整：
 
