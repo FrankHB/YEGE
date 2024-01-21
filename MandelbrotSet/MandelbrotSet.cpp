@@ -581,7 +581,7 @@ main()
 	//IMAGE img_def, img_ms;
 	//img_def.getimage(0, 0, w, h);
 
-	for(;;)
+	while(true)
 	{
 		int bmsg = 0;
 

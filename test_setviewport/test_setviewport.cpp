@@ -8,12 +8,12 @@ int main()
 	initgraph(400, 300);
 	setfont(24, 12, "宋体");
 
-	char str[] = "滚动字幕示例，Hello EGE !! Welcome to graphics programming !!!!!!~~~~~~";
+	const char str[] = "滚动字幕示例，Hello EGE !! Welcome to graphics programming !!!!!!~~~~~~";
 	int w = textwidth(str);        //记录下字幕的完整宽度
 	int view_x = 100, view_w = 200; //设置可见区的位置和大小（只要x方向）
 	int t = std::clock(), roll_time = 10000; //记录下起始时间，和滚动完所需要的时间
 
-	for(;;delay_fps(60))
+	while(true)
 	{
 		int nt = std::clock(); //取得当前时间，nt-t就是时间差，(nt-t) / roll_time 就是当前时间应该滚动的比例
 
@@ -30,5 +30,6 @@ int main()
 			outtextxy(view_w - (w + view_w) * (nt - t) / roll_time, 0, str);
 			setviewport(0, 0, 400, 300); //还原绘图区
 		}
+		delay_fps(60);
 	}
 }
