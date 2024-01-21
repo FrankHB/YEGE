@@ -107,6 +107,24 @@
 * 内部头文件 `<ege/base.h>` 不再包含 `<ege/colorbase.h>` 。
 * 更新默认窗口标题和格式，用空格分隔字符串，支持 G++ 和 Clang++（新增）。
 
+　　以下 [wysaid/xege](https://github.com/wysaid/xege) 特性具有类似但不同的设计和实现：
+
+* [将 `EgeControlBase` 移出 `ege.h`](https://github.com/wysaid/xege/pull/24) 。
+	* YEGE 中已在不同的头文件。
+	* 因为其它被间接包含的头文件也不在 `ege.h` 中，仍需 `ege/` ，YEGE 不支持单独分发 `ege.h` 。
+* [部分重构 `IMAGE` 类](https://github.com/wysaid/xege/pull/28)。
+	* 对[相关初始化问题的修复](https://github.com/wysaid/xege/issues/2)仍然在逻辑上存在缺陷。
+		* YEGE 重构的方式不同，不支持初始化前使用资源。
+	* 调整大小的具有不同的作用（对函数 `resize` 可见）：
+		* [wysaid/xege 修改不初始化背景](https://github.com/wysaid/xege/commit/16cfad18cc847e7c525975c1f060a1bf0b18b9f8)，但[之后又被撤销](https://github.com/wysaid/xege/pull/82)。
+		* YEGE 调整对应大小时使用 `ScreenBuffer` ，内容未指定。
+	* `IMAGE::getimage` 中的[编码转换](https://github.com/wysaid/xege/pull/32/commits/9c21257c221e121c6e3672134033ad8a61d10491#diff-3cc33c19b2f83be364b2b42d7fe2ccc7c1d6f32a78d5f963400a28f81696221f)。
+		* YEGE 使用 `ege::MBCSToWCS` 实现 `IMAGE::getimage` 中的编码转换。
+		* 设置窗口标题的实现暂不调整。
+* [wysaid/xege pull request 34](https://github.com/wysaid/xege/pull/34) 中的特性和对 BGI 兼容的[函数 `initgraph` 重载的参数类型 `char*` 修改为 `const char*`](https://github.com/wysaid/xege/commit/85d841ffc03496ae7fb71e75ae33199c6687f3c2) ：
+	* 因为 YEGE 不支持 BGI 函数重载，没有需要修复的初始化行为。
+	* YEGE 不使用 `-1` 作为模式（使用 `-1` 作为模式可能会影响初始化状态，未在 wysaid/xege 文档中说明）；这也[在之后被撤销](https://github.com/wysaid/xege/commit/85d841ffc03496ae7fb71e75ae33199c6687f3c2)。
+
 ### 实现质量
 
 　　EGE 库中加入 `-Wnon-virtual-dtor -Wshadow -Wredundant-decls -Wcast-align -Wmissing-declarations -pedantic-errors -Wextra -Wall -Wctor-dtor-privacy -Wconditionally-supported -Wdeprecated -Wdeprecated-declarations -Wformat=2 -Wno-format-nonliteral -Winvalid-pch -Wlogical-op -Wmissing-include-dirs -Wmultichar -Woverloaded-virtual -Wpacked -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstringop-overflow=0 -Wsuggest-attribute=noreturn -Wtrampolines -Wzero-as-null-pointer-constant` 保证无错误和警告。
