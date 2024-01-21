@@ -72,7 +72,15 @@ See [the change log](ChangeLog.md) (zh-CN) for details about modification of fea
 
 　　当前只提供有限的文档，暂不包含 API 文档。
 
-　　关于 API ，可参照 [EGE 手册](http://xege.org/manual/)，对照[更新日志](ChangeLog.md)中关于不兼容改动的说明。
+## 接口约定
+
+　　头文件中，被 `<ege.h>` 包含的 `ege` 目录下的文件是内部同文件，其文件名和内容 EGE 不保证兼容，不提供隐含的相互包含保证。
+
+　　具体 EGE API 可通过这些头文件提供。不指定具体 API 通过 `ege` 目录中的哪些 API 提供。
+
+　　可在命名空间中提供的 API 声明都在 `namespace ege` 中，只有 BGI 兼容头文件 `graphics.h` 同时在全局命名空间中引入声明。
+
+　　关于具体 API ，可参照 [EGE 手册](http://xege.org/manual/)，对照[更新日志](ChangeLog.md)中关于不兼容改动的说明。
 
 # 设计计划
 
