@@ -178,6 +178,7 @@
 
 * 修改 `egeball` 中的颜色，使之更具有饱和度。
 	* 参见 [wysaid/xege 的类似修改](https://github.com/wysaid/xege/commit/a0ed0e9218768eeb0826ca5226cce1c102863cec)。
+* 修复 `tutorial` 源代码具有的保留名称。
 
 ## 19.01
 
