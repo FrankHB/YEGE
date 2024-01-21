@@ -455,7 +455,7 @@ int main()
 
 #include <map>
 
-template <typename str_t>
+template<typename str_t>
 class IniParser
 {
 public:

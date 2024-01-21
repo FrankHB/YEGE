@@ -322,7 +322,7 @@ public:
 	 *
 	 * @return 回调函数指针；若未设置，返回 nullptr
 	 */
-	template <typename T>
+	template<typename T>
 	T callback() const
 	{
 		return _on_click;
