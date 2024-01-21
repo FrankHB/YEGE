@@ -19,7 +19,7 @@
 #define SC_W (640 * 2) //1280
 #define SC_H (480 * 2) //960
 
-#define for if(1) for
+#define for if(true) for
 
 
 // 定义复数及乘、加运算
@@ -613,54 +613,51 @@ DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int = 0)
 
 				if(p.ed)
 				{
-					if(1)
+#if true
+					if(x == 0)
+						;//addpoint(x+1, y, k);
+					else if(pMap[y][x - 1].ed && pMap[y][x - 1].nIter != k)
 					{
-						if(x == 0)
-							;//addpoint(x+1, y, k);
-						else if(pMap[y][x - 1].ed && pMap[y][x - 1].nIter != k)
-						{
-							addpoint(x  , y - 1, k);
-							addpoint(x - 1, y - 1, k);
-							addpoint(x  , y + 1, k);
-							addpoint(x - 1, y + 1, k);
-						}
-						if(x + 1 == SC_W)
-						{
-							//addpoint(x-1, y, k);
-						}
-						else if(pMap[y][x + 1].ed && pMap[y][x + 1].nIter != k)
-						{
-							addpoint(x  , y - 1, k);
-							addpoint(x + 1, y - 1, k);
-							addpoint(x  , y + 1, k);
-							addpoint(x + 1, y + 1, k);
-						}
-						if(y == 0)
-							;//addpoint(x, y+1, k);
-						else if(pMap[y - 1][x].ed && pMap[y - 1][x].nIter != k)
-						{
-							addpoint(x - 1, y - 1, k);
-							addpoint(x - 1, y  , k);
-							addpoint(x + 1, y - 1, k);
-							addpoint(x + 1, y  , k);
-						}
-						if(y + 1 == SC_H)
-							;//addpoint(x, y-1, k);
-						else if(pMap[y + 1][x].ed && pMap[y + 1][x].nIter != k)
-						{
-							addpoint(x - 1, y + 1, k);
-							addpoint(x - 1, y  , k);
-							addpoint(x + 1, y + 1, k);
-							addpoint(x + 1, y  , k);
-						}
+						addpoint(x  , y - 1, k);
+						addpoint(x - 1, y - 1, k);
+						addpoint(x  , y + 1, k);
+						addpoint(x - 1, y + 1, k);
 					}
-					else
+					if(x + 1 == SC_W)
 					{
-						addpoint(x, y - 1, k);
-						addpoint(x, y + 1, k);
-						addpoint(x - 1, y, k);
-						addpoint(x + 1, y, k);
+						//addpoint(x-1, y, k);
 					}
+					else if(pMap[y][x + 1].ed && pMap[y][x + 1].nIter != k)
+					{
+						addpoint(x  , y - 1, k);
+						addpoint(x + 1, y - 1, k);
+						addpoint(x  , y + 1, k);
+						addpoint(x + 1, y + 1, k);
+					}
+					if(y == 0)
+						;//addpoint(x, y+1, k);
+					else if(pMap[y - 1][x].ed && pMap[y - 1][x].nIter != k)
+					{
+						addpoint(x - 1, y - 1, k);
+						addpoint(x - 1, y  , k);
+						addpoint(x + 1, y - 1, k);
+						addpoint(x + 1, y  , k);
+					}
+					if(y + 1 == SC_H)
+						;//addpoint(x, y-1, k);
+					else if(pMap[y + 1][x].ed && pMap[y + 1][x].nIter != k)
+					{
+						addpoint(x - 1, y + 1, k);
+						addpoint(x - 1, y  , k);
+						addpoint(x + 1, y + 1, k);
+						addpoint(x + 1, y  , k);
+					}
+#else
+					addpoint(x, y - 1, k);
+					addpoint(x, y + 1, k);
+					addpoint(x - 1, y, k);
+					addpoint(x + 1, y, k);
+#endif
 					g_b_update_mark += 1;
 					putpixel_f(x, y, Color[k & COLORMASK]);
 				}
@@ -676,9 +673,10 @@ DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int = 0)
 		}
 	}
 	//else
-	if(0)
+#if false
 	{
 		int x, y;
+
 		while(g_udlist.pop(&x, &y))
 		{
 			PIXEL& p = pMap[y][x];
@@ -718,6 +716,7 @@ DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy, int = 0)
 			}
 		}
 	}
+#endif
 	g_udlist.swap();
 	return 0;
 }

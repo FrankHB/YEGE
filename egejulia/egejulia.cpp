@@ -463,13 +463,14 @@ int main()
 			++n_update;
 		else
 			n_update = 0;
-		if(0)
+#if false
 		{
 			char str[500];
 
 			std::sprintf(str, "%d %d %f %f", g_w, g_h, r, d);
 			outtextxy(0, 0, str);
 		}
+#endif
 		if(ret == 0 || n_update > 8 || loop > 1000)
 		{
 			loop = 0;

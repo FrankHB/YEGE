@@ -16,7 +16,7 @@
 #define SC_W 640
 #define SC_H 480
 
-#define for if(1) for
+#define for if(true) for
 
 
 // 定义复数及乘、加运算
