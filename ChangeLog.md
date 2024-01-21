@@ -95,11 +95,11 @@
 * 合并部分重复的实现。
 * 重命名部分内部实现使用的宏。
 	* 参见 [wysaid/xege pull request 26](https://github.com/wysaid/xege/pull/26) 。
-* 更新默认窗口标题。
 * [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 中的宏 `EGEALPHABLEND` 实现为内部函数。
 * 未定义行为断言失败，不保证终止程序外的具体行为，可能[有不同的实现](https://github.com/wysaid/xege/pull/35)。
 * [wysaid/xege pull request 36](https://github.com/wysaid/xege/pull/36) 中的宏 `INITGRAPH(x, y)` 和 `INITGRAPH3(x, y, f)` 自从 14.01 已被移除。
 * 内部头文件 `<ege/base.h>` 不再包含 `<ege/colorbase.h>` 。
+* 更新默认窗口标题和格式，用空格分隔字符串，支持 G++ 和 Clang++（新增）。
 
 ### 实现质量
 

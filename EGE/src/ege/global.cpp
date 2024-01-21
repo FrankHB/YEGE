@@ -13,16 +13,24 @@
 #include <winbase.h> // for ::EnumResourceNamesW;
 
 #ifdef _WIN64
-#define ARCH L"x64"
+#	define EGE_ARCH L"x64"
 #else
-#define ARCH L"x86"
+#	define EGE_ARCH L"x86"
 #endif
 
 #define EGE_TOSTR_(x) #x
 #define EGE_TOSTR(x) EGE_TOSTR_(x)
-#define GCC_VER EGE_TOSTR(__GNUC__) L"." EGE_TOSTR(__GNUC_MINOR__) L"." EGE_TOSTR(__GNUC_PATCHLEVEL__)
-
-#define EGE_TITLE L"yEGE19.01+ GCC" GCC_VER ARCH
+#define EGE_VERSION L"19.01+"
+#ifdef __clang__
+#	define EGE_CXX "Clang++"
+#	define EGE_CXX_VER EGE_TOSTR(__clang_major__) "." \
+	EGE_TOSTR(__clang_minor__) "." EGE_TOSTR(__clang_patchlevel__)
+#else
+#	define EGE_CXX "G++"
+#	define EGE_CXX_VER EGE_TOSTR(__GNUC__) "." EGE_TOSTR(__GNUC_MINOR__) "." \
+	EGE_TOSTR(__GNUC_PATCHLEVEL__)
+#endif
+#define EGE_TITLE L"yEGE " EGE_VERSION " " EGE_CXX " " EGE_CXX_VER " " EGE_ARCH
 
 namespace ege
 {
