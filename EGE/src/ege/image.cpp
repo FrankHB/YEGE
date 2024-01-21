@@ -8,10 +8,8 @@
 #include "ege/gapi.h"
 #include "ege/gapi_aa.h"
 #include "ege/img.h"
-#if YEGE_Use_YSLib
-#	include YFM_Win32_YCLib_NLS // for platform_ex::MBCSToWCS,
-//	platform_ex::WCSToMBCS;
-#else
+#include "ege/windows.h" // for ege::MBCSToWCS;
+#if !YEGE_Use_YSLib
 #	include <ocidl.h>
 #	include <olectl.h>
 #	include <png.h>
@@ -360,12 +358,14 @@ IMAGE::getimage(void* pMem, unsigned long dwSize)
 	return grIOerror;
 #endif
 }
-#if YEGE_Use_YSLib
 graphics_errors
 IMAGE::getimage(const char* filename)
 {
-	return getimage(platform_ex::MBCSToWCS(filename).c_str());
+	if(getimage_pngfile(this, filename) == 0)
+		return grOk;
+	return getimage(ege::MBCSToWCS(filename).c_str());
 }
+#if YEGE_Use_YSLib
 graphics_errors
 IMAGE::getimage(const wchar_t* filename)
 {
@@ -379,17 +379,6 @@ IMAGE::getimage(const wchar_t* filename)
 	return grIOerror;
 }
 #else
-graphics_errors
-IMAGE::getimage(const char* filename)
-{
-	if(getimage_pngfile(this, filename) == 0)
-		return grOk;
-
-	wchar_t wszPath[MAX_PATH * 2 + 1];
-
-	::MultiByteToWideChar(CP_ACP, 0, filename, -1, wszPath, MAX_PATH * 2);
-	return getimage(wszPath);
-}
 graphics_errors
 IMAGE::getimage(const wchar_t* filename)
 {
@@ -523,7 +512,7 @@ IMAGE::putimage(int dstX, int dstY, unsigned long dwRop) const
 int
 IMAGE::saveimage(const char* filename, ImageFormat fmt) const
 {
-	return saveimage(platform_ex::MBCSToWCS(filename).c_str(), fmt);
+	return saveimage(ege::MBCSToWCS(filename).c_str(), fmt);
 }
 int
 IMAGE::saveimage(const wchar_t* filename, ImageFormat fmt) const

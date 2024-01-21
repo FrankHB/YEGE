@@ -95,7 +95,7 @@ See [the change log](ChangeLog.md) (zh-CN) for details about modification of fea
 	* [wysaid/xege pull request 25](https://github.com/wysaid/xege/pull/25) 中的部分特性：
 		* 初始化选项 `INIT_UNICODE` ，可由使用者选择创建 Unicode 窗口。
 		* 函数 `w2mb` 。
-	* [wysaid/xege pull request 32](https://github.com/wysaid/xege/pull/32) 中的特性：
+	* [wysaid/xege pull request 32](https://github.com/wysaid/xege/pull/32) 中的部分特性：
 		* 函数 `mb2w` 。
 	* [wysaid/xege pull request 82](https://github.com/wysaid/xege/pull/82) 中的部分特性：
 		* 函数 `resize_f` 。
@@ -130,6 +130,7 @@ See [the change log](ChangeLog.md) (zh-CN) for details about modification of fea
 	* 调整大小的具有不同的作用（对函数 `resize` 可见）：
 		* [wysaid/xege 修改不初始化背景](https://github.com/wysaid/xege/commit/16cfad18cc847e7c525975c1f060a1bf0b18b9f8)，但[之后又被撤销](https://github.com/wysaid/xege/pull/82)。
 		* YEGE 调整对应大小时使用 `ScreenBuffer` ，内容未指定。
+	* `IMAGE::getimage` 中的[编码转换](https://github.com/wysaid/xege/pull/32/commits/9c21257c221e121c6e3672134033ad8a61d10491#diff-3cc33c19b2f83be364b2b42d7fe2ccc7c1d6f32a78d5f963400a28f81696221f)。
 * [wysaid/xege pull request 34](https://github.com/wysaid/xege/pull/34) 中的特性和对 BGI 兼容的[函数 `initgraph` 重载的参数类型 `char*` 修改为 `const char*`](https://github.com/wysaid/xege/commit/85d841ffc03496ae7fb71e75ae33199c6687f3c2) ：
 	* 因为 YEGE 不支持 BGI 函数重载，没有需要修复的初始化行为。
 	* YEGE 不使用 `-1` 作为模式（使用 `-1` 作为模式可能会影响初始化状态，未在 wysaid/xege 文档中说明）；这也[在之后被撤销](https://github.com/wysaid/xege/commit/85d841ffc03496ae7fb71e75ae33199c6687f3c2)。
