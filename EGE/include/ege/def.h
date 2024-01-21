@@ -26,6 +26,8 @@ using ystdex::octet;
 #define YPP_Comma ,
 #define YPP_Concat(_x, _y) _x ## _y
 
+#	define YB_ATTR_nodiscard
+
 #	if __GNUC__
 #		define YB_EXPECT(_expr, _constant) (__builtin_expect(_expr, _constant))
 #		define YB_LIKELY(_expr) (__builtin_expect(bool(_expr), 1))
@@ -35,6 +37,8 @@ using ystdex::octet;
 #		define YB_LIKELY(_expr) (_expr)
 #		define YB_UNLIKELY(_expr) (_expr)
 #	endif
+
+#	define YB_NONNULL(...) 
 
 #	define yconstfn constexpr
 #	define yconstexpr constexpr

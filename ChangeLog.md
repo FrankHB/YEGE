@@ -84,6 +84,9 @@
 	* 参见 [wysaid/xege pull request 41](https://github.com/wysaid/xege/pull/41) 。
 	* 使用 YEGE 时实现已支持调用。
 * 修复不使用 YSLib 时头文件 `<ege/def.h>` 遗漏包含 `<climits>`（自从 19.01 ） 。
+* 不使用 YSLib 时提供和 YBase 兼容的宏（空实现）：
+	* `YB_ATTR_nodiscard`。
+	* `YB_NONNULL(...)` 。
 
 　　兼容实现调整：
 
