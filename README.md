@@ -78,6 +78,8 @@ See [the change log](ChangeLog.md) (zh-CN) for details about modification of fea
 
 　　具体 EGE API 可通过这些头文件提供。不指定具体 API 通过 `ege` 目录中的哪些 API 提供。
 
+　　`EGE` 起始的标识符和命名空间 `ege` 被保留。
+
 　　可在命名空间中提供的 API 声明都在 `namespace ege` 中，只有 BGI 兼容头文件 `graphics.h` 同时在全局命名空间中引入声明。
 
 　　关于具体 API ，可参照 [EGE 手册](http://xege.org/manual/)，对照[更新日志](ChangeLog.md)中关于不兼容改动的说明。
