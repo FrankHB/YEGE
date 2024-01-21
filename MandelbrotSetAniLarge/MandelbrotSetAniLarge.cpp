@@ -27,7 +27,7 @@
 
 #if false
 // ¶¨Òå¸´Êý
-template<class TFLOAT>
+template<typename TFLOAT>
 struct complex
 {
 	TFLOAT re;
