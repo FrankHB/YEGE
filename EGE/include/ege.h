@@ -21,7 +21,7 @@
 #include "ege/random.h"
 #include "ege/fpsbase.h"
 
-#if 0
+#if false
 #include "ege/button.h"
 #include "ege/fps.h"
 #include "ege/label.h"

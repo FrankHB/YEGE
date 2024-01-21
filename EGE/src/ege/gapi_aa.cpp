@@ -285,7 +285,7 @@ ege_puttexture(const IMAGE* srcimg, ege_rect dest, ege_rect src, IMAGE* pimg)
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img.m_aa)
 			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-#if 0
+#if false
 		Gdiplus::ImageAttributes ia;
 		Gdiplus::ColorMatrix mx{
 			{

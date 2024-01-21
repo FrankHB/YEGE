@@ -22,7 +22,7 @@
 // 定义复数及乘、加运算
 
 
-#if 0
+#if false
 // 定义复数
 template <class TFLOAT>
 struct complex
@@ -631,7 +631,7 @@ int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy)
 			k = MandelbrotEx(p);
 			if(p.ed)
 			{
-#if 1
+#if true
 				if(x == 0)
 					; //addpoint(x+1, y, k);
 				else if(pMap[y][x - 1].ed && pMap[y][x - 1].nIter != k)

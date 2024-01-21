@@ -104,7 +104,7 @@ gettarget()
 	return get_pages().get_target_set();
 }
 
-#if 0
+#if false
 void
 swappage()
 {
@@ -250,7 +250,7 @@ getcolor(const IMAGE* pimg)
 	if(img.getdc())
 	{
 		return img.m_color;
-#if 0
+#if false
 		::HPEN hpen_c = (::HPEN)::GetCurrentObject(img.getdc(), OBJ_PEN);
 		::LOGPEN logPen;
 		GetObject(hpen_c, sizeof(logPen), &logPen);

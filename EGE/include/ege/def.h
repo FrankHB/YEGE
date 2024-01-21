@@ -2,7 +2,7 @@
 #define Inc_ege_def_h_
 
 #ifndef YEGE_Use_YSLib
-#	define YEGE_Use_YSLib 0
+#	define YEGE_Use_YSLib false
 #endif
 
 #if YEGE_Use_YSLib

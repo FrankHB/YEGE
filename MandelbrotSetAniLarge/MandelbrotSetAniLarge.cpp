@@ -25,7 +25,7 @@
 // 定义复数及乘、加运算
 
 
-#if 0
+#if false
 // 定义复数
 template <class TFLOAT>
 struct complex
