@@ -1,8 +1,10 @@
 ﻿#ifndef Inc_ege_base_h_
 #define Inc_ege_base_h_
 
-#include "ege/colorbase.h"
-#if !YEGE_Use_YSLib
+#include "ege/def.h"
+#if YEGE_Use_YSLib
+#	include <YSBuild.h>
+#else
 #	include <cstddef>
 #	include <cstdint>
 #	include <type_traits>
@@ -709,27 +711,6 @@ enum graphics_errors        /* graphresult error return codes */
 	grNullPointer       = 0x14,
 	grAllocError        = 0x15,
 	grInvalidMemory     = 0xCDCDCDCD,
-};
-
-// 颜色
-enum COLORS
-{
-	BLACK           = 0,
-	BLUE            = EGERGB(0, 0, 0xA8),
-	GREEN           = EGERGB(0, 0xA8, 0),
-	CYAN            = EGERGB(0, 0xA8, 0xA8),
-	RED             = EGERGB(0xA8, 0, 0),
-	MAGENTA         = EGERGB(0xA8, 0, 0xA8),
-	BROWN           = EGERGB(0xA8, 0xA8, 0),
-	LIGHTGRAY       = EGERGB(0xA8, 0xA8, 0xA8),
-	DARKGRAY        = EGERGB(0x54, 0x54, 0x54),
-	LIGHTBLUE       = EGERGB(0x54, 0x54, 0xFC),
-	LIGHTGREEN      = EGERGB(0x54, 0xFC, 0x54),
-	LIGHTCYAN       = EGERGB(0x54, 0xFC, 0xFC),
-	LIGHTRED        = EGERGB(0xFC, 0x54, 0x54),
-	LIGHTMAGENTA    = EGERGB(0xFC, 0x54, 0xFC),
-	YELLOW          = EGERGB(0xFC, 0xFC, 0x54),
-	WHITE           = EGERGB(0xFC, 0xFC, 0xFC),
 };
 
 // 填充模式

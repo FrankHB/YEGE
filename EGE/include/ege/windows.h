@@ -1,7 +1,8 @@
 ﻿#ifndef Inc_ege_windows_h_
 #define Inc_ege_windows_h_
 
-#include "ege/base.h"
+#include "ege/colorbase.h" // for Size;
+#include "ege/base.h" // for BitmapPtr;
 #include "ege/env.h"
 #include <windef.h> // for ::HBITMAP, ::HANDLE, ::HWND, ::HINSTANCE;
 // NOTE: Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97362.

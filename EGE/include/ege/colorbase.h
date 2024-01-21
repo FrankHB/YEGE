@@ -1,7 +1,7 @@
 ﻿#ifndef Inc_ege_colorbase_h_
 #define Inc_ege_colorbase_h_
 
-#include "ege/def.h"
+#include "ege/def.h" // for std::uint32_t, octet;
 #if YEGE_Use_YSLib
 #	include <YSBuild.h>
 #else

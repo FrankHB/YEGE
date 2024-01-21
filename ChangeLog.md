@@ -99,6 +99,7 @@
 * [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 中的宏 `EGEALPHABLEND` 实现为内部函数。
 * 未定义行为断言失败，不保证终止程序外的具体行为，可能[有不同的实现](https://github.com/wysaid/xege/pull/35)。
 * [wysaid/xege pull request 36](https://github.com/wysaid/xege/pull/36) 中的宏 `INITGRAPH(x, y)` 和 `INITGRAPH3(x, y, f)` 自从 14.01 已被移除。
+* 内部头文件 `<ege/base.h>` 不再包含 `<ege/colorbase.h>` 。
 
 ### 实现质量
 
