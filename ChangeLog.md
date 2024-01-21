@@ -133,6 +133,7 @@
 * 函数 `getimage` 支持在通过函数 `initgraph` 初始化前调用。
 	* 参见 [wysaid/xege pull request 41](https://github.com/wysaid/xege/pull/41) 。
 	* 使用 YEGE 时实现已支持调用。
+* 修复不使用 YSLib 时头文件 `<ege/def.h>` 遗漏包含 `<climits>`（自从 19.01 ） 。
 
 　　兼容实现调整：
 

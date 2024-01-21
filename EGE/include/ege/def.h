@@ -6,7 +6,7 @@
 #endif
 
 #if YEGE_Use_YSLib
-#	include <ystdex/cstddef.h> // for ystdex::byte, ystdex::octet;
+#	include <ystdex/cstddef.h> // for ystdex::byte, ystdex::octet, CHAR_BIT;
 
 namespace ege
 {
@@ -17,6 +17,7 @@ using ystdex::octet;
 } // namespace ege;
 
 #else
+#	include <climits> // for CHAR_BIT;
 #	include <cassert>
 #	include <cwchar>
 #	include <utility>
