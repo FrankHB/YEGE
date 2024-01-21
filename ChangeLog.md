@@ -210,42 +210,46 @@
 
 　　YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 
-* 提供和 YBase 兼容的伪关键字宏 `yconstfn` 、`yconstexpr` 和 `ynothrow` ，分别替换为 `constexpr` 、`constexpr` 和 `noexcept` 。
-* 提供和 YBase 兼容的伪关键字宏 `yconstraint` 和 `yassume` 替换 `assert` 。
-* 提供和 YBase 兼容的伪关键字宏 `yunseq` 。
-* 提供和 YBase 一致实现的伪关键字宏 `yunused` 。
-* 在 `ege` 命名空间提供和 YBase 一致实现的类型 `octet` 和 `byte` 。
-* 在 `ege` 命名空间使用 `using` 引入智能指针类型和相关操作的声明，并提供 `std::make_unique` 的替代实现。
-* 在 `ege` 命名空间提供和 YCLib 的 `platform::Deref` 和 `platform::Nonnull` 兼容的模板。
-* 在 `ege` 命名空间提供和 YSLib 兼容的 `SPos` 和 `SDst` 类型。
-* 提供和 YBase 一致实现的宏 `YPP_Empty` 、`YPP_Commma` 和 `YPP_Concat` 。
-* 提供和 YCLib 兼容的宏 `YTraceDe`。
-	* 空实现。
+* 提供和 YBase 兼容的宏：
+	* 伪关键字宏：
+		* `yconstfn` 、`yconstexpr` 和 `ynothrow` ，分别替换为 `constexpr` 、`constexpr` 和 `noexcept` 。
+		* `yconstraint` 和 `yassume` 替换 `assert` 。
+		* `yunseq` 。
+		* 和 YBase 一致实现的宏 `yunused` 。
+	* 和 YBase 一致实现的宏 `YPP_Empty` 、`YPP_Commma` 和 `YPP_Concat` 。
+	* `YB_EXPECT` 、`YB_LIKELY` 和 `YB_UNLIKELY`。
+		* 仅实现判断 GCC ，不确定版本。
+* 提供和 YCLib 兼容的宏：
+	* `YTraceDe` 。
+		* 空实现。
+	* `YAssert` 。
+		* 替换为 `yassume` 表达式。
 * 提供和 YSLib 一致实现的以下宏：
-	* `PDefH` `PDefHOp`
-	* `ImplExpr` `ImplRet` `ImplThrow` `ImplUnseq`
-	* `TryExpr` `TryRet`
-	* `CatchExpr` `CatchIgnore` `CatchThrow`
-	* `DefDeCtor` `DefDelCtor`
-	* `DefDeCopyCtor` `DefDelCopyCtor` `DefDeMoveCtor` `DefDelMoveCtor`
-	* `DefDeCopyMoveCtor`
-	* `DefDeDtor` `DefDelDtor` `ImplDeDtor`
-	* `DefDeCopyAssignment` `DefDelCopyAssignment` `DefDeMoveAssignment` `DefDelMoveAssignment` `DefDeCopyMoveAssignment` `DefDeCopyMoveCtorAssignment`
-	* `DefCvt`
-	* `DefNeg` `DefBoolNeg`
-	* `DefPred` `DefGetter` `DefGetterMem` `DefSetter`
-	* `DefSwap`
-* 提供和 YCLib 兼容的宏 `YAssert`。
-	* 替换为 `yassume` 表达式。
-* 在 `ege` 命名空间提供和 YSLib 兼容的 `min` 和 `max` 模板。
-	* 非 YSLib 使用 `std` 的对应名称代替，不保证 `constexpr` 。
-* 在 `ege` 命名空间提供和 YSLib 兼容的 `HalfDifference` 、`IsInInterval` 和 `IsInOpenInterval` 模板。
-* 在 `ege` 命名空间提供和 `YSLib::Drawing` 兼容的模板 `GBinaryGroup` 、类型 `Point` 、`Vec` 、`Size` 和 `Rect` 以及相关操作。
-* 在 `ege` 命名空间提供和 `YSLib::Drawing` 二进制兼容的类型 `BitmapPtr` 和 `ConstBitmapPtr`。
-	* 实现为 `color_int_t` 的指针。
-* 提供和 YBase 兼容的宏 `YB_EXPECT` 、`YB_LIKELY` 和 `YB_UNLIKELY`。
-	* 仅实现判断 GCC ，不确定版本。
-* 在 `ege` 命名空间提供和 YCLib 兼容的类 `ScreenBuffer` ，但成员 `Premultiply` 、`UpdatePremultipliedTo` 和 `UpdateTo` 除外。
+	* `PDefH` 和 `PDefHOp` 。
+	* `ImplExpr` 、`ImplRet` 、`ImplThrow` 和 `ImplUnseq`。
+	* `TryExpr` 和 `TryRet` 。
+	* `CatchExpr` 、`CatchIgnore` 和 `CatchThrow` 。
+	* `DefDeCtor` 和 `DefDelCtor` 。
+	* `DefDeCopyCtor` 、`DefDelCopyCtor` 、`DefDeMoveCtor` 和 `DefDelMoveCtor` 。
+	* `DefDeCopyMoveCtor` 。
+	* `DefDeDtor` 、`DefDelDtor` 和 `ImplDeDtor` 。
+	* `DefDeCopyAssignment` 、`DefDelCopyAssignment` 、`DefDeMoveAssignment` 、`DefDelMoveAssignment` 、`DefDeCopyMoveAssignment` 和 `DefDeCopyMoveCtorAssignment` 。
+	* `DefCvt` 。
+	* `DefNeg` 和 `DefBoolNeg` 。
+	* `DefPred` 、`DefGetter` 、`DefGetterMem` 和 `DefSetter` 。
+	* `DefSwap` 。
+* 在 `ege` 命名空间提供：
+	* 提供和 YBase 一致实现的类型 `octet` 和 `byte` 。
+	* 使用 `using` 引入智能指针类型和相关操作的声明，并提供 `std::make_unique` 的替代实现。
+	* 提供和 YCLib 的 `platform::Deref` 和 `platform::Nonnull` 兼容的模板。
+	* 提供和 YSLib 兼容的 `SPos` 和 `SDst` 类型。
+	* 和 YSLib 兼容的 `min` 和 `max` 模板。
+		* 非 YSLib 使用 `std` 的对应名称代替，不保证 `constexpr` 。
+	* 和 YSLib 兼容的 `HalfDifference` 、`IsInInterval` 和 `IsInOpenInterval` 模板。
+	* 和 `YSLib::Drawing` 兼容的模板 `GBinaryGroup` 、类型 `Point` 、`Vec` 、`Size` 和 `Rect` 以及相关操作。
+	* 和 `YSLib::Drawing` 二进制兼容的类型 `BitmapPtr` 和 `ConstBitmapPtr`。
+		* 实现为 `color_int_t` 的指针。 
+	* 和 YCLib 兼容的类 `ScreenBuffer` ，但成员 `Premultiply` 、`UpdatePremultipliedTo` 和 `UpdateTo` 除外。
 
 　　非向后兼容接口：
 
