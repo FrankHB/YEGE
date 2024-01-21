@@ -68,3 +68,9 @@ See [the change log](ChangeLog.md) (zh-CN) for details about modification of fea
 	* 这也是当前发布版本来源的分支。
 	* 当前作为主分支而基线不定期合入主分支。部分仅在主分支使用的代码也在发布中保留。
 
+# 文档
+
+　　当前只提供有限的文档，暂不包含 API 文档。
+
+　　关于 API ，可参照 [EGE 手册](http://xege.org/manual/)，对照[更新日志](ChangeLog.md)中关于不兼容改动的说明。
+
