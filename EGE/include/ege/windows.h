@@ -9,6 +9,17 @@
 #undef __deref
 #include <wingdi.h> // for PS_*;
 #include <winuser.h> // for WM_MOUSEWHEEL;
+#if YEGE_Use_YSLib
+#	if YCL_Win32
+#		include <YCLib/YModules.h>
+#		include YFM_Win32_YCLib_NLS // for platform_ex::MBCSToWCS,
+#	else
+#		error "Win32 required for YSLib."
+#	endif
+#else
+#	include <string> // for std::wstring;
+#	include <winnls.h> // for CP_ACP;
+#endif
 
 #ifndef WM_MOUSEWHEEL
 #	define WM_MOUSEWHEEL                   0x020A
@@ -89,6 +100,14 @@ getHWnd();         // 获取绘图窗口句柄
 
 EGEAPI ::HINSTANCE
 getHInstance();
+
+
+#if YEGE_Use_YSLib
+using platform_ex::MBCSToWCS;
+#else
+YB_ATTR_nodiscard EGEAPI YB_NONNULL(1) std::wstring
+MBCSToWCS(const char*, unsigned = CP_ACP);
+#endif
 
 }
 

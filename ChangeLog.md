@@ -87,6 +87,9 @@
 * 不使用 YSLib 时提供和 YBase 兼容的宏（空实现）：
 	* `YB_ATTR_nodiscard`。
 	* `YB_NONNULL(...)` 。
+* 新增函数 `MBCSToWCS` 。
+	* 不使用 YSLib 时同 `platform_ex` 的函数的第一个重载，即 `std::wstring MBCSToWCS(const char*, unsigned = CP_ACP);` 。
+	* 使用 YSLib 时同 `platform_ex` 的函数。
 
 　　兼容实现调整：
 

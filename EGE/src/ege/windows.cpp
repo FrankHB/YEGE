@@ -1,6 +1,8 @@
-﻿#include "ege/windows.h" // for ::WideCharToMultiByte;
+﻿#include "ege/windows.h" // for ::MultiByteToWideChar;
 #include "global.h"
-#if !YEGE_Use_YSLib
+#if YEGE_Use_YSLib
+#	include "ege/base.h" // for ege::Nonnull;
+#else
 #	include <limits>
 #	include <algorithm>
 #endif
@@ -34,6 +36,25 @@ CheckPositive(_type val, const std::string& name = "")
 }
 
 using Pixel = color_int_t*;
+
+template<class _tWString>
+YB_ATTR_nodiscard YB_NONNULL(3) _tWString
+MBCSToWCSImpl(const typename _tWString::allocator_type& a, int l,
+	const char* str, unsigned cp)
+{
+	const int w_len(::MultiByteToWideChar(cp, 0, ege::Nonnull(str), l, {}, 0));
+
+	if(w_len != 0)
+	{
+		_tWString res(CheckPositive<size_t>(w_len), wchar_t(), a);
+
+		::MultiByteToWideChar(cp, 0, str, l, &res[0], w_len);
+		if(l == -1 && !res.empty())
+			res.pop_back();
+		return res;
+	}
+	return _tWString(a);
+}
 
 } // unnamed namespace;
 
@@ -116,11 +137,13 @@ getHInstance()
 }
 
 
-std::string
-WCSToMBCS(const wchar_t* str, unsigned cp)
+#if !YEGE_Use_YSLib
+std::wstring
+MBCSToWCS(const char* str, unsigned cp)
 {
-	return WCSToMBCSImpl<std::string>({}, -1, str, cp);
+	return MBCSToWCSImpl<std::wstring>({}, -1, str, cp);
 }
+#endif
 
 } // namespace ege;
 
