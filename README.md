@@ -56,3 +56,15 @@ See [the change log](ChangeLog.md) (zh-CN) for details about modification of fea
 
 　　基于以上目的，相对 EGE ，进一步移除其中最显著过时的 BGI 兼容 API 。
 
+# 开发分支
+
+　　项目的存储库包含两个主要分支：
+
+* `master` ：主分支。
+	* 这是为项目长期目标的主要分支。
+	* 引入 [YSLib](https://osdn.net/projects/yslib) 作为必要依赖。
+* `traditional` ：传统分支。
+	* 这是和原版 EGE 以及其它 BGI(en-US) 实现的主要的 API 兼容的开发分支。
+	* 这也是当前发布版本来源的分支。
+	* 当前作为主分支而基线不定期合入主分支。部分仅在主分支使用的代码也在发布中保留。
+
