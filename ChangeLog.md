@@ -90,6 +90,10 @@
 * 新增函数 `MBCSToWCS` 。
 	* 不使用 YSLib 时同 `platform_ex` 的函数的第一个重载，即 `std::wstring MBCSToWCS(const char*, unsigned = CP_ACP);` 。
 	* 使用 YSLib 时同 `platform_ex` 的函数。
+* 修复使用 YSLib 时函数 `getimage_pngfile` 的实现（自从 14.01 ）。
+	* 修复错误的文件大小计算导致的缓冲区访问。
+	* 修复可能的并发访问冲突。
+	* 大小超过 32 位无符号整数范围的文件总是访问失败。
 
 　　兼容实现调整：
 

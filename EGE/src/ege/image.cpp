@@ -214,8 +214,12 @@ IMAGE::getpngimg(std::FILE* fp)
 	try
 	{
 		// XXX: Use encapsulated file size getter.
-		struct ::stat st;
-		vector<octet> buf(::fstat(::_fileno(fp), &st));
+		const auto fsize(platform::FileDescriptor(::_fileno(fp)).GetSize());
+
+		if(fsize != std::uint32_t(fsize))
+			return grIOerror;
+
+		vector<octet> buf(static_cast<size_t>(fsize));
 		ystdex::ifile_iterator i(fp);
 
 		buf.assign(i, ystdex::ifile_iterator());
