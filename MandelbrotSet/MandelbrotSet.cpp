@@ -381,7 +381,8 @@ Draw(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 				z = {fromx + (tox - fromx) * (x / (double)SC_W),
 					fromy + (toy - fromy) * (y / (double)SC_H)};
 				int k = Mandelbrot(z, c, x, y);
-				putpixel_f(x, y, pMap[y][x].ed == 0 ? BLACK : Color[k & COLORMASK]);
+				putpixel_f(x, y, pMap[y][x].ed == 0 ? color_int_t(BLACK)
+					: Color[k & COLORMASK]);
 			}
 			if(std::clock() - t > 100)
 			{
