@@ -56,15 +56,15 @@ struct point_t
 	double vy = 0;
 	double ax = 0;
 	double ay = 0;
-	vector_t vt[2]{};
+	vector_t v[2]{};
 
 	vector_t
-	get_power(double x, double y) // double minx=0, double miny=0
+	get_power(double xx, double yy) // double minx=0, double miny=0
 	{
 		vector_t vt;
 
-		vt.dx = x - this->x;
-		vt.dy = y - this->y;
+		vt.dx = xx - x;
+		vt.dy = yy - y;
 		//vt.dx = s_minus(vt.dx, minx);
 		//vt.dy = s_minus(vt.dy, miny);
 		vt.dx *= g_k;
@@ -97,27 +97,26 @@ public:
 	net(int b, int sw, int sh)
 		: net(b * 4, b * 3, sw, sh)
 	{}
-	net(int w, int h, int sw, int sh)
+	net(int w_, int h_, int sw, int sh)
 		: pt(2)
 	{
-		double dtw = sw / (double)(w - 1);
-		double dth = sh / (double)(h - 1);
+		const double dtw_ = sw / double(w_ - 1), dth_ = sh / double(h_ - 1);
 		int x, y, l;
-		point_t pt;
+		point_t pt_;
 
-		this->layer = 0;
-		this->w = w;
-		this->h = h;
-		this->dtw = dtw;
-		this->dth = dth;
+		layer = 0;
+		w = w_;
+		h = h_;
+		dtw = dtw_;
+		dth = dth_;
 
-		for(y = 0; y <= h + 1; ++y)
-			for(x = 0; x <= w + 1; ++x)
+		for(y = 0; y <= h_ + 1; ++y)
+			for(x = 0; x <= w_ + 1; ++x)
 				for(l = 0; l < 2; ++l)
 				{
-					this->pt[l][y][x] = pt;
-					this->pt[l][y][x].x = (dtw * (x - 1));
-					this->pt[l][y][x].y = (dth * (y - 1));
+					pt[l][y][x] = pt_;
+					pt[l][y][x].x = dtw_ * (x - 1);
+					pt[l][y][x].y = dth_ * (y - 1);
 				}
 	}
 
@@ -128,31 +127,32 @@ public:
 		double ay = 0;
 		vector_t vt;
 		int i;
-		int l = this->layer;
+		int l = layer;
 		int dxy[8][2] =
 		{
-			{ 1, 0},
-			{ 0, 1},
-			{ -1, 0},
-			{ 0, -1},
+			{1, 0},
+			{0, 1},
+			{-1, 0},
+			{0, -1},
 		};
-		point_t* op = &(this->pt[l][y][x]);
+		point_t* op = &pt[l][y][x];
 
-		this->pt[l ^ 1][y][x] = *op;
+		pt[l ^ 1][y][x] = *op;
 		for(i = 0; i < 2; ++i)
 		{
-			point_t* p = &this->pt[l][y + dxy[i][1]][x + dxy[i][0]];
-			vt = op->get_power(p->x - dxy[i][0] * this->dtw, p->y - dxy[i][1] * this->dth);
-			p->vt[i] = vt;
+			point_t* p = &pt[l][y + dxy[i][1]][x + dxy[i][0]];
+			vt = op->get_power(p->x - dxy[i][0] * dtw,
+				p->y - dxy[i][1] * dth);
+			p->v[i] = vt;
 			ax += vt.dx;
 			ay += vt.dy;
 		}
-		ax -= op->vt[0].dx;
-		ay -= op->vt[0].dy;
-		ax -= op->vt[1].dx;
-		ay -= op->vt[1].dy;
+		ax -= op->v[0].dx;
+		ay -= op->v[0].dy;
+		ax -= op->v[1].dx;
+		ay -= op->v[1].dy;
 
-		op = &(this->pt[l ^ 1][y][x]);
+		op = &pt[l ^ 1][y][x];
 		op->ax = ax;
 		op->ay = ay;
 
@@ -171,62 +171,64 @@ public:
 	void
 	move_net()
 	{
-		int x, y = 0, l = this->layer, i = 1;
+		int x, y = 0, l = layer, i = 1;
 		vector_t vt;
 
-		for(x = 1; x <= this->w; ++x)
+		for(x = 1; x <= w; ++x)
 		{
-			point_t* p = &this->pt[l][y + 1][x + 0];
+			point_t* p = &pt[l][y + 1][x + 0];
 
-			vt = this->pt[l][y][x].get_power(p->x, p->y - this->dth);
-			p->vt[i] = vt;
+			vt = pt[l][y][x].get_power(p->x, p->y - dth);
+			p->v[i] = vt;
 		}
 		i = 0;
-		for(y = 1; y <= this->h; ++y)
+		for(y = 1; y <= h; ++y)
 		{
 			x = 0;
 			{
-				point_t* p = &this->pt[l][y][x + 1];
+				point_t* p = &pt[l][y][x + 1];
 
-				vt = this->pt[l][y][x].get_power(p->x - this->dtw, p->y);
-				p->vt[i] = vt;
-				for(x = 1; x <= this->w; ++x)
+				vt = pt[l][y][x].get_power(p->x - dtw, p->y);
+				p->v[i] = vt;
+				for(x = 1; x <= w; ++x)
 					move_point(x, y);
 			}
 		}
-		this->layer ^= 1;
+		layer ^= 1;
 	}
 
 
 	void
 	draw_net()
 	{
-		int x, y, l = this->layer;
-		::POINT pt[NET_W + NET_H];
+		int x, y, l = layer;
+		::POINT pt_[NET_W + NET_H];
 
-		for(y = 0; y <= this->h; ++y)
+		for(y = 0; y <= h; ++y)
 		{
 			//if(y % g_mod_show == 0)
 			{
-				for(x = 0; x <= this->w + 1; ++x)
+				for(x = 0; x <= w + 1; ++x)
 				{
-					pt[x].x = (int)(this->pt[l][y][x].x + 0.5);
-					pt[x].y = (int)(this->pt[l][y][x].y + 0.5);
-					//line_f(this->pt[l][y][x].x, this->pt[l][y][x].y, this->pt[l][y][x+1].x, this->pt[l][y][x+1].y);
+					pt_[x].x = int(pt[l][y][x].x + 0.5);
+					pt_[x].y = int(pt[l][y][x].y + 0.5);
+					//line_f(pt[l][y][x].x, pt[l][y][x].y,
+					//	pt[l][y][x+1].x, pt[l][y][x+1].y);
 				}
-				drawbezier(this->w + 2, (int*)pt);
+				drawbezier(w + 2, reinterpret_cast<int*>(pt_));
 			}
 		}
-		for(x = 0; x <= this->w; ++x)
+		for(x = 0; x <= w; ++x)
 			//if(x % g_mod_show == 0)
 			{
-				for(y = 0; y <= this->h + 1; ++y)
+				for(y = 0; y <= h + 1; ++y)
 				{
-					pt[y].x = (int)(this->pt[l][y][x].x + 0.5);
-					pt[y].y = (int)(this->pt[l][y][x].y + 0.5);
-					//line_f(this->pt[l][y][x].x, this->pt[l][y][x].y, this->pt[l][y+1][x].x, this->pt[l][y+1][x].y);
+					pt_[y].x = int(pt[l][y][x].x + 0.5);
+					pt_[y].y = int(pt[l][y][x].y + 0.5);
+					//line_f(pt[l][y][x].x, pt[l][y][x].y,
+					//	pt[l][y+1][x].x, pt[l][y+1][x].y);
 				}
-				drawbezier(this->h + 2, (int*)pt);
+				drawbezier(h + 2, reinterpret_cast<int*>(pt_));
 			}
 	}
 
@@ -237,20 +239,21 @@ public:
 	{
 		if(op)
 		{
-			int y, x, l = this->layer;
+			int y, x, l = layer;
 			if(b_cp == 0)
 			{
 				int mx = 1, my = 1;
 				double mdis = 1e9, dis;
-				for(y = 1; y < this->h; ++y)
+				for(y = 1; y < h; ++y)
 				{
 					if(y % g_mod_show == 0)
 						continue;
-					for(x = 1; x < this->w; ++x)
+					for(x = 1; x < w; ++x)
 					{
 						if(x % g_mod_show == 0)
 							continue;
-						dis = fabs(px - this->pt[l][y][x].x) + fabs(py - this->pt[l][y][x].y);
+						dis = fabs(px - pt[l][y][x].x)
+							+ fabs(py - pt[l][y][x].y);
 						if(dis < mdis)
 						{
 							mx = x;
@@ -261,17 +264,17 @@ public:
 				}
 				cp_x = mx;
 				cp_y = my;
-				this->pt[l][cp_y][cp_x].x = px;
-				this->pt[l][cp_y][cp_x].y = py;
+				pt[l][cp_y][cp_x].x = px;
+				pt[l][cp_y][cp_x].y = py;
 				b_cp = 1;
 			}
 			else
 			{
-				this->pt[l][cp_y][cp_x].x = px;
-				this->pt[l][cp_y][cp_x].y = py;
+				pt[l][cp_y][cp_x].x = px;
+				pt[l][cp_y][cp_x].y = py;
 			}
-			this->pt[l][cp_y][cp_x].vx = 0;
-			this->pt[l][cp_y][cp_x].vy = 0;
+			pt[l][cp_y][cp_x].vx = 0;
+			pt[l][cp_y][cp_x].vy = 0;
 		}
 		else
 			b_cp = 0;
