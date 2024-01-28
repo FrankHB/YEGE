@@ -4,7 +4,7 @@
 
 # 版本历史
 
-## 主分支版本
+## 24.01
 
 ### 构建配置
 
@@ -33,15 +33,15 @@
 			* 撤销自从 14.01 的修改，和原始 misakamm/xege 的 `color_t` 一致，而不再和 `::COLORREF` 一致。
 			* 同时修改函数 `EGERGB` 的实现，解决和其它函数的不一致问题。
 			* 同时撤销函数 `setlinestyle` 、`setfillstyle` 、`setcolor` 、`setbkcolor` 、`setbkcolor_f` 、`setfontbkcolor` 、`floodfill` 和 `floodfillsurface` 的实现修改。
-				* 注意 `putpixels` 和 `putpixels_f` 保持不变。
+				* **注意** 函数 `putpixels` 和 `putpixels_f` 保持不变。
 			* 修改后的格式和 `YSLib::Pixel` 在 Win32 上的实现以及 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 中的像素格式保持一致，存储格式都为 BGRA8888 。
 		* 修复不使用 YSLib 时类型 `color_t` 声明（自从 19.01 ），保证是无符号数。
 			* 这个类型不保证是整数，但不使用 YSLib 时当前实现为整数。
-			* 在原始的 EGE 中，这个类型是 `DWORD` 的别名，对支持的 Win32 环境即 `unsigned long` 。
-			* 在 19.01 中，不使用 YSLib 实现时，这个类型是 `int` 的别名。
+			* **注释** 在原始的 EGE 中，这个类型是 `DWORD` 的别名，对支持的 Win32 环境即 `unsigned long` 。
+			* **原理** 在 19.01 中，不使用 YSLib 实现时，这个类型是 `int` 的别名。
 				* 虽然使用有符号数仍然二进制兼容，但可能引起非预期的有符号数和无符号数的转换，如 G++ [-Wsign-conversion] 警告。
 				* 因此，有必要修正为无符号数。
-			* 用户代码仍不应预期 `color_t` 和 `color_int_t` 总是相同。
+			* **注释** 用户代码仍不应预期 `color_t` 和 `color_int_t` 总是相同。
 	* 修复函数 `EGERGBA`、`EGEARGB`、`EGEACOLOR`、`EGECOLORA`、`EGEGET_A`、`EGEGRAYA` 和 `EGEAGRAY` 关于 alpha 分量的类型 `MonoType` 为 `AlphaType` 。
 		* 因为当前 `MonoType` 和 `AlphaType` 都是 `octet` 的别名，不影响用户源代码和目标代码的兼容性。
 	* 添加函数 `ARGBTOZBGR` 。
@@ -94,6 +94,8 @@
 	* 修复错误的文件大小计算导致的缓冲区访问。
 	* 修复可能的并发访问冲突。
 	* 大小超过 32 位无符号整数范围的文件总是访问失败。
+* 新增版本宏 `EGE_VERSION` 、`EGE_VERSION_MAJOR` 、`EGE_VERSION_MINOR` 、`EGE_VERSION_PATCH` 、`EGE_MAKE_VERSION_NUMBER(major, minor, patch)` 和 `EGE_VERSION_NUMBER` 。
+	* 参见 [wysaid/xege pull request 143](https://github.com/wysaid/xege/pull/143) 。
 
 　　兼容实现调整：
 
@@ -128,6 +130,8 @@
 * [wysaid/xege pull request 34](https://github.com/wysaid/xege/pull/34) 中的特性和对 BGI 兼容的[函数 `initgraph` 重载的参数类型 `char*` 修改为 `const char*`](https://github.com/wysaid/xege/commit/85d841ffc03496ae7fb71e75ae33199c6687f3c2) ：
 	* 因为 YEGE 不支持 BGI 函数重载，没有需要修复的初始化行为。
 	* YEGE 不使用 `-1` 作为模式（使用 `-1` 作为模式可能会影响初始化状态，未在 wysaid/xege 文档中说明）；这也[在之后被撤销](https://github.com/wysaid/xege/commit/85d841ffc03496ae7fb71e75ae33199c6687f3c2)。
+* 在公开头文件中新增[判断版本的宏](https://github.com/wysaid/xege/pull/143)的提案由 YEGE 提出。
+	* 因为已经有版本宏，不支持[函数 `getGraphicsVer`](https://github.com/wysaid/xege/pull/22/commits/5064e690bd981a4b765702511873b44126eb006a) 。
 
 ### 实现质量
 

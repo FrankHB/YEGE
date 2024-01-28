@@ -4,7 +4,7 @@ Yet another EGE library
 
 This is a graphic/GUI library sharing similar interface with the EGE (Easy Graphics Engine) library.
 
-Code based on [original implementation](http://misakamm.github.com/xege) (EGE 13.03).
+Code is based on [the original implementation](http://misakamm.github.com/xege) (EGE 13.03).
 
 Licensed GNU LGPLv3.
 
@@ -12,7 +12,7 @@ See [the change log](ChangeLog.md) (zh-CN) for details about modification of fea
 
 　　YEGE 库是和 EGE 图形库的一个接口类似的库。
 
-　　代码来源于 EGE 13.03 。
+　　原始代码来源于 EGE 13.03 。
 
 　　遵循 GNU LGPLv3 发布。
 
@@ -92,6 +92,9 @@ See [the change log](ChangeLog.md) (zh-CN) for details about modification of fea
 
 * 新增 API ：
 	* 带有不同字符串参数的[函数 `ege_drawtext`](https://github.com/wysaid/xege/pull/20) 。
+	* [wysaid/xege pull request 22](https://github.com/wysaid/xege/pull/22) 中的部分特性：
+		* 函数 `getGraphicsVer` 。
+			* **注释** 可使用版本宏代替。
 	* [wysaid/xege pull request 25](https://github.com/wysaid/xege/pull/25) 中的部分特性：
 		* 初始化选项 `INIT_UNICODE` ，可由使用者选择创建 Unicode 窗口。
 		* 函数 `w2mb` 。

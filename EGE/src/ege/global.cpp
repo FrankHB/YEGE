@@ -20,7 +20,6 @@
 
 #define EGE_TOSTR_(x) #x
 #define EGE_TOSTR(x) EGE_TOSTR_(x)
-#define EGE_VERSION L"19.01+"
 #ifdef __clang__
 #	define EGE_CXX "Clang++"
 #	define EGE_CXX_VER EGE_TOSTR(__clang_major__) "." \
