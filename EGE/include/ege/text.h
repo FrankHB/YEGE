@@ -2,8 +2,10 @@
 #define Inc_ege_text_h_
 
 #include "ege/def.h"
-#include <WinDef.h>
-#include <Wingdi.h>
+#include <windef.h> // for ::POINT used by <wingdi.h>
+// NOTE: Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97362.
+#undef __deref
+#include <wingdi.h> // for ::LOGFONTA, ::LOGFONTW;
 
 namespace ege
 {
@@ -102,9 +104,9 @@ EGEAPI void
 setfont(const ::LOGFONTW* font, IMAGE* pimg = {}); // 设置当前字体样式
 
 EGEAPI void
-getfont(::LOGFONTA* font, IMAGE* pimg = {});       // 获取当前字体样式
+getfont(::LOGFONTA* font, const IMAGE* pimg = {});       // 获取当前字体样式
 EGEAPI void
-getfont(::LOGFONTW* font, IMAGE* pimg = {});       // 获取当前字体样式
+getfont(::LOGFONTW* font, const IMAGE* pimg = {});       // 获取当前字体样式
 
 
 //高级输入函数

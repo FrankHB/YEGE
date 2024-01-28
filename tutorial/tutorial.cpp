@@ -1,8 +1,8 @@
-//#define _GRAPH_NO_LIB_
+//#define GRAPH_NO_LIB_
 //#include "ege.h"
 
-#define _TUTORIAL_ 0
-#if _TUTORIAL_ == 0
+#define TUTORIAL_ 0
+#if TUTORIAL_ == 0
 
 #include <graphics.h>
 int main()
@@ -18,69 +18,69 @@ int main()
 	ege::closegraph();
 }
 
-#elif _TUTORIAL_ == 1
+#elif TUTORIAL_ == 1
 #include "../../man/tutorial/t01.cpp"
-#elif _TUTORIAL_ == 2
+#elif TUTORIAL_ == 2
 #include "../../man/tutorial/t02.cpp"
-#elif _TUTORIAL_ == 3
+#elif TUTORIAL_ == 3
 #include "../../man/tutorial/t03.cpp"
-#elif _TUTORIAL_ == 4
+#elif TUTORIAL_ == 4
 #include "../../man/tutorial/t04.cpp"
-#elif _TUTORIAL_ == 5
+#elif TUTORIAL_ == 5
 #include "../../man/tutorial/t05.cpp"
-#elif _TUTORIAL_ == 6
+#elif TUTORIAL_ == 6
 #include "../../man/tutorial/t06.cpp"
-#elif _TUTORIAL_ == 7
+#elif TUTORIAL_ == 7
 #include "../../man/tutorial/t07.cpp"
-#elif _TUTORIAL_ == 8
+#elif TUTORIAL_ == 8
 #include "../../man/tutorial/t08.cpp"
-#elif _TUTORIAL_ == 9
+#elif TUTORIAL_ == 9
 #include "../../man/tutorial/t09.cpp"
-#elif _TUTORIAL_ == 10
+#elif TUTORIAL_ == 10
 #include "../../man/tutorial/t10.cpp"
-#elif _TUTORIAL_ == 11
+#elif TUTORIAL_ == 11
 #include "../../man/tutorial/t11.cpp"
-#elif _TUTORIAL_ == 12
+#elif TUTORIAL_ == 12
 #include "../../man/tutorial/t12.cpp"
-#elif _TUTORIAL_ == 13
+#elif TUTORIAL_ == 13
 #include "../../man/tutorial/t13.cpp"
-#elif _TUTORIAL_ == 14
+#elif TUTORIAL_ == 14
 #include "../../man/tutorial/t14.cpp"
-#elif _TUTORIAL_ == 15
+#elif TUTORIAL_ == 15
 #include "../../man/tutorial/t15.cpp"
-#elif _TUTORIAL_ == 16
+#elif TUTORIAL_ == 16
 #include "../../man/tutorial/t16.cpp"
-#elif _TUTORIAL_ == 17
+#elif TUTORIAL_ == 17
 #include "../../man/tutorial/t17.cpp"
-#elif _TUTORIAL_ == 18
+#elif TUTORIAL_ == 18
 #include "../../man/tutorial/t18.cpp"
-#elif _TUTORIAL_ == 19
+#elif TUTORIAL_ == 19
 #include "../../man/tutorial/t19.cpp"
-#elif _TUTORIAL_ == 21
+#elif TUTORIAL_ == 21
 #include "../../man/tutorial/t21.cpp"
-#elif _TUTORIAL_ == 22
+#elif TUTORIAL_ == 22
 #include "../../man/tutorial/t22.cpp"
-#elif _TUTORIAL_ == 23
+#elif TUTORIAL_ == 23
 #include "../../man/tutorial/t23.cpp"
-#elif _TUTORIAL_ == 24
+#elif TUTORIAL_ == 24
 #include "../../man/tutorial/t24.cpp"
-#elif _TUTORIAL_ == 25
+#elif TUTORIAL_ == 25
 #include "../../man/tutorial/t25.cpp"
-#elif _TUTORIAL_ == 26
+#elif TUTORIAL_ == 26
 #include "../../man/tutorial/t26.cpp"
-#elif _TUTORIAL_ == 27
+#elif TUTORIAL_ == 27
 #include "../../man/tutorial/t27.cpp"
-#elif _TUTORIAL_ == 28
+#elif TUTORIAL_ == 28
 #include "../../man/tutorial/t28.cpp"
-#elif _TUTORIAL_ == 29
+#elif TUTORIAL_ == 29
 #include "../../man/tutorial/t29.cpp"
-#elif _TUTORIAL_ == 30
+#elif TUTORIAL_ == 30
 #include "../../man/tutorial/t30.cpp"
-#elif _TUTORIAL_ == 50
+#elif TUTORIAL_ == 50
 #include "../../man/tutorial/t50.cpp"
-#elif _TUTORIAL_ == 51
+#elif TUTORIAL_ == 51
 #include "../../man/tutorial/t51.cpp"
-#elif _TUTORIAL_ == 52
+#elif TUTORIAL_ == 52
 
 #include <graphics.h>
 #include <ege/fps.h>
@@ -179,7 +179,7 @@ int main()
 	}
 }
 
-#elif _TUTORIAL_ == 53
+#elif TUTORIAL_ == 53
 
 #include <ege.h>
 #include <ege/fps.h>
@@ -278,7 +278,7 @@ int main()
 		ege::cleardevice();
 	}
 }
-#elif _TUTORIAL_ == 60
+#elif TUTORIAL_ == 60
 // 星空屏保程序，请生成为scr后缀，或者手工改后缀，不要直接运行exe
 #include "graphics.h"
 #include <ctime>
@@ -396,7 +396,7 @@ main(int argc, char* argv[])
 }
 
 
-#elif _TUTORIAL_ == 61
+#elif TUTORIAL_ == 61
 
 #include <cstdio>
 #include <graphics.h>
@@ -451,11 +451,11 @@ int main()
 	closegraph();
 }
 
-#elif _TUTORIAL_ == 62
+#elif TUTORIAL_ == 62
 
 #include <map>
 
-template <typename str_t>
+template<typename str_t>
 class IniParser
 {
 public:

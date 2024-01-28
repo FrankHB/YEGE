@@ -1,13 +1,10 @@
 #include "graphics.h"
-//#include <complex>
 #include <ctime>
-//#include <gmpxx.h>
 #include <cstdio>
 #include <algorithm>
 #include <cstdio>
-#include <Windows.h>
-
-//using namespace std;
+#include <processthreadsapi.h> // for ::GetCurrentProcess;
+#include <winbase.h> // for IDLE_PRIORITY_CLASS;
 
 #define USINGDOUBLE
 
@@ -19,15 +16,15 @@
 #define SC_W 640
 #define SC_H 480
 
-#define for if(1) for
+#define for if(true) for
 
 
 // 定义复数及乘、加运算
 
 
-#if 0
+#if false
 // 定义复数
-template <class TFLOAT>
+template<typename TFLOAT>
 struct complex
 {
 	TFLOAT re;
@@ -634,7 +631,7 @@ int DrawEx(Float& fromx, Float& fromy, Float& tox, Float& toy)
 			k = MandelbrotEx(p);
 			if(p.ed)
 			{
-#if 1
+#if true
 				if(x == 0)
 					; //addpoint(x+1, y, k);
 				else if(pMap[y][x - 1].ed && pMap[y][x - 1].nIter != k)

@@ -2,11 +2,11 @@
 #define Inc_ege_def_h_
 
 #ifndef YEGE_Use_YSLib
-#	define YEGE_Use_YSLib 1
+#	define YEGE_Use_YSLib true
 #endif
 
 #if YEGE_Use_YSLib
-#	include <ydef.h>
+#	include <ystdex/cstddef.h> // for ystdex::byte, ystdex::octet, CHAR_BIT;
 
 namespace ege
 {
@@ -17,6 +17,7 @@ using ystdex::octet;
 } // namespace ege;
 
 #else
+#	include <climits> // for CHAR_BIT;
 #	include <cassert>
 #	include <cwchar>
 #	include <utility>
@@ -24,6 +25,8 @@ using ystdex::octet;
 #define YPP_Empty
 #define YPP_Comma ,
 #define YPP_Concat(_x, _y) _x ## _y
+
+#	define YB_ATTR_nodiscard
 
 #	if __GNUC__
 #		define YB_EXPECT(_expr, _constant) (__builtin_expect(_expr, _constant))
@@ -34,6 +37,8 @@ using ystdex::octet;
 #		define YB_LIKELY(_expr) (_expr)
 #		define YB_UNLIKELY(_expr) (_expr)
 #	endif
+
+#	define YB_NONNULL(...) 
 
 #	define yconstfn constexpr
 #	define yconstexpr constexpr

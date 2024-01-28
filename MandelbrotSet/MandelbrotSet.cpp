@@ -1,6 +1,7 @@
 #include "graphics.h"
 #include <complex>
 #include <ctime>
+#include <cstdio>
 
 #define USE_MPF 1
 
@@ -124,7 +125,7 @@ struct updatelist
 }* g_pudlist = new updatelist;
 updatelist& g_udlist = *g_pudlist;
 
-#if 0
+#if false
 struct calclist
 {
 	int m_len;
@@ -255,7 +256,7 @@ void InitColor()
 	setinitcolor(Color + MAXCOLOR * 6, MAXCOLOR, h1, h2);
 	h1 = 150;
 	setinitcolor(Color + MAXCOLOR * 7, MAXCOLOR, h1, h2);
-#if 0
+#if false
 	h1 = 240, h2 = 60;
 	setinitcolor(Color, MAXCOLOR, h1, h2);
 	h1 = 270, h2 = 90;
@@ -275,10 +276,10 @@ void InitColor()
 #endif
 }
 
-#if 0
+#if false
 #define func(z, c, ed) \
-{z*=z; if(z.real() > 4) \
-{ed = 1; break;} z+=c;} //(z * z * z * z * z * z + c)
+	{z*=z; if(z.real() > 4) \
+	{ed = 1; break;} z+=c;} //(z * z * z * z * z * z + c)
 #endif
 #define func(z, c) z *= z, z += c;
 
@@ -503,8 +504,6 @@ DrawEx(Float fromx, Float fromy, Float tox, Float toy, int mode = 0,
 	g_udlist.swap();
 }
 
-#include <cstdio>
-
 // 主函数
 
 int
@@ -524,7 +523,8 @@ main()
 
 	// 初始化 Mandelbrot Set(曼德布洛特集)坐标系
 	COMPLEX from{-2.2, -1.65}, to{2.2, 1.65}, from_b, to_b;
-#if 0
+
+#if false
 	do
 	{
 		std::FILE* fp = std::fopen("MandelbrotSet.ini", "r");
@@ -567,9 +567,7 @@ main()
 	}
 	while(0);
 #endif
-
 	Draw(from.real(), from.imag(), to.real(), to.imag());
-
 
 	// 捕获鼠标操作，实现放大鼠标选中区域
 	mouse_msg m;
@@ -583,9 +581,10 @@ main()
 	//IMAGE img_def, img_ms;
 	//img_def.getimage(0, 0, w, h);
 
-	for(;;)
+	while(true)
 	{
 		int bmsg = 0;
+
 		if(kbhit())
 		{
 			int k = getch();
@@ -618,15 +617,15 @@ main()
 						  d = to.real() - from.real();
 #if USE_MPF
 					gmp_sprintf(str, "%.500Ff", x.get_mpf_t());
-					fprintf(fp, "%s\n", str);
+					std::fprintf(fp, "%s\n", str);
 					gmp_sprintf(str, "%.500Ff", y.get_mpf_t());
-					fprintf(fp, "%s\n", str);
+					std::fprintf(fp, "%s\n", str);
 					gmp_sprintf(str, "%.500Ff", d.get_mpf_t());
 #else
 					std::sprintf(str, "%.15lf", x);
-					fprintf(fp, "%s\n", str);
+					std::fprintf(fp, "%s\n", str);
 					std::sprintf(str, "%.15lf", y);
-					fprintf(fp, "%s\n", str);
+					std::fprintf(fp, "%s\n", str);
 					std::sprintf(str, "%.15lf", d);
 #endif
 					std::fclose(fp);
@@ -745,7 +744,7 @@ main()
 
 				// 按鼠标左键并拖动，选择区域
 			case mouse_flag_left | mouse_msg_up:
-				if(isLDown == true)
+				if(isLDown)
 				{
 					rectangle(self.real(), self.imag(), selt.real(), selt.imag());
 					setwritemode(R2_COPYPEN);
@@ -784,15 +783,17 @@ main()
 					// 更新坐标系
 					COMPLEX nf(from.real() + (to.real() - from.real()) * self.real() / w, from.imag() + (to.imag() - from.imag()) * self.imag() / h);
 					COMPLEX nt(from.real() + (to.real() - from.real()) * selt.real() / w, from.imag() + (to.imag() - from.imag()) * selt.imag() / h);
+
 					from = nf, to = nt;
+
 #if USE_MPF
 					Float f = to.real() - from.real();
+
 					setgprec(f);
 					mpf_set_default_prec(g_prec);
 					setprec(from);
 					setprec(to);
 #endif
-
 					// 画图形
 					Draw(from.real(), from.imag(), to.real(), to.imag(), mode, js_c);
 				}
@@ -801,11 +802,12 @@ main()
 		}
 		if(!bmsg)
 		{
-#if 1
+#if true
 			for(int n = 0, t = std::clock(); g_udlist.nLen > 0 && n < 1024; ++n)
 			{
 				DrawEx(from.real(), from.imag(), to.real(), to.imag(), mode, js_c);
-				if(std::clock() - t > 100) break;
+				if(std::clock() - t > 100)
+					break;
 			}
 #endif
 			delay_fps(1000);

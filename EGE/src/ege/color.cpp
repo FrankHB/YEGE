@@ -27,17 +27,17 @@ rgb2hsl_impl(float r, float g, float b)
 	float rh, rs, rl;
 
 	rl = (*dp[0] + *dp[2]) / 2;
-	if(rl < 1e-2f)
+	if(rl < 1e-2F)
 		return {0, 0, 0};
-	if(rl > 0.99)
+	if(rl > 0.99F)
 		return {0, 0, 1};
-	if(fabs(rl - 0.5) < 1e-2)
-		rl = 0.5;
+	if(std::fabs(rl - .5F) < 1e-2F)
+		rl = .5F;
 #define BLACKUNFORMAT(c, v) ((c)/((v)*2))
 #define WHITEUNFORMAT(c, v) (1-(1-c)/((1-(v))*2))
-	if(rl == 0.5)
+	if(rl == .5F)
 		;
-	else if(rl < 0.5)
+	else if(rl < .5F)
 	{
 		for(int n = 0; n < 3; ++n)
 		{
@@ -58,7 +58,7 @@ rgb2hsl_impl(float r, float g, float b)
 #undef BLACKUNFORMAT
 #undef WHITEUNFORMAT
 	rs = *dp[2] * 2 - 1;
-	if(rs < 1e-2)
+	if(rs < 1e-2F)
 		return {0, rs, rl};
 #define SATUNFORMAT(c, s) (((c)-.5F)/(s)+.5F)
 	for(int n = 0; n < 3; ++n)
@@ -120,20 +120,19 @@ std::array<MonoType, 3>
 HSV_TO_RGB(float ih, float is, float iv)
 {
 	float R = 0, G = 0, B = 0;
-	int k;
-	float aa, bb, cc, f;
-	if(is <= 0.0)
+
+	if(is <= 0.F)
 		R = G = B = iv;
 	else
 	{
-		if(ih == 1.0)
-			ih = 0.0;
-		ih *= 6.0;
-		k = int(floor(ih)); // ??
-		f = ih - k;
-		aa = iv * (1.F - is);
-		bb = iv * (1.F - is * f);
-		cc = iv * (1.F - (is * (1.F - f)));
+		if(ih == 1.F)
+			ih = 0.F;
+		ih *= 6.F;
+
+		int k = int(floor(ih)); // ??
+		float f = ih - k, aa = iv * (1.F - is), bb = iv * (1.F - is * f),
+			cc = iv * (1.F - (is * (1.F - f)));
+
 		switch(k)
 		{
 		case 0:
@@ -181,14 +180,11 @@ rgb2gray(color_t color)
 	return MakeGray(color_t::traits_type::integer(((color >> 16) & 0xFF) * 0.299
 		+ ((color >> 8) & 0xFF) * 0.587 + ((color) & 0xFF) * 0.114));
 #else
-	double c;
-	color_t r;
+	const auto r(EGEGET_R(color_int_t(color)) * 0.299
+		+ EGEGET_G(color_int_t(color)) * 0.587
+		+ EGEGET_B(color_int_t(color)) * 0.114);
 
-	c = ((color >> 16) & 0xFF) * 0.299;
-	c += ((color >> 8) & 0xFF) * 0.587;
-	c += (color & 0xFF) * 0.114;
-	r = color_t(c);
-	return EGERGB(r, r, r);
+	return color_t(EGERGB(r, r, r));
 #endif
 }
 
@@ -200,8 +196,9 @@ rgb2hsl(color_t rgb, float* h, float* s, float* l)
 
 	yunseq(Deref(h) = hsl.GetH(), Deref(s) = hsl.GetS(), Deref(l) = hsl.GetL());
 #else
-	const auto hsl(rgb2hsl_impl(EGEGET_R(rgb) / 255.F, EGEGET_G(rgb) / 255.F,
-		EGEGET_B(rgb) / 255.F));
+	const auto hsl(rgb2hsl_impl(EGEGET_R(color_int_t(rgb)) / 255.F,
+		EGEGET_G(color_int_t(rgb)) / 255.F,
+		EGEGET_B(color_int_t(rgb)) / 255.F));
 
 	yunseq(Deref(h) = hsl[0] * 360.F, Deref(s) = hsl[1], Deref(l) = hsl[2]);
 #endif
@@ -294,9 +291,8 @@ hsl2rgb(float h, float s, float l)
 			b = dp[1];
 		}
 	}
-	return EGERGB(static_cast<color_int_t>(r * 255),
-		static_cast<color_int_t>(g * 255),
-		static_cast<color_int_t>(b * 255));
+	return color_t(
+		EGERGB(MonoType(r * 255), MonoType(g * 255), MonoType(b * 255)));
 #endif
 }
 
@@ -308,8 +304,8 @@ rgb2hsv(color_t rgb, float* h, float* s, float* v)
 
 	yunseq(Deref(h) = hsv.GetH(), Deref(s) = hsv.GetS(), Deref(v) = hsv.GetV());
 #else
-	const auto chsv(RGB_TO_HSV(MonoType(EGEGET_R(rgb)), MonoType(EGEGET_G(rgb)),
-		MonoType(EGEGET_B(rgb))));
+	const auto chsv(RGB_TO_HSV(EGEGET_R(color_int_t(rgb)),
+		EGEGET_G(color_int_t(rgb)), EGEGET_B(color_int_t(rgb))));
 
 	yunseq(Deref(h) = chsv[0] * 360.F, Deref(s) = chsv[1], Deref(v) = chsv[2]);
 #endif
@@ -328,7 +324,7 @@ hsv2rgb(float h, float s, float v)
 
 	const auto crgb(HSV_TO_RGB(h / 360.F, s, v));
 
-	return EGERGB(crgb[0], crgb[1], crgb[2]);
+	return color_t(EGERGB(crgb[0], crgb[1], crgb[2]));
 #endif
 }
 

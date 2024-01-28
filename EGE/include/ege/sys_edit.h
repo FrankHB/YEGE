@@ -3,7 +3,7 @@
 
 #include "ege/ctl.h"
 #include <synchapi.h> // for ::CreateEvent;
-#include <WinBase.h> // for INFINITE;
+#include <winbase.h> // for INFINITE;
 
 namespace ege
 {
@@ -39,7 +39,7 @@ public:
 		msg_createwindow msg{nullptr, nullptr, nullptr, 0, 0, 0, nullptr};
 		msg.hEvent = ::CreateEvent({}, TRUE, {}, {});
 		msg.classname = L"EDIT";
-		msg.id = egeControlBase::allocId();
+		msg.id = unsigned(egeControlBase::allocId());
 		msg.style = WS_CHILD | WS_BORDER | ES_LEFT | ES_WANTRETURN;
 		msg.style |= multiline ? ES_MULTILINE | WS_VSCROLL : ES_AUTOHSCROLL;
 		msg.exstyle = WS_EX_CLIENTEDGE;// | WS_EX_STATICEDGE;

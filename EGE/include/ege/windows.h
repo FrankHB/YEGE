@@ -1,15 +1,28 @@
 ﻿#ifndef Inc_ege_windows_h_
 #define Inc_ege_windows_h_
 
-#include "ege/base.h"
+#include "ege/colorbase.h" // for Size;
+#include "ege/base.h" // for BitmapPtr;
 #include "ege/env.h"
-#include <WinDef.h>
-#include <MinWinBase.h>
-#include <Wingdi.h>
-#include <WinUser.h>
+#include <windef.h> // for ::HBITMAP, ::HANDLE, ::HWND, ::HINSTANCE;
+// NOTE: Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97362.
+#undef __deref
+#include <wingdi.h> // for PS_*;
+#include <winuser.h> // for WM_MOUSEWHEEL;
+#if YEGE_Use_YSLib
+#	if YCL_Win32
+#		include <YCLib/YModules.h>
+#		include YFM_Win32_YCLib_NLS // for platform_ex::MBCSToWCS,
+#	else
+#		error "Win32 required for YSLib."
+#	endif
+#else
+#	include <string> // for std::wstring;
+#	include <winnls.h> // for CP_ACP;
+#endif
 
 #ifndef WM_MOUSEWHEEL
-#define WM_MOUSEWHEEL                   0x020A
+#	define WM_MOUSEWHEEL                   0x020A
 #endif
 
 namespace ege
@@ -87,6 +100,14 @@ getHWnd();         // 获取绘图窗口句柄
 
 EGEAPI ::HINSTANCE
 getHInstance();
+
+
+#if YEGE_Use_YSLib
+using platform_ex::MBCSToWCS;
+#else
+YB_ATTR_nodiscard EGEAPI YB_NONNULL(1) std::wstring
+MBCSToWCS(const char*, unsigned = CP_ACP);
+#endif
 
 }
 

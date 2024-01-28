@@ -21,12 +21,22 @@
 #include "ege/random.h"
 #include "ege/fpsbase.h"
 
-#if 0
+#if false
 #include "ege/button.h"
 #include "ege/fps.h"
 #include "ege/label.h"
 #include "ege/sys_edit.h"
 #endif
+
+#define EGE_VERSION "24.01"
+#define EGE_VERSION_W L"24.01"
+#define EGE_VERSION_MAJOR 24
+#define EGE_VERSION_MINOR 1
+#define EGE_VERSION_PATCH 0
+#define EGE_MAKE_VERSION_NUMBER(major, minor, patch) \
+	((major) * 10000L + (minor) * 100L + (patch))
+#define EGE_VERSION_NUMBER EGE_MAKE_VERSION_NUMBER(EGE_VERSION_MAJOR, \
+	EGE_VERSION_MINOR, EGE_VERSION_PATCH)
 
 namespace ege
 {

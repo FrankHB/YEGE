@@ -2,7 +2,9 @@
 #define Inc_ege_music_h_
 
 #include "ege/def.h"
-#include <WinDef.h>
+#include <windef.h> // for ::HWND;
+// NOTE: Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97362.
+#undef __deref
 
 namespace ege
 {
@@ -47,6 +49,7 @@ public:
 	// MUSIC_MODE_OPEN //打开中（较少使用）
 	// MUSIC_MODE_SEEK //定位中（较少使用）
 	unsigned long GetPlayStatus();
+
 private:
 	unsigned long m_DID;
 	void* m_dwCallBack;

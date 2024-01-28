@@ -216,7 +216,7 @@ ege_setpattern_ellipsegradient(ege_point center, color_t centercolor,
 }
 
 void
-ege_setpattern_texture(IMAGE* srcimg, float x, float y, float w, float h,
+ege_setpattern_texture(const IMAGE* srcimg, float x, float y, float w, float h,
 	IMAGE* pimg)
 {
 	if(srcimg->m_texture)
@@ -234,7 +234,8 @@ ege_setalpha(int alpha, IMAGE* pimg)
 	{
 		const auto w(img.GetWidth()), h(img.GetHeight());
 		const auto buf(img.getbuffer());
-		typename std::decay<decltype(*buf)>::type a(alpha << 24);
+		typename std::decay<decltype(*buf)>::type
+			a(static_cast<unsigned long>(alpha) << 24);
 
 		yassume(buf);
 		for(typename std::decay<decltype(h)>::type y(0); y < h; ++y)
@@ -254,14 +255,15 @@ ege_gentexture(bool gen, IMAGE* pimg)
 }
 
 void
-ege_puttexture(IMAGE* srcimg, float x, float y, float w, float h, IMAGE* pimg)
+ege_puttexture(const IMAGE* srcimg, float x, float y, float w, float h,
+	IMAGE* pimg)
 {
 	ege_rect dest{x, y, w, h};
 
 	ege_puttexture(srcimg, dest, pimg);
 }
 void
-ege_puttexture(IMAGE* srcimg, ege_rect dest, IMAGE* pimg)
+ege_puttexture(const IMAGE* srcimg, ege_rect dest, IMAGE* pimg)
 {
 	ege_rect src;
 
@@ -272,7 +274,7 @@ ege_puttexture(IMAGE* srcimg, ege_rect dest, IMAGE* pimg)
 	ege_puttexture(srcimg, dest, src, &cimg_ref_c(pimg));
 }
 void
-ege_puttexture(IMAGE* srcimg, ege_rect dest, ege_rect src, IMAGE* pimg)
+ege_puttexture(const IMAGE* srcimg, ege_rect dest, ege_rect src, IMAGE* pimg)
 {
 	auto& img(cimg_ref(pimg));
 
@@ -283,7 +285,7 @@ ege_puttexture(IMAGE* srcimg, ege_rect dest, ege_rect src, IMAGE* pimg)
 		graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
 		if(img.m_aa)
 			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-#if 0
+#if false
 		Gdiplus::ImageAttributes ia;
 		Gdiplus::ColorMatrix mx{
 			{

@@ -11,15 +11,15 @@ main()
 
 	fps f;
 
-	for(double r = 0; is_run(); delay_fps(100000))
+	for(double a = 0; is_run(); delay_fps(100000))
 	{
-		r += 0.02;
-		if(r > PI * 2)
-			r -= PI * 2;
+		a += 0.02;
+		if(a > PI * 2)
+			a -= PI * 2;
 		cleardevice();
 		setcolor(EGERGB(0xFF, 0xFF, 0xFF));
 		setfillcolor(EGERGB(0, 0, 0xFF));
-		[](double x, double y, double r, double a){
+		[a](double x, double y, double r){
 			int pt[10];
 
 			for(int n = 0; n < 5; ++n)
@@ -28,7 +28,7 @@ main()
 				pt[n * 2 + 1] = std::sin(PI * 4 / 5 * n + a) * r + y;
 			}
 			fillpoly(5, pt);
-		}(300, 200, 100, r);
+		}(300, 200, 100);
 	}
 }
 

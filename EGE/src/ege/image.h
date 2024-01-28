@@ -9,7 +9,9 @@
 #else
 #	include "ege/gapi.h"
 #	include "global.h"
-#	include <Windows.h>
+#	include <windef.h>
+// NOTE: Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97362.
+#	undef __deref
 #endif
 #include <wtypes.h> // for ::PROPID required by <gdiplus.h>;
 #include <gdiplus.h>
@@ -20,7 +22,7 @@ namespace ege
 inline Size
 ToSize(int w, int h)
 {
-	if(w < 0 || h < 0)
+	if(w <= 0 || h <= 0)
 		throw std::invalid_argument("ege::ToSize");
 	return {w, h};
 }
@@ -104,11 +106,12 @@ public:
 		return Resize(ToSize(width, height));
 	}
 
-#if YEGE_Use_YSLib
+	void
+	getimage(const IMAGE*, int, int, int, int);
 	graphics_errors
-	getimage(HBitmap&&);
+	getimage(::HRSRC);
 	graphics_errors
-	getimage(ystdex::octet*, size_t);
+	getimage(void*, unsigned long);
 	graphics_errors
 	getimage(const char*);
 	graphics_errors
@@ -117,21 +120,13 @@ public:
 	getimage(const char*, const char*);
 	graphics_errors
 	getimage(const wchar_t*, const wchar_t*);
-	void
-	getimage(IMAGE*, int, int, int, int);
+
+#if YEGE_Use_YSLib
+	graphics_errors
+	getimage_b(HBitmap&&);
 #else
-	void
-	getimage(IMAGE* pSrcImg, int srcX, int srcY, int srcWidth, int srcHeight);
-	int
-	getimage(const char* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
-	int
-	getimage(const wchar_t* pImgFile, int zoomWidth = 0, int zoomHeight = 0);
-	int
-	getimage(const char* pResType, const char* pResName, int zoomWidth = 0, int zoomHeight = 0);
-	int
-	getimage(const wchar_t* pResType, const wchar_t* pResName, int zoomWidth = 0, int zoomHeight = 0);
-	int
-	getimage(void* pMem, long size);
+	graphics_errors
+	getimage_b(void*);
 #endif
 
 	void
@@ -141,24 +136,25 @@ public:
 	void
 	putimage(IMAGE*, int, int, unsigned long = SRCCOPY) const;
 	void
-	putimage(IMAGE*, int, int, int, int, int, int, unsigned long = SRCCOPY) const;
-	void
-	putimage(IMAGE*, int, int, int, int, int, int, int, int, unsigned long = SRCCOPY)
+	putimage(IMAGE*, int, int, int, int, int, int, unsigned long = SRCCOPY)
 		const;
+	void
+	putimage(IMAGE*, int, int, int, int, int, int, int, int,
+		unsigned long = SRCCOPY) const;
 
 #if YEGE_Use_YSLib
 	int
-	saveimage(const char* filename, ImageFormat = ImageFormat::BMP);
+	saveimage(const char* filename, ImageFormat = ImageFormat::BMP) const;
 	int
-	saveimage(const wchar_t* filename, ImageFormat = ImageFormat::BMP);
+	saveimage(const wchar_t* filename, ImageFormat = ImageFormat::BMP) const;
 #else
 	int
-	saveimage(const char* filename);
+	saveimage(const char* filename) const;
 	int
-	saveimage(const wchar_t* filename);
+	saveimage(const wchar_t* filename) const;
 
 	int
-	savepngimg(std::FILE* fp, int bAlpha);
+	savepngimg(std::FILE* fp, int bAlpha) const;
 #endif
 
 	int
@@ -174,7 +170,7 @@ public:
 		int nYOriginSrc = 0,    // y-coord of source upper-left corner
 		int nWidthSrc = 0,      // width of source rectangle
 		int nHeightSrc = 0      // height of source rectangle
-	);
+	) const;
 
 	int
 	putimage_alphablend(
@@ -186,7 +182,7 @@ public:
 		int nYOriginSrc = 0,    // y-coord of source upper-left corner
 		int nWidthSrc = 0,      // width of source rectangle
 		int nHeightSrc = 0      // height of source rectangle
-	);
+	) const;
 
 	int
 	putimage_alphatransparent(
@@ -199,7 +195,7 @@ public:
 		int nYOriginSrc = 0,    // y-coord of source upper-left corner
 		int nWidthSrc = 0,      // width of source rectangle
 		int nHeightSrc = 0      // height of source rectangle
-	);
+	) const;
 
 	int
 	putimage_withalpha(
@@ -210,7 +206,7 @@ public:
 		int nYOriginSrc = 0,    // y-coord of source upper-left corner
 		int nWidthSrc = 0,      // width of source rectangle
 		int nHeightSrc = 0      // height of source rectangle
-	);
+	) const;
 
 	int
 	putimage_alphafilter(
@@ -222,7 +218,7 @@ public:
 		int nYOriginSrc = 0,    // y-coord of source upper-left corner
 		int nWidthSrc = 0,      // width of source rectangle
 		int nHeightSrc = 0      // height of source rectangle
-	);
+	) const;
 
 	int
 	imagefilter_blurring_4(
@@ -255,7 +251,7 @@ public:
 	);
 
 	int putimage_rotate(
-		IMAGE* imgtexture,
+		const IMAGE* imgtexture,
 		int nXOriginDest,
 		int nYOriginDest,
 		float centerx,
@@ -267,7 +263,7 @@ public:
 	);
 
 	int putimage_rotatezoom(
-		IMAGE* imgtexture,
+		const IMAGE* imgtexture,
 		int nXOriginDest,
 		int nYOriginDest,
 		float centerx,
@@ -283,9 +279,13 @@ public:
 
 IMAGE&
 cimg_ref(IMAGE*);
+const IMAGE&
+cimg_ref(const IMAGE*);
 
 IMAGE&
 cimg_ref_c(IMAGE*);
+const IMAGE&
+cimg_ref_c(const IMAGE*);
 
 } // namespace ege;
 

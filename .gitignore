@@ -14,4 +14,4 @@ libEGE.def
 *.cscope_file_list
 
 /MandelbrotSet/log.txt
-/MandelbrotSetAni/snap*.bmp
+/MandelbrotSetAni*/snap*.*

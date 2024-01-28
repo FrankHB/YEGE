@@ -2,7 +2,6 @@
 #define Inc_ege_input_h_
 
 #include "ege/def.h"
-#include <MinWinDef.h>
 
 namespace ege
 {
@@ -144,6 +143,13 @@ enum key_code_e
 	key_num7        = 0x67,
 	key_num8        = 0x68,
 	key_num9        = 0x69,
+
+	key_multiply    = 0x6a,
+	key_add         = 0x6b,
+	key_separator   = 0x6c,
+	key_subtract    = 0x6d,
+	key_decimal     = 0x6e,
+	key_divide      = 0x6f,
 
 	key_f1          = 0x70,
 	key_f2          = 0x71,

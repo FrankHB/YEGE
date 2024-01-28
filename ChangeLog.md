@@ -1,10 +1,22 @@
 ﻿# 概要
 
-YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，提供兼容特性。
+　　YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，提供兼容特性。
 
 # 版本历史
 
-## 主分支版本
+## 24.01
+
+### 构建配置
+
+　　调整部分 Code::Blocks 构建选项：
+
+* EGE 静态库项目中加入编译器选项 `-fdata-sections -ffunction-sections` 。
+* 项目的 release 配置中加入编译器选项 `-fno-enforce-eh-specs`（同 `-DNDEBUG` ）。
+* 项目中加入编译器选项 `fnew-inheriting-ctors -fno-strong-eval-order -U__GXX_TYPEINFO_EQUALITY_INLINE -U__GXX_MERGED_TYPEINFO_NAMES -D__GXX_TYPEINFO_EQUALITY_INLINE=1 -D__GXX_MERGED_TYPEINFO_NAMES=0` 。
+* LTO 选项使用 `-flto=jobserver` 。
+* 添加编译器警告选项（参见实现质量的说明）。
+
+**已知问题** MinGW 工具链在启用 LTO 构建可执行程序时可能[引起可忽略的错误](https://bugs.launchpad.net/gcc-arm-embedded/+bug/1853451)，但错误没有被 Code::Blocks 忽略。这导致生成失败，但实际生成可运行的可执行文件。
 
 ### API 修改
 
@@ -14,39 +26,158 @@ YEGE 以 [misakamm 的 xege](http://github.com/misakamm/xege) 为基础修改，
 	* 参见 [wysaid/xege pull request 5](https://github.com/wysaid/xege/pull/5) 。
 	* 参见 [wysaid/xege pull request 9](https://github.com/wysaid/xege/pull/9) 。
 * 颜色转换函数添加 `ynothrow` 。
-* 修复函数 `RGBTOBGR` 的参数类型（自从 19.01 ）。
-* 修改 `color_t` 的格式：交换红色和蓝色分量。
-	* 撤销 14.01 的修改，和原始 misakamm/xege 的 `color_t` 一致，而不再和 `::COLORREF` 一致。
-	* 同时修改函数 `EGERGB` 的实现，解决和其它函数的不一致问题。
-	* 修改后的格式和 `YSLib::Pixel` 在 Win32 上的实现以及 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 中的像素格式保持一致，存储格式都为 BGRA8888 。
+* 调整和修复颜色和转换 API ：
+	* 修复函数 `RGBTOBGR` 的参数类型（自从 19.01 ）。
+	* 调整 `color_t` ：
+		* 修改格式：交换红色和蓝色分量。
+			* 撤销自从 14.01 的修改，和原始 misakamm/xege 的 `color_t` 一致，而不再和 `::COLORREF` 一致。
+			* 同时修改函数 `EGERGB` 的实现，解决和其它函数的不一致问题。
+			* 同时撤销函数 `setlinestyle` 、`setfillstyle` 、`setcolor` 、`setbkcolor` 、`setbkcolor_f` 、`setfontbkcolor` 、`floodfill` 和 `floodfillsurface` 的实现修改。
+				* **注意** 函数 `putpixels` 和 `putpixels_f` 保持不变。
+			* 修改后的格式和 `YSLib::Pixel` 在 Win32 上的实现以及 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 中的像素格式保持一致，存储格式都为 BGRA8888 。
+		* 修复不使用 YSLib 时类型 `color_t` 声明（自从 19.01 ），保证是无符号数。
+			* 这个类型不保证是整数，但不使用 YSLib 时当前实现为整数。
+			* **注释** 在原始的 EGE 中，这个类型是 `DWORD` 的别名，对支持的 Win32 环境即 `unsigned long` 。
+			* **原理** 在 19.01 中，不使用 YSLib 实现时，这个类型是 `int` 的别名。
+				* 虽然使用有符号数仍然二进制兼容，但可能引起非预期的有符号数和无符号数的转换，如 G++ [-Wsign-conversion] 警告。
+				* 因此，有必要修正为无符号数。
+			* **注释** 用户代码仍不应预期 `color_t` 和 `color_int_t` 总是相同。
+	* 修复函数 `EGERGBA`、`EGEARGB`、`EGEACOLOR`、`EGECOLORA`、`EGEGET_A`、`EGEGRAYA` 和 `EGEAGRAY` 关于 alpha 分量的类型 `MonoType` 为 `AlphaType` 。
+		* 因为当前 `MonoType` 和 `AlphaType` 都是 `octet` 的别名，不影响用户源代码和目标代码的兼容性。
+	* 添加函数 `ARGBTOZBGR` 。
+		* 参见 [wysaid/xege pull request 29](https://github.com/wysaid/xege/pull/29) ；此处不是宏而是函数。
+	* 设置函数 `EGERGB` 的结果 alpha 值为 `0xFF` 。
+		* 这和 `YSLib::Drawing::Color` 仅使用 RGB 值初始化的行为一致。
+		* 另见 [wysaid/xege pull request 29](https://github.com/wysaid/xege/pull/29) 。
 * 函数 `clearviewport` 使用背景颜色填充。
 	* 参见 [wysaid/xege pull request 12](https://github.com/wysaid/xege/pull/12) 。
 * 修复函数 `getch` 阻塞不返回（自从 19.01 ）。
 * 修复函数 `setcolor` 、`setlinestyle` 和 `setlinewidth` 并简化实现。
 	* 参见 [wysaid/xege pull request 13](https://github.com/wysaid/xege/pull/13) 。
-* 修复函数 `ege_setalpha` 对无效的 `IMAGE`（未成功初始化的图像）缺少检查。
-	* 另见 [wysaid/xege pull request 16](https://github.com/wysaid/xege/pull/16) 。
-* 优化函数 `ege_setalpha` 的实现。
+* 函数 `ege_setalpha` ：
+	* 修复对无效的 `IMAGE`（未成功初始化的图像）缺少检查。
+		* 另见 [wysaid/xege pull request 16](https://github.com/wysaid/xege/pull/16) 。
+	* 优化实现。
+		* 参见 [wysaid/xege pull request 16](https://github.com/wysaid/xege/pull/16) 。
+* 添加小键盘符号键的键码。
+	* 参见 [wysaid/xege pull request 17](https://github.com/wysaid/xege/pull/17) 。
+* 确保函数 `setcolor` 和 `setlinestyle` 忽略颜色 alpha 分量。
+	* 参见 [wysaid/xege pull request 20](https://github.com/wysaid/xege/pull/20) 。
+	* 参见 [wysaid/xege pull request 29](https://github.com/wysaid/xege/pull/29) 。
+* 部分函数类型中添加 `const` 并添加若干 `const` 重载函数。
+	* 参见 [wysaid/xege pull request 31](https://github.com/wysaid/xege/pull/31) 。
+	* `getbuffer` 添加重载后分别返回 `void*` 和 `const void*` 。
+* 检查 `resize` 的参数，在等于 0 也抛出 `std::invalid_argument` 异常，因为之前的实现的行为未定义。
+	* 使用 GDI 实现的 [`diWidth` 的宽度不大于 0 时没有显式定义](https://docs.microsoft.com/en-us/previous-versions/dd183376%28v=vs.85%29) 。
+	* [可出现无法预期的行为](https://github.com/wysaid/xege/issues/2)。
+	* 在 ReactOS 的 `CreateDIBSection` 实现中直接转换为 `ULONG` 值，没有检查。
+* 改用误差更小的 alpha 通道混合算法：不调整 `unsigned char` 值的上界。
+	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
+	* 这和模块 `YSLib::Service::YPixel` 的通用实现更接近，利于以后复用。
+* 函数 `putimage_transparent` 仅比较 RGB 颜色。
+	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
+* 添加函数 `putimage_alphafilter` 。
+	* 参见 [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 。
+* 修复函数 `setlinestyle` 、`setfillstyle` 、`setcolor` 、`setbkcolor` 、`setbkcolor_f` 、`setfontbkcolor` 、`floodfill` 和 `floodfillsurface` 的实现没有忽略 alpha 值。	
+	* 参见 [wysaid/xege pull request 29](https://github.com/wysaid/xege/pull/29) 。
+* 函数 `getimage` 支持在通过函数 `initgraph` 初始化前调用。
+	* 参见 [wysaid/xege pull request 41](https://github.com/wysaid/xege/pull/41) 。
+	* 使用 YEGE 时实现已支持调用。
+* 修复不使用 YSLib 时头文件 `<ege/def.h>` 遗漏包含 `<climits>`（自从 19.01 ） 。
+* 不使用 YSLib 时提供和 YBase 兼容的宏（空实现）：
+	* `YB_ATTR_nodiscard`。
+	* `YB_NONNULL(...)` 。
+* 新增函数 `MBCSToWCS` 。
+	* 不使用 YSLib 时同 `platform_ex` 的函数的第一个重载，即 `std::wstring MBCSToWCS(const char*, unsigned = CP_ACP);` 。
+	* 使用 YSLib 时同 `platform_ex` 的函数。
+* 修复使用 YSLib 时函数 `getimage_pngfile` 的实现（自从 14.01 ）。
+	* 修复错误的文件大小计算导致的缓冲区访问。
+	* 修复可能的并发访问冲突。
+	* 大小超过 32 位无符号整数范围的文件总是访问失败。
+* 新增版本宏 `EGE_VERSION` 、`EGE_VERSION_MAJOR` 、`EGE_VERSION_MINOR` 、`EGE_VERSION_PATCH` 、`EGE_MAKE_VERSION_NUMBER(major, minor, patch)` 和 `EGE_VERSION_NUMBER` 。
+	* 参见 [wysaid/xege pull request 143](https://github.com/wysaid/xege/pull/143) 。
+
+　　兼容实现调整：
+
+* 替换以下 Windows SDK 类型：
+	* `WORD` → `unsigned short` 。
+
+　　实现注记：
+
+* 合并部分重复的实现。
+* 重命名部分内部实现使用的宏。
+	* 参见 [wysaid/xege pull request 26](https://github.com/wysaid/xege/pull/26) 。
+* [wysaid/xege pull request 30](https://github.com/wysaid/xege/pull/30) 中的宏 `EGEALPHABLEND` 实现为内部函数。
+* 未定义行为断言失败，不保证终止程序外的具体行为，可能[有不同的实现](https://github.com/wysaid/xege/pull/35)。
+* [wysaid/xege pull request 36](https://github.com/wysaid/xege/pull/36) 中的宏 `INITGRAPH(x, y)` 和 `INITGRAPH3(x, y, f)` 自从 14.01 已被移除。
+* 内部头文件 `<ege/base.h>` 不再包含 `<ege/colorbase.h>` 。
+* 更新默认窗口标题和格式，用空格分隔字符串，支持 G++ 和 Clang++（新增）。
+
+　　以下 [wysaid/xege](https://github.com/wysaid/xege) 特性具有类似但不同的设计和实现：
+
+* [将 `EgeControlBase` 移出 `ege.h`](https://github.com/wysaid/xege/pull/24) 。
+	* YEGE 中已在不同的头文件。
+	* 因为其它被间接包含的头文件也不在 `ege.h` 中，仍需 `ege/` ，YEGE 不支持单独分发 `ege.h` 。
+* [部分重构 `IMAGE` 类](https://github.com/wysaid/xege/pull/28)。
+	* 对[相关初始化问题的修复](https://github.com/wysaid/xege/issues/2)仍然在逻辑上存在缺陷。
+		* YEGE 重构的方式不同，不支持初始化前使用资源。
+	* 调整大小的具有不同的作用（对函数 `resize` 可见）：
+		* [wysaid/xege 修改不初始化背景](https://github.com/wysaid/xege/commit/16cfad18cc847e7c525975c1f060a1bf0b18b9f8)，但[之后又被撤销](https://github.com/wysaid/xege/pull/82)。
+		* YEGE 调整对应大小时使用 `ScreenBuffer` ，内容未指定。
+	* `IMAGE::getimage` 中的[编码转换](https://github.com/wysaid/xege/pull/32/commits/9c21257c221e121c6e3672134033ad8a61d10491#diff-3cc33c19b2f83be364b2b42d7fe2ccc7c1d6f32a78d5f963400a28f81696221f)。
+		* YEGE 使用 `ege::MBCSToWCS` 实现 `IMAGE::getimage` 中的编码转换。
+		* 设置窗口标题的实现暂不调整。
+* [wysaid/xege pull request 34](https://github.com/wysaid/xege/pull/34) 中的特性和对 BGI 兼容的[函数 `initgraph` 重载的参数类型 `char*` 修改为 `const char*`](https://github.com/wysaid/xege/commit/85d841ffc03496ae7fb71e75ae33199c6687f3c2) ：
+	* 因为 YEGE 不支持 BGI 函数重载，没有需要修复的初始化行为。
+	* YEGE 不使用 `-1` 作为模式（使用 `-1` 作为模式可能会影响初始化状态，未在 wysaid/xege 文档中说明）；这也[在之后被撤销](https://github.com/wysaid/xege/commit/85d841ffc03496ae7fb71e75ae33199c6687f3c2)。
+* 在公开头文件中新增[判断版本的宏](https://github.com/wysaid/xege/pull/143)的提案由 YEGE 提出。
+	* 因为已经有版本宏，不支持[函数 `getGraphicsVer`](https://github.com/wysaid/xege/pull/22/commits/5064e690bd981a4b765702511873b44126eb006a) 。
+
+### 实现质量
+
+　　EGE 库中加入 `-Wnon-virtual-dtor -Wshadow -Wredundant-decls -Wcast-align -Wmissing-declarations -pedantic-errors -Wextra -Wall -Wctor-dtor-privacy -Wconditionally-supported -Wdeprecated -Wdeprecated-declarations -Wformat=2 -Wno-format-nonliteral -Winvalid-pch -Wlogical-op -Wmissing-include-dirs -Wmultichar -Woverloaded-virtual -Wpacked -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstringop-overflow=0 -Wsuggest-attribute=noreturn -Wtrampolines -Wzero-as-null-pointer-constant` 保证无错误和警告。
+
+**注释** 相对之前的版本，添加 `-Wshadow -Woverloaded-virtual -Wsign-conversion -Wstringop-overflow=0 -Wsuggest-attribute=noreturn` 。
+
+　　依赖 YSLib 时，EGE 库中加入 `-Wfloat-equal` 保证无警告。相对 YSLib 的 G++ 默认警告选项，缺少 `-Wno-mismatched-tags -Wno-noexcept-type -Wdouble-promotion -Wsuggest-attribute=const -Wsuggest-attribute=pure -Wsuggest-final-methods -Wsuggest-final-types` 。
+
+　　EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题没有加入此选项）。
 
 ### 非外部依赖项代码风格和格式
 
 * 函数参数列表 `(void)` 修改为 `()` 。
+* 移除类型名 `vector2d` 后的空格。
+* 使用 `false` 和 `true` 代替条件包含使用的整数值。
+* 移除 `template` 和 `<` 之间的空格。
+* 非类类型模板形式参数使用 `typename` 代替 `class` 。
+* 使用 `while(true)` 代替没有显式条件的 `for` 。
+* 尽量使用条件包含代替 `if(0)` 或 `if(1)` ；使用 `false` 和 `true` 代替条件 `0` 和 `1` 。
 
 ### 外部依赖项全局名称
 
-具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
+　　具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
 
-* `ExtC`
+* `BITMAPINFO`
+* `BITMAPFILEHEADER`
+* `Ext`
+* `IS`
+* `TextOut`
+
+### 示例
+
+* 修改 `egeball` 中的颜色，使之更具有饱和度。
+	* 参见 [wysaid/xege 的类似修改](https://github.com/wysaid/xege/commit/a0ed0e9218768eeb0826ca5226cce1c102863cec)。
+* 修复 `tutorial` 源代码具有的保留名称。
 
 ## 19.01
 
-YEGE 19.01 以 YEGE 14.01 为基础修改。
+　　YEGE 19.01 以 YEGE 14.01 为基础修改。
 
 ### 限制实现需求
 
-依赖 [YSLib](https://bitbucket.org/FrankHB/yslib)（见下文）时，要求 MinGW G++ 5.3.0 或以上。YSLib 提供的库 YBase 和 YFramework 的 API 需要满足最低实现支持。以后的版本可能提升实现的支持要求。
+　　依赖 [YSLib](https://bitbucket.org/FrankHB/yslib)（见下文）时，要求 MinGW G++ 5.3.0 或以上。YSLib 提供的库 YBase 和 YFramework 的 API 需要满足最低实现支持。以后的版本可能提升实现的支持要求。
 
-只测试 MinGW-W64（使用同 YSLib 项目相同的 [MSYS2](https://www.msys2.org/) 基础环境）。未测试 [MinGW.org](http://mingw.org/) 的运行时。
+　　只测试 MinGW-W64（使用同 YSLib 项目相同的 [MSYS2](https://www.msys2.org/) 基础环境）。未测试 [MinGW.org](http://mingw.org/) 的运行时。
 
 ### 依赖项更改
 
@@ -57,50 +188,54 @@ YEGE 19.01 以 YEGE 14.01 为基础修改。
 
 ### API 修改
 
-接口扩充：
+　　接口扩充：
 
 * 在 `ege` 命名空间提供类型别名 `color_int_t` 和 `MonoType` 表示颜色转换整数类型和分量类型。
 
-YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
+　　YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 
-* 提供和 YBase 兼容的伪关键字宏 `yconstfn` 、`yconstexpr` 和 `ynothrow` ，分别替换为 `constexpr` 、`constexpr` 和 `noexcept` 。
-* 提供和 YBase 兼容的伪关键字宏 `yconstraint` 和 `yassume` 替换 `assert` 。
-* 提供和 YBase 兼容的伪关键字宏 `yunseq` 。
-* 提供和 YBase 一致实现的伪关键字宏 `yunused` 。
-* 在 `ege` 命名空间提供和 YBase 一致实现的类型 `octet` 和 `byte` 。
-* 在 `ege` 命名空间使用 `using` 引入智能指针类型和相关操作的声明，并提供 `std::make_unique` 的替代实现。
-* 在 `ege` 命名空间提供和 YCLib 的 `platform::Deref` 和 `platform::Nonnull` 兼容的模板。
-* 在 `ege` 命名空间提供和 YSLib 兼容的 `SPos` 和 `SDst` 类型。
-* 提供和 YBase 一致实现的宏 `YPP_Empty` 、`YPP_Commma` 和 `YPP_Concat` 。
-* 提供和 YCLib 兼容的宏 `YTraceDe`。
-	* 空实现。
+* 提供和 YBase 兼容的宏：
+	* 伪关键字宏：
+		* `yconstfn` 、`yconstexpr` 和 `ynothrow` ，分别替换为 `constexpr` 、`constexpr` 和 `noexcept` 。
+		* `yconstraint` 和 `yassume` 替换 `assert` 。
+		* `yunseq` 。
+		* 和 YBase 一致实现的宏 `yunused` 。
+	* 和 YBase 一致实现的宏 `YPP_Empty` 、`YPP_Commma` 和 `YPP_Concat` 。
+	* `YB_EXPECT` 、`YB_LIKELY` 和 `YB_UNLIKELY`。
+		* 仅实现判断 GCC ，不确定版本。
+* 提供和 YCLib 兼容的宏：
+	* `YTraceDe` 。
+		* 空实现。
+	* `YAssert` 。
+		* 替换为 `yassume` 表达式。
 * 提供和 YSLib 一致实现的以下宏：
-	* `PDefH` `PDefHOp`
-	* `ImplExpr` `ImplRet` `ImplThrow` `ImplUnseq`
-	* `TryExpr` `TryRet`
-	* `CatchExpr` `CatchIgnore` `CatchThrow`
-	* `DefDeCtor` `DefDelCtor`
-	* `DefDeCopyCtor` `DefDelCopyCtor` `DefDeMoveCtor` `DefDelMoveCtor`
-	* `DefDeCopyMoveCtor`
-	* `DefDeDtor` `DefDelDtor` `ImplDeDtor`
-	* `DefDeCopyAssignment` `DefDelCopyAssignment` `DefDeMoveAssignment` `DefDelMoveAssignment` `DefDeCopyMoveAssignment` `DefDeCopyMoveCtorAssignment`
-	* `DefCvt`
-	* `DefNeg` `DefBoolNeg`
-	* `DefPred` `DefGetter` `DefGetterMem` `DefSetter`
-	* `DefSwap`
-* 提供和 YCLib 兼容的宏 `YAssert`。
-	* 替换为 `yassume` 表达式。
-* 在 `ege` 命名空间提供和 YSLib 兼容的 `min` 和 `max` 模板。
-	* 非 YSLib 使用 `std` 的对应名称代替，不保证 `constexpr` 。
-* 在 `ege` 命名空间提供和 YSLib 兼容的 `HalfDifference` 、`IsInInterval` 和 `IsInOpenInterval` 模板。
-* 在 `ege` 命名空间提供和 `YSLib::Drawing` 兼容的模板 `GBinaryGroup` 、类型 `Point` 、`Vec` 、`Size` 和 `Rect` 以及相关操作。
-* 在 `ege` 命名空间提供和 `YSLib::Drawing` 二进制兼容的类型 `BitmapPtr` 和 `ConstBitmapPtr`。
-	* 实现为 `color_int_t` 的指针。
-* 提供和 YBase 兼容的宏 `YB_EXPECT` 、`YB_LIKELY` 和 `YB_UNLIKELY`。
-	* 仅实现判断 GCC ，不确定版本。
-* 在 `ege` 命名空间提供和 YCLib 兼容的类 `ScreenBuffer` ，但成员 `Premultiply` 、`UpdatePremultipliedTo` 和 `UpdateTo` 除外。
+	* `PDefH` 和 `PDefHOp` 。
+	* `ImplExpr` 、`ImplRet` 、`ImplThrow` 和 `ImplUnseq`。
+	* `TryExpr` 和 `TryRet` 。
+	* `CatchExpr` 、`CatchIgnore` 和 `CatchThrow` 。
+	* `DefDeCtor` 和 `DefDelCtor` 。
+	* `DefDeCopyCtor` 、`DefDelCopyCtor` 、`DefDeMoveCtor` 和 `DefDelMoveCtor` 。
+	* `DefDeCopyMoveCtor` 。
+	* `DefDeDtor` 、`DefDelDtor` 和 `ImplDeDtor` 。
+	* `DefDeCopyAssignment` 、`DefDelCopyAssignment` 、`DefDeMoveAssignment` 、`DefDelMoveAssignment` 、`DefDeCopyMoveAssignment` 和 `DefDeCopyMoveCtorAssignment` 。
+	* `DefCvt` 。
+	* `DefNeg` 和 `DefBoolNeg` 。
+	* `DefPred` 、`DefGetter` 、`DefGetterMem` 和 `DefSetter` 。
+	* `DefSwap` 。
+* 在 `ege` 命名空间提供：
+	* 提供和 YBase 一致实现的类型 `octet` 和 `byte` 。
+	* 使用 `using` 引入智能指针类型和相关操作的声明，并提供 `std::make_unique` 的替代实现。
+	* 提供和 YCLib 的 `platform::Deref` 和 `platform::Nonnull` 兼容的模板。
+	* 提供和 YSLib 兼容的 `SPos` 和 `SDst` 类型。
+	* 和 YSLib 兼容的 `min` 和 `max` 模板。
+		* 非 YSLib 使用 `std` 的对应名称代替，不保证 `constexpr` 。
+	* 和 YSLib 兼容的 `HalfDifference` 、`IsInInterval` 和 `IsInOpenInterval` 模板。
+	* 和 `YSLib::Drawing` 兼容的模板 `GBinaryGroup` 、类型 `Point` 、`Vec` 、`Size` 和 `Rect` 以及相关操作。
+	* 和 `YSLib::Drawing` 二进制兼容的类型 `BitmapPtr` 和 `ConstBitmapPtr`。
+		* 实现为 `color_int_t` 的指针。 
+	* 和 YCLib 兼容的类 `ScreenBuffer` ，但成员 `Premultiply` 、`UpdatePremultipliedTo` 和 `UpdateTo` 除外。
 
-非向后兼容接口：
+　　非向后兼容接口：
 
 * 添加 `linestyletype` 和 `EGEMSG` 的构造函数，只支持默认构造和提供所有成员的初始化。
 * 宏 `RGBTOBGR` 、`EGERGB` 、`EGERGBA` 、`EGEARGB` 、`EGEACOLOR` 、`EGECOLORA` 、`EGEGET_R` 、`EGEGET_G` 、`EGEGET_B` 、`EGEGET_A` 、`EGEGRAY` 、`EGEGRAYA` 和 `EGEAGRAY` 变更为 `ege` 命名空间内的函数。
@@ -124,10 +259,10 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 * 移除枚举 `graphics_drivers` 、`message_event` 和 `message_mouse` 。
 * 函数 `resize` 调用后状态未指定，不保证填充背景色。
 
-非向后兼容接口（仅当依赖 YSLib 时）：
+　　非向后兼容接口（仅当依赖 YSLib 时）：
 
 * `typedef` 类型名 `color_t` 从 `unsigned int` 改为 `YSLib::Drawing::PixelType` 。
-* 使用 YCLib 提供的 `YSLib::Drawing::MonoType` 表示颜色分量。
+* 使用 YCLib 提供的 `YSLib::Drawing::MonoType` 表示颜色分量，代替 `ege::mono_t` 。
 * 使用 `YSLib::Drawing::PixelType::Integer` 表示颜色对应的整数类型。
 	* 注意布局同 `::COLORREF` ，相对原有实现红色和蓝色分量交换，修复了 `<wingdi.h>` 中 RGB 等宏的参数红色和蓝色分量相反的问题。
 * 函数 `savepng` 的表示是否使用 alpha 的参数被忽略。
@@ -145,7 +280,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 * 设置图像大小不依赖公共 `API` 。
 * 设置图像页面时检查越界并忽略越界访问。
 
-兼容接口和实现调整：
+　　兼容接口和实现调整：
 
 * 替换以下 Windows SDK 类型：
 	* `VOID` → `void` 。
@@ -157,7 +292,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 * 所有同名 `typedef` 结构体名称或 `typedef` 匿名结构体调整为非 `typedef` 结构体类型名。
 * 宏 `EGEAPI` 调整至返回值前；移除函数形参中不必要的 `const` 。
 
-修复错误实现：
+　　修复错误实现：
 
 * 修复绘制时遗漏调用 `::EndPaint`（此 bug 在 EGE 15.04 修复）。
 * 修复退出时遗漏清理 GDI+ 。
@@ -171,7 +306,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 * 修复函数 `flushkey` 和 `flushmouse` 调用可能被中断导致队列非空。
 * 修复函数 `inputbox_getline` 未检查分配存储失败。
 
-实现注记：
+　　实现注记：
 
 * 返回指针的内联函数 `CONVERT_IMAGE` 和 `CONVERT_IMAGE_CONST` 改用返回引用的非内联函数 `cimg_ref` 和 `cimg_ref_c` 替代。
 * 移除不符合标准的保留名称 `_RGBtoHSL` 和 `_HSLtoRGB` 的使用。
@@ -184,7 +319,7 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 * 简化绘图 API 实现。
 * 使用 YSLib 兼容的 `ScreenBuffer` 实现类 `IMAGE` 。
 
-实现注记（仅当依赖 YSLib 时）：
+　　实现注记（仅当依赖 YSLib 时）：
 
 * 使用 `YSLib::Drawing` 实现函数 `rgb2hsl` 、`hsl2rgb` 、`rgb2hsv` 和 `hsv2rgb`（不保证精度完全一致）。
 * 使用 `YSLib::Adaptor::Image` 模块提供的接口代替 OLE 和 libpng 实现图像读取操作。
@@ -193,19 +328,19 @@ YSLib 兼容接口扩充（依赖 YSLib 时直接使用 YSLib 对应接口）：
 
 ### 实现质量
 
-EGE 库中加入 `-Wall -Wcast-align -Wconditionally-supported -Wctor-dtor-privacy -Wdeprecated -Wdeprecated-declarations -Wextra -Wformat=2 -Winvalid-pch -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wmultichar -Wno-format-nonliteral -Wnon-virtual-dtor -Wpacked -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wtrampolines -Wzero-as-null-pointer-constant -pedantic-errors` 保证无错误和警告。
+　　EGE 库中加入 `-Wall -Wcast-align -Wconditionally-supported -Wctor-dtor-privacy -Wdeprecated -Wdeprecated-declarations -Wextra -Wformat=2 -Winvalid-pch -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wmultichar -Wno-format-nonliteral -Wnon-virtual-dtor -Wpacked -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wtrampolines -Wzero-as-null-pointer-constant -pedantic-errors` 保证无错误和警告。
 
-依赖 YSLib 时，EGE 库中加入 `-Wfloat-equal` 保证无警告。
+　　依赖 YSLib 时，EGE 库中加入 `-Wfloat-equal` 保证无警告。
 
-EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题没有加入此选项）。
+　　EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题没有加入此选项）。
 
 ### 非外部依赖项代码风格和格式
 
-主函数不使用冗余形参和返回语句。
+　　主函数不使用冗余形参和返回语句。
 
 ### 外部依赖项全局名称
 
-具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
+　　具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
 
 * `HMENU`
 * `LRES`
@@ -213,9 +348,9 @@ EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题�
 * `SetLayeredWindowAttributes`
 * `SetStretch`
 
-扩展 `OleLoadPicturePath` 到 `OleLoadPicturePath` 前缀的外部依赖项全局名称在使用时前缀 `::` 。
+　　扩展 `OleLoadPicturePath` 到 `OleLoadPicturePath` 前缀的外部依赖项全局名称在使用时前缀 `::` 。
 
-以下过时的前缀的外部依赖项全局名称在使用时不再需要附加前缀 `::` ：
+　　以下过时的前缀的外部依赖项全局名称在使用时不再需要附加前缀 `::` ：
 
 * `HEVENT`
 * `HRGN`
@@ -226,29 +361,29 @@ EGE 代码 `-Wold-style-cast` 保证无警告（因为依赖库头文件问题�
 * `TCHA`
 * `wsprintfW`
 
-添加以下所列外部依赖项全局名称在使用时不再需要附加前缀 `::` ：
+　　添加以下所列外部依赖项全局名称在使用时不再需要附加前缀 `::` ：
 
 * `BYTE`
 
-过时的外部依赖项全局名称在使用时不再需要附加前缀 `::` ：
+　　过时的外部依赖项全局名称在使用时不再需要附加前缀 `::` ：
 
 * `access`
 
 ## 14.01
 
-YEGE 19.01 以 EGE 13.03 为基础修改。
+　　YEGE 19.01 以 EGE 13.03 为基础修改。
 
 ### 增加 IDE 支持
 
-Code::Blocks 。
+　　Code::Blocks 。
 
 ### 限制实现需求
 
-限 MinGW G++ 4.8.0 或以上，需要 `-std=c++11` 支持。使用了 `std::thread` ，需要 POSIX 线程模型。
+　　限 MinGW G++ 4.8.0 或以上，需要 `-std=c++11` 支持。使用了 `std::thread` ，需要 POSIX 线程模型。
 
-（其它版本未测试，但至少需要 `-std=c++0x` 的 `auto` 、`nullptr` 、lambda 表达式和初始化列表等 C++11 特性支持，且若在 Code::Blocks 项目使用，需要去除 `debug` 的 `-Og` 选项。）
+　　（其它版本未测试，但至少需要 `-std=c++0x` 的 `auto` 、`nullptr` 、lambda 表达式和初始化列表等 C++11 特性支持，且若在 Code::Blocks 项目使用，需要去除 `debug` 的 `-Og` 选项。）
 
-只测试 MinGW-W64 。未测试 MinGW.org 的运行时。
+　　只测试 MinGW-W64 。未测试 MinGW.org 的运行时。
 
 ### 依赖项更改
 
@@ -258,7 +393,7 @@ Code::Blocks 。
 
 ### API 修改
 
-非向后兼容接口：
+　　非向后兼容接口：
 
 * 入口统一为 `::main` 。
 * 编译为 DLL 无需定义宏。
@@ -277,8 +412,9 @@ Code::Blocks 。
 * 移除函数 `attachHWND` 以避免潜在的死锁。
 * 函数 `setrendermode` 无效，默认状态统一为 `setrendermode(RENDER_MANUAL)` ；仅为兼容性保留。
 * 移除类型 `LPCALLBACK_PROC` 、`LPMSG_KEY_PROC` 、`LPMSG_MOUSE_PROC` 、`MSG_KEY_PROC` 和 `MSG_MOUSE_PROC` ，其中 `LPCALLBACK_PROC` 可用 `CALLBACK_PROC*` 代替。
+* 检查 `resize` 的参数，若小于 0 抛出 `std::invalid_argument` 异常。
 
-向后（源代码）兼容但不保证向前兼容原始实现的接口：
+　　向后（源代码）兼容但不保证向前兼容原始实现的接口：
 
 * `delay_fps` 和 `delay_jfps` 仅保留 `double` 重载版本。
 * 部分函数（包括 `mousepos` 等）加入断言检查参数。
@@ -286,7 +422,11 @@ Code::Blocks 。
 * 控件基类 `egeControlBase` 的析构函数保证为 `virtual` 。
 * 宏 `EGEAPI` 支持显式导入和导出。
 
-兼容接口和实现调整:
+　　以下 EGE 13.03 之后的 API 没有修改：
+
+* `getbuffer` 的返回类型保持为 `void*` 而不是 `color_t*` 以避免违反严格别名规则。
+
+　　兼容接口和实现调整:
 
 * 替换以下 Windows SDK 类型：
 	* `CHAR` → `char` 。
@@ -298,7 +438,7 @@ Code::Blocks 。
 * 所有同名 `typedef` 结构体名称或 `typedef` 匿名结构体调整为非 `typedef` 结构体类型名。
 * 宏 `EGEAPI` 调整至返回值前；移除函数形参中不必要的 `const` 。
 
-实现注记：
+　　实现注记：
 
 * 随机数改用 C++11 标准库 `<random>` 实现。
 * 移除的 `Array` 和 `Set` 模板改用 `std::vector` 和 `std::set` 代替。
@@ -327,27 +467,27 @@ Code::Blocks 。
 
 ### 实现质量
 
-EGE 库中加入 `-Wall -Wextra -Wmissing-include-dirs -Wzero-as-null-pointer-constant -pedantic-errors` 保证无错误和警告。
+　　EGE 库中加入 `-Wall -Wextra -Wmissing-include-dirs -Wzero-as-null-pointer-constant -pedantic-errors` 保证无错误和警告。
 
-其它项目中加入 `-Wall -Wextra -pedantic` 保证无警告。
+　　其它项目中加入 `-Wall -Wextra -pedantic` 保证无警告。
 
 ### 非外部依赖项代码风格和格式
 
-`{` 之前不邻接空格。
+　　`{` 之前不邻接空格。
 
-指针和空指针的相等比较用 `!` 操作符代替，不等比较使用 `bool` 转换代替。
+　　指针和空指针的相等比较用 `!` 操作符代替，不等比较使用 `bool` 转换代替。
 
-尽可能使用 `{}` 代替 `NULL` 或其它形式的空指针常量；无法使用 `{}` 的用 `nullptr` 代替。
+　　尽可能使用 `{}` 代替 `NULL` 或其它形式的空指针常量；无法使用 `{}` 的用 `nullptr` 代替。
 
-字面量 `false` 尽可能用 `{}` 代替。
+　　字面量 `false` 尽可能用 `{}` 代替。
 
-### 标准库使用
+### 外部依赖项使用
 
-标准库实体名称保证 `std::` 起始或使用 `using` 声明/指示。
+　　标准库实体名称保证 `std::` 起始或使用 `using` 声明/指示。
 
-使用 C++ 标准库头文件而不是 C 标准库头文件。
+　　使用 C++ 标准库头文件而不是 C 标准库头文件。
 
-具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
+　　具有以下所列前缀的外部依赖项全局名称在使用时附加前缀 `::` ：
 
 * `_wf`
 * `Arc`
@@ -434,7 +574,7 @@ EGE 库中加入 `-Wall -Wextra -Wmissing-include-dirs -Wzero-as-null-pointer-co
 * `mciSend`
 * `png_`
 
-以下所列外部依赖项全局名称在使用时附加前缀 :: ：
+　　以下所列外部依赖项全局名称在使用时附加前缀 :: ：
 
 * `HWND`
 * `MSG`

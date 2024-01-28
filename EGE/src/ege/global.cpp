@@ -10,18 +10,26 @@
 #include <mutex> // for std::once_flag, std::call_once;
 #include <atomic>
 #include "head.h"
+#include <winbase.h> // for ::EnumResourceNamesW;
 
 #ifdef _WIN64
-#define ARCH L"x64"
+#	define EGE_ARCH L"x64"
 #else
-#define ARCH L"x86"
+#	define EGE_ARCH L"x86"
 #endif
 
-#define TOSTRING_(x) #x
-#define TOSTRING(x) TOSTRING_(x)
-#define GCC_VER TOSTRING(__GNUC__) L"." TOSTRING(__GNUC_MINOR__) L"." TOSTRING(__GNUC_PATCHLEVEL__)
-
-#define EGE_TITLE L"yEGE13.04 GCC" GCC_VER ARCH
+#define EGE_TOSTR_(x) #x
+#define EGE_TOSTR(x) EGE_TOSTR_(x)
+#ifdef __clang__
+#	define EGE_CXX "Clang++"
+#	define EGE_CXX_VER EGE_TOSTR(__clang_major__) "." \
+	EGE_TOSTR(__clang_minor__) "." EGE_TOSTR(__clang_patchlevel__)
+#else
+#	define EGE_CXX "G++"
+#	define EGE_CXX_VER EGE_TOSTR(__GNUC__) "." EGE_TOSTR(__GNUC_MINOR__) "." \
+	EGE_TOSTR(__GNUC_PATCHLEVEL__)
+#endif
+#define EGE_TITLE L"yEGE " EGE_VERSION " " EGE_CXX " " EGE_CXX_VER " " EGE_ARCH
 
 namespace ege
 {
@@ -316,7 +324,7 @@ EGEApplication::_get_input(get_input_op op)
 							}));
 
 							if(k != 0xFFFFFFFF)
-								return k;
+								return int(k);
 						}
 					}
 				} while(_is_run() && _waitdealmessage());
@@ -509,8 +517,8 @@ EGEApplication::_init_graph_x()
 #else
 			&init_finish]{
 			hwnd = ::CreateWindowExW(g_wstyle_ex, window_class_name,
-				window_caption, g_wstyle & ~WS_VISIBLE, g_wpos_x, g_wpos_y,
-				dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
+				window_caption, g_wstyle & unsigned(~WS_VISIBLE), g_wpos_x,
+				g_wpos_y, dc_w + ::GetSystemMetrics(SM_CXFRAME) * 2,
 				dc_h + ::GetSystemMetrics(SM_CYFRAME)
 				+ ::GetSystemMetrics(SM_CYCAPTION) * 2, HWND_DESKTOP,
 #endif
@@ -670,16 +678,16 @@ EGEApplication::_on_mouse_button_up(::HWND h_wnd, unsigned msg,
 }
 
 void
-EGEApplication::_on_paint(::HWND hwnd)
+EGEApplication::_on_paint(::HWND h)
 {
 	::PAINTSTRUCT ps;
-	::HDC dc(::BeginPaint(hwnd, &ps));
+	::HDC dc(::BeginPaint(h, &ps));
 	get_pages().paint(dc);
-	::EndPaint(hwnd, &ps);
+	::EndPaint(h, &ps);
 }
 
 ::HCURSOR
-EGEApplication::_on_setcursor(::HWND hwnd)
+EGEApplication::_on_setcursor(::HWND h)
 {
 	if(!mouse_show)
 	{
@@ -687,8 +695,8 @@ EGEApplication::_on_setcursor(::HWND hwnd)
 		::POINT pt;
 
 		::GetCursorPos(&pt);
-		::ScreenToClient(hwnd, &pt);
-		::GetClientRect(hwnd, &rect);
+		::ScreenToClient(h, &pt);
+		::GetClientRect(h, &rect);
 		if(pt.x >= rect.left && pt.x < rect.right
 			&& pt.y >= rect.top && pt.y <= rect.bottom)
 			return {};
